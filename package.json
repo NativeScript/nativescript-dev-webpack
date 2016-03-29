@@ -1,0 +1,22 @@
+{
+    "name": "nativescript-dev-webpack",
+    "version": "0.0.1",
+    "main": "index",
+    "description": "",
+    "homepage": "http://www.telerik.com",
+    "bugs": "http://www.telerik.com",
+    "contributors": [
+        "Hristo Deshev <hristo.deshev@telerik.com>"
+    ],
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/NativeScript/nativescript-dev-webpack.git"
+    },
+    "dependencies": {
+        "webpack": "^1.12.14"
+    },
+    "devDependencies": {
+        "shelljs": "^0.5.3"
+    }
+}
