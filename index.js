@@ -1,6 +1,7 @@
 var webpack = require("webpack");
 var shelljs = require("shelljs");
 var path = require("path");
+var fs = require("fs");
 
 var tnsPackage = "tns-core-modules";
 var tnsModulesDir = path.join("node_modules", tnsPackage);
@@ -72,6 +73,11 @@ exports.readPackageJson = function readPackageJson(dir) {
     }
 }
 
+exports.writePackageJson = function readPackageJson(dir, data) {
+    var packageJson = path.join(dir, "package.json");
+    fs.writeFileSync(packageJson, JSON.stringify(data, null, 4), 'utf8');
+}
+
 exports.readNodeModulesPackageJson = function readPackageJson(dir) {
     var moduleDir = path.join(tnsModulesDir, dir);
     return exports.readPackageJson(moduleDir);
@@ -102,7 +108,7 @@ exports.getEntryPoint = function getEntryPoint(appDir) {
     if (packageJson.bundleMain) {
         entryModule = packageJson.bundleMain;
     } else {
-        entryModule = appDir, exports.getPackageMain(appDir);
+        entryModule = path.join(appDir, exports.getPackageMain(appDir));
     }
     return "./" + entryModule;
 }
@@ -131,7 +137,7 @@ exports.getBundleDestination = function getBundleDestination(appDir) {
     if (packageJson.bundleOutput) {
         bundleOutput = packageJson.bundleOutput;
     }
-    return path.join(platformOutDir, bundleOutput);
+    return path.join(platformOutDir, appDir, bundleOutput);
 }
 
 exports.getConfig = function getConfig(userDefined) {
