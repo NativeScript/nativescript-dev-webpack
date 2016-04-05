@@ -11,14 +11,14 @@ exports.readPackageJson = function readPackageJson(dir) {
     } else {
         return {};
     }
-}
+};
 
 exports.TnsResolver = {
     apply: function(resolver) {
         var plugin = this;
         resolver.plugin('module', function(request, callback) {
             var resolvedFile = null;
-            var moduleName = request.request
+            var moduleName = request.request;
             if (plugin.isCoreDirModule(moduleName)) {
                 resolvedFile = plugin.resolveCoreDirModule(moduleName);
             } else if (plugin.isCoreFileModule(moduleName)) {

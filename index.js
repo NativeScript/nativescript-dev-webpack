@@ -14,7 +14,7 @@ exports.readPackageJson = resolver.readPackageJson;
 exports.writePackageJson = function writePackageJson(dir, data) {
     var packageJson = path.join(dir, "package.json");
     fs.writeFileSync(packageJson, JSON.stringify(data, null, 4), 'utf8');
-}
+};
 
 exports.getEntryPoint = function getEntryPoint(appDir) {
     var packageJson = exports.readPackageJson(appDir);
@@ -25,7 +25,7 @@ exports.getEntryPoint = function getEntryPoint(appDir) {
         entryModule = path.join(appDir, exports.getPackageMain(appDir));
     }
     return "./" + entryModule;
-}
+};
 
 exports.getBundleDestination = function getBundleDestination(appDir) {
     var packageJson = exports.readPackageJson(appDir);
@@ -34,7 +34,7 @@ exports.getBundleDestination = function getBundleDestination(appDir) {
         bundleOutput = packageJson.bundleOutput;
     }
     return path.join(platformOutDir, appDir, bundleOutput);
-}
+};
 
 exports.getConfig = function getConfig(userDefined) {
     if (!userDefined.context) {
@@ -43,20 +43,20 @@ exports.getConfig = function getConfig(userDefined) {
     if (!userDefined.entry) {
         userDefined.entry =  {
             app: exports.getEntryPoint("./app"),
-        }
+        };
     }
     if (!userDefined.output) {
         userDefined.output = {
             pathinfo: true,
             libraryTarget: "commonjs2",
             filename: exports.getBundleDestination("./app"),
-        }
+        };
     }
     if (!userDefined.resolve) {
         userDefined.resolve = {
             extensions: ["", ".js"],
             packageMains: ["main"],
-        }
+        };
     }
 
     if (!userDefined.plugins) {
@@ -74,4 +74,4 @@ exports.getConfig = function getConfig(userDefined) {
     var resolverPlugins = (userDefined.resolverPlugins || []).concat(resolver.TnsResolver);
     userDefined.plugins.push(new webpack.ResolverPlugin(resolverPlugins));
     return userDefined;
-}
+};
