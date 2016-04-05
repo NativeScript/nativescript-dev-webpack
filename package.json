@@ -13,8 +13,18 @@
         "type": "git",
         "url": "https://github.com/NativeScript/nativescript-dev-webpack.git"
     },
+    "nativescript": {
+        "hooks": [
+            {
+                "type": "after-prepare",
+                "script": "./after-prepare-hook.js",
+                "inject": true
+            }
+        ]
+    },
     "dependencies": {
-        "webpack": "^1.12.14"
+        "webpack": "1.12.14",
+        "nativescript-hook": "^0.2.1"
     },
     "devDependencies": {
         "shelljs": "^0.5.3"
