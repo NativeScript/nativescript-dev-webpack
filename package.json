@@ -22,6 +22,10 @@
             }
         ]
     },
+    "scripts": {
+        "postinstall": "node postinstall.js",
+        "preuninstall": "node preuninstall.js"
+    },
     "dependencies": {
         "webpack": "1.12.14",
         "nativescript-hook": "^0.2.1"
