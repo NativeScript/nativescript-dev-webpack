@@ -13,6 +13,29 @@ exports.readPackageJson = function readPackageJson(dir) {
     }
 };
 
+exports.getPackageMain = function(packageDir) {
+    if (shelljs.test("-f", packageDir + ".js")) {
+        return packageDir + ".js";
+    }
+
+    var data = exports.readPackageJson(packageDir);
+    if (data.main) {
+        var main = data.main;
+        if (/\.js$/i.test(main)) {
+            return path.join(packageDir, main);
+        } else {
+            return path.join(packageDir, main + ".js");
+        }
+    } else {
+        var indexPath = path.join(packageDir, "index.js");
+        if (shelljs.test("-f", indexPath)) {
+            return path.join(packageDir, "index.js");
+        } else {
+            throw new Error("Main module not found for: " + packageDir);
+        }
+    }
+};
+
 exports.TnsResolver = {
     apply: function(resolver) {
         var plugin = this;
@@ -53,27 +76,27 @@ exports.TnsResolver = {
             return this.doResolve(["file", "directory"], obj, newCallback);
         });
     },
-    isCoreDirModule: function isCoreDirModule(moduleName) {
+    isCoreDirModule: function(moduleName) {
         var tnsPath = path.join("node_modules/tns-core-modules", moduleName);
         return shelljs.test("-d", tnsPath);
     },
-    isNonCoreDirModule: function isNonCoreDirModule(moduleName) {
+    isNonCoreDirModule: function(moduleName) {
         var modulePath = path.join("node_modules", moduleName);
         return shelljs.test("-d", modulePath);
     },
-    resolveCoreDirModule: function resolveCoreDirModule(tnsModule) {
+    resolveCoreDirModule: function(tnsModule) {
         var tnsPath = path.join("node_modules/tns-core-modules", tnsModule);
         return this.getDirModule(tnsPath);
     },
-    resolveNonCoreDirModule: function resolveNonCoreDirModule(moduleName) {
+    resolveNonCoreDirModule: function(moduleName) {
         var modulePath = path.join("node_modules", moduleName);
         return this.getDirModule(modulePath);
     },
-    getDirModule: function getDirModule(modulePath) {
-        var mainModule = this.getPackageMain(modulePath);
+    getDirModule: function(modulePath) {
+        var mainModule = exports.getPackageMain(modulePath);
         return this.resolveFileModule(mainModule);
     },
-    resolveFileModule: function resolveFileModule(tnsModule) {
+    resolveFileModule: function(tnsModule) {
         var result = tnsModule;
         if (shelljs.test("-f", tnsModule)) {
             result = tnsModule;
@@ -89,7 +112,7 @@ exports.TnsResolver = {
         }
         return result.replace(/^node_modules\/?/i, "");
     },
-    resolveNonCoreFileModule: function resolveNonCoreFileModule(moduleName) {
+    resolveNonCoreFileModule: function(moduleName) {
         var nodeModulesPath = path.join("node_modules", moduleName);
         try {
             return plugin.resolveFileModule(nodeModulesPath);
@@ -97,7 +120,7 @@ exports.TnsResolver = {
             return null;
         }
     },
-    isCoreFileModule: function isCoreFileModule(moduleName) {
+    isCoreFileModule: function(moduleName) {
         var tnsPath = path.join("node_modules/tns-core-modules", moduleName);
         try {
             this.resolveFileModule(tnsPath);
@@ -106,33 +129,11 @@ exports.TnsResolver = {
             return false;
         }
     },
-    getPlatformModule: function getPlatformModule(platform, modulePath) {
+    getPlatformModule: function(platform, modulePath) {
         var noExtension = modulePath.replace(/\.js$/i, "");
         return noExtension + "." + platform + ".js";
     },
-    getPackageMain: function getPackageMain(packageDir) {
-        if (shelljs.test("-f", packageDir + ".js")) {
-            return packageDir + ".js";
-        }
-
-        var data = exports.readPackageJson(packageDir);
-        if (data.main) {
-            var main = data.main;
-            if (/\.js$/i.test(main)) {
-                return path.join(packageDir, main);
-            } else {
-                return path.join(packageDir, main + ".js");
-            }
-        } else {
-            var indexPath = path.join(packageDir, "index.js");
-            if (shelljs.test("-f", indexPath)) {
-                return path.join(packageDir, "index.js");
-            } else {
-                throw new Error("Main module not found for: " + packageDir);
-            }
-        }
-    },
-    isNonCoreFileModule: function isNonCoreFileModule(moduleFile) {
+    isNonCoreFileModule: function(moduleFile) {
         return shelljs.test("-f", moduleFile);
     },
 };
