@@ -23,9 +23,11 @@ exports.getEntryPoint = function getEntryPoint(appDir) {
     if (packageJson.bundleMain) {
         entryModule = packageJson.bundleMain;
     } else {
-        entryModule = path.join(appDir, exports.getPackageMain(appDir));
+        entryModule = exports.getPackageMain(appDir);
     }
-    return "./" + entryModule;
+
+    // Strip leading dir name and return just the submodule.
+    return entryModule.replace(/^[^\\\/]+[\\\/]/, "./");
 };
 
 exports.getBundleDestination = function getBundleDestination(appDir) {
