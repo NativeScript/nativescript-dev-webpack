@@ -17,7 +17,7 @@
         "hooks": [
             {
                 "type": "after-prepare",
-                "script": "lib/after-prepare.js",
+                "script": "after-prepare-hook.js",
                 "inject": true
             }
         ]
