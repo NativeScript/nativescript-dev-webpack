@@ -2,8 +2,7 @@ var path = require("path");
 var shelljs = require("shelljs");
 
 module.exports = function (logger, platformsData, projectData, hookArgs) {
-    if (!process.env.TNS_WEBPACK) {
-        console.log("Bundling disabled. Set the TNS_WEBPACK environment variable to enable it.");
+    if (!projectData.$options.argv.bundle) {
         return;
     }
 
