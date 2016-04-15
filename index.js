@@ -7,6 +7,7 @@ var resolver = require("./resolver");
 var tnsPackage = "tns-core-modules";
 var tnsModulesDir = path.join("node_modules", tnsPackage);
 
+var platform = process.env.PLATFORM;
 var platformOutDir = process.env.PLATFORM_DIR;
 
 exports.readPackageJson = resolver.readPackageJson;
@@ -17,11 +18,19 @@ exports.writePackageJson = function writePackageJson(dir, data) {
     fs.writeFileSync(packageJson, JSON.stringify(data, null, 4), 'utf8');
 };
 
+function endWithJs(fileName) {
+    if (/\.js$/i.test(fileName)) {
+        return fileName;
+    } else {
+        return fileName + ".js";
+    }
+}
+
 exports.getEntryPoint = function getEntryPoint(appDir) {
     var packageJson = exports.readPackageJson(appDir);
     var entryModule = null;
     if (packageJson.bundleMain) {
-        entryModule = packageJson.bundleMain;
+        entryModule = endWithJs(packageJson.bundleMain);
     } else {
         entryModule = exports.getPackageMain(appDir);
     }
@@ -40,19 +49,27 @@ exports.getBundleDestination = function getBundleDestination(appDir) {
 };
 
 exports.getConfig = function getConfig(userDefined) {
+    var platformOutDir = process.env.PLATFORM_DIR;
+    var appOutDir = path.join(platformOutDir, "app");
+
     if (!userDefined.context) {
         userDefined.context = "./app";
     }
     if (!userDefined.entry) {
-        userDefined.entry =  {
-            app: exports.getEntryPoint("./app"),
+        userDefined.entry = {
+            "bundle": exports.getEntryPoint("./app"),
         };
+        if (platform === "android") {
+            userDefined.entry["tns-java-classes"] = "./tns-java-classes";
+        }
     }
     if (!userDefined.output) {
         userDefined.output = {
             pathinfo: true,
+            path: appOutDir,
             libraryTarget: "commonjs2",
-            filename: exports.getBundleDestination("./app"),
+            filename: "[name].js",
+            jsonpFunction: "nativescriptJsonp",
         };
     }
     if (!userDefined.resolve) {
@@ -71,9 +88,15 @@ exports.getConfig = function getConfig(userDefined) {
     userDefined.plugins.push(
         new webpack.DefinePlugin({
             global: 'global',
-            __dirname: '__dirname'
+            __dirname: '__dirname',
+            "global.TNS_WEBPACK": 'true',
         })
     );
+    if (platform === "android") {
+        userDefined.plugins.push(new webpack.optimize.CommonsChunkPlugin(
+            "tns-java-classes", "tns-java-classes.js", Infinity));
+    }
+
     var resolverPlugins = (userDefined.resolverPlugins || []).concat(resolver.TnsResolver);
     userDefined.plugins.push(new webpack.ResolverPlugin(resolverPlugins));
     return userDefined;
