@@ -8,15 +8,15 @@
 //At runtime the module gets loaded *before* the rest of the app code, so code
 //placed here needs to be careful about its dependencies.
 
-if (global.TNS_WEBPACK) {
-    require("application");
-    require("ui/frame");
+require("application");
+require("ui/frame");
 
+if (global.TNS_WEBPACK) {
     global.__requireOverride = function (name, dir) {
-        if (name === "application") {
+		var tnsModulesPrefix = "./tns_modules/";
+        if (name === "./tns_modules/application/application.js") {
             return require("application");
-        }
-        else if (name === "ui/frame") {
+        } else if (name === "./tns_modules/ui/frame/frame.js") {
             return require("ui/frame");
         }
     };
