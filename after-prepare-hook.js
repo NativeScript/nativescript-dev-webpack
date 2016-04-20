@@ -25,7 +25,11 @@ module.exports = function (logger, platformsData, projectData, hookArgs) {
     }
 
     return new Promise(function (resolve, reject) {
-        return shelljs.exec(webPackBinary, function(code, output) {
+        var webPackCommand = webPackBinary;
+        if (process.env.WEBPACK_OPTS) {
+            webPackCommand += " " + process.env.WEBPACK_OPTS;
+        }
+        return shelljs.exec(webPackCommand, function(code, output) {
             if (code === 0) {
                 var appJson = bundler.readPackageJson(platformAppDir);
                 var bundleRelativePath = path.relative(platformOutDir, bundler.getBundleDestination("./app"));
