@@ -51,6 +51,10 @@ exports.TnsResolver = {
                 resolvedFile = plugin.resolveNonCoreFileModule(moduleName);
             } else if (plugin.isNonCoreDirModule(moduleName)) {
                 resolvedFile = plugin.resolveNonCoreDirModule(moduleName);
+            } else  if (plugin.isAppFileModule(moduleName)) {
+                resolvedFile = plugin.resolveAppFileModule(moduleName);
+            } else if (plugin.isAppDirModule(moduleName)) {
+                resolvedFile = plugin.resolveAppDirModule(moduleName);
             }
 
             if (!resolvedFile) {
@@ -115,7 +119,7 @@ exports.TnsResolver = {
     resolveNonCoreFileModule: function(moduleName) {
         var nodeModulesPath = path.join("node_modules", moduleName);
         try {
-            return plugin.resolveFileModule(nodeModulesPath);
+            return this.resolveFileModule(nodeModulesPath);
         } catch (e) {
             return null;
         }
@@ -135,5 +139,25 @@ exports.TnsResolver = {
     },
     isNonCoreFileModule: function(moduleFile) {
         return shelljs.test("-f", moduleFile);
+    },
+    isAppFileModule: function (moduleName) {
+        var modulePath = path.resolve(__dirname, "..", "..", "app", moduleName.replace(/^~/, "."));
+        return shelljs.test("-f", modulePath + ".js") || shelljs.test("-f", this.getPlatformModule(platform, modulePath));
+    },
+    resolveAppFileModule: function (moduleName) {
+        var modulePath = path.resolve(__dirname, "..", "..", "app", moduleName.replace(/^~/, "."));
+        try {
+            return this.resolveFileModule(modulePath);
+        } catch (e) {
+            return null;
+        }
+    },
+    isAppDirModule: function (moduleName) {
+        var modulePath = path.resolve(__dirname, "..", "..", "app", moduleName.replace(/^~/, "."));
+        return shelljs.test("-d", modulePath);
+    },
+        resolveAppDirModule: function (moduleName) {
+        var modulePath = path.resolve(__dirname, "..", "..", "app", moduleName.replace(/^~/, "."));
+        return this.getDirModule(modulePath);
     },
 };
