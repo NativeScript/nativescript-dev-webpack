@@ -74,7 +74,7 @@ exports.getConfig = function getConfig(userDefined) {
     }
     if (!userDefined.resolve) {
         userDefined.resolve = {
-            extensions: ["", ".js"],
+            extensions: ["", ".js", "." + platform + ".js"],
             packageMains: ["main"],
         };
     }
