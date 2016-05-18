@@ -51,10 +51,14 @@ exports.TnsResolver = {
                 resolvedFile = plugin.resolveNonCoreFileModule(moduleName);
             } else if (plugin.isNonCoreDirModule(moduleName)) {
                 resolvedFile = plugin.resolveNonCoreDirModule(moduleName);
-            } else  if (plugin.isAppFileModule(moduleName)) {
+            } else if (plugin.isAppFileModule(moduleName)) {
                 resolvedFile = plugin.resolveAppFileModule(moduleName);
             } else if (plugin.isAppDirModule(moduleName)) {
                 resolvedFile = plugin.resolveAppDirModule(moduleName);
+            } else if (plugin.isNativeScriptAngularDirModule(moduleName)) {
+                resolvedFile = plugin.resolveNativeScriptAngularDirModule(moduleName);
+            } else if (plugin.isNativeScriptAngularFileModule(moduleName)) {
+                resolvedFile = plugin.resolveNativeScriptAngularFileModule(moduleName);
             }
 
             if (!resolvedFile) {
@@ -82,6 +86,10 @@ exports.TnsResolver = {
     },
     isCoreDirModule: function(moduleName) {
         var tnsPath = path.join("node_modules/tns-core-modules", moduleName);
+        return shelljs.test("-d", tnsPath);
+    },
+    isNativeScriptAngularDirModule: function(moduleName) {
+        var tnsPath = path.join("node_modules/nativescript-angular/node_modules", moduleName);
         return shelljs.test("-d", tnsPath);
     },
     isNonCoreDirModule: function(moduleName) {
@@ -133,6 +141,15 @@ exports.TnsResolver = {
             return false;
         }
     },
+    isNativeScriptAngularFileModule: function(moduleName) {
+        var tnsPath = path.join("node_modules/nativescript-angular/node_modules", moduleName);
+        try {
+            this.resolveFileModule(tnsPath);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    },
     getPlatformModule: function(platform, modulePath) {
         var noExtension = modulePath.replace(/\.js$/i, "");
         return noExtension + "." + platform + ".js";
@@ -156,8 +173,20 @@ exports.TnsResolver = {
         var modulePath = path.resolve(__dirname, "..", "..", "app", moduleName.replace(/^~/, "."));
         return shelljs.test("-d", modulePath);
     },
-        resolveAppDirModule: function (moduleName) {
+    resolveAppDirModule: function (moduleName) {
         var modulePath = path.resolve(__dirname, "..", "..", "app", moduleName.replace(/^~/, "."));
         return this.getDirModule(modulePath);
+    },
+    resolveNativeScriptAngularDirModule: function(tnsModule) {
+        var tnsPath = path.join("node_modules/nativescript-angular/node_modules/", tnsModule);
+        return this.getDirModule(tnsPath);
+    },
+    resolveNativeScriptAngularFileModule: function(moduleName) {
+        var nodeModulesPath = path.join("node_modules/nativescript-angular/node_modules", moduleName);
+        try {
+            return this.resolveFileModule(nodeModulesPath);
+        } catch (e) {
+            return null;
+        }
     },
 };
