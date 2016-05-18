@@ -1,6 +1,6 @@
 {
     "name": "nativescript-dev-webpack",
-    "version": "0.0.13",
+    "version": "0.0.14",
     "main": "index",
     "description": "",
     "homepage": "http://www.telerik.com",
@@ -27,11 +27,11 @@
         "preuninstall": "node preuninstall.js"
     },
     "dependencies": {
+        "shelljs": "^0.5.3",
         "webpack": "1.12.14",
         "enhanced-resolve": "0.9.1",
         "nativescript-hook": "^0.2.1"
     },
     "devDependencies": {
-        "shelljs": "^0.5.3"
     }
 }
