@@ -41,7 +41,8 @@ exports.TnsResolver = {
         var plugin = this;
         resolver.plugin('module', function(request, callback) {
             var resolvedFile = null;
-            var moduleName = request.request;
+            //Remove leading backslash on Windows!
+            var moduleName = request.request.replace(/^\\/, "");
             if (plugin.isCoreDirModule(moduleName)) {
                 resolvedFile = plugin.resolveCoreDirModule(moduleName);
             } else if (plugin.isCoreFileModule(moduleName)) {
@@ -66,6 +67,9 @@ exports.TnsResolver = {
                 callback();
                 return;
             }
+
+            //Turn Windows backslashes to slashes
+            resolvedFile = resolvedFile.replace(/\\/g, "/");
 
             // Resolve to discovered "real" module name.
             //
@@ -122,7 +126,8 @@ exports.TnsResolver = {
                 throw new Error("File module not found for: " + tnsModule);
             }
         }
-        return result.replace(/^node_modules\/?/i, "");
+        //Make sure we strip both slashes and backslashes after node_modules!
+        return result.replace(/^node_modules[\/\\]?/i, "");
     },
     resolveNonCoreFileModule: function(moduleName) {
         var nodeModulesPath = path.join("node_modules", moduleName);
