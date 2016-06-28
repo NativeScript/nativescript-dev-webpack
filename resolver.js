@@ -71,14 +71,6 @@ exports.TnsResolver = {
             //Turn Windows backslashes to slashes
             resolvedFile = resolvedFile.replace(/\\/g, "/");
 
-            if (!path.isAbsolute(resolvedFile)) {
-                // non-absolute module paths assumed to be below node_modules
-                // make them absolute to prevent webpack from bundling them
-                // multiple times, if it encounters different relative imports
-                resolvedFile = path.join("node_modules", resolvedFile);
-                resolvedFile = path.resolve(resolvedFile);
-            }
-
             // Resolve to discovered "real" module name.
             //
             // Taken from "enhanced-resolve@0.9.1", ModuleAliasPlugin.js
@@ -175,9 +167,10 @@ exports.TnsResolver = {
         return shelljs.test("-f", modulePath + ".js") || shelljs.test("-f", this.getPlatformModule(platform, modulePath));
     },
     resolveAppFileModule: function (moduleName) {
-        var modulePath = path.resolve(__dirname, "..", "..", "app", moduleName.replace(/^~/, "."));
+        var modulePath = moduleName.replace(/^~\/?/, "");
+        modulePath = "./app/" + modulePath;
         try {
-            return this.resolveFileModule(modulePath);
+            return this.resolveFileModule(modulePath).replace(/^\.[\/\\]app/, ".");
         } catch (e) {
             return null;
         }
@@ -187,8 +180,9 @@ exports.TnsResolver = {
         return shelljs.test("-d", modulePath);
     },
     resolveAppDirModule: function (moduleName) {
-        var modulePath = path.resolve(__dirname, "..", "..", "app", moduleName.replace(/^~/, "."));
-        return this.getDirModule(modulePath);
+        var modulePath = moduleName.replace(/^~\/?/, "");
+        modulePath = "./app/" + modulePath;
+        return this.getDirModule(modulePath).replace(/^\.[\/\\]app/, ".");
     },
     resolveNativeScriptAngularDirModule: function(tnsModule) {
         var tnsPath = path.join("node_modules/nativescript-angular/node_modules/", tnsModule);
