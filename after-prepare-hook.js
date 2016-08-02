@@ -36,9 +36,6 @@ module.exports = function (logger, platformsData, projectData, hookArgs) {
                 appJson.main = path.basename(bundleRelativePath);
                 bundler.writePackageJson(platformAppDir, appJson);
 
-                var tnsClassesPath = path.join(platformAppDir, "tns-java-classes.js");
-                shelljs.sed("-i", /window\["nativescriptJsonp"\]/g, "global[\"nativescriptJsonp\"]", tnsClassesPath);
-
                 resolve();
             } else {
                 console.log('Webpack bundling failed.');

@@ -1,4 +1,5 @@
 var webpack = require("webpack");
+var ConcatSource = require("webpack/lib/ConcatSource");
 var shelljs = require("shelljs");
 var path = require("path");
 var fs = require("fs");
@@ -48,12 +49,38 @@ exports.getBundleDestination = function getBundleDestination(appDir) {
     return path.join(platformOutDir, appDir, bundleOutput);
 };
 
+//HACK: changes the JSONP chunk eval function to `global["nativescriptJsonp"]`
+// applied to tns-java-classes.js only
+function FixJsonpPlugin(options) {
+}
+
+FixJsonpPlugin.prototype.apply = function(compiler) {
+    compiler.plugin('compilation', function(compilation, params) {
+        compilation.plugin("optimize-chunk-assets", function(chunks, callback) {
+            chunks.forEach(function(chunk) {
+                chunk.files.forEach(function(file) {
+                    if (file === "tns-java-classes.js") {
+                        var src = compilation.assets[file];
+                        var code = src.source();
+                        var match = code.match(/window\["nativescriptJsonp"\]/);
+                        if (match) {
+                            compilation.assets[file] = new ConcatSource(code.replace(/window\["nativescriptJsonp"\]/g,  "global[\"nativescriptJsonp\"]"));
+                        }
+                    }
+                });
+            });
+            callback();
+        });
+    });
+};
+
+
 exports.getConfig = function getConfig(userDefined) {
     var platformOutDir = process.env.PLATFORM_DIR;
     var appOutDir = path.join(platformOutDir, "app");
 
     if (!userDefined.context) {
-        userDefined.context = "./app";
+        userDefined.context = path.resolve("./app");
     }
     if (!userDefined.entry) {
         userDefined.entry = {
@@ -99,5 +126,7 @@ exports.getConfig = function getConfig(userDefined) {
 
     var resolverPlugins = (userDefined.resolverPlugins || []).concat(resolver.TnsResolver);
     userDefined.plugins.push(new webpack.ResolverPlugin(resolverPlugins));
+    userDefined.plugins.push(new FixJsonpPlugin());
+
     return userDefined;
 };
