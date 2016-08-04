@@ -140,8 +140,8 @@ exports.getConfig = function getConfig(userDefined) {
     if (!userDefined.resolve.modulesDirectories) {
         userDefined.resolve.modulesDirectories = [];
     }
-    userDefined.resolve.modulesDirectories.push("node_modules");
     userDefined.resolve.modulesDirectories.push("node_modules/tns-core-modules");
+    userDefined.resolve.modulesDirectories.push("node_modules");
 
     if (!userDefined.plugins) {
         userDefined.plugins = [];
