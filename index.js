@@ -3,7 +3,6 @@ var ConcatSource = require("webpack/lib/ConcatSource");
 var shelljs = require("shelljs");
 var path = require("path");
 var fs = require("fs");
-var resolver = require("./resolver");
 
 var tnsPackage = "tns-core-modules";
 var tnsModulesDir = path.join("node_modules", tnsPackage);
@@ -11,8 +10,37 @@ var tnsModulesDir = path.join("node_modules", tnsPackage);
 var platform = process.env.PLATFORM;
 var platformOutDir = process.env.PLATFORM_DIR;
 
-exports.readPackageJson = resolver.readPackageJson;
-exports.getPackageMain = resolver.getPackageMain;
+exports.readPackageJson = function(dir) {
+    var packageJson = path.join(dir, "package.json");
+    if (shelljs.test("-f", packageJson)) {
+        return JSON.parse(shelljs.cat(packageJson));
+    } else {
+        return {};
+    }
+};
+
+exports.getPackageMain = function(packageDir) {
+    if (shelljs.test("-f", packageDir + ".js")) {
+        return packageDir + ".js";
+    }
+
+    var data = exports.readPackageJson(packageDir);
+    if (data.main) {
+        var main = data.main;
+        if (/\.js$/i.test(main)) {
+            return path.join(packageDir, main);
+        } else {
+            return path.join(packageDir, main + ".js");
+        }
+    } else {
+        var indexPath = path.join(packageDir, "index.js");
+        if (shelljs.test("-f", indexPath)) {
+            return path.join(packageDir, "index.js");
+        } else {
+            throw new Error("Main module not found for: " + packageDir);
+        }
+    }
+};
 
 exports.writePackageJson = function writePackageJson(dir, data) {
     var packageJson = path.join(dir, "package.json");
@@ -100,11 +128,20 @@ exports.getConfig = function getConfig(userDefined) {
         };
     }
     if (!userDefined.resolve) {
-        userDefined.resolve = {
-            extensions: ["", ".js", "." + platform + ".js"],
-            packageMains: ["main"],
-        };
+        userDefined.resolve = {};
     }
+    if (!userDefined.resolve.extensions) {
+        userDefined.resolve.extensions = [];
+    }
+    userDefined.resolve.extensions.push("");
+    userDefined.resolve.extensions.push(".js");
+    userDefined.resolve.extensions.push("." + platform + ".js");
+
+    if (!userDefined.resolve.modulesDirectories) {
+        userDefined.resolve.modulesDirectories = [];
+    }
+    userDefined.resolve.modulesDirectories.push("node_modules");
+    userDefined.resolve.modulesDirectories.push("node_modules/tns-core-modules");
 
     if (!userDefined.plugins) {
         userDefined.plugins = [];
@@ -124,8 +161,6 @@ exports.getConfig = function getConfig(userDefined) {
             "tns-java-classes", "tns-java-classes.js", Infinity));
     }
 
-    var resolverPlugins = (userDefined.resolverPlugins || []).concat(resolver.TnsResolver);
-    userDefined.plugins.push(new webpack.ResolverPlugin(resolverPlugins));
     userDefined.plugins.push(new FixJsonpPlugin());
 
     return userDefined;

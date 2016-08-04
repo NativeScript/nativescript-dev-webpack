@@ -29,7 +29,6 @@
     "dependencies": {
         "shelljs": "^0.5.3",
         "webpack": "1.12.14",
-        "enhanced-resolve": "0.9.1",
         "nativescript-hook": "^0.2.1"
     },
     "devDependencies": {
