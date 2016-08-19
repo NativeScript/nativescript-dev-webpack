@@ -28,7 +28,7 @@
     },
     "dependencies": {
         "shelljs": "^0.5.3",
-        "webpack": "1.12.14",
+        "webpack": "1.13.2",
         "nativescript-hook": "^0.2.1"
     },
     "devDependencies": {
