@@ -8,7 +8,7 @@ var path = require("path");
 
 module.exports = function(platform, destinationApp) {
     var entry = {};
-    entry.bundle = "./main";
+    entry.bundle = "./" + nsWebpack.getEntryModule();
     entry.vendor = "./vendor";
 
     return {
@@ -67,9 +67,9 @@ module.exports = function(platform, destinationApp) {
                 "global.TNS_WEBPACK": 'true',
             }),
             new CopyWebpackPlugin([
-                { from: "starter*.js" },
                 { from: "**/*.css" },
                 { from: "**/*.html" },
+                { from: "**/*.xml", ignore: "App_Resources/**" },
             ]),
             new nsWebpack.GenerateBundleStarterPlugin([
                 "./vendor",

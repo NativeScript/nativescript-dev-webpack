@@ -59,3 +59,13 @@ exports.GenerateBundleStarterPlugin.prototype = {
         return new sources.RawSource(moduleSource);
     },
 };
+
+exports.getEntryModule = function() {
+    var projectDir = path.dirname(path.dirname(__dirname));
+    var appPackageJsonPath = path.join(projectDir, "app", "package.json");
+    var appPackageJson = JSON.parse(fs.readFileSync(appPackageJsonPath, "utf8"));
+    if (!appPackageJson.main) {
+        throw new Error("app/package.json must contain a `main` attribute.");
+    }
+    return appPackageJson.main.replace(/\.js$/i, "");
+}
