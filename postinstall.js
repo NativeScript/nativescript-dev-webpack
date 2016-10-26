@@ -38,7 +38,7 @@ addPlatformScript(packageJson, "start-[PLATFORM]", "tns run [PLATFORM] --bundle 
 addPlatformScript(packageJson, "prebuild-[PLATFORM]", "npm run webpack-[PLATFORM]");
 addPlatformScript(packageJson, "build-[PLATFORM]", "tns build [PLATFORM] --bundle --disable-npm-install");
 
-dependencies(packageJson.devDependencies, function(add) {
+configureDevDependencies(packageJson, function(add) {
     add("webpack", "~2.1.0-beta.25");
     add("webpack-sources", "~0.1.2");
     add("copy-webpack-plugin", "~3.0.1");
@@ -64,8 +64,12 @@ function addPlatformScript(packageJson, nameTemplate, commandTemplate) {
     });
 }
 
-function dependencies(dependencies, adderCallback) {
+function configureDevDependencies(packageJson, adderCallback) {
     var pendingNpmInstall = false;
+    if (!packageJson.devDependencies) {
+        packageJson.devDependencies = {};
+    }
+    var dependencies = packageJson.devDependencies;
 
     adderCallback(function(name, version) {
         if (!dependencies[name]) {
