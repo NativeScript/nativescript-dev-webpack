@@ -1,6 +1,6 @@
 var path = require("path");
 var fs = require("fs");
-var child_process = require("child_process");
+var childProcess = require("child_process");
 
 var projectDir = path.dirname(path.dirname(__dirname));
 var appDir = path.join(projectDir, "app");
@@ -33,10 +33,10 @@ copyAppTemplate("vendor-platform.ios.ts.template", tsOrJs("vendor-platform.ios")
 addPlatformScript(packageJson, "clean-[PLATFORM]", "tns clean-app [PLATFORM]");
 addPlatformScript(packageJson, "prewebpack-[PLATFORM]", "npm run clean-[PLATFORM]");
 addPlatformScript(packageJson, "webpack-[PLATFORM]", "npm run clean-[PLATFORM] && webpack --config=webpack.[PLATFORM].js");
-addPlatformScript(packageJson, "prestart-[PLATFORM]", "npm run webpack-[PLATFORM]");
-addPlatformScript(packageJson, "start-[PLATFORM]", "tns run [PLATFORM] --bundle --disable-npm-install");
-addPlatformScript(packageJson, "prebuild-[PLATFORM]", "npm run webpack-[PLATFORM]");
-addPlatformScript(packageJson, "build-[PLATFORM]", "tns build [PLATFORM] --bundle --disable-npm-install");
+addPlatformScript(packageJson, "prestart-[PLATFORM]-bundle", "npm run webpack-[PLATFORM]");
+addPlatformScript(packageJson, "start-[PLATFORM]-bundle", "tns run [PLATFORM] --bundle --disable-npm-install");
+addPlatformScript(packageJson, "prebuild-[PLATFORM]-bundle", "npm run webpack-[PLATFORM]");
+addPlatformScript(packageJson, "build-[PLATFORM]-bundle", "tns build [PLATFORM] --bundle --disable-npm-install");
 
 configureDevDependencies(packageJson, function(add) {
     add("webpack", "~2.1.0-beta.25");
@@ -92,8 +92,8 @@ function configureDevDependencies(packageJson, adderCallback) {
                 spawnArgs = ["npm", ["install"]];
             }
             spawnArgs.push({ cwd: projectDir, stdio: "inherit" });
-            var npm = child_process.spawn.apply(null, spawnArgs);
-            npm.on('close', function(code) {
+            var npm = childProcess.spawn.apply(null, spawnArgs);
+            npm.on("close", function(code) {
                 process.exit(code);
             });
         }, 100);
