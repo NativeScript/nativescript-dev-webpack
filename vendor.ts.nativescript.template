@@ -1,5 +1,6 @@
 require("./vendor-platform");
 
+require("application");
 require("text/formatted-string");
 require("text/span");
 require("ui/action-bar");
