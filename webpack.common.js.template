@@ -7,6 +7,9 @@ var fs = require("fs");
 var path = require("path");
 
 module.exports = function(platform, destinationApp) {
+    if (!destinationApp) {
+        destinationApp = nsWebpack.getAppPath(platform);
+    }
     var entry = {};
     entry.bundle = "./" + nsWebpack.getEntryModule();
     entry.vendor = "./vendor";

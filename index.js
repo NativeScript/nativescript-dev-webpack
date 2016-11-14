@@ -69,3 +69,17 @@ exports.getEntryModule = function() {
     }
     return appPackageJson.main.replace(/\.js$/i, "");
 }
+
+exports.getAppPath = function(platform) {
+    var projectDir = path.dirname(path.dirname(__dirname));
+
+    if (/ios/i.test(platform)) {
+        var packageJson = JSON.parse(fs.readFileSync(path.join(projectDir, "package.json"), "utf8"));
+        var appName = packageJson.nativescript.id.replace(/.*\.([^.]+)$/, "$1");
+        return "platforms/ios/" + appName + "/app";
+    } else if (/android/i.test(platform)) {
+        return path.join(projectDir, "platforms/android/src/main/assets/app");
+    } else {
+        throw new Error("Invalid platform: " + platform);
+    }
+}
