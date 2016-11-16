@@ -32,7 +32,7 @@ copyAppTemplate("vendor-platform.ios.ts.template", tsOrJs("vendor-platform.ios")
 
 addPlatformScript(packageJson, "clean-[PLATFORM]", "tns clean-app [PLATFORM]");
 addPlatformScript(packageJson, "prewebpack-[PLATFORM]", "npm run clean-[PLATFORM]");
-addPlatformScript(packageJson, "webpack-[PLATFORM]", "npm run clean-[PLATFORM] && webpack --config=webpack.[PLATFORM].js --progress");
+addPlatformScript(packageJson, "webpack-[PLATFORM]", "webpack --config=webpack.[PLATFORM].js --progress");
 addPlatformScript(packageJson, "prestart-[PLATFORM]-bundle", "npm run webpack-[PLATFORM]");
 addPlatformScript(packageJson, "start-[PLATFORM]-bundle", "tns run [PLATFORM] --bundle --disable-npm-install");
 addPlatformScript(packageJson, "prebuild-[PLATFORM]-bundle", "npm run webpack-[PLATFORM]");
