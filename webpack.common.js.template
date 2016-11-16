@@ -46,7 +46,7 @@ module.exports = function(platform, destinationApp) {
             loaders: [
                 {
                     test: /\.html$/,
-                    loader: "html"
+                    loader: "html-loader"
                 },
                 {
                     test: /\.ts$/,
@@ -55,7 +55,7 @@ module.exports = function(platform, destinationApp) {
                 {
                     test: /\.scss$/,
                     loaders: [
-                        'raw', 'resolve-url', 'sass'
+                        'raw-loader', 'resolve-url', 'sass'
                     ]
                 },
             ]

@@ -44,6 +44,7 @@ configureDevDependencies(packageJson, function(add) {
     add("copy-webpack-plugin", "~3.0.1");
     add("awesome-typescript-loader", "~2.2.4");
     add("html-loader", "~0.4.3");
+    add("raw-loader", "~0.5.1");
 });
 
 fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 4));
