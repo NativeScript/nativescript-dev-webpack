@@ -43,7 +43,7 @@ configureDevDependencies(packageJson, function(add) {
     add("webpack-sources", "~0.1.2");
     add("copy-webpack-plugin", "~3.0.1");
     add("awesome-typescript-loader", "~2.2.4");
-    add("html-loader", "~0.4.3");
+    add("angular2-template-loader", "~0.6.0");
     add("raw-loader", "~0.5.1");
 });
 
