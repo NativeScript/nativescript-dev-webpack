@@ -25,6 +25,11 @@ module.exports = function(platform, destinationApp) {
             filename: "[name].js",
             jsonpFunction: "nativescriptJsonp"
         },
+        resolveLoader: {
+            alias: {
+                "moduleId-fix": path.join(__dirname, "node_modules/nativescript-dev-webpack/moduleId-fix.js")
+            }
+        },
         resolve: {
             //Resolve platform-specific modules like module.android.js
             extensions: [
@@ -59,7 +64,8 @@ module.exports = function(platform, destinationApp) {
                     test: /\.ts$/,
                     loaders: [
                         "awesome-typescript-loader",
-                        "angular2-template-loader"
+                        "angular2-template-loader",
+                        "moduleId-fix"
                     ]
                 },
                 {
