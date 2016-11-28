@@ -2,6 +2,7 @@ var webpack = require("webpack");
 var nsWebpack = require("nativescript-dev-webpack");
 var path = require("path");
 var CopyWebpackPlugin = require("copy-webpack-plugin");
+var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var path = require("path");
 
 module.exports = function(platform, destinationApp) {
@@ -14,6 +15,8 @@ module.exports = function(platform, destinationApp) {
     entry.bundle = "./" + nsWebpack.getEntryModule();
     //Vendor entry with third party libraries.
     entry.vendor = "./vendor";
+    //app.css bundle
+    entry["app.css"] = "./app.css";
 
     return {
         context: path.resolve("./app"),
@@ -30,8 +33,10 @@ module.exports = function(platform, destinationApp) {
             extensions: [
                 ".ts",
                 ".js",
+                ".css",
                 "." + platform + ".ts",
                 "." + platform + ".js",
+                "." + platform + ".css",
             ],
             //Resolve {N} system modules from tns-core-modules
             modules: [
@@ -51,10 +56,24 @@ module.exports = function(platform, destinationApp) {
                     test: /\.html$/,
                     loader: "raw-loader"
                 },
+                // Root app.css file gets extracted with bundled dependencies
+                {
+                    test: /app\.css$/,
+                    loader: ExtractTextPlugin.extract([
+                        "resolve-url-loader",
+                        "css-loader",
+                        "nativescript-dev-webpack/platform-css-loader",
+                    ]),
+                },
+                // Other CSS files get bundled using the raw loader
                 {
                     test: /\.css$/,
-                    loader: "raw-loader"
+                    exclude: /app\.css$/,
+                    loaders: [
+                        "raw-loader",
+                    ]
                 },
+                // Compile TypeScript files, replace templateUrl and styleUrls.
                 {
                     test: /\.ts$/,
                     loaders: [
@@ -62,17 +81,19 @@ module.exports = function(platform, destinationApp) {
                         "angular2-template-loader"
                     ]
                 },
+                // SASS support
                 {
                     test: /\.scss$/,
                     loaders: [
                         "raw-loader",
-                        "resolve-url",
+                        "resolve-url-loader",
                         "sass-loader"
                     ]
                 },
             ]
         },
         plugins: [
+            new ExtractTextPlugin("app.css"),
             //Vendor libs go to the vendor.js chunk
             new webpack.optimize.CommonsChunkPlugin({
                 name: ["vendor"]
@@ -98,6 +119,6 @@ module.exports = function(platform, destinationApp) {
             ]),
             //Required for bundle chunks loading
             new nsWebpack.NativeScriptJsonpPlugin(),
-        ]
+        ],
     };
 };

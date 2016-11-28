@@ -45,6 +45,9 @@ configureDevDependencies(packageJson, function(add) {
     add("awesome-typescript-loader", "~2.2.4");
     add("angular2-template-loader", "~0.6.0");
     add("raw-loader", "~0.5.1");
+    add("css-loader", "~0.26.0");
+    add("resolve-url-loader", "~1.6.0");
+    add("extract-text-webpack-plugin", "~2.0.0-beta.4");
 });
 
 fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 4));
