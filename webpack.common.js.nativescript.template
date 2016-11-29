@@ -4,8 +4,9 @@ var path = require("path");
 var CopyWebpackPlugin = require("copy-webpack-plugin");
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var path = require("path");
+var nativescriptTarget = require('nativescript-dev-webpack/nativescript-target');
 
-module.exports = function(platform, destinationApp) {
+module.exports = function (platform, destinationApp) {
     if (!destinationApp) {
         //Default destination inside platforms/<platform>/...
         destinationApp = nsWebpack.getAppPath(platform);
@@ -20,13 +21,13 @@ module.exports = function(platform, destinationApp) {
 
     return {
         context: path.resolve("./app"),
+        target: nativescriptTarget,
         entry: entry,
         output: {
             pathinfo: true,
             path: path.resolve(destinationApp),
             libraryTarget: "commonjs2",
             filename: "[name].js",
-            jsonpFunction: "nativescriptJsonp"
         },
         resolve: {
             //Resolve platform-specific modules like module.android.js
@@ -77,8 +78,7 @@ module.exports = function(platform, destinationApp) {
                 {
                     test: /\.ts$/,
                     loaders: [
-                        "awesome-typescript-loader",
-                        "angular2-template-loader"
+                        "awesome-typescript-loader"
                     ]
                 },
                 // SASS support
@@ -106,19 +106,17 @@ module.exports = function(platform, destinationApp) {
             }),
             //Copy assets to out dir. Add your own globs as needed.
             new CopyWebpackPlugin([
-                {from: "app.css"},
-                {from: "css/**"},
-                {from: "**/*.jpg"},
-                {from: "**/*.png"},
-                {from: "**/*.xml"},
-            ], {ignore: ["App_Resources/**"]}),
+                { from: "app.css" },
+                { from: "css/**" },
+                { from: "**/*.jpg" },
+                { from: "**/*.png" },
+                { from: "**/*.xml" },
+            ], { ignore: ["App_Resources/**"] }),
             //Generate a bundle starter script and activate it in package.json
             new nsWebpack.GenerateBundleStarterPlugin([
                 "./vendor",
                 "./bundle",
             ]),
-            //Required for bundle chunks loading
-            new nsWebpack.NativeScriptJsonpPlugin(),
         ],
     };
 };
