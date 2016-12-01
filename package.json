@@ -1,6 +1,6 @@
 {
     "name": "nativescript-dev-webpack",
-    "version": "0.0.20",
+    "version": "0.2.9",
     "main": "index",
     "description": "",
     "homepage": "http://www.telerik.com",
@@ -13,24 +13,10 @@
         "type": "git",
         "url": "https://github.com/NativeScript/nativescript-dev-webpack.git"
     },
-    "nativescript": {
-        "hooks": [
-            {
-                "type": "after-prepare",
-                "script": "after-prepare-hook.js",
-                "inject": true
-            }
-        ]
-    },
     "scripts": {
-        "postinstall": "node postinstall.js",
-        "preuninstall": "node preuninstall.js"
+        "postinstall": "node postinstall.js"
     },
     "dependencies": {
-        "shelljs": "^0.5.3",
-        "webpack": "1.12.14",
-        "enhanced-resolve": "0.9.1",
-        "nativescript-hook": "^0.2.1"
     },
     "devDependencies": {
     }

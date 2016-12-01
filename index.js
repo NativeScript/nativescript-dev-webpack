@@ -1,70 +1,23 @@
-var webpack = require("webpack");
-var ConcatSource = require("webpack/lib/ConcatSource");
-var shelljs = require("shelljs");
-var path = require("path");
+var sources = require("webpack-sources");
 var fs = require("fs");
-var resolver = require("./resolver");
-
-var tnsPackage = "tns-core-modules";
-var tnsModulesDir = path.join("node_modules", tnsPackage);
-
-var platform = process.env.PLATFORM;
-var platformOutDir = process.env.PLATFORM_DIR;
-
-exports.readPackageJson = resolver.readPackageJson;
-exports.getPackageMain = resolver.getPackageMain;
-
-exports.writePackageJson = function writePackageJson(dir, data) {
-    var packageJson = path.join(dir, "package.json");
-    fs.writeFileSync(packageJson, JSON.stringify(data, null, 4), 'utf8');
-};
-
-function endWithJs(fileName) {
-    if (/\.js$/i.test(fileName)) {
-        return fileName;
-    } else {
-        return fileName + ".js";
-    }
-}
-
-exports.getEntryPoint = function getEntryPoint(appDir) {
-    var packageJson = exports.readPackageJson(appDir);
-    var entryModule = null;
-    if (packageJson.bundleMain) {
-        entryModule = endWithJs(packageJson.bundleMain);
-    } else {
-        entryModule = exports.getPackageMain(appDir);
-    }
-
-    // Strip leading dir name and return just the submodule.
-    return entryModule.replace(/^[^\\\/]+[\\\/]/, "./");
-};
-
-exports.getBundleDestination = function getBundleDestination(appDir) {
-    var packageJson = exports.readPackageJson(appDir);
-    var bundleOutput = "bundle.js";
-    if (packageJson.bundleOutput) {
-        bundleOutput = packageJson.bundleOutput;
-    }
-    return path.join(platformOutDir, appDir, bundleOutput);
-};
+var path = require("path");
 
 //HACK: changes the JSONP chunk eval function to `global["nativescriptJsonp"]`
 // applied to tns-java-classes.js only
-function FixJsonpPlugin(options) {
+exports.NativeScriptJsonpPlugin = function(options) {
 }
 
-FixJsonpPlugin.prototype.apply = function(compiler) {
-    compiler.plugin('compilation', function(compilation, params) {
-        compilation.plugin("optimize-chunk-assets", function(chunks, callback) {
-            chunks.forEach(function(chunk) {
-                chunk.files.forEach(function(file) {
-                    if (file === "tns-java-classes.js") {
+exports.NativeScriptJsonpPlugin.prototype.apply = function (compiler) {
+    compiler.plugin('compilation', function (compilation, params) {
+        compilation.plugin("optimize-chunk-assets", function (chunks, callback) {
+            chunks.forEach(function (chunk) {
+                chunk.files.forEach(function (file) {
+                    if (file === "vendor.js") {
                         var src = compilation.assets[file];
                         var code = src.source();
                         var match = code.match(/window\["nativescriptJsonp"\]/);
                         if (match) {
-                            compilation.assets[file] = new ConcatSource(code.replace(/window\["nativescriptJsonp"\]/g,  "global[\"nativescriptJsonp\"]"));
+                            compilation.assets[file] = new sources.ConcatSource(code.replace(/window\["nativescriptJsonp"\]/g, "global[\"nativescriptJsonp\"]"));
                         }
                     }
                 });
@@ -74,59 +27,59 @@ FixJsonpPlugin.prototype.apply = function(compiler) {
     });
 };
 
+exports.GenerateBundleStarterPlugin = function(bundles) {
+    this.bundles = bundles;
+}
 
-exports.getConfig = function getConfig(userDefined) {
-    var platformOutDir = process.env.PLATFORM_DIR;
-    var appOutDir = path.join(platformOutDir, "app");
+exports.GenerateBundleStarterPlugin.prototype = {
+    apply: function (compiler) {
+        var plugin = this;
+        plugin.webpackContext = compiler.options.context;
 
-    if (!userDefined.context) {
-        userDefined.context = path.resolve("./app");
-    }
-    if (!userDefined.entry) {
-        userDefined.entry = {
-            "bundle": exports.getEntryPoint("./app"),
-        };
-        if (platform === "android") {
-            userDefined.entry["tns-java-classes"] = "./tns-java-classes";
-        }
-    }
-    if (!userDefined.output) {
-        userDefined.output = {
-            pathinfo: true,
-            path: appOutDir,
-            libraryTarget: "commonjs2",
-            filename: "[name].js",
-            jsonpFunction: "nativescriptJsonp",
-        };
-    }
-    if (!userDefined.resolve) {
-        userDefined.resolve = {
-            extensions: ["", ".js", "." + platform + ".js"],
-            packageMains: ["main"],
-        };
-    }
+        compiler.plugin('emit', function (compilation, cb) {
+            console.log(" GenerateBundleStarterPlugin: " + plugin.webpackContext);
 
-    if (!userDefined.plugins) {
-        userDefined.plugins = [];
-    }
-    if (!userDefined.resolverPlugins) {
-        userDefined.resolverPlugins = [];
-    }
-    userDefined.plugins.push(
-        new webpack.DefinePlugin({
-            global: 'global',
-            __dirname: '__dirname',
-            "global.TNS_WEBPACK": 'true',
-        })
-    );
-    if (platform === "android") {
-        userDefined.plugins.push(new webpack.optimize.CommonsChunkPlugin(
-            "tns-java-classes", "tns-java-classes.js", Infinity));
-    }
+            compilation.assets["package.json"] = plugin.generatePackageJson();
+            compilation.assets["starter.js"] = plugin.generateStarterModule();
 
-    var resolverPlugins = (userDefined.resolverPlugins || []).concat(resolver.TnsResolver);
-    userDefined.plugins.push(new webpack.ResolverPlugin(resolverPlugins));
-    userDefined.plugins.push(new FixJsonpPlugin());
+            cb();
+        });
+    },
+    generatePackageJson: function() {
+        var packageJsonPath = path.join(this.webpackContext, "package.json");
+        var packageData = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+        packageData.main = "starter";
 
-    return userDefined;
+        return new sources.RawSource(JSON.stringify(packageData, null, 4));
+    },
+    generateStarterModule: function() {
+        var moduleSource = this.bundles.map(function(bundle) {
+            return "require(\"" + bundle + "\");";
+        }).join("\n");
+        return new sources.RawSource(moduleSource);
+    },
 };
+
+exports.getEntryModule = function() {
+    var projectDir = path.dirname(path.dirname(__dirname));
+    var appPackageJsonPath = path.join(projectDir, "app", "package.json");
+    var appPackageJson = JSON.parse(fs.readFileSync(appPackageJsonPath, "utf8"));
+    if (!appPackageJson.main) {
+        throw new Error("app/package.json must contain a `main` attribute.");
+    }
+    return appPackageJson.main.replace(/\.js$/i, "");
+}
+
+exports.getAppPath = function(platform) {
+    var projectDir = path.dirname(path.dirname(__dirname));
+
+    if (/ios/i.test(platform)) {
+        var packageJson = JSON.parse(fs.readFileSync(path.join(projectDir, "package.json"), "utf8"));
+        var appName = packageJson.nativescript.id.replace(/.*\.([^.]+)$/, "$1");
+        return "platforms/ios/" + appName + "/app";
+    } else if (/android/i.test(platform)) {
+        return path.join(projectDir, "platforms/android/src/main/assets/app");
+    } else {
+        throw new Error("Invalid platform: " + platform);
+    }
+}
