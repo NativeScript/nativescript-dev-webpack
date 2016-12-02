@@ -11,7 +11,10 @@
     "suppressImplicitAnyIndexErrors": true,
     "types": []
   },
-
+  "exclude": [
+      "node_modules",
+      "platforms"
+  ],
   "angularCompilerOptions": {
     "skipMetadataEmit": true
   }
