@@ -83,3 +83,26 @@ exports.getAppPath = function(platform) {
         throw new Error("Invalid platform: " + platform);
     }
 }
+
+exports.uglifyMangleExcludes = [
+    "ActionBar",
+    "ActivityIndicator",
+    "Button",
+    "DatePicker",
+    "Image",
+    "Label",
+    "ListPicker",
+    "ListView",
+    "Page",
+    "Progress",
+    "SearchBar",
+    "SegmentedBar",
+    "Slider",
+    "Switch",
+    "TabView",
+    "TextBase",
+    "TextField",
+    "TextView",
+    "TimePicker",
+    "View",
+];
