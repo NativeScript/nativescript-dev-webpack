@@ -129,31 +129,6 @@ module.exports = function (platform, destinationApp) {
                 },
             ]
         },
-        plugins: [
-            new ExtractTextPlugin("app.css"),
-            //Vendor libs go to the vendor.js chunk
-            new webpack.optimize.CommonsChunkPlugin({
-                name: ["vendor"]
-            }),
-            //Define useful constants like TNS_WEBPACK
-            new webpack.DefinePlugin({
-                global: "global",
-                __dirname: "__dirname",
-                "global.TNS_WEBPACK": "true",
-            }),
-            //Copy assets to out dir. Add your own globs as needed.
-            new CopyWebpackPlugin([
-                { from: "app.css" },
-                { from: "css/**" },
-                { from: "**/*.jpg" },
-                { from: "**/*.png" },
-                { from: "**/*.xml" },
-            ], { ignore: ["App_Resources/**"] }),
-            //Generate a bundle starter script and activate it in package.json
-            new nsWebpack.GenerateBundleStarterPlugin([
-                "./vendor",
-                "./bundle",
-            ]),
-        ],
+        plugins: plugins,
     };
 };
