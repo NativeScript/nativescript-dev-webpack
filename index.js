@@ -17,7 +17,7 @@ if (isAngular) {
 
 //HACK: changes the JSONP chunk eval function to `global["nativescriptJsonp"]`
 // applied to tns-java-classes.js only
-exports.NativeScriptJsonpPlugin = function(options) {
+exports.NativeScriptJsonpPlugin = function (options) {
 };
 
 exports.NativeScriptJsonpPlugin.prototype.apply = function (compiler) {
@@ -40,7 +40,42 @@ exports.NativeScriptJsonpPlugin.prototype.apply = function (compiler) {
     });
 };
 
-exports.GenerateBundleStarterPlugin = function(bundles) {
+exports.ExcludeUnusedElementsPlugin = function () {
+};
+
+exports.ExcludeUnusedElementsPlugin.prototype.apply = function (compiler) {
+    compiler.plugin("normal-module-factory", function (nmf) {
+        nmf.plugin("before-resolve", function (result, callback) {
+            if (!result) {
+                return callback();
+            }
+
+            if (result.request === "globals" || result.request === "ui/core/view") {
+                return callback(null, result);
+            }
+
+            if (result.context.indexOf("tns-core-modules") === -1) {
+                if (result.contextInfo.issuer &&
+                    result.contextInfo.issuer.indexOf("element-registry") !== -1 && global["ELEMENT_REGISTRY"] &&
+                    !global["ELEMENT_REGISTRY"][result.request]) {
+                    return callback();
+
+                } else {
+                    return callback(null, result);
+                }
+            }
+
+            if (result.contextInfo.issuer.indexOf("bundle-entry-points") !== -1 && global["ELEMENT_REGISTRY"] &&
+                !global["ELEMENT_REGISTRY"][result.request]) {
+                return callback();
+            }
+
+            return callback(null, result);
+        });
+    });
+};
+
+exports.GenerateBundleStarterPlugin = function (bundles) {
     this.bundles = bundles;
 };
 
@@ -58,22 +93,22 @@ exports.GenerateBundleStarterPlugin.prototype = {
             cb();
         });
     },
-    generatePackageJson: function() {
+    generatePackageJson: function () {
         var packageJsonPath = path.join(this.webpackContext, "package.json");
         var packageData = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
         packageData.main = "starter";
 
         return new sources.RawSource(JSON.stringify(packageData, null, 4));
     },
-    generateStarterModule: function() {
-        var moduleSource = this.bundles.map(function(bundle) {
+    generateStarterModule: function () {
+        var moduleSource = this.bundles.map(function (bundle) {
             return "require(\"" + bundle + "\");";
         }).join("\n");
         return new sources.RawSource(moduleSource);
     },
 };
 
-exports.getEntryModule = function() {
+exports.getEntryModule = function () {
     const maybePackageJsonEntry = getPackageJsonEntry();
     if (!maybePackageJsonEntry) {
         throw new Error("app/package.json must contain a `main` attribute.");
@@ -83,12 +118,12 @@ exports.getEntryModule = function() {
     return maybeAotEntry || maybePackageJsonEntry;
 };
 
-exports.getAppPath = function(platform) {
+exports.getAppPath = function (platform) {
     var projectDir = path.dirname(path.dirname(__dirname));
 
     if (/ios/i.test(platform)) {
         var appName = path.basename(projectDir);
-        var sanitizedName = appName.split("").filter(function(c) {
+        var sanitizedName = appName.split("").filter(function (c) {
             return /[a-zA-Z0-9]/.test(c);
         }).join("");
         return "platforms/ios/" + sanitizedName + "/app";
@@ -127,7 +162,7 @@ function getPackageJsonEntry() {
     const entry = packageJsonSource.main;
 
     return entry ? entry.replace(/\.js$/i, "") : null;
- }
+}
 
 function getAppPackageJsonSource() {
     const projectDir = getProjectDir();
