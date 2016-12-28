@@ -34,6 +34,7 @@ module.exports = function (platform, destinationApp) {
         new CopyWebpackPlugin([
             { from: "app.css" },
             { from: "css/**" },
+            { from: "fonts/**" },
             { from: "**/*.jpg" },
             { from: "**/*.png" },
             { from: "**/*.xml" },
