@@ -52,8 +52,8 @@ configureDevDependencies(packageJson, function (add) {
     add("extract-text-webpack-plugin", "~2.0.0-beta.4");
 
     if (isAngular) {
-        add("@angular/compiler-cli", "2.2.1");
-        add("@ngtools/webpack", "1.1.6");
+        add("@angular/compiler-cli", "2.3.1");
+        add("@ngtools/webpack", "1.2.1");
     } else {
         add("awesome-typescript-loader", "~3.0.0-beta.9");
     }
