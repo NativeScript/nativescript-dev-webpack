@@ -61,13 +61,13 @@ exports.GenerateBundleStarterPlugin.prototype = {
 };
 
 exports.getEntryModule = function() {
-    var projectDir = path.dirname(path.dirname(__dirname));
-    var appPackageJsonPath = path.join(projectDir, "app", "package.json");
-    var appPackageJson = JSON.parse(fs.readFileSync(appPackageJsonPath, "utf8"));
-    if (!appPackageJson.main) {
+    const maybePackageJsonEntry = getPackageJsonEntry();
+    if (!maybePackageJsonEntry) {
         throw new Error("app/package.json must contain a `main` attribute.");
     }
-    return appPackageJson.main.replace(/\.js$/i, "");
+
+    const maybeAotEntry = getAotEntry(maybePackageJsonEntry);
+    return maybeAotEntry || maybePackageJsonEntry;
 };
 
 exports.getAppPath = function(platform) {
@@ -108,3 +108,29 @@ exports.uglifyMangleExcludes = [
     "TimePicker",
     "View",
 ];
+
+function getPackageJsonEntry() {
+    const packageJsonSource = getAppPackageJsonSource();
+    const entry = packageJsonSource.main;
+
+    return entry ? entry.replace(/\.js$/i, "") : null;
+ }
+
+function getAppPackageJsonSource() {
+    const projectDir = getProjectDir();
+    const appPackageJsonPath = path.join(projectDir, "app", "package.json");
+
+    return JSON.parse(fs.readFileSync(appPackageJsonPath, "utf8"));
+}
+
+function getAotEntry(entry) {
+    const aotEntry = `${entry}.aot.ts`;
+    const projectDir = getProjectDir();
+    const aotEntryPath = path.join(projectDir, "app", aotEntry);
+
+    return fs.existsSync(aotEntryPath) ? aotEntry : null;
+}
+
+function getProjectDir() {
+    return path.dirname(path.dirname(__dirname));
+}
