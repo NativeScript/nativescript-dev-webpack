@@ -51,6 +51,7 @@ module.exports = function (platform, destinationApp) {
             entryModule: path.resolve(__dirname, "app/app.module#AppModule"),
             typeChecking: false
         }),
+        new nsWebpack.StyleUrlResolvePlugin({platform}),
     ];
 
     if (process.env.npm_config_uglify) {

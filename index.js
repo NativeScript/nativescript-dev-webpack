@@ -2,6 +2,8 @@ var sources = require("webpack-sources");
 var fs = require("fs");
 var path = require("path");
 
+exports.StyleUrlResolvePlugin = require('./resource-resolver-plugins/StyleUrlResolvePlugin');
+
 //HACK: changes the JSONP chunk eval function to `global["nativescriptJsonp"]`
 // applied to tns-java-classes.js only
 exports.NativeScriptJsonpPlugin = function(options) {
