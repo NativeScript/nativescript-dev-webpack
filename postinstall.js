@@ -45,6 +45,7 @@ addPlatformScript(packageJson, "build-[PLATFORM]-bundle", "tns build [PLATFORM] 
 
 configureDevDependencies(packageJson, function (add) {
     add("webpack", "~2.1.0-beta.27");
+    add("webpack-sources", "~0.1.3");
     add("copy-webpack-plugin", "~3.0.1");
     add("raw-loader", "~0.5.1");
     add("css-loader", "~0.26.0");
