@@ -15,7 +15,6 @@ const StyleUrlResolvePlugin = (function() {
         compiler.plugin("make", (compilation, callback) => {
             const aotPlugin = getAotPlugin(compilation);
             aotPlugin._program.getSourceFiles()
-                .map(sf => this.setCurrentDirectory(sf))
                 .forEach(sf => this.usePlatformStyleUrl(sf));
 
             callback();
@@ -38,8 +37,6 @@ const StyleUrlResolvePlugin = (function() {
 
     StyleUrlResolvePlugin.prototype.setCurrentDirectory = function(sourceFile) {
         this.currentDirectory = path.resolve(sourceFile.path, "..");
-
-        return sourceFile;
     }
 
     StyleUrlResolvePlugin.prototype.traverseDecorators = function(node) {
@@ -68,7 +65,7 @@ const StyleUrlResolvePlugin = (function() {
     StyleUrlResolvePlugin.prototype.traversePropertyElements = function(property) {
         property.initializer.elements
             .filter(el => this.notPlatformUrl(el.text))
-            .filter(el => this.noCommonFile(el.text))
+            .filter(el => this.noMultiplatformFile(el.text))
             .forEach(el => this.replaceStyleUrlsValue(el));
     }
 
@@ -79,7 +76,7 @@ const StyleUrlResolvePlugin = (function() {
         return !styleUrl.endsWith(`.${this.platform}${extension}`);
     }
 
-    StyleUrlResolvePlugin.prototype.noCommonFile = function(styleUrl) {
+    StyleUrlResolvePlugin.prototype.noMultiplatformFile = function(styleUrl) {
         let stylePath = path.resolve(this.currentDirectory, styleUrl);
 
         return !fs.existsSync(stylePath);
