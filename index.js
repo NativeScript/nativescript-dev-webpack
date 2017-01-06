@@ -2,7 +2,18 @@ var sources = require("webpack-sources");
 var fs = require("fs");
 var path = require("path");
 
-exports.StyleUrlResolvePlugin = require('./resource-resolver-plugins/StyleUrlResolvePlugin');
+var projectDir = path.dirname(path.dirname(__dirname));
+var packageJsonPath = path.join(projectDir, "package.json");
+var packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+
+var isAngular = Object.keys(packageJson.dependencies).filter(function (dependency) {
+    return /^@angular\b/.test(dependency);
+}).length > 0;
+
+
+if (isAngular) {
+    exports.StyleUrlResolvePlugin = require("./resource-resolver-plugins/StyleUrlResolvePlugin");
+}
 
 //HACK: changes the JSONP chunk eval function to `global["nativescriptJsonp"]`
 // applied to tns-java-classes.js only
@@ -10,7 +21,7 @@ exports.NativeScriptJsonpPlugin = function(options) {
 };
 
 exports.NativeScriptJsonpPlugin.prototype.apply = function (compiler) {
-    compiler.plugin('compilation', function (compilation, params) {
+    compiler.plugin("compilation", function (compilation, params) {
         compilation.plugin("optimize-chunk-assets", function (chunks, callback) {
             chunks.forEach(function (chunk) {
                 chunk.files.forEach(function (file) {
@@ -38,7 +49,7 @@ exports.GenerateBundleStarterPlugin.prototype = {
         var plugin = this;
         plugin.webpackContext = compiler.options.context;
 
-        compiler.plugin('emit', function (compilation, cb) {
+        compiler.plugin("emit", function (compilation, cb) {
             console.log(" GenerateBundleStarterPlugin: " + plugin.webpackContext);
 
             compilation.assets["package.json"] = plugin.generatePackageJson();
