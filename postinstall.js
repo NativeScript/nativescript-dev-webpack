@@ -55,6 +55,7 @@ configureDevDependencies(packageJson, function (add) {
     if (isAngular) {
         add("@angular/compiler-cli", "2.3.1");
         add("@ngtools/webpack", "1.2.1");
+        add("typescript", "~2.0.10");
     } else {
         add("awesome-typescript-loader", "~3.0.0-beta.9");
     }
