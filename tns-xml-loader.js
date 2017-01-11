@@ -14,7 +14,10 @@ var MODULES = {
 var ELEMENT_REGISTRY = "ELEMENT_REGISTRY";
 
 if (!global[ELEMENT_REGISTRY]) {
-    global[ELEMENT_REGISTRY] = {};
+    global[ELEMENT_REGISTRY] = {
+        "ui/proxy-view-container": "ProxyViewContainer",
+        "ui/placeholder": "Placeholder"
+    };
 }
 
 module.exports = function (source, map) {
@@ -29,7 +32,7 @@ module.exports = function (source, map) {
             // Module path from element name
             var modulePath = MODULES[elementName] || UI_PATH +
                 (elementName.toLowerCase().indexOf("layout") !== -1 ? "layouts/" : "") +
-                    elementName.split(/(?=[A-Z])/).join("-").toLowerCase();
+                elementName.split(/(?=[A-Z])/).join("-").toLowerCase();
             // Update ELEMENT_REGISTRY
             global[ELEMENT_REGISTRY][modulePath] = elementName;
         }
