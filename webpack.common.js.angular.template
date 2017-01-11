@@ -117,7 +117,7 @@ module.exports = function (platform, destinationApp) {
                     test: /app\.css$/,
                     loader: ExtractTextPlugin.extract([
                         "resolve-url-loader",
-                        "css-loader",
+                        "nativescript-css-loader",
                         "nativescript-dev-webpack/platform-css-loader",
                     ]),
                 },

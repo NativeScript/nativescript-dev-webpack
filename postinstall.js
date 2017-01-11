@@ -48,7 +48,7 @@ configureDevDependencies(packageJson, function (add) {
     add("webpack-sources", "~0.1.3");
     add("copy-webpack-plugin", "~3.0.1");
     add("raw-loader", "~0.5.1");
-    add("css-loader", "~0.26.0");
+    add("nativescript-css-loader", "~0.26.0");
     add("resolve-url-loader", "~1.6.0");
     add("extract-text-webpack-plugin", "~2.0.0-beta.4");
 
