@@ -53,10 +53,10 @@ configureDevDependencies(packageJson, function (add) {
     add("extract-text-webpack-plugin", "~2.0.0-beta.4");
 
     if (isAngular) {
-        add("@angular/compiler-cli", "2.3.1");
+        add("@angular/compiler-cli", "2.4.3");
         add("@ngtools/webpack", "1.2.1");
-        add("typescript", "~2.0.10");
-        add("htmlparser2", "^3.9.2");
+        add("typescript", "^2.0.10");
+        add("htmlparser2", "~3.9.2");
     } else {
         add("awesome-typescript-loader", "~3.0.0-beta.9");
     }
