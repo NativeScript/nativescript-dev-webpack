@@ -17,11 +17,11 @@ if (isAngular) {
 
 //HACK: changes the JSONP chunk eval function to `global["nativescriptJsonp"]`
 // applied to tns-java-classes.js only
-exports.NativeScriptJsonpPlugin = function (options) {
+exports.NativeScriptJsonpPlugin = function () {
 };
 
 exports.NativeScriptJsonpPlugin.prototype.apply = function (compiler) {
-    compiler.plugin("compilation", function (compilation, params) {
+    compiler.plugin("compilation", function (compilation) {
         compilation.plugin("optimize-chunk-assets", function (chunks, callback) {
             chunks.forEach(function (chunk) {
                 chunk.files.forEach(function (file) {
@@ -158,7 +158,7 @@ exports.uglifyMangleExcludes = [
     "View",
 
     //Android native class extenders
-    "TapAndDoubleTapGestureListener"
+    "TapAndDoubleTapGestureListener",
     "SwipeGestureListener",
     "PinchGestureListener",
     "SwipeGestureListener",
