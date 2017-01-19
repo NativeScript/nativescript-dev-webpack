@@ -85,8 +85,6 @@ exports.GenerateBundleStarterPlugin.prototype = {
         plugin.webpackContext = compiler.options.context;
 
         compiler.plugin("emit", function (compilation, cb) {
-            console.log(" GenerateBundleStarterPlugin: " + plugin.webpackContext);
-
             compilation.assets["package.json"] = plugin.generatePackageJson();
             compilation.assets["starter.js"] = plugin.generateStarterModule();
 
