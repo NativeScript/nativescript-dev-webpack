@@ -135,6 +135,7 @@ exports.getAppPath = function (platform) {
 };
 
 exports.uglifyMangleExcludes = [
+    //Control names
     "ActionBar",
     "ActivityIndicator",
     "Button",
@@ -155,6 +156,24 @@ exports.uglifyMangleExcludes = [
     "TextView",
     "TimePicker",
     "View",
+
+    //Android native class extenders
+    "TapAndDoubleTapGestureListener"
+    "SwipeGestureListener",
+    "PinchGestureListener",
+    "SwipeGestureListener",
+    "CustomTypefaceSpan",
+    "BroadcastReceiver",
+    "LruBitmapCache",
+    "DialogFragmentClassInner",
+    "SegmentedBarColorDrawable",
+    "OurTabHost",
+    "PagerAdapterClassInner",
+    "PageChangedListener",
+    "ListViewAdapter",
+    "WebViewClientClassInner",
+    "NativeScriptActivity",
+    "FragmentClass",
 ];
 
 function getPackageJsonEntry() {
