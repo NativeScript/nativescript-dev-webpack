@@ -56,8 +56,8 @@ exports.ExcludeUnusedElementsPlugin.prototype.apply = function (compiler) {
 
             if (result.context.indexOf("tns-core-modules") === -1) {
                 if (result.contextInfo.issuer &&
-                    result.contextInfo.issuer.indexOf("element-registry") !== -1 && global["ELEMENT_REGISTRY"] &&
-                    !global["ELEMENT_REGISTRY"][result.request]) {
+                    result.contextInfo.issuer.indexOf("element-registry") !== -1 && global.ELEMENT_REGISTRY &&
+                    !global.ELEMENT_REGISTRY[result.request]) {
                     return callback();
 
                 } else {
@@ -65,8 +65,8 @@ exports.ExcludeUnusedElementsPlugin.prototype.apply = function (compiler) {
                 }
             }
 
-            if (result.contextInfo.issuer.indexOf("bundle-entry-points") !== -1 && global["ELEMENT_REGISTRY"] &&
-                !global["ELEMENT_REGISTRY"][result.request]) {
+            if (result.contextInfo.issuer.indexOf("bundle-entry-points") !== -1 && global.ELEMENT_REGISTRY &&
+                !global.ELEMENT_REGISTRY[result.request]) {
                 return callback();
             }
 
