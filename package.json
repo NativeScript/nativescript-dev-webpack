@@ -17,7 +17,8 @@
     "postinstall": "node postinstall.js"
   },
   "bin": {
-      "install-ns-webpack": "./bin/install-ns-webpack"
+      "install-ns-webpack": "./bin/install-ns-webpack",
+      "remove-ns-webpack": "./bin/remove-ns-webpack"
   },
   "dependencies": {},
   "devDependencies": {}

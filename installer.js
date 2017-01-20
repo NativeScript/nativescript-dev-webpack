@@ -17,59 +17,134 @@ if (isAngular) {
     isTypeScript = true;
 }
 
+function getProjectTemplates() {
+    var templates = {
+        "webpack.android.js.template": "webpack.android.js",
+        "webpack.ios.js.template": "webpack.ios.js",
+    };
+
+    if (isAngular) {
+        templates["webpack.common.js.angular.template"] = "webpack.common.js";
+        templates["tsconfig.aot.json.template"] = "tsconfig.aot.json";
+    } else {
+        templates["webpack.common.js.nativescript.template"] = "webpack.common.js";
+    }
+    return templates;
+}
+
+function getAppTemplates() {
+    var templates = {
+        "vendor-platform.android.ts.template": tsOrJs("vendor-platform.android"),
+        "vendor-platform.ios.ts.template": tsOrJs("vendor-platform.ios"),
+    };
+
+    if (isAngular) {
+        templates["vendor.ts.angular.template"] = tsOrJs("vendor");
+    } else {
+        templates["vendor.ts.nativescript.template"] = tsOrJs("vendor");
+    }
+    return templates;
+}
+
 function addProjectFiles() {
-    copyProjectTemplate("webpack.android.js.template", "webpack.android.js");
-    copyProjectTemplate("webpack.ios.js.template", "webpack.ios.js");
+    var projectTemplates = getProjectTemplates();
+    Object.keys(projectTemplates).forEach(function(templateName) {
+        var templateDestination = projectTemplates[templateName];
+        copyProjectTemplate(templateName, templateDestination);
+    });
 
-    if (isAngular) {
-        copyProjectTemplate("webpack.common.js.angular.template", "webpack.common.js");
-        copyProjectTemplate("tsconfig.aot.json.template", "tsconfig.aot.json");
-    } else {
-        copyProjectTemplate("webpack.common.js.nativescript.template", "webpack.common.js");
-    }
-
-    copyAppTemplate("vendor-platform.android.ts.template", tsOrJs("vendor-platform.android"));
-    copyAppTemplate("vendor-platform.ios.ts.template", tsOrJs("vendor-platform.ios"));
-    if (isAngular) {
-        copyAppTemplate("vendor.ts.angular.template", tsOrJs("vendor"));
-    } else {
-        copyAppTemplate("vendor.ts.nativescript.template", tsOrJs("vendor"));
-    }
+    var appTemplates = getAppTemplates();
+    Object.keys(appTemplates).forEach(function(templateName) {
+        var templateDestination = appTemplates[templateName];
+        copyAppTemplate(templateName, templateDestination);
+    });
 }
 exports.addProjectFiles = addProjectFiles;
 
+function removeProjectFiles() {
+    var projectTemplates = getProjectTemplates();
+    Object.keys(projectTemplates).forEach(function(templateName) {
+        var templateDestination = projectTemplates[templateName];
+        deleteProjectFile(templateDestination);
+    });
+
+    var appTemplates = getAppTemplates();
+    Object.keys(appTemplates).forEach(function(templateName) {
+        var templateDestination = appTemplates[templateName];
+        deleteAppFile(templateDestination);
+    });
+}
+exports.removeProjectFiles = removeProjectFiles;
+
+function getScriptTemplates() {
+    return {
+        "clean-[PLATFORM]": "tns clean-app [PLATFORM]",
+        "prewebpack-[PLATFORM]": "npm run clean-[PLATFORM]",
+        "webpack-[PLATFORM]": "webpack --config=webpack.[PLATFORM].js --progress",
+        "prestart-[PLATFORM]-bundle": "npm run webpack-[PLATFORM]",
+        "start-[PLATFORM]-bundle": "tns run [PLATFORM] --bundle --disable-npm-install",
+        "prebuild-[PLATFORM]-bundle": "npm run webpack-[PLATFORM]",
+        "build-[PLATFORM]-bundle": "tns build [PLATFORM] --bundle --disable-npm-install",
+    };
+}
+
 function addNpmScripts() {
-    addPlatformScript(packageJson, "clean-[PLATFORM]", "tns clean-app [PLATFORM]");
-    addPlatformScript(packageJson, "prewebpack-[PLATFORM]", "npm run clean-[PLATFORM]");
-    addPlatformScript(packageJson, "webpack-[PLATFORM]", "webpack --config=webpack.[PLATFORM].js --progress");
-    addPlatformScript(packageJson, "prestart-[PLATFORM]-bundle", "npm run webpack-[PLATFORM]");
-    addPlatformScript(packageJson, "start-[PLATFORM]-bundle", "tns run [PLATFORM] --bundle --disable-npm-install");
-    addPlatformScript(packageJson, "prebuild-[PLATFORM]-bundle", "npm run webpack-[PLATFORM]");
-    addPlatformScript(packageJson, "build-[PLATFORM]-bundle", "tns build [PLATFORM] --bundle --disable-npm-install");
+    var scriptTemplates = getScriptTemplates();
+    Object.keys(scriptTemplates).forEach(function(templateName) {
+        addPlatformScript(packageJson, templateName, scriptTemplates[templateName]);
+    });
 }
 exports.addNpmScripts = addNpmScripts;
 
+function removeNpmScripts() {
+    var scriptTemplates = getScriptTemplates();
+    Object.keys(scriptTemplates).forEach(function(templateName) {
+        removePlatformScripts(packageJson, templateName);
+    });
+}
+exports.removeNpmScripts = removeNpmScripts;
+
+function getProjectDependencies() {
+    var dependencies = {
+        "webpack": "~2.1.0-beta.27",
+        "webpack-sources": "~0.1.3",
+        "copy-webpack-plugin": "~3.0.1",
+        "raw-loader": "~0.5.1",
+        "nativescript-css-loader": "~0.26.0",
+        "resolve-url-loader": "~1.6.0",
+        "extract-text-webpack-plugin": "~2.0.0-beta.4",
+    };
+
+    if (isAngular) {
+        dependencies["@angular/compiler-cli"] = "2.4.3";
+        dependencies["@ngtools/webpack"] = "1.2.1";
+        dependencies["typescript"] = "^2.0.10";
+        dependencies["htmlparser2"] = "~3.9.2";
+    } else {
+        dependencies["awesome-typescript-loader"] = "~3.0.0-beta.9";
+    }
+    return dependencies;
+}
+
 function addProjectDependencies() {
     configureDevDependencies(packageJson, function (add) {
-        add("webpack", "~2.1.0-beta.27");
-        add("webpack-sources", "~0.1.3");
-        add("copy-webpack-plugin", "~3.0.1");
-        add("raw-loader", "~0.5.1");
-        add("nativescript-css-loader", "~0.26.0");
-        add("resolve-url-loader", "~1.6.0");
-        add("extract-text-webpack-plugin", "~2.0.0-beta.4");
-
-        if (isAngular) {
-            add("@angular/compiler-cli", "2.4.3");
-            add("@ngtools/webpack", "1.2.1");
-            add("typescript", "^2.0.10");
-            add("htmlparser2", "~3.9.2");
-        } else {
-            add("awesome-typescript-loader", "~3.0.0-beta.9");
-        }
+        var dependencies = getProjectDependencies();
+        Object.keys(dependencies).forEach(function(dependencyName) {
+            add(dependencyName, dependencies[dependencyName]);
+        });
     });
 }
 exports.addProjectDependencies = addProjectDependencies;
+
+function removeProjectDependencies() {
+    configureDevDependencies(packageJson, function (add, remove) {
+        var dependencies = getProjectDependencies();
+        Object.keys(dependencies).forEach(function(dependencyName) {
+            remove(dependencyName);
+        });
+    });
+}
+exports.removeProjectDependencies = removeProjectDependencies;
 
 
 function addPlatformScript(packageJson, nameTemplate, commandTemplate) {
@@ -82,9 +157,22 @@ function addPlatformScript(packageJson, nameTemplate, commandTemplate) {
         var name = nameTemplate.replace(/\[PLATFORM\]/g, platform);
         var command = commandTemplate.replace(/\[PLATFORM\]/g, platform);
         if (!scripts[name]) {
-            scripts[name] = command;
             console.log("Registering script: " + name);
+            scripts[name] = command;
         }
+    });
+}
+
+function removePlatformScripts(packageJson, nameTemplate) {
+    if (!packageJson.scripts) {
+        return;
+    }
+
+    var scripts = packageJson.scripts;
+    ["android", "ios"].forEach(function (platform) {
+        var name = nameTemplate.replace(/\[PLATFORM\]/g, platform);
+        console.log("Removing script: " + name);
+        delete scripts[name];
     });
 }
 
@@ -103,6 +191,9 @@ function configureDevDependencies(packageJson, adderCallback) {
         } else {
             console.info("Dev dependency: '" + name + "' already added. Leaving version: " + dependencies[name]);
         }
+    }, function(name) {
+        console.info("Removing dev dependency: " + name);
+        delete dependencies[name];
     });
 
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
@@ -139,16 +230,28 @@ function copyProjectTemplate(templateName, projectPath) {
     copyTemplate(templateName, destinationPath);
 }
 
+function deleteProjectFile(projectPath) {
+    var destinationPath = path.join(projectDir, projectPath);
+    console.log("Deleting file: " + destinationPath);
+    fs.unlink(destinationPath);
+}
+
 function copyAppTemplate(templateName, appPath) {
     var destinationPath = path.join(appDir, appPath);
     copyTemplate(templateName, destinationPath);
+}
+
+function deleteAppFile(appPath) {
+    var destinationPath = path.join(appDir, appPath);
+    console.log("Deleting file: " + destinationPath);
+    fs.unlink(destinationPath);
 }
 
 function copyTemplate(templateName, destinationPath) {
     var templatePath = path.join(__dirname, templateName);
     // Create destination file, only if not present.
     if (!fs.existsSync(destinationPath)) {
-        console.log("Creating: " + destinationPath);
+        console.log("Creating file: " + destinationPath);
         var content = fs.readFileSync(templatePath, "utf8");
         fs.writeFileSync(destinationPath, content);
     }

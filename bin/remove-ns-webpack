@@ -1,0 +1,6 @@
+#!/usr/bin/env node
+var installer = require("../installer");
+
+installer.removeProjectFiles();
+installer.removeNpmScripts();
+installer.removeProjectDependencies();
