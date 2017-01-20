@@ -16,6 +16,9 @@
   "scripts": {
     "postinstall": "node postinstall.js"
   },
+  "bin": {
+      "install-ns-webpack": "./bin/install-ns-webpack"
+  },
   "dependencies": {},
   "devDependencies": {}
 }
