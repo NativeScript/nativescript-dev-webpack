@@ -138,6 +138,7 @@ exports.uglifyMangleExcludes = [
     "ActivityIndicator",
     "Button",
     "DatePicker",
+    "EditableTextBase",
     "Image",
     "Label",
     "ListPicker",
