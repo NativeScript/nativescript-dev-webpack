@@ -1,4 +1,5 @@
-var installer = require("./installer");
+#!/usr/bin/env node
+var installer = require("../installer");
 
 installer.addProjectFiles();
 installer.addNpmScripts();
