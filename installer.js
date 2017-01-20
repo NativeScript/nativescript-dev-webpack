@@ -232,8 +232,7 @@ function copyProjectTemplate(templateName, projectPath) {
 
 function deleteProjectFile(projectPath) {
     var destinationPath = path.join(projectDir, projectPath);
-    console.log("Deleting file: " + destinationPath);
-    fs.unlink(destinationPath);
+    deleteFile(destinationPath);
 }
 
 function copyAppTemplate(templateName, appPath) {
@@ -243,8 +242,14 @@ function copyAppTemplate(templateName, appPath) {
 
 function deleteAppFile(appPath) {
     var destinationPath = path.join(appDir, appPath);
-    console.log("Deleting file: " + destinationPath);
-    fs.unlink(destinationPath);
+    deleteFile(destinationPath);
+}
+
+function deleteFile(destinationPath) {
+    if (fs.existsSync(destinationPath)) {
+        console.log("Deleting file: " + destinationPath);
+        fs.unlink(destinationPath);
+    }
 }
 
 function copyTemplate(templateName, destinationPath) {
