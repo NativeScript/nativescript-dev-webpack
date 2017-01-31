@@ -106,7 +106,7 @@ exports.removeNpmScripts = removeNpmScripts;
 
 function getProjectDependencies() {
     var dependencies = {
-        "webpack": "~2.1.0-beta.27",
+        "webpack": "2.2.0",
         "webpack-sources": "~0.1.3",
         "copy-webpack-plugin": "~3.0.1",
         "raw-loader": "~0.5.1",
@@ -116,8 +116,8 @@ function getProjectDependencies() {
     };
 
     if (isAngular) {
-        dependencies["@angular/compiler-cli"] = "2.4.3";
-        dependencies["@ngtools/webpack"] = "1.2.1";
+        dependencies["@angular/compiler-cli"] = "~2.4.3";
+        dependencies["@ngtools/webpack"] = "1.2.4";
         dependencies["typescript"] = "^2.0.10";
         dependencies["htmlparser2"] = "~3.9.2";
     } else {
