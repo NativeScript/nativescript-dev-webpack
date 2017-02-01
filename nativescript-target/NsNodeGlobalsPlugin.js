@@ -13,6 +13,12 @@ NsNodeGlobalsPlugin.prototype.apply = function(compiler) {
                 this.state.current.addDependency(dep);
                 return true;
             });
+            parser.plugin("expression __dirname", function(expr) {
+                var dep = new ConstDependency("__dirname", expr.range);
+                dep.loc = expr.loc;
+                this.state.current.addDependency(dep);
+                return true;
+            });
         });
     });
 };
