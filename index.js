@@ -134,13 +134,19 @@ exports.getAppPath = function (platform) {
 
 exports.uglifyMangleExcludes = [
     //Control names
+    "AbsoluteLayout",
     "ActionBar",
     "ActivityIndicator",
     "Button",
     "DatePicker",
+    "DockLayout",
     "EditableTextBase",
+    "FlexboxLayout",
+    "GridLayout",
     "Image",
     "Label",
+    "Layout",
+    "LayoutBase",
     "ListPicker",
     "ListView",
     "Page",
@@ -148,6 +154,7 @@ exports.uglifyMangleExcludes = [
     "SearchBar",
     "SegmentedBar",
     "Slider",
+    "StackLayout",
     "Switch",
     "TabView",
     "TextBase",
@@ -155,6 +162,7 @@ exports.uglifyMangleExcludes = [
     "TextView",
     "TimePicker",
     "View",
+    "WrapLayout",
 
     //Android native class extenders
     "BroadcastReceiver",
