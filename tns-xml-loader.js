@@ -61,7 +61,10 @@ function getTemplateSource(path, source) {
         return source;
     } else if (isComponent(path)) {
         const templateMatcher = /template\s*:\s*([`'"])((.|\n)*?)\1/;
-        return templateMatcher.test(source) ? source.replace(templateMatcher, "$2") : "";
+        let match = templateMatcher.exec(source);
+
+        return match ? match[2] : "";
+
     } else {
         throw new Error(`The NativeScript XML loader must be used with HTML, XML or TypeScript files`);
     }

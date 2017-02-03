@@ -135,9 +135,9 @@ module.exports = function (platform, destinationApp) {
                 {
                     test: /\.ts$/,
                     loaders: [
-                        "nativescript-dev-webpack/tns-xml-loader",
                         "nativescript-dev-webpack/tns-aot-loader",
                         "@ngtools/webpack",
+                        "nativescript-dev-webpack/tns-xml-loader",
                     ]
                 },
                 // SASS support
