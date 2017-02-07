@@ -1,0 +1,108 @@
+#!/usr/bin/env node
+
+const spawn = require("child_process").spawn;
+const path = require("path");
+
+const PROJECT_DIR = path.resolve(__dirname, "../../../");
+
+if (!process.env.npm_config_argv) {
+    throwError({message: "No flags provided."});
+}
+
+const npmArgs = JSON.parse(process.env.npm_config_argv).original;
+const flags = npmArgs.filter(a => a.startsWith("--")).map(a => a.substring(2));
+const options = getOptions(flags);
+
+execute(options);
+
+function execute(options) {
+    let commands = [
+        () => runTns(options.command, options.platform),
+    ];
+
+    if (options.bundle) {
+        commands.unshift(() => webpack(options.platform));
+    }
+
+    return commands.reduce((current, next) => current.then(next), Promise.resolve());
+}
+
+function webpack(platform) {
+    return new Promise(function (resolve, reject) {
+        console.log(`Running webpack for ${platform}...`);
+
+        spawnChildProcess("tns", "clean-app", platform)
+            .then(() => spawnChildProcess("webpack", `--config=webpack.${platform}.js`, "--progress"))
+            .then(resolve)
+            .catch(throwError);
+    });
+}
+
+function runTns(command, platform) {
+    console.log(`Running tns ${command}...`);
+    return new Promise((resolve, reject) => {
+        spawnChildProcess("tns", command, platform, "--bundle", "--disable-npm-install")
+            .then(resolve)
+            .catch(throwError);
+    });
+}
+
+function getOptions(flags) {
+    let options = {};
+    options.platform = getPlatform(flags);
+    options.command = getCommand(flags);
+    options.bundle = !flags.includes("nobundle");
+
+    return options;
+}
+
+function getPlatform(flags) {
+    if (flags.includes("android") && flags.includes("ios")) {
+        throwError({message: "You cannot use both --android and --ios flags!"});
+    }
+
+    if (flags.includes("android")) {
+        return "android";
+    } else if (flags.includes("ios")) {
+        return "ios";
+    } else {
+        throwError({message: "You must provide a target platform! Use either --android, or --ios flag."});
+    }
+}
+
+function getCommand(flags) {
+    if (flags.includes("start-app") && flags.includes("build-app")) {
+        throwError({message: "You cannot use both --start-app and --build-app flags!"});
+    }
+
+    if (flags.includes("start-app")) {
+        return "run";
+    } else if (flags.includes("build-app")) {
+        return "build";
+    } else {
+        throwError({message: "You must provide either --start-app, or --build-app flag!"});
+    }
+}
+
+function spawnChildProcess(command, ...args) {
+    return new Promise((resolve, reject) => {
+            const childProcess = spawn(command, args,  { stdio: "inherit", pwd: PROJECT_DIR });
+
+            childProcess.on("close", (code) => {
+                if (code === 0) {
+                    resolve();
+                } else {
+                    reject({
+                        code,
+                        message: `child process exited with code ${code}`,
+                    });
+                }
+            });
+    });
+}
+
+function throwError(error) {
+    console.error(error.message);
+    process.exit(error.code || 1);
+}
+

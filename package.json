@@ -18,7 +18,9 @@
   },
   "bin": {
     "install-ns-webpack": "./bin/install-ns-webpack",
-    "remove-ns-webpack": "./bin/remove-ns-webpack"
+    "remove-ns-webpack": "./bin/remove-ns-webpack",
+    "ns-bundle": "./bin/ns-bundle",
+    "verify-bundle": "./bin/verify-bundle"
   },
   "dependencies": {},
   "devDependencies": {}
