@@ -78,14 +78,22 @@ exports.removeProjectFiles = removeProjectFiles;
 
 function getScriptTemplates() {
     return {
-        "clean-[PLATFORM]": "tns clean-app [PLATFORM]",
-        "prewebpack-[PLATFORM]": "npm run clean-[PLATFORM]",
-        "webpack-[PLATFORM]": "webpack --config=webpack.[PLATFORM].js --progress",
-        "prestart-[PLATFORM]-bundle": "npm run webpack-[PLATFORM]",
-        "start-[PLATFORM]-bundle": "tns run [PLATFORM] --bundle --disable-npm-install",
-        "prebuild-[PLATFORM]-bundle": "npm run webpack-[PLATFORM]",
-        "build-[PLATFORM]-bundle": "tns build [PLATFORM] --bundle --disable-npm-install",
+        "ns-bundle": "ns-bundle",
+        "start-[PLATFORM]-bundle": "npm run ns-bundle --[PLATFORM] --start-app",
+        "build-[PLATFORM]-bundle": "npm run ns-bundle --[PLATFORM] --build-app",
     };
+}
+
+function getDeprecatedScriptTemplates() {
+    return [
+        "clean-[PLATFORM]",
+        "prewebpack-[PLATFORM]",
+        "webpack-[PLATFORM]",
+        "prestart-[PLATFORM]-bundle",
+        "start-[PLATFORM]-bundle",
+        "prebuild-[PLATFORM]-bundle",
+        "build-[PLATFORM]-bundle",
+    ]
 }
 
 function addNpmScripts() {
@@ -96,9 +104,15 @@ function addNpmScripts() {
 }
 exports.addNpmScripts = addNpmScripts;
 
-function removeNpmScripts() {
-    var scriptTemplates = getScriptTemplates();
-    Object.keys(scriptTemplates).forEach(function(templateName) {
+function removeDeprecatedNpmScripts() {
+    removeNpmScripts(getDeprecatedScriptTemplates());
+}
+
+exports.removeDeprecatedNpmScripts = removeDeprecatedNpmScripts;
+
+function removeNpmScripts(scriptTemplates) {
+    var scriptTemplates = scriptTemplates || Object.keys(getScriptTemplates());
+    scriptTemplates.forEach(function(templateName) {
         removePlatformScripts(packageJson, templateName);
     });
 }

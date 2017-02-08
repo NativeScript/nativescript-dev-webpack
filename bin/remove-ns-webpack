@@ -2,5 +2,6 @@
 var installer = require("../installer");
 
 installer.removeProjectFiles();
+installer.removeDeprecatedNpmScripts();
 installer.removeNpmScripts();
 installer.removeProjectDependencies();
