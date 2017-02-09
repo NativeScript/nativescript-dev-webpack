@@ -182,6 +182,27 @@ exports.uglifyMangleExcludes = [
     "TapAndDoubleTapGestureListener",
     "WebViewClientClassInner",
 
+    // tns 3.0
+    "CheckedChangeListener",
+    "ClickListener",
+    "CloseListener",
+    "DateChangedListener",
+    "DisableUserInteractionListener",
+    "EditorActionListener",
+    "FocusChangeListener",
+    "Formatter",
+    "ImageLoadedListener",
+    "ItemClickListener",
+    "MenuItemClickListener",
+    "QueryTextListener",
+    "SeekBarChangeListener",
+    "TabChangeListener",
+    "TabContentFactory",
+    "TextWatcher",
+    "TimeChangedListener",
+    "TouchListener",
+    "ValueChangeListener",
+
     //iOS native class extenders
     "AnimatedTransitioning",
     "AnimationDelegateImpl",
