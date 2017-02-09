@@ -10,8 +10,24 @@ if (!process.env.npm_config_argv) {
 }
 
 const npmArgs = JSON.parse(process.env.npm_config_argv).original;
+const tnsArgs = getTnsArgs(npmArgs);
 const flags = npmArgs.filter(a => a.startsWith("--")).map(a => a.substring(2));
 const options = getOptions(flags);
+
+function getTnsArgs(args) {
+    let other = [
+        "run",
+        "ns-bundle",
+        "--android",
+        "--ios",
+        "--build-app",
+        "--start-app",
+        "--uglify",
+        "--nobundle",
+    ];
+
+    return args.filter(a => !other.includes(a));
+}
 
 execute(options);
 
@@ -41,7 +57,7 @@ function webpack(platform) {
 function runTns(command, platform) {
     console.log(`Running tns ${command}...`);
     return new Promise((resolve, reject) => {
-        spawnChildProcess("tns", command, platform, "--bundle", "--disable-npm-install")
+        spawnChildProcess("tns", command, platform, "--bundle", "--disable-npm-install", ...tnsArgs)
             .then(resolve)
             .catch(throwError);
     });
