@@ -1,15 +1,6 @@
 {
+  "extend": "./tsconfig",
   "compilerOptions": {
-    "target": "es5",
-    "module": "es2015",
-    "moduleResolution": "node",
-    "sourceMap": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "removeComments": false,
-    "noImplicitAny": false,
-    "suppressImplicitAnyIndexErrors": true,
-    "types": [],
     "baseUrl": ".",
     "paths": {
       "ui/*": ["node_modules/tns-core-modules/ui/*"],
@@ -35,13 +26,8 @@
       "image-asset": ["node_modules/tns-core-modules/image-asset"],
       "connectivity": ["node_modules/tns-core-modules/connectivity"],
       "globals": ["node_modules/tns-core-modules/globals"]
-
     }
-   },
-  "exclude": [
-      "node_modules",
-      "platforms"
-  ],
+  },
   "angularCompilerOptions": {
     "skipMetadataEmit": true,
     "genDir": "./"
