@@ -104,6 +104,7 @@ module.exports = function (platform, destinationApp) {
             "http": false,
             "timers": false,
             "setImmediate": false,
+            "fs": "empty",
         },
         module: {
             loaders: [
