@@ -131,7 +131,7 @@ function getProjectDependencies() {
 
     if (isAngular) {
         dependencies["@angular/compiler-cli"] = "~2.4.3";
-        dependencies["@ngtools/webpack"] = "1.2.4";
+        dependencies["@ngtools/webpack"] = "1.2.10";
         dependencies["typescript"] = "^2.0.10";
         dependencies["htmlparser2"] = "~3.9.2";
     } else {
