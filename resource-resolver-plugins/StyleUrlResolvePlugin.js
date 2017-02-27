@@ -50,7 +50,7 @@ const StyleUrlResolvePlugin = (function() {
     }
 
     StyleUrlResolvePlugin.prototype.traverseDecoratorArguments = function(args) {
-        args.forEach(arg => this.traverseProperties(arg.properties));
+        args.forEach(arg => arg.properties && this.traverseProperties(arg.properties));
     }
 
     StyleUrlResolvePlugin.prototype.traverseProperties = function(properties) {
