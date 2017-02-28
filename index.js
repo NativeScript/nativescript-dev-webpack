@@ -40,41 +40,6 @@ exports.NativeScriptJsonpPlugin.prototype.apply = function (compiler) {
     });
 };
 
-exports.ExcludeUnusedElementsPlugin = function () {
-};
-
-exports.ExcludeUnusedElementsPlugin.prototype.apply = function (compiler) {
-    compiler.plugin("normal-module-factory", function (nmf) {
-        nmf.plugin("before-resolve", function (result, callback) {
-            if (!result) {
-                return callback();
-            }
-
-            if (result.request === "globals" || result.request === "ui/core/view") {
-                return callback(null, result);
-            }
-
-            if (result.context.indexOf("tns-core-modules") === -1) {
-                if (result.contextInfo.issuer &&
-                    result.contextInfo.issuer.indexOf("element-registry") !== -1 && global.ELEMENT_REGISTRY &&
-                    !global.ELEMENT_REGISTRY[result.request]) {
-                    return callback();
-
-                } else {
-                    return callback(null, result);
-                }
-            }
-
-            if (result.contextInfo.issuer.indexOf("bundle-entry-points") !== -1 && global.ELEMENT_REGISTRY &&
-                !global.ELEMENT_REGISTRY[result.request]) {
-                return callback();
-            }
-
-            return callback(null, result);
-        });
-    });
-};
-
 exports.GenerateBundleStarterPlugin = function (bundles) {
     this.bundles = bundles;
 };
