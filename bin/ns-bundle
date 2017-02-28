@@ -102,7 +102,7 @@ function getCommand(flags) {
 
 function spawnChildProcess(command, ...args) {
     return new Promise((resolve, reject) => {
-            const childProcess = spawn(command, args,  { stdio: "inherit", pwd: PROJECT_DIR });
+            const childProcess = spawn(command, args,  { stdio: "inherit", pwd: PROJECT_DIR, shell: true });
 
             childProcess.on("close", (code) => {
                 if (code === 0) {
