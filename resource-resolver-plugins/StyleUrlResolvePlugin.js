@@ -64,6 +64,7 @@ const StyleUrlResolvePlugin = (function() {
 
     StyleUrlResolvePlugin.prototype.traversePropertyElements = function(property) {
         property.initializer.elements
+            .filter(el => !!el.text)
             .filter(el => this.notPlatformUrl(el.text))
             .filter(el => this.noMultiplatformFile(el.text))
             .forEach(el => this.replaceStyleUrlsValue(el));
