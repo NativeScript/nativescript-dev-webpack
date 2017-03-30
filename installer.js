@@ -130,9 +130,9 @@ function getProjectDependencies() {
     };
 
     if (isAngular) {
-        dependencies["@angular/compiler-cli"] = "~2.4.3";
-        dependencies["@ngtools/webpack"] = "1.2.10";
-        dependencies["typescript"] = "^2.0.10";
+        dependencies["@angular/compiler-cli"] = "~4.0.0";
+        dependencies["@ngtools/webpack"] = "1.2.13";
+        dependencies["typescript"] = "^2.1.0";
     } else {
         dependencies["awesome-typescript-loader"] = "~3.0.0-beta.9";
     }
