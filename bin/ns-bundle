@@ -37,7 +37,11 @@ function execute(options) {
     ];
 
     if (options.bundle) {
-        commands.unshift(() => webpack(options.platform));
+        commands = [
+            () => prepare(options.platform),
+            () => webpack(options.platform),
+            ...commands
+        ];
     }
 
     return commands.reduce((current, next) => current.then(next), Promise.resolve());
@@ -47,17 +51,42 @@ function webpack(platform) {
     return new Promise(function (resolve, reject) {
         console.log(`Running webpack for ${platform}...`);
 
-        spawnChildProcess("tns", "clean-app", platform)
-            .then(() => spawnChildProcess("webpack", `--config=webpack.${platform}.js`, "--progress"))
+        spawnChildProcess(true, "webpack", `--config=webpack.${platform}.js`, "--progress")
             .then(resolve)
             .catch(throwError);
     });
 }
 
+function prepare(platform) {
+    return removePlatform(platform)
+        .then(() => addPlatform(platform));
+}
+
+function removePlatform(platform) {
+    return new Promise(function (resolve, reject) {
+        console.log(`Removing platform ${platform}...`);
+
+        spawnChildProcess(false, "tns", "platform", "remove", platform)
+            .then(resolve)
+            .catch(resolve);
+    });
+}
+
+function addPlatform(platform) {
+    return new Promise(function (resolve, reject) {
+        console.log(`Adding platform ${platform}...`);
+
+        spawnChildProcess(false, "tns", "platform", "add", platform)
+            .then(resolve)
+            .catch(resolve);
+    });
+}
+
 function runTns(command, platform) {
-    console.log(`Running tns ${command}...`);
     return new Promise((resolve, reject) => {
-        spawnChildProcess("tns", command, platform, "--bundle", "--disable-npm-install", ...tnsArgs)
+        console.log(`Running tns ${command}...`);
+
+        spawnChildProcess(true, "tns", command, platform, "--bundle", "--disable-npm-install", ...tnsArgs)
             .then(resolve)
             .catch(throwError);
     });
@@ -100,9 +129,11 @@ function getCommand(flags) {
     }
 }
 
-function spawnChildProcess(command, ...args) {
+function spawnChildProcess(shouldPrintOutput, command, ...args) {
+    const stdio = shouldPrintOutput ? "inherit" : "ignore";
+
     return new Promise((resolve, reject) => {
-            const childProcess = spawn(command, args,  { stdio: "inherit", pwd: PROJECT_DIR, shell: true });
+            const childProcess = spawn(command, args, { stdio, pwd: PROJECT_DIR, shell: true });
 
             childProcess.on("close", (code) => {
                 if (code === 0) {
