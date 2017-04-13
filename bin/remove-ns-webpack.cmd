@@ -1,1 +1,1 @@
-@node %~dp0\install-ns-webpack %*
+@node %~dp0\remove-ns-webpack %*

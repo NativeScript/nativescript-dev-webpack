@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+const path = require("path");
+const fs = require("fs");
+
+const helpers = require("../projectHelpers");
+const forceUpdateProjectDeps = require("../dependencyManager").forceUpdateProjectDeps;
+
+const PROJECT_DIR = path.resolve(__dirname, "../../../");
+const packageJson = helpers.getPackageJson(PROJECT_DIR);
+
+forceUpdateProjectDeps(packageJson);
+helpers.writePackageJson(packageJson, PROJECT_DIR);
