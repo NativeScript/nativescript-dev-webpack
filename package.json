@@ -20,7 +20,8 @@
     "install-ns-webpack": "./bin/install-ns-webpack",
     "remove-ns-webpack": "./bin/remove-ns-webpack",
     "ns-bundle": "./bin/ns-bundle",
-    "ns-verify-bundle": "./bin/ns-verify-bundle"
+    "ns-verify-bundle": "./bin/ns-verify-bundle",
+    "ns-webpack-update": "./bin/ns-webpack-update"
   },
   "dependencies": {},
   "devDependencies": {}

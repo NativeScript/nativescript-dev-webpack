@@ -1,7 +1,3 @@
 #!/usr/bin/env node
-var installer = require("../installer");
-
-installer.removeProjectFiles();
-installer.removeDeprecatedNpmScripts();
-installer.removeNpmScripts();
-installer.removeProjectDependencies();
+const installer = require("../installer");
+installer.uninstall();
