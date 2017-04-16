@@ -19,8 +19,7 @@ function install() {
     scripts = npmScriptsManager.addNpmScripts(scripts);
     packageJson.scripts = scripts;
 
-
-    dependencyManager.addProjectDeps(packageJson);
+    packageJson.devDependencies = dependencyManager.addProjectDeps(packageJson);
 
     helpers.writePackageJson(packageJson, PROJECT_DIR);
 }
