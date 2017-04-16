@@ -29,7 +29,7 @@ function addDependency(deps, name, version, force) {
 }
 
 function getRequiredDeps(packageJson) {
-    var deps = {
+    let deps = {
         "webpack": "~2.3.3",
         "webpack-sources": "~0.2.3",
         "copy-webpack-plugin": "~4.0.1",
@@ -40,13 +40,58 @@ function getRequiredDeps(packageJson) {
     };
 
     if (helpers.isAngular({packageJson})) {
-        deps["@angular/compiler-cli"] = "~4.0.2";
-        deps["@ngtools/webpack"] = "1.3.0";
-        deps["typescript"] = "~2.2.2";
+        const angularDeps = resolveAngularDeps(packageJson.dependencies);
+        deps = Object.assign(deps, angularDeps);
     } else if (helpers.isTypeScript({packageJson})) {
         deps["awesome-typescript-loader"] = "~3.1.2";
     }
+
     return deps;
+}
+
+function resolveAngularDeps(usedDependencies) {
+    let depsToAdd = {
+        "@angular/compiler-cli": usedDependencies["@angular/core"],
+    };
+    const tnsModulesVersion = getVersionNumber(usedDependencies["tns-core-modules"]);
+    const angularCoreVersion = getVersionNumber(usedDependencies["@angular/core"]);
+
+    if (angularCoreVersion.startsWith("2.")) {
+        Object.assign(depsToAdd, {
+            "typescript": "~2.1.6",
+            "@ngtools/webpack": "1.2.10",
+        });
+    } else if (tnsModulesVersion.startsWith("2.")) {
+         Object.assign(depsToAdd, {
+            "typescript": "~2.1.6",
+            "@ngtools/webpack": "1.2.13",
+        });
+    } else {
+          Object.assign(depsToAdd, {
+            "typescript": "~2.2.2",
+            "@ngtools/webpack": "1.3.0",
+        });
+    }
+
+    return depsToAdd; 
+}
+
+function getVersionWithoutPatch(version) {
+    if (!version) {
+        return "";
+    }
+    
+    if (version === "next" || version === "latest" || version === "rc") {
+        return version;
+    }
+
+    version = version.substring(0, version.lastIndexOf("."));
+
+    if (version.startsWith("~") || version.startsWith("^")) {
+        return version.substring(1);
+    } else {
+        return version;
+    }
 }
 
 module.exports = {
