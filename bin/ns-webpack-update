@@ -8,5 +8,6 @@ const forceUpdateProjectDeps = require("../dependencyManager").forceUpdateProjec
 const PROJECT_DIR = path.resolve(__dirname, "../../../");
 const packageJson = helpers.getPackageJson(PROJECT_DIR);
 
-forceUpdateProjectDeps(packageJson);
+packageJson.devDependencies = forceUpdateProjectDeps(packageJson);
+
 helpers.writePackageJson(packageJson, PROJECT_DIR);

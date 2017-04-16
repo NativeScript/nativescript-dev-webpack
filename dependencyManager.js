@@ -1,35 +1,31 @@
 const helpers = require("./projectHelpers");
 
 function forceUpdateProjectDeps(packageJson) {
-    addProjectDeps(packageJson, true);
+    return addProjectDeps(packageJson, true);
 }
 
 function addProjectDeps(packageJson, force = false) {
     const depsToAdd = getRequiredDeps(packageJson);
     packageJson.devDependencies = packageJson.devDependencies || {};
-    let oldDeps = packageJson.devDependencies;
+    let deps = Object.assign({}, packageJson.devDependencies);
 
-    let alreadyAdded = false;
     Object.keys(depsToAdd).forEach(function(name) {
         const version = depsToAdd[name];
-        alreadyAdded = addDependency(oldDeps, name, version, force) || alreadyAdded;
+        deps = addDependency(deps, name, version, force);
     });
 
-    if (alreadyAdded) {
-        console.error("Some deps were not updated because they were already added.");
-        console.error("If you want to force update them, please run './node_modules/.bin/ns-webpack-update'");
-    }
+    return deps;
 }
 
 function addDependency(deps, name, version, force) {
     if (!deps[name] || force) {
         deps[name] = version;
         console.info(`Adding dev dependency: ${name}@${version}`);
-        return false;
-    } else {
+    } else if (deps[name] !== version) {
         console.info(`Dev dependency: ${name} already added. Leaving version: ${deps[name]}`);
-        return true;
     }
+
+    return deps;
 }
 
 function getRequiredDeps(packageJson) {
