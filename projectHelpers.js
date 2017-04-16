@@ -1,13 +1,17 @@
 const path = require("path");
 const fs = require("fs");
 
-const isTypeScript = packageJson => {
+const isTypeScript = ({projectDir, packageJson} = {}) => {
+    packageJson = packageJson || getPackageJson(projectDir);
+
     return packageJson.dependencies.hasOwnProperty("typescript") ||
         packageJson.devDependencies.hasOwnProperty("typescript") ||
         isAngular({packageJson});
 };
 
-const isAngular = projectDir => {
+const isAngular = ({projectDir, packageJson} = {}) => {
+    packageJson = packageJson || getPackageJson(projectDir);
+
     return Object.keys(packageJson.dependencies)
         .some(dependency => /^@angular\b/.test(dependency));
 };

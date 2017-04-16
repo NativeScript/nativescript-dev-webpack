@@ -57,8 +57,10 @@ function getProjectTemplates(projectDir) {
     if (helpers.isAngular({projectDir})) {
         templates["webpack.common.js.angular.template"] = "webpack.common.js";
         templates["tsconfig.aot.json.template"] = "tsconfig.aot.json";
+    } else if (helpers.isTypeScript({projectDir})) {
+        templates["webpack.common.js.typescript.template"] = "webpack.common.js";
     } else {
-        templates["webpack.common.js.nativescript.template"] = "webpack.common.js";
+        templates["webpack.common.js.javascript.template"] = "webpack.common.js";
     }
 
     return getFullTemplatesPath(projectDir, templates);
