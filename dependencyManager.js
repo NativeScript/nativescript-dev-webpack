@@ -53,8 +53,8 @@ function resolveAngularDeps(usedDependencies) {
     let depsToAdd = {
         "@angular/compiler-cli": usedDependencies["@angular/core"],
     };
-    const tnsModulesVersion = getVersionNumber(usedDependencies["tns-core-modules"]);
-    const angularCoreVersion = getVersionNumber(usedDependencies["@angular/core"]);
+    const tnsModulesVersion = getVersionWithoutPatch(usedDependencies["tns-core-modules"]);
+    const angularCoreVersion = getVersionWithoutPatch(usedDependencies["@angular/core"]);
 
     if (angularCoreVersion.startsWith("2.")) {
         Object.assign(depsToAdd, {
