@@ -1,5 +1,13 @@
 const helpers = require("./projectHelpers");
 
+const NEW_DEPS_MESSAGE = `
+A few development dependencies were added. \
+Install them before bundling your project.`;
+
+const ALREADY_ADDED_MESSAGE = `\
+Some dependencies may have already been added. \
+If you want to force update them, please run "node_modules/.bin/update-ns-webpack".`;
+
 function forceUpdateProjectDeps(packageJson) {
     return addProjectDeps(packageJson, true);
 }
@@ -13,6 +21,8 @@ function addProjectDeps(packageJson, force = false) {
         const version = depsToAdd[name];
         deps = addDependency(deps, name, version, force);
     });
+
+    logHelperMessages();
 
     return deps;
 }
@@ -92,6 +102,11 @@ function getVersionWithoutPatch(version) {
     } else {
         return version;
     }
+}
+
+function logHelperMessages(someAlreadyAdded) {
+    console.info(NEW_DEPS_MESSAGE);
+    console.info(ALREADY_ADDED_MESSAGE);
 }
 
 module.exports = {
