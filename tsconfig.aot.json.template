@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig",
   "compilerOptions": {
+    "baseUrl": ".",
     "paths": {
       "ui/*": ["node_modules/tns-core-modules/ui/*"],
       "platform": ["node_modules/tns-core-modules/platform"],
@@ -27,6 +28,10 @@
       "globals": ["node_modules/tns-core-modules/globals"]
     }
   },
+  "exclude": [
+    "node_modules",
+    "platforms"
+  ],
   "angularCompilerOptions": {
     "skipMetadataEmit": true,
     "genDir": "./"
