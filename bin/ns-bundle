@@ -15,7 +15,7 @@ const flags = npmArgs.filter(a => a.startsWith("--")).map(a => a.substring(2));
 const options = getOptions(flags);
 
 function getTnsArgs(args) {
-    let other = [
+    const other = [
         "run",
         "ns-bundle",
         "--android",
@@ -36,16 +36,20 @@ function escape(arg) {
 execute(options);
 
 function execute(options) {
-    let commands = [
-        () => runTns(options.command, options.platform),
-    ];
+    let commands = [];
 
     if (options.bundle) {
-        commands = [
-            () => prepare(options.platform),
-            () => webpack(options.platform),
-            ...commands
-        ];
+        commands.push(() => clearPlatform(options.platform));
+        commands.push(() => webpack(options.platform));
+    }
+
+    // If "build-app" or "start-app" is specified,
+    // the respective command should be run last.
+    // Otherwise, the app should be just prepared.
+    if (options.command) {
+        commands.push(() => runTns(options.command, options.platform));
+    } else {
+        commands.shift(() => runTns("prepare", options.platform))
     }
 
     return commands.reduce((current, next) => current.then(next), Promise.resolve());
@@ -61,7 +65,7 @@ function webpack(platform) {
     });
 }
 
-function prepare(platform) {
+function clearPlatform(platform) {
     return removePlatform(platform)
         .then(() => addPlatform(platform));
 }
@@ -128,8 +132,6 @@ function getCommand(flags) {
         return "run";
     } else if (flags.includes("build-app")) {
         return "build";
-    } else {
-        throwError({message: "You must provide either --start-app, or --build-app flag!"});
     }
 }
 
