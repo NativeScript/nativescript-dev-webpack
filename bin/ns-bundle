@@ -10,7 +10,7 @@ if (!process.env.npm_config_argv) {
 }
 
 const npmArgs = JSON.parse(process.env.npm_config_argv).original;
-const tnsArgs = getTnsArgs(npmArgs);
+const tnsArgs = getTnsArgs(npmArgs).map(escape);
 const flags = npmArgs.filter(a => a.startsWith("--")).map(a => a.substring(2));
 const options = getOptions(flags);
 
@@ -27,6 +27,10 @@ function getTnsArgs(args) {
     ];
 
     return args.filter(a => !other.includes(a));
+}
+
+function escape(arg) {
+    return `"${arg}"`;
 }
 
 execute(options);
