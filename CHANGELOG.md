@@ -1,3 +1,21 @@
+<a name="0.4.0"></a>
+# [0.4.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/v0.3.7...v0.4.0) (2017-04-20)
+
+
+### Bug Fixes
+
+* add webpack.common template for JS projects ([7451545](https://github.com/NativeScript/nativescript-dev-webpack/commit/7451545)), closes [#113](https://github.com/NativeScript/nativescript-dev-webpack/issues/113)
+* **installer:** show helper message for new dependencies ([#122](https://github.com/NativeScript/nativescript-dev-webpack/issues/122)) ([5c7ebeb](https://github.com/NativeScript/nativescript-dev-webpack/commit/5c7ebeb))
+* **ns-bundle:** use remove/add platform instead of clean-app ([#116](https://github.com/NativeScript/nativescript-dev-webpack/issues/116)) ([6609370](https://github.com/NativeScript/nativescript-dev-webpack/commit/6609370))
+* **tsconfig:** add "exclude" property to aot config ([#120](https://github.com/NativeScript/nativescript-dev-webpack/issues/120)) ([d28dba1](https://github.com/NativeScript/nativescript-dev-webpack/commit/d28dba1)), closes [#101](https://github.com/NativeScript/nativescript-dev-webpack/issues/101)
+
+
+### Features
+
+* detect required devDeps versions ([9b102c3](https://github.com/NativeScript/nativescript-dev-webpack/commit/9b102c3))
+
+
+
 <a name="0.3.7"></a>
 ## [0.3.7](https://github.com/NativeScript/nativescript-dev-webpack/compare/v0.3.6...v0.3.7) (2017-03-31)
 
