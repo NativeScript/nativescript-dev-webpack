@@ -22,7 +22,14 @@ module.exports = function (platform, destinationApp) {
         new ExtractTextPlugin("app.css"),
         // Vendor libs go to the vendor.js chunk
         new webpack.optimize.CommonsChunkPlugin({
-            name: ["vendor"]
+            name: [
+                // Vendor libs go to the vendor.js chunk
+                "vendor",
+
+                // Compatibility workaround with NativeScript 2.5 Android runtime
+                // https://github.com/NativeScript/NativeScript/issues/3947
+                "tns-java-classes",
+            ],
         }),
         // Define useful constants like TNS_WEBPACK
         new webpack.DefinePlugin({
