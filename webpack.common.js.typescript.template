@@ -72,12 +72,12 @@ module.exports = function (platform, destinationApp) {
         resolve: {
             // Resolve platform-specific modules like module.android.js
             extensions: [
-                ".ts",
-                ".js",
-                ".css",
                 "." + platform + ".ts",
                 "." + platform + ".js",
                 "." + platform + ".css",
+                ".ts",
+                ".js",
+                ".css",
             ],
             // Resolve {N} system modules from tns-core-modules
             modules: [
