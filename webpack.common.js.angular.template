@@ -19,17 +19,19 @@ module.exports = function (platform, destinationApp) {
     // app.css bundle
     entry["app.css"] = "./app.css";
 
+    // Vendor libs go to the vendor.js chunk
+    var commonsChunkNames = ["vendor"];
+
+    // Compatibility workaround with NativeScript 2.5 Android runtime
+    // https://github.com/NativeScript/NativeScript/issues/3947
+     if (platform === "android") {
+        commonsChunkNames.push("tns-java-classes");
+    }
+
     var plugins = [
         new ExtractTextPlugin("app.css"),
         new webpack.optimize.CommonsChunkPlugin({
-            name: [
-                // Vendor libs go to the vendor.js chunk
-                "vendor",
-
-                // Compatibility workaround with NativeScript 2.5 Android runtime
-                // https://github.com/NativeScript/NativeScript/issues/3947
-                "tns-java-classes",
-            ],
+            name: commonsChunkNames
         }),
         // Define useful constants like TNS_WEBPACK
         new webpack.DefinePlugin({
