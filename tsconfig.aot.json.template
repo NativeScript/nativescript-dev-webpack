@@ -9,7 +9,7 @@
       "xml": ["node_modules/tns-core-modules/xml"],
       "xhr": ["node_modules/tns-core-modules/xhr"],
       "text": ["node_modules/tns-core-modules/text"],
-      "data": ["node_modules/tns-core-modules/data"],
+      "data/*": ["node_modules/tns-core-modules/data/*"],
       "fetch": ["node_modules/tns-core-modules/fetch"],
       "trace": ["node_modules/tns-core-modules/trace"],
       "fps-meter": ["node_modules/tns-core-modules/fps-meter"],
