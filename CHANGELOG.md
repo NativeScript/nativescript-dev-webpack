@@ -1,3 +1,20 @@
+<a name="0.4.1"></a>
+## [0.4.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/v0.4.0...v0.4.1) (2017-05-01)
+
+
+### Bug Fixes
+
+* **ns-bundle:** escape arguments passed to `tns` command ([#125](https://github.com/NativeScript/nativescript-dev-webpack/issues/125)) ([b9430e3](https://github.com/NativeScript/nativescript-dev-webpack/commit/b9430e3)), closes [#123](https://github.com/NativeScript/nativescript-dev-webpack/issues/123)
+* **template:** include platform specific files in bundle first ([#133](https://github.com/NativeScript/nativescript-dev-webpack/issues/133)) ([c399e1e](https://github.com/NativeScript/nativescript-dev-webpack/commit/c399e1e)), closes [#31](https://github.com/NativeScript/nativescript-dev-webpack/issues/31)
+* **template:** ship android bundle with empty `tns-java-classes.js` chunk ([#128](https://github.com/NativeScript/nativescript-dev-webpack/issues/128)) ([b65a80c](https://github.com/NativeScript/nativescript-dev-webpack/commit/b65a80c))
+
+
+### Features
+
+* **ns-bundle:** app can be just prepared and bundled now ([#126](https://github.com/NativeScript/nativescript-dev-webpack/issues/126)) ([b0688b4](https://github.com/NativeScript/nativescript-dev-webpack/commit/b0688b4))
+
+
+
 <a name="0.4.0"></a>
 # [0.4.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/v0.3.7...v0.4.0) (2017-04-20)
 
