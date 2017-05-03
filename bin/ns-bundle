@@ -1,9 +1,12 @@
 #!/usr/bin/env node
 
 const spawn = require("child_process").spawn;
-const path = require("path");
+const resolve = require("path").resolve;
 
-const PROJECT_DIR = path.resolve(__dirname, "../../../");
+const getPackageJson = require("../projectHelpers").getPackageJson;
+
+const PROJECT_DIR = resolve(__dirname, "../../../");
+const packageJson = getPackageJson(PROJECT_DIR);
 
 if (!process.env.npm_config_argv) {
     throwError({message: "No flags provided."});
@@ -13,6 +16,11 @@ const npmArgs = JSON.parse(process.env.npm_config_argv).original;
 const tnsArgs = getTnsArgs(npmArgs).map(escape);
 const flags = npmArgs.filter(a => a.startsWith("--")).map(a => a.substring(2));
 const options = getOptions(flags);
+
+let platformVersion;
+try {
+    platformVersion = packageJson.nativescript[`tns-${options.platform}`].version;
+} catch(e) {}
 
 function getTnsArgs(args) {
     const other = [
@@ -82,9 +90,10 @@ function removePlatform(platform) {
 
 function addPlatform(platform) {
     return new Promise(function (resolve, reject) {
-        console.log(`Adding platform ${platform}...`);
+        const platformToAdd = platformVersion ? `${platform}@${platformVersion}` : platform;
+        console.log(`Adding platform ${platformToAdd}...`);
 
-        spawnChildProcess(false, "tns", "platform", "add", platform)
+        spawnChildProcess(false, "tns", "platform", "add", platformToAdd)
             .then(resolve)
             .catch(resolve);
     });
