@@ -8,11 +8,6 @@ const getPackageJson = require("../projectHelpers").getPackageJson;
 const PROJECT_DIR = resolve(__dirname, "../../../");
 const packageJson = getPackageJson(PROJECT_DIR);
 
-let platformVersion;
-try {
-    platformVersion = packageJson.nativescript["tns-android"].version;
-} catch(e) {}
-
 if (!process.env.npm_config_argv) {
     throwError({message: "No flags provided."});
 }
@@ -21,6 +16,11 @@ const npmArgs = JSON.parse(process.env.npm_config_argv).original;
 const tnsArgs = getTnsArgs(npmArgs).map(escape);
 const flags = npmArgs.filter(a => a.startsWith("--")).map(a => a.substring(2));
 const options = getOptions(flags);
+
+let platformVersion;
+try {
+    platformVersion = packageJson.nativescript[`tns-${options.platform}`].version;
+} catch(e) {}
 
 function getTnsArgs(args) {
     const other = [
