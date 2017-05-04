@@ -1,5 +1,16 @@
+<a name="0.4.2"></a>
+## [0.4.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.4.1...0.4.2) (2017-05-04)
+
+
+### Bug Fixes
+
+* **ns-bundle:** respect platform version from app package.json ([#138](https://github.com/NativeScript/nativescript-dev-webpack/issues/138)) ([839ce93](https://github.com/NativeScript/nativescript-dev-webpack/commit/839ce93))
+* **tsconfig:** add missing paths and skipLibCheck option ([#140](https://github.com/NativeScript/nativescript-dev-webpack/issues/140)) ([c453944](https://github.com/NativeScript/nativescript-dev-webpack/commit/c453944))
+
+
+
 <a name="0.4.1"></a>
-## [0.4.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/v0.4.0...v0.4.1) (2017-05-01)
+## [0.4.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/v0.4.0...0.4.1) (2017-05-01)
 
 
 ### Bug Fixes
