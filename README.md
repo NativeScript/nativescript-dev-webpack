@@ -39,7 +39,7 @@ Then you should use:
 ```
 	"nativescript-angular": "rc" or "internal-preview"
 	"@ngtools/webpack": "1.3.0"
-	"typescript": "~2.2.2"
+	"typescript": "^2.2.0"
 ```
 
 
