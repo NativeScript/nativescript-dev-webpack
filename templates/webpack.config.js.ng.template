@@ -1,4 +1,3 @@
-
 const { resolve, join  } = require("path");
 
 const webpack = require("webpack");
@@ -7,6 +6,7 @@ const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
+const { AotPlugin } = require("@ngtools/webpack");
 
 const mainSheet = `app.css`;
 
@@ -107,7 +107,16 @@ function getRules() {
             ]
         },
 
-[object Object]
+
+        // Compile TypeScript files with ahead-of-time compiler.
+        {
+            test: /\.ts$/,
+            loaders: [
+                "nativescript-dev-webpack/tns-aot-loader",
+                "@ngtools/webpack",
+            ]
+        }
+
     ];
 }
 
@@ -140,6 +149,17 @@ function getPlugins(platform, env) {
             "./vendor",
             "./bundle",
         ]),
+
+        // Angular AOT compiler
+        new AotPlugin({
+            tsConfigPath: "tsconfig.aot.json",
+            entryModule: resolve(__dirname, "app/app.module#AppModule"),
+            typeChecking: false
+        }),
+
+        // Resolve .ios.css and .android.css component stylesheets
+        new nsWebpack.StyleUrlResolvePlugin({platform}),
+
     ];
     
     if (env.uglify) {
@@ -162,6 +182,7 @@ function getExtensions(platform) {
         `.${platform}.ts`,
         `.${platform}.js`,
         `.${platform}.css`,
+        ".aot.ts",
         ".ts",
         ".js",
         ".css",

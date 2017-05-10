@@ -1,4 +1,3 @@
-
 const { resolve, join  } = require("path");
 
 const webpack = require("webpack");

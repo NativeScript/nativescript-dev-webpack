@@ -1,5 +1,4 @@
-module.exports = `
-const { resolve, join  } = require("path");
+module.exports = `const { resolve, join  } = require("path");
 
 const webpack = require("webpack");
 const nsWebpack = require("nativescript-dev-webpack");
