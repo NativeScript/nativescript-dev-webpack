@@ -17,6 +17,8 @@ const DEPRECATED_SCRIPT_TEMPLATES = Object.freeze([
 const PLATFORMS = Object.freeze(["android", "ios"]);
 
 function addNpmScripts(scripts) {
+    scripts = scripts || {};
+
     Object.keys(SCRIPT_TEMPLATES).forEach(name => {
         packageJson = addPlatformScript(scripts, name, SCRIPT_TEMPLATES[name]);
     });
@@ -51,8 +53,8 @@ function addPlatformScript(scripts, nameTemplate, commandTemplate) {
 }
 
 function removePlatformScripts(scripts, nameTemplate) {
-    if (!scripts) {
-        return;
+    if (!scripts || Object.keys(SCRIPT_TEMPLATES).includes(nameTemplate)) {
+        return scripts;
     }
 
     PLATFORMS.forEach(function (platform) {

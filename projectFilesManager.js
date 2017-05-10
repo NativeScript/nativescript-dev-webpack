@@ -7,7 +7,7 @@ function addProjectFiles(projectDir, appDir) {
     const projectTemplates = getProjectTemplates(projectDir);
     Object.keys(projectTemplates).forEach(function(templateName) {
         const templateDestination = projectTemplates[templateName];
-        templateName = path.resolve(templateName)
+        templateName = path.resolve(templateName);
         copyTemplate(templateName, templateDestination);
     });
 
@@ -43,24 +43,22 @@ function copyTemplate(templateName, destinationPath) {
     // Create destination file, only if not present.
     if (!fs.existsSync(destinationPath)) {
         console.info(`Creating file: ${destinationPath}`);
+        console.log(templateName)
         const content = fs.readFileSync(templateName, "utf8");
         fs.writeFileSync(destinationPath, content);
     }
 }
 
 function getProjectTemplates(projectDir) {
-    let templates = {
-        "webpack.android.js.template": "webpack.android.js",
-        "webpack.ios.js.template": "webpack.ios.js",
-    };
+    let templates = {}
 
     if (helpers.isAngular({projectDir})) {
-        templates["webpack.common.js.angular.template"] = "webpack.common.js";
+        templates["webpack.config.js.ng.template"] = "webpack.config.js";
         templates["tsconfig.aot.json.template"] = "tsconfig.aot.json";
     } else if (helpers.isTypeScript({projectDir})) {
-        templates["webpack.common.js.typescript.template"] = "webpack.common.js";
+        templates["webpack.config.js.ts.template"] = "webpack.config.js";
     } else {
-        templates["webpack.common.js.javascript.template"] = "webpack.common.js";
+        templates["webpack.config.js.js.template"] = "webpack.config.js";
     }
 
     return getFullTemplatesPath(projectDir, templates);
@@ -85,7 +83,7 @@ function getFullTemplatesPath(projectDir, templates) {
     let updatedTemplates = {};
 
     Object.keys(templates).forEach(key => {
-        const updatedKey = getFullPath(__dirname, key);
+        const updatedKey = getFullPath(path.join(__dirname, "templates"), key);
         const updatedValue = getFullPath(projectDir, templates[key])
 
         updatedTemplates[updatedKey] = updatedValue;

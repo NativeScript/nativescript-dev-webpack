@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 
-const spawn = require("child_process").spawn;
-const resolve = require("path").resolve;
+const { spawn } = require("child_process");
+const { resolve: pathResolve } = require("path");
+const { getPackageJson } = require("../projectHelpers");
 
-const getPackageJson = require("../projectHelpers").getPackageJson;
-
-const PROJECT_DIR = resolve(__dirname, "../../../");
+const PROJECT_DIR = pathResolve(__dirname, "../../../");
 const packageJson = getPackageJson(PROJECT_DIR);
 
 if (!process.env.npm_config_argv) {
@@ -67,7 +66,16 @@ function webpack(platform) {
     return new Promise(function (resolve, reject) {
         console.log(`Running webpack for ${platform}...`);
 
-        spawnChildProcess(true, "webpack", `--config=webpack.${platform}.js`, "--progress")
+        const args = [
+            true, // show output on console
+            `webpack`,
+            `--config=webpack.config.js`,
+            `--progress`,
+            `--env.${platform}`,
+            process.env.npm_config_uglify && `--env.uglify`,
+        ];
+
+        spawnChildProcess(...args)
             .then(resolve)
             .catch(throwError);
     });

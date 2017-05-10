@@ -14,7 +14,8 @@
     "url": "https://github.com/NativeScript/nativescript-dev-webpack.git"
   },
   "scripts": {
-    "postinstall": "node postinstall.js"
+    "postinstall": "node postinstall.js",
+    "prepublishOnly": "node ./templates/buildTemplates.js"
   },
   "bin": {
     "install-ns-webpack": "./bin/install-ns-webpack",
