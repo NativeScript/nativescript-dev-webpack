@@ -6,7 +6,7 @@ saveTemplate("ng");
 
 function saveTemplate(target) {
     const content = buildTemplate(target);
-    writeFileSync(`./templates/webpack.common.js.${target}.template`, content);
+    writeFileSync(`./templates/webpack.config.js.${target}.template`, content);
 }
 
 function buildTemplate(target) {

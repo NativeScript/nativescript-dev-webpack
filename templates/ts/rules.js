@@ -1,4 +1,4 @@
-module.exports = [
+module.exports = `
         // Compile TypeScript files, replace templateUrl and styleUrls.
         {
             test: /\\.ts$/,
@@ -6,4 +6,4 @@ module.exports = [
                 "awesome-typescript-loader",
             ]
         }
-];
+`;
