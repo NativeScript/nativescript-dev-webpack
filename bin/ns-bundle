@@ -67,7 +67,16 @@ function webpack(platform) {
     return new Promise(function (resolve, reject) {
         console.log(`Running webpack for ${platform}...`);
 
-        spawnChildProcess(true, "webpack", `--config=webpack.${platform}.js`, "--progress")
+        const args = [
+            true, // show output on console
+            `webpack`,
+            `--config=webpack.common.js`,
+            `--progress`,
+            `--env.${platform}`,
+            process.env.npm_config_uglify && `--env.uglify`,
+        ];
+
+        spawnChildProcess(...args)
             .then(resolve)
             .catch(throwError);
     });
