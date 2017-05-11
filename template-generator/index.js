@@ -1,12 +1,12 @@
 const { writeFileSync } = require("fs");
 
-saveTemplate("js");
-saveTemplate("ts");
-saveTemplate("ng");
+saveTemplate("javascript");
+saveTemplate("typescript");
+saveTemplate("angular");
 
 function saveTemplate(target) {
     const content = buildTemplate(target);
-    writeFileSync(`./templates/webpack.config.js.${target}.template`, content);
+    writeFileSync(`./templates/webpack.${target}.js`, content);
 }
 
 function buildTemplate(target) {

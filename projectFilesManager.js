@@ -43,7 +43,6 @@ function copyTemplate(templateName, destinationPath) {
     // Create destination file, only if not present.
     if (!fs.existsSync(destinationPath)) {
         console.info(`Creating file: ${destinationPath}`);
-        console.log(templateName)
         const content = fs.readFileSync(templateName, "utf8");
         fs.writeFileSync(destinationPath, content);
     }
@@ -53,12 +52,12 @@ function getProjectTemplates(projectDir) {
     let templates = {}
 
     if (helpers.isAngular({projectDir})) {
-        templates["webpack.config.js.ng.template"] = "webpack.config.js";
-        templates["tsconfig.aot.json.template"] = "tsconfig.aot.json";
+        templates["webpack.angular.js"] = "webpack.config.js";
+        templates["tsconfig.aot.json"] = "tsconfig.aot.json";
     } else if (helpers.isTypeScript({projectDir})) {
-        templates["webpack.config.js.ts.template"] = "webpack.config.js";
+        templates["webpack.typescript.js"] = "webpack.config.js";
     } else {
-        templates["webpack.config.js.js.template"] = "webpack.config.js";
+        templates["webpack.javascript.js"] = "webpack.config.js";
     }
 
     return getFullTemplatesPath(projectDir, templates);
@@ -66,14 +65,14 @@ function getProjectTemplates(projectDir) {
 
 function getAppTemplates(projectDir, appDir) {
     const templates = {
-        "vendor-platform.android.ts.template": tsOrJs(projectDir, "vendor-platform.android"),
-        "vendor-platform.ios.ts.template": tsOrJs(projectDir, "vendor-platform.ios"),
+        "vendor-platform.android.ts": tsOrJs(projectDir, "vendor-platform.android"),
+        "vendor-platform.ios.ts": tsOrJs(projectDir, "vendor-platform.ios"),
     };
 
     if (helpers.isAngular({projectDir})) {
-        templates["vendor.ts.angular.template"] = tsOrJs(projectDir, "vendor");
+        templates["vendor.angular.ts"] = tsOrJs(projectDir, "vendor");
     } else {
-        templates["vendor.ts.nativescript.template"] = tsOrJs(projectDir, "vendor");
+        templates["vendor.nativescript.ts"] = tsOrJs(projectDir, "vendor");
     }
 
     return getFullTemplatesPath(appDir, templates);
