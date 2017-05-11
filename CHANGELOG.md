@@ -1,3 +1,25 @@
+<a name="0.5.0"></a>
+# [0.5.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.4.2...0.5.0) (2017-05-11)
+
+
+### Bug Fixes
+
+* **ns-bundle:** don't re-add scripts from nativescript-dev-webpack ([3d690cb](https://github.com/NativeScript/nativescript-dev-webpack/commit/3d690cb))
+* **ns-bundle:** pass platform and uglify as env properties ([dcf21f8](https://github.com/NativeScript/nativescript-dev-webpack/commit/dcf21f8))
+* **ns-bundle:** use webpack.config.js instead of webpack.common.js ([3df5d9b](https://github.com/NativeScript/nativescript-dev-webpack/commit/3df5d9b))
+* **template:** create empty `tns-java-classes.js` internally ([#148](https://github.com/NativeScript/nativescript-dev-webpack/issues/148)) ([0fd9159](https://github.com/NativeScript/nativescript-dev-webpack/commit/0fd9159))
+* **templates:** prefer css templates over platform.css templates ([6fc4747](https://github.com/NativeScript/nativescript-dev-webpack/commit/6fc4747))
+
+BREAKING CHANGES:
+The plugin now adds `webpack.config.js` file instead of `webpack.common.js`, `webpack.android.js` and `webpack.ios.js` files.
+The ns-bundle script targets the `webpack.config.js` file in
+your repository instead of the `webpack.common.js` one. If you modified
+your configuration, you need to apply the changes to `webpack.config.js`.
+The following files are no longer needed and can be safely removed from
+the project: `webpack.common.js`, `webpack.android.js`,
+`webpack.ios.js`.
+
+
 <a name="0.4.2"></a>
 ## [0.4.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.4.1...0.4.2) (2017-05-04)
 
