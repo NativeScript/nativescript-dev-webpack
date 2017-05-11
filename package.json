@@ -15,7 +15,7 @@
   },
   "scripts": {
     "postinstall": "node postinstall.js",
-    "prepublishOnly": "node ./template-generator"
+    "prepublishOnly": "node ./prepublish"
   },
   "bin": {
     "install-ns-webpack": "./bin/install-ns-webpack",
