@@ -4,11 +4,11 @@ function getExtensions(platform) {
     return Object.freeze([
         \`.\${platform}.ts\`,
         \`.\${platform}.js\`,
-        \`.\${platform}.css\`,
         ".aot.ts",
         ".ts",
         ".js",
         ".css",
+        \`.\${platform}.css\`,
     ]);
 }
 `;

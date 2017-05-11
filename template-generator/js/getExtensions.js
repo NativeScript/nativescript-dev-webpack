@@ -3,9 +3,9 @@ module.exports = `
 function getExtensions(platform) {
     return Object.freeze([
         \`.\${platform}.js\`,
-        \`.\${platform}.css\`,
         ".js",
         ".css",
+        \`.\${platform}.css\`,
     ]);
 }
 `;
