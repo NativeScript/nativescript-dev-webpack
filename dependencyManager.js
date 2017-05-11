@@ -40,7 +40,7 @@ function addDependency(deps, name, version, force) {
 
 function getRequiredDeps(packageJson) {
     let deps = {
-        "webpack": "~2.4.1",
+        "webpack": "~2.5.1",
         "webpack-sources": "~0.2.3",
         "copy-webpack-plugin": "~4.0.1",
         "raw-loader": "~0.5.1",
@@ -53,7 +53,7 @@ function getRequiredDeps(packageJson) {
         const angularDeps = resolveAngularDeps(packageJson.dependencies);
         deps = Object.assign(deps, angularDeps);
     } else if (helpers.isTypeScript({packageJson})) {
-        deps["awesome-typescript-loader"] = "~3.1.2";
+        deps["awesome-typescript-loader"] = "~3.1.3";
     }
 
     return deps;
