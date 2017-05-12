@@ -30,43 +30,10 @@ The versions of the newly added packages depend on the versions of some of your 
 You can force update your `package.json` using the `update-ns-webpack` script which you can find in `PROJECT_DIR/node_modules/.bin`.
 If the bundling process fails, please make sure you have the correct versions of the packages.
 
-If you are targetting:
-```
-	"tns-core-modules": "^3.0.0" or "^3.0.0-rc.1" or "rc"
-	"@angular/": "^4.0.0"
-```
-Then you should use:
-```
-	"nativescript-angular": "rc" or "internal-preview"
-	"@ngtools/webpack": "1.3.0"
-	"typescript": "^2.2.0"
-```
-
-
-If you are targetting:
-```
-	"tns-core-modules": "~2.5.0"
-	"@angular/": "^4.0.0"
-```
-Then you should use:
-```
-	"nativescript-angular": "~1.5.1"
-	"@ngtools/webpack": "1.2.13"
-	"typescript": "~2.1.6"
-```
-
-
-If you are targetting:
-```
-	"tns-core-modules": "~2.5.0"
-	"@angular/": "~2.4.0"
-```
-Then you should use:
-```
-	"nativescript-angular": "~1.4.1"
-	"@ngtools/webpack": "1.2.10"
-	"typescript": "~2.1.6"
-```
-
+| Main packages versions | Plugins versions
+| --- | ---
+| `tns-core-modules`: **^3.0.0** <br> `@angular/`: **^4.0.0** | `nativescript-angular`: **^3.0.0** <br> `@ngtools/webpack`: **^1.3.0** <br> `typescript`: **^2.2.0**
+| `tns-core-modules`: **^2.5.0** <br> `@angular/`: **^4.0.0** | `nativescript-angular`: **^1.5.1** <br> `@ngtools/webpack`: **1.2.13** <br> `typescript`: **2.1.6**
+| `tns-core-modules`: **^2.5.0** <br> `@angular/`: **^2.4.0** | `nativescript-angular`: **^1.4.1** <br> ``@ngtools/webpack``: **1.2.10** <br> `typescript`: **2.1.6**
 
 P.S. Also please make sure you are using the same version of all `@angular/` packages, including the devDependency of `@angular/compiler-cli`.
