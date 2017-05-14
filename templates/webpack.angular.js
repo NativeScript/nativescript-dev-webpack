@@ -5,6 +5,7 @@ const nsWebpack = require("nativescript-dev-webpack");
 const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const AndroidSnapshotPlugin = require("nativescript-dev-webpack/snapshot/android/snapshot-webpack-plugin");
 
 const { AotPlugin } = require("@ngtools/webpack");
 
@@ -31,7 +32,7 @@ module.exports = env => {
     const plugins = getPlugins(platform, env);
     const extensions = getExtensions(platform);
 
-    return {
+    var config = {
         context: resolve("./app"),
         target: nativescriptTarget,
         entry,
@@ -60,6 +61,12 @@ module.exports = env => {
         module: { rules },
         plugins,
     };
+
+    if (isSnapshotEnabled(env)) {
+        plugins.push(new AndroidSnapshotPlugin({ chunk: "vendor", projectRoot: __dirname, webpackConfig: config, useLibs: false }));
+    }
+
+    return config;
 };
 
 
@@ -148,7 +155,7 @@ function getPlugins(platform, env) {
         ], { ignore: ["App_Resources/**"] }),
 
         // Generate a bundle starter script and activate it in package.json
-        new nsWebpack.GenerateBundleStarterPlugin([
+        new nsWebpack.GenerateBundleStarterPlugin(isSnapshotEnabled(env) ? ["./bundle"] : [
             "./vendor",
             "./bundle",
         ]),
@@ -194,4 +201,8 @@ function getExtensions(platform) {
         ".css",
         `.${platform}.css`,
     ]);
+}
+
+function isSnapshotEnabled(env) {
+    return getPlatform(env) === "android";
 }

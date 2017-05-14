@@ -1,0 +1,13 @@
+android {
+    productFlavors {
+        "__android-snapshot-libs" {
+            dimension "__android-snapshot-libs"
+        }
+    }
+}
+
+android {
+    aaptOptions {
+        ignoreAssetsPattern "_embedded_script_.js"
+    }
+}

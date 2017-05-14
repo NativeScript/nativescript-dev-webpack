@@ -1,0 +1,9 @@
+{
+  "name": "__android-snapshot-libs",
+  "version": "0.0.1",
+  "nativescript": {
+    "platforms": {
+      "android": "3.0.0"
+    }
+  }
+}
