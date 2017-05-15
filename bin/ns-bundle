@@ -2,6 +2,7 @@
 
 const { spawn } = require("child_process");
 const { resolve: pathResolve } = require("path");
+const { existsSync } = require("fs");
 const { getPackageJson } = require("../projectHelpers");
 
 const PROJECT_DIR = pathResolve(__dirname, "../../../");
@@ -15,11 +16,6 @@ const npmArgs = JSON.parse(process.env.npm_config_argv).original;
 const tnsArgs = getTnsArgs(npmArgs).map(escape);
 const flags = npmArgs.filter(a => a.startsWith("--")).map(a => a.substring(2));
 const options = getOptions(flags);
-
-let platformVersion;
-try {
-    platformVersion = packageJson.nativescript[`tns-${options.platform}`].version;
-} catch(e) {}
 
 function getTnsArgs(args) {
     const other = [
@@ -44,22 +40,50 @@ execute(options);
 
 function execute(options) {
     let commands = [];
+    const platform = options.platform;
 
     if (options.bundle) {
-        commands.push(() => clearPlatform(options.platform));
-        commands.push(() => webpack(options.platform));
+        commands.push(() => cleanApp(platform));
+        commands.push(() => webpack(platform));
+    }
+
+    if (platform === "android") {
+        commands.push(() => gradlewClean());
     }
 
     // If "build-app" or "start-app" is specified,
     // the respective command should be run last.
     // Otherwise, the app should be just prepared.
     if (options.command) {
-        commands.push(() => runTns(options.command, options.platform));
+        commands.push(() => runTns(options.command, platform));
     } else {
-        commands.shift(() => runTns("prepare", options.platform))
+        commands.shift(() => runTns("prepare", platform))
     }
 
     return commands.reduce((current, next) => current.then(next), Promise.resolve());
+}
+
+// Clear platform/**/app folder contents
+function cleanApp(platform) {
+    return new Promise((resolve, reject) => {
+        spawnChildProcess(true, "tns", "clean-app", platform)
+            .then(resolve)
+            .catch(throwError)
+    });
+}
+
+function gradlewClean() {
+    return new Promise((resolve, reject) => {
+        const platformsPath = pathResolve(PROJECT_DIR, "platforms", "android")
+        const gradlew = pathResolve(platformsPath, "gradlew");
+        if (!existsSync(gradlew)) {
+            resolve();
+        }
+
+        spawnChildProcess(true, gradlew, "-p", platformsPath, "clean")
+            .then(resolve)
+            .catch(throwError);
+    });
 }
 
 function webpack(platform) {
@@ -78,32 +102,6 @@ function webpack(platform) {
         spawnChildProcess(...args)
             .then(resolve)
             .catch(throwError);
-    });
-}
-
-function clearPlatform(platform) {
-    return removePlatform(platform)
-        .then(() => addPlatform(platform));
-}
-
-function removePlatform(platform) {
-    return new Promise(function (resolve, reject) {
-        console.log(`Removing platform ${platform}...`);
-
-        spawnChildProcess(false, "tns", "platform", "remove", platform)
-            .then(resolve)
-            .catch(resolve);
-    });
-}
-
-function addPlatform(platform) {
-    return new Promise(function (resolve, reject) {
-        const platformToAdd = platformVersion ? `${platform}@${platformVersion}` : platform;
-        console.log(`Adding platform ${platformToAdd}...`);
-
-        spawnChildProcess(false, "tns", "platform", "add", platformToAdd)
-            .then(resolve)
-            .catch(resolve);
     });
 }
 
