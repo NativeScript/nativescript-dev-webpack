@@ -163,6 +163,8 @@ function getPlugins(platform, env) {
         // Resolve .ios.css and .android.css component stylesheets
         new nsWebpack.StyleUrlResolvePlugin({platform}),
 
+        // Resolve .ios.html and .android.html component views
+        new nsWebpack.ViewUrlResolvePlugin({platform}),
     ];
     
     if (env.uglify) {
