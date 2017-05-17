@@ -109,10 +109,10 @@ SnapshotGenerator.prototype.generate = function(options) {
     if (!shelljs.test("-e", options.inputFile)) { throw new Error("Can't find V8 snapshot input file: '" + options.inputFile + "'."); }
     if (!options.targetArchs || options.targetArchs.length == 0) { throw new Error("No target archs specified."); }
     if (!options.v8Version) { throw new Error("No v8 version specified."); }
-    var modifiedInputFileDest = options.modifiedInputFileDest || options.inputFile + ".snapshotable";
+    var preprocessedInputFile = options.preprocessedInputFile || options.inputFile + ".preprocessed";
 
-    this.preprocessInputFile(options.inputFile, modifiedInputFileDest);
-    this.runMksnapshotTool(modifiedInputFileDest, options.v8Version, options.targetArchs, options.useLibs); // generates the actual .blob and .c files
+    this.preprocessInputFile(options.inputFile, preprocessedInputFile);
+    this.runMksnapshotTool(preprocessedInputFile, options.v8Version, options.targetArchs, options.useLibs); // generates the actual .blob and .c files
 
     if (options.useLibs) {
         var androidNdkBuildPath = options.androidNdkPath ? path.join(options.androidNdkPath, "ndk-build") : "ndk-build";
