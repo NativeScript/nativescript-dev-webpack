@@ -160,11 +160,12 @@ function getPlugins(platform, env) {
             typeChecking: false
         }),
 
-        // Resolve .ios.css and .android.css component stylesheets
-        new nsWebpack.StyleUrlResolvePlugin({platform}),
-
-        // Resolve .ios.html and .android.html component views
-        new nsWebpack.ViewUrlResolvePlugin({platform}),
+        // // Resolve .ios.css and .android.css component stylesheets, and .ios.html and .android component views
+        new nsWebpack.UrlResolvePlugin({
+            platform: platform,
+            resolveStylesUrls: true,
+            resolveTemplateUrl: true
+        }),
     ];
     
     if (env.uglify) {
