@@ -91,6 +91,29 @@ function getFullTemplatesPath(projectDir, templates) {
     return updatedTemplates;
 }
 
+function editExistingProjectFiles(projectDir) {
+    const webpackConfigPath = getFullPath(projectDir, "webpack.config.js");
+    const webpackCommonPath = getFullPath(projectDir, "webpack.common.js");
+
+    editWebpackConfig(webpackConfigPath, replaceStyleUrlResolvePlugin);
+    editWebpackConfig(webpackCommonPath, replaceStyleUrlResolvePlugin);
+}
+
+function editWebpackConfig(path, fn) {
+    if (!fs.existsSync(path)) {
+        return;
+    }
+
+    const config = fs.readFileSync(path, "utf8");
+    const newConfig = fn(config);
+
+    fs.writeFileSync(path, newConfig, "utf8");
+}
+
+function replaceStyleUrlResolvePlugin(config) {
+    return config.replace(/StyleUrlResolvePlugin/g, "UrlResolvePlugin");
+}
+
 function getFullPath(projectDir, filePath) {
     return path.resolve(projectDir, filePath);
 }
@@ -103,4 +126,5 @@ function tsOrJs(projectDir, name) {
 module.exports = {
     addProjectFiles,
     removeProjectFiles,
+    editExistingProjectFiles,
 };
