@@ -12,7 +12,7 @@ var isAngular = Object.keys(packageJson.dependencies).filter(function (dependenc
 
 
 if (isAngular) {
-    exports.StyleUrlResolvePlugin = require("./resource-resolver-plugins/StyleUrlResolvePlugin");
+    exports.UrlResolvePlugin = require("./resource-resolver-plugins/UrlResolvePlugin");
 }
 
 //HACK: changes the JSONP chunk eval function to `global["nativescriptJsonp"]`
