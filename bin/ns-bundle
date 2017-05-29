@@ -43,12 +43,11 @@ function execute(options) {
     const platform = options.platform;
 
     if (options.bundle) {
-        commands.push(() => cleanApp(platform));
-        commands.push(() => webpack(platform));
-    }
-
-    if (platform === "android") {
-        commands.push(() => gradlewClean());
+        commands = [
+            () => cleanApp(platform),
+            () => cleanBuildArtifacts(platform),
+            () => webpack(platform),
+        ];
     }
 
     // If "build-app" or "start-app" is specified,
@@ -59,16 +58,26 @@ function execute(options) {
     } else {
         commands.shift(() => runTns("prepare", platform))
     }
-
     return commands.reduce((current, next) => current.then(next), Promise.resolve());
 }
 
-// Clear platform/**/app folder contents
-function cleanApp(platform) {
+function cleanBuildArtifacts(platform) {
     return new Promise((resolve, reject) => {
-        spawnChildProcess(true, "tns", "clean-app", platform)
-            .then(resolve)
-            .catch(throwError)
+        if (platform !== "android") {
+            return resolve();
+        }
+
+        getTnsVersion().then(versionString => {
+            const version = versionToNumber(versionString);
+
+            // for nativescript-cli v3.0.1 and below
+            // the android build artifacts should be cleaned manually
+            if (version <= 301) {
+                gradlewClean().then(resolve).catch(throwError);
+            } else {
+                return resolve();
+            }
+        }).catch(throwError);
     });
 }
 
@@ -80,9 +89,41 @@ function gradlewClean() {
             resolve();
         }
 
-        spawnChildProcess(true, gradlew, "-p", platformsPath, "clean")
+        spawnChildProcess(gradlew, "-p", platformsPath, "clean")
             .then(resolve)
             .catch(throwError);
+    });
+}
+
+function getTnsVersion() {
+    return new Promise((resolve, reject) => {
+        const childProcess = spawn("tns", ["--version"], { shell: true });
+
+        childProcess.stdout.on("data", resolve);
+
+        childProcess.on("close", code => {
+            if (code) {
+                reject({
+                    code,
+                    message: `child process exited with code ${code}`,
+                });
+            }
+        });
+    });
+}
+
+function versionToNumber(version) {
+    const VERSION_MATCHER = /(\d+)\.(\d+)\.(\d+)/;
+
+    return Number(VERSION_MATCHER.exec(version).splice(1).join(""));
+}
+
+// Clear platform/**/app folder contents
+function cleanApp(platform) {
+    return new Promise((resolve, reject) => {
+        spawnChildProcess("tns", "clean-app", platform)
+            .then(resolve)
+            .catch(throwError)
     });
 }
 
@@ -91,7 +132,6 @@ function webpack(platform) {
         console.log(`Running webpack for ${platform}...`);
 
         const args = [
-            true, // show output on console
             `webpack`,
             `--config=webpack.config.js`,
             `--progress`,
@@ -109,7 +149,7 @@ function runTns(command, platform) {
     return new Promise((resolve, reject) => {
         console.log(`Running tns ${command}...`);
 
-        spawnChildProcess(true, "tns", command, platform, "--bundle", "--disable-npm-install", ...tnsArgs)
+        spawnChildProcess("tns", command, platform, "--bundle", "--disable-npm-install", ...tnsArgs)
             .then(resolve)
             .catch(throwError);
     });
@@ -150,22 +190,24 @@ function getCommand(flags) {
     }
 }
 
-function spawnChildProcess(shouldPrintOutput, command, ...args) {
-    const stdio = shouldPrintOutput ? "inherit" : "ignore";
-
+function spawnChildProcess(command, ...args) {
     return new Promise((resolve, reject) => {
-            const childProcess = spawn(command, args, { stdio, pwd: PROJECT_DIR, shell: true });
+        const childProcess = spawn(command, args, {
+            stdio: "inherit",
+            pwd: PROJECT_DIR,
+            shell: true,
+        });
 
-            childProcess.on("close", (code) => {
-                if (code === 0) {
-                    resolve();
-                } else {
-                    reject({
-                        code,
-                        message: `child process exited with code ${code}`,
-                    });
-                }
-            });
+        childProcess.on("close", code => {
+            if (code === 0) {
+                resolve();
+            } else {
+                reject({
+                    code,
+                    message: `child process exited with code ${code}`,
+                });
+            }
+        });
     });
 }
 
