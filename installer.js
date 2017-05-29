@@ -20,9 +20,12 @@ function install() {
     scripts = npmScriptsManager.addNpmScripts(scripts);
     packageJson.scripts = scripts;
 
-    packageJson.devDependencies = dependencyManager.addProjectDeps(packageJson);
+    const postinstallOptions = dependencyManager.addProjectDeps(packageJson);
+    packageJson.devDependencies = postinstallOptions.deps;
 
     helpers.writePackageJson(packageJson, PROJECT_DIR);
+
+    dependencyManager.showHelperMessages(postinstallOptions);
 }
 
 function uninstall() {
@@ -36,6 +39,10 @@ function uninstall() {
     packageJson.scripts = scripts;
 
     helpers.writePackageJson(packageJson, PROJECT_DIR);
+}
+
+function showHelperMessages() {
+
 }
 
 module.exports = {

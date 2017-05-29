@@ -1,41 +1,59 @@
 const helpers = require("./projectHelpers");
 
-const NEW_DEPS_MESSAGE = `
-A few development dependencies were added. \
-Install them before bundling your project.`;
+const NEW_DEPS_MESSAGE = `\
+A few new dependencies were added. \
+Run "npm install" before building your project.
+`;
 
 const ALREADY_ADDED_MESSAGE = `\
-Some dependencies may have already been added. \
-If you want to force update them, please run "node_modules/.bin/update-ns-webpack".`;
+Some dependencies have already been added. \
+If you want to force update them, please run "node_modules/.bin/update-ns-webpack".
+`;
+
+const USAGE_MESSAGE = `
+NativeScript Webpack plugin was successfully added.
+You can now bundle your project with the following npm scripts:
+    - "npm run build-android-bundle" to build for android.
+    - "npm run build-ios-bundle" to build for ios.
+    - "npm run start-android-bundle" to run on android.
+    - "npm run start-ios-bundle" to run on ios.
+You can also pass the "--uglify" flag to use UglifyJS for minification.
+For more information check out https://docs.nativescript.org/tooling/bundling-with-webpack#bundling.
+`;
 
 function forceUpdateProjectDeps(packageJson) {
     return addProjectDeps(packageJson, true);
 }
 
 function addProjectDeps(packageJson, force = false) {
-    const depsToAdd = getRequiredDeps(packageJson);
     packageJson.devDependencies = packageJson.devDependencies || {};
-    let deps = Object.assign({}, packageJson.devDependencies);
+    const postinstallOptions = {
+        deps: Object.assign({}, packageJson.devDependencies),
+    };
 
+    const depsToAdd = getRequiredDeps(packageJson);
     Object.keys(depsToAdd).forEach(function(name) {
         const version = depsToAdd[name];
-        deps = addDependency(deps, name, version, force);
+        Object.assign(postinstallOptions,
+            addDependency(postinstallOptions.deps, name, version, force));
     });
 
-    logHelperMessages();
-
-    return deps;
+    return postinstallOptions;
 }
 
 function addDependency(deps, name, version, force) {
+    const options = { deps };
+
     if (!deps[name] || force) {
         deps[name] = version;
+        options.newDepsAdded = true;
         console.info(`Adding dev dependency: ${name}@${version}`);
     } else if (deps[name] !== version) {
+        options.hasOldDeps = true;
         console.info(`Dev dependency: ${name} already added. Leaving version: ${deps[name]}`);
     }
 
-    return deps;
+    return options;
 }
 
 function getRequiredDeps(packageJson) {
@@ -104,12 +122,20 @@ function getVersionWithoutPatch(version) {
     }
 }
 
-function logHelperMessages(someAlreadyAdded) {
-    console.info(NEW_DEPS_MESSAGE);
-    console.info(ALREADY_ADDED_MESSAGE);
+function showHelperMessages({ newDepsAdded, hasOldDeps }) {
+    console.info(USAGE_MESSAGE);
+
+    if (hasOldDeps) {
+        console.info(ALREADY_ADDED_MESSAGE);
+    }
+
+    if (newDepsAdded) {
+        console.info(NEW_DEPS_MESSAGE);
+    }
 }
 
 module.exports = {
-    forceUpdateProjectDeps,
     addProjectDeps,
+    forceUpdateProjectDeps,
+    showHelperMessages,
 };
