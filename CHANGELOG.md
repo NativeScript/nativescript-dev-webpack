@@ -1,3 +1,21 @@
+<a name="0.6.0"></a>
+# [0.6.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.5.0...0.6.0) (2017-05-29)
+
+
+### Bug Fixes
+
+* **ns-bundle:** clean android build for NativeScript CLI 3.0.1<= ([#163](https://github.com/NativeScript/nativescript-dev-webpack/issues/163)) ([35ce787](https://github.com/NativeScript/nativescript-dev-webpack/commit/35ce787))
+* **template:** disable minification of css by css-loader ([#154](https://github.com/NativeScript/nativescript-dev-webpack/issues/154)) ([30e9c97](https://github.com/NativeScript/nativescript-dev-webpack/commit/30e9c97)), closes [#135](https://github.com/NativeScript/nativescript-dev-webpack/issues/135)
+
+
+### Features
+
+* add UrlResolvePlugin for platform-specific template/style urls ([#155](https://github.com/NativeScript/nativescript-dev-webpack/issues/155)) ([2ccf55b](https://github.com/NativeScript/nativescript-dev-webpack/commit/2ccf55b)), closes [#75](https://github.com/NativeScript/nativescript-dev-webpack/issues/75)
+
+### BREAKING CHANGES:
+The StyleUrlResolvePlugin is now replaced by the UrlResolvePlugin. The latter replaces both style and template platform-specific urls from Angular components. On postinstall nativescript-dev-webpack will automatically replaces all occurencies of the old plugin in the project's webpack config.
+
+
 <a name="0.5.0"></a>
 # [0.5.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.4.2...0.5.0) (2017-05-11)
 
