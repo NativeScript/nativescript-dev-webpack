@@ -86,7 +86,7 @@ function gradlewClean() {
         const platformsPath = pathResolve(PROJECT_DIR, "platforms", "android")
         const gradlew = pathResolve(platformsPath, "gradlew");
         if (!existsSync(gradlew)) {
-            resolve();
+            return resolve();
         }
 
         spawnChildProcess(gradlew, "-p", platformsPath, "clean")
