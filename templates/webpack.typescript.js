@@ -152,7 +152,7 @@ function getPlugins(platform, env) {
         ], { ignore: ["App_Resources/**"] }),
 
         // Generate a bundle starter script and activate it in package.json
-        new nsWebpack.GenerateBundleStarterPlugin(isSnapshotEnabled(env) ? ["./bundle"] : [
+        new nsWebpack.GenerateBundleStarterPlugin([
             "./vendor",
             "./bundle",
         ]),

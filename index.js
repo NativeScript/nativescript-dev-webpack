@@ -52,18 +52,9 @@ exports.GenerateBundleStarterPlugin.prototype = {
         compiler.plugin("emit", function (compilation, cb) {
             compilation.assets["package.json"] = plugin.generatePackageJson();
             compilation.assets["starter.js"] = plugin.generateStarterModule();
-            plugin.generateTnsJavaClasses(compilation);
 
             cb();
         });
-    },
-    generateTnsJavaClasses: function (compilation) {
-        const path = compilation.compiler.outputPath;
-        const isAndroid = path.indexOf("android") > -1;
-
-        if (isAndroid) {
-            compilation.assets["tns-java-classes.js"] = new sources.RawSource("");
-        }
     },
     generatePackageJson: function () {
         var packageJsonPath = path.join(this.webpackContext, "package.json");
