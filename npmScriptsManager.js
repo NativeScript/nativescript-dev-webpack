@@ -2,6 +2,7 @@ const SCRIPT_TEMPLATES = Object.freeze({
     "ns-bundle": "ns-bundle",
     "start-[PLATFORM]-bundle": "npm run ns-bundle --[PLATFORM] --start-app",
     "build-[PLATFORM]-bundle": "npm run ns-bundle --[PLATFORM] --build-app",
+    "publish-[PLATFORM]-bundle": "npm run ns-bundle --[PLATFORM] --publish-app",
 });
 
 const DEPRECATED_SCRIPT_TEMPLATES = Object.freeze([
