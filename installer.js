@@ -41,10 +41,6 @@ function uninstall() {
     helpers.writePackageJson(packageJson, PROJECT_DIR);
 }
 
-function showHelperMessages() {
-
-}
-
 module.exports = {
     install,
     uninstall,
