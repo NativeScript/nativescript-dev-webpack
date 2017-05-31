@@ -1,3 +1,19 @@
+<a name="0.6.1"></a>
+## [0.6.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.6.0...0.6.1) (2017-05-31)
+
+
+### Bug Fixes
+
+* **ns-bundle:** add missing return ([#167](https://github.com/NativeScript/nativescript-dev-webpack/issues/167)) ([cd7ea25](https://github.com/NativeScript/nativescript-dev-webpack/commit/cd7ea25))
+* **ns-bundle:** parse all '*-app' flags as tns commands ([#166](https://github.com/NativeScript/nativescript-dev-webpack/issues/166)) ([8e7a1b3](https://github.com/NativeScript/nativescript-dev-webpack/commit/8e7a1b3))
+
+
+### Features
+
+* add publish-ios-bundle npm script ([c424a8a](https://github.com/NativeScript/nativescript-dev-webpack/commit/c424a8a))
+
+
+
 <a name="0.6.0"></a>
 # [0.6.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.5.0...0.6.0) (2017-05-29)
 
