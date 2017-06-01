@@ -1,7 +1,7 @@
 android {
     productFlavors {
-        "__android-snapshot-libs" {
-            dimension "__android-snapshot-libs"
+        "nativescript-generated-snapshot" {
+            dimension "nativescript-generated-snapshot"
         }
     }
 }

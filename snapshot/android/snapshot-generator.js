@@ -18,10 +18,11 @@ function SnapshotGenerator() {}
 module.exports = SnapshotGenerator;
 
 SnapshotGenerator.BUILD_PATH = path.join(__dirname, "build");
-SnapshotGenerator.MKSNAPSHOT_TOOLS_PATH = path.join(__dirname, "tools/snapshot-tools/mksnapshot");
-SnapshotGenerator.NDK_BUILD_SEED_PATH = path.join(__dirname, "tools/snapshot-tools/ndk-build");
-SnapshotGenerator.BUNDLE_PREAMBLE_PATH = path.join(__dirname, "tools/snapshot-tools/bundle-preamble.js");
-SnapshotGenerator.SNAPSHOT_PLUGIN_SEED_PATH = path.join(__dirname, "tools/snapshot-tools/__android-snapshot-libs-plugin-seed");
+SnapshotGenerator.MKSNAPSHOT_TOOLS_PATH = path.join(__dirname, "snapshot-generator-tools/mksnapshot");
+SnapshotGenerator.NDK_BUILD_SEED_PATH = path.join(__dirname, "snapshot-generator-tools/ndk-build");
+SnapshotGenerator.BUNDLE_PREAMBLE_PATH = path.join(__dirname, "snapshot-generator-tools/bundle-preamble.js");
+SnapshotGenerator.SNAPSHOT_PACKAGE_NANE = "nativescript-generated-snapshot";
+SnapshotGenerator.SNAPSHOT_PLUGIN_SEED_PATH = path.join(__dirname, "snapshot-generator-tools", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE + "-plugin-seed");
 
 SnapshotGenerator.prototype.preprocessInputFile = function(inputFile, outputFile) {
     // Make some modifcations on the original bundle and save it on the specified path
@@ -95,10 +96,12 @@ SnapshotGenerator.prototype.buildSnapshotLibs = function(androidNdkBuildPath) {
 }
 
 SnapshotGenerator.prototype.buildSnapshotLibsPlugin = function(builtLibsPath) {
-    var pluginBuildPath = path.join(SnapshotGenerator.BUILD_PATH, "__android-snapshot-libs");
+    var pluginBuildPath = path.join(SnapshotGenerator.BUILD_PATH, SnapshotGenerator.SNAPSHOT_PACKAGE_NANE);
     shelljs.rm("-rf", pluginBuildPath);
     shelljs.cp("-r", SnapshotGenerator.SNAPSHOT_PLUGIN_SEED_PATH, pluginBuildPath);
-    shelljs.cp("-r", builtLibsPath, path.join(pluginBuildPath, "platforms/android/jniLibs" + "/"));
+    if (builtLibsPath) {
+        shelljs.cp("-r", builtLibsPath, path.join(pluginBuildPath, "platforms/android/jniLibs" + "/"));
+    }
     return pluginBuildPath;
 }
 
@@ -116,8 +119,8 @@ SnapshotGenerator.prototype.generate = function(options) {
 
     if (options.useLibs) {
         var androidNdkBuildPath = options.androidNdkPath ? path.join(options.androidNdkPath, "ndk-build") : "ndk-build";
-        var builtLibsPath = this.buildSnapshotLibs(androidNdkBuildPath);
-        this.buildSnapshotLibsPlugin(builtLibsPath);
+        libsPath = this.buildSnapshotLibs(androidNdkBuildPath);
+        this.buildSnapshotLibsPlugin(libsPath);
     }
     return SnapshotGenerator.BUILD_PATH;
 }
