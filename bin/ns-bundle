@@ -181,7 +181,7 @@ function getCommand(flags) {
         throwError({message: `You can't use ${commands.join(", ")} together!`});
     }
 
-    return commands[0].replace(/-app/, "");
+    return commands.length && commands[0].replace(/-app/, "");
 }
 
 function spawnChildProcess(command, ...args) {
