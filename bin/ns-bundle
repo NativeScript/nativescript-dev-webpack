@@ -14,6 +14,7 @@ if (!process.env.npm_config_argv) {
 
 const escape = arg => `"${arg}"`;
 const isTnsCommand = flag => flag.endsWith("-app");
+const shouldUglify = () => process.env.npm_config_uglify;
 
 const npmArgs = JSON.parse(process.env.npm_config_argv).original;
 const tnsArgs = getTnsArgs(npmArgs).map(escape);
@@ -67,9 +68,9 @@ function cleanBuildArtifacts(platform) {
         getTnsVersion().then(versionString => {
             const version = versionToNumber(versionString);
 
-            // for nativescript-cli v3.0.1 and below
             // the android build artifacts should be cleaned manually
-            if (version <= 301) {
+            // for nativescript-cli v3.0.1 and below or if using uglify
+            if (version <= 301 || shouldUglify()) {
                 gradlewClean().then(resolve).catch(throwError);
             } else {
                 return resolve();
@@ -133,7 +134,7 @@ function webpack(platform) {
             `--config=webpack.config.js`,
             `--progress`,
             `--env.${platform}`,
-            process.env.npm_config_uglify && `--env.uglify`,
+            shouldUglify() && `--env.uglify`,
         ];
 
         spawnChildProcess(...args)
