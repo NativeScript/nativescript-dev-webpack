@@ -58,8 +58,8 @@ function addDependency(deps, name, version, force) {
 
 function getRequiredDeps(packageJson) {
     let deps = {
-        "webpack": "~2.5.1",
-        "webpack-sources": "~0.2.3",
+        "webpack": "~2.6.1",
+        "webpack-sources": "~1.0.1",
         "copy-webpack-plugin": "~4.0.1",
         "raw-loader": "~0.5.1",
         "nativescript-css-loader": "~0.26.0",
@@ -96,8 +96,8 @@ function resolveAngularDeps(usedDependencies) {
         });
     } else {
           Object.assign(depsToAdd, {
-            "typescript": "~2.3.2",
-            "@ngtools/webpack": "1.3.1",
+            "typescript": "~2.3.4",
+            "@ngtools/webpack": "~1.4.0",
         });
     }
 
