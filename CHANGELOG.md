@@ -1,3 +1,16 @@
+<a name="0.6.2"></a>
+## [0.6.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.6.1...0.6.2) (2017-06-06)
+
+
+### Bug Fixes
+
+* **ns-bundle:** properly get tns command ([#170](https://github.com/NativeScript/nativescript-dev-webpack/issues/170)) ([43eeaf4](https://github.com/NativeScript/nativescript-dev-webpack/commit/43eeaf4)), closes [#169](https://github.com/NativeScript/nativescript-dev-webpack/issues/169)
+* bundle scripts should invoke tns run instead of tns start ([#174](https://github.com/NativeScript/nativescript-dev-webpack/issues/174)) ([f3d8a3a](https://github.com/NativeScript/nativescript-dev-webpack/commit/f3d8a3a)), closes [#172](https://github.com/NativeScript/nativescript-dev-webpack/issues/172)
+* clean android build artifacts when using with uglify ([#175](https://github.com/NativeScript/nativescript-dev-webpack/issues/175)) ([278244b](https://github.com/NativeScript/nativescript-dev-webpack/commit/278244b))
+* exclude impl core modules classes from mangling ([#173](https://github.com/NativeScript/nativescript-dev-webpack/issues/173)) ([53d7538](https://github.com/NativeScript/nativescript-dev-webpack/commit/53d7538))
+
+
+
 <a name="0.6.1"></a>
 ## [0.6.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.6.0...0.6.1) (2017-05-31)
 
