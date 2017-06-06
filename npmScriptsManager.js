@@ -1,6 +1,6 @@
 const SCRIPT_TEMPLATES = Object.freeze({
     "ns-bundle": "ns-bundle",
-    "start-[PLATFORM]-bundle": "npm run ns-bundle --[PLATFORM] --start-app",
+    "start-[PLATFORM]-bundle": "npm run ns-bundle --[PLATFORM] --run-app",
     "build-[PLATFORM]-bundle": "npm run ns-bundle --[PLATFORM] --build-app",
     "publish-ios-bundle": "npm run ns-bundle --ios --publish-app",
 });
