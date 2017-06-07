@@ -3,6 +3,7 @@ var fs = require('fs');
 var shelljs = require("shelljs");
 var semver = require("semver");
 var SnapshotGenerator = require("./snapshot-generator");
+var TnsJavaClassesGenerator = require("./tns-java-classes-generator");
 
 function ProjectSnapshotGenerator(options) {
     this.options = options = options || {};
@@ -16,6 +17,7 @@ function ProjectSnapshotGenerator(options) {
 module.exports = ProjectSnapshotGenerator;
 
 ProjectSnapshotGenerator.MIN_ANDROID_RUNTIME_VERSION_WITH_SNAPSHOT_SUPPORT = "3.0.0";
+ProjectSnapshotGenerator.TNS_JAVA_CLASSES_BUILD_PATH = path.join(SnapshotGenerator.BUILD_PATH, "tns-java-classes.js");
 
 ProjectSnapshotGenerator.prototype.getV8Version = function() {
     var nativescriptLibraryPath = path.join(this.options.projectRoot, "platforms/android/libs/runtime-libs/nativescript-regular.aar");
@@ -54,7 +56,7 @@ ProjectSnapshotGenerator.prototype.validateAndroidRuntimeVersion = function() {
     }
 }
 
-ProjectSnapshotGenerator.prototype.installSnapshotLibsPlugin = function(snapshotPluginContent) {
+ProjectSnapshotGenerator.prototype.installSnapshotLibsPlugin = function(generatorBuildPath) {
     // Add the module as dependency in package.json
     var packageJsonPath = path.join(this.options.projectRoot, "package.json");
     var packageJsonContent = shelljs.test("-e", packageJsonPath) ? JSON.parse(fs.readFileSync(packageJsonPath, 'utf8')) : {};
@@ -68,10 +70,11 @@ ProjectSnapshotGenerator.prototype.installSnapshotLibsPlugin = function(snapshot
     // Add the package to node_modules
     var snapshotPackagePath = path.join(this.options.projectRoot, "node_modules", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE);
     shelljs.rm("-rf", snapshotPackagePath);
-    shelljs.cp("-r", snapshotPluginContent, snapshotPackagePath);
+    shelljs.cp("-r", path.join(generatorBuildPath, SnapshotGenerator.SNAPSHOT_PACKAGE_NANE), snapshotPackagePath);
 }
 
-ProjectSnapshotGenerator.prototype.installSnapshotBlobs = function(preparedAppRootPath, blobsPath) {
+ProjectSnapshotGenerator.prototype.installSnapshotBlobs = function(preparedAppRootPath, generatorBuildPath) {
+    var blobsPath = path.join(generatorBuildPath, "snapshots/blobs");
     // Copy the blobs in the prepared app folder
     var blobsDestination = path.join(preparedAppRootPath, "snapshots");
     shelljs.rm("-rf", blobsDestination);
@@ -93,9 +96,27 @@ ProjectSnapshotGenerator.prototype.addSnapshotKeyInPackageJSON = function(appPac
     fs.writeFileSync(appPackageJSONPath, JSON.stringify(appPackageJSON, null, 2));
 }
 
+ProjectSnapshotGenerator.prototype.generateTnsJavaClassesFile = function(generationOptions) {
+    var tnsJavaClassesGenerator = new TnsJavaClassesGenerator();
+    return tnsJavaClassesGenerator.generate({
+        projectRoot: this.options.projectRoot, 
+        output: generationOptions.output,
+        options: generationOptions.options
+    });
+}
+
 ProjectSnapshotGenerator.prototype.generate = function(generationOptions) {
     generationOptions = generationOptions || {};
 
+    // Generate tns-java-classes.js if needed
+    if (generationOptions.tnsJavaClassesPath) {
+        shelljs.cp(generationOptions.tnsJavaClassesPath, ProjectSnapshotGenerator.TNS_JAVA_CLASSES_BUILD_PATH);
+    }
+    else {
+        this.generateTnsJavaClassesFile({ output: ProjectSnapshotGenerator.TNS_JAVA_CLASSES_BUILD_PATH, options: generationOptions.tnsJavaClassesOptions });
+    }
+
+    // Generate snapshots
     var generator = new SnapshotGenerator();
     var generatorBuildPath = generator.generate({
         inputFile: generationOptions.inputFile || path.join(this.options.projectRoot, "__snapshot.js"),
@@ -106,14 +127,13 @@ ProjectSnapshotGenerator.prototype.generate = function(generationOptions) {
         androidNdkPath: generationOptions.androidNdkPath
     });
 
-    var preparedAppRootPath = path.join(this.options.projectRoot, "platforms/android/src/main/assets");
-
     if (generationOptions.useLibs) {
-        this.installSnapshotLibsPlugin(path.join(generatorBuildPath, SnapshotGenerator.SNAPSHOT_PACKAGE_NANE));
+        this.installSnapshotLibsPlugin(generatorBuildPath);
         console.log("Snapshot is included in the app as dynamically linked library (.so file).");
     }
     else {
-        this.installSnapshotBlobs(preparedAppRootPath, path.join(generatorBuildPath, "snapshots/blobs"));
+        var preparedAppRootPath = path.join(this.options.projectRoot, "platforms/android/src/main/assets");
+        this.installSnapshotBlobs(preparedAppRootPath, generatorBuildPath);
         console.log("Snapshot is included in the app as binary .blob file. The more space-efficient option is to embed it in a dynamically linked library (.so file).");
     }
 }

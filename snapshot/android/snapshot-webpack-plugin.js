@@ -15,30 +15,17 @@ function SnapshotWebpackPlugin(options) {
             this.options.webpackConfig.output.libraryTarget = undefined;
         }
 
-        // TODO: Consider extracting this in a separate plugin
         if (this.options.webpackConfig.entry) {
             if (typeof this.options.webpackConfig.entry === "string" ||
                 this.options.webpackConfig.entry instanceof Array)
                 this.options.webpackConfig.entry = { bundle: this.options.webpackConfig.entry };
         }
-        
-        var projectRoot = this.options.projectRoot;
-        var node_modules_path = path.join(projectRoot, "node_modules");
-        var modules = fs.readdirSync(node_modules_path);
-        var earlyModules = [];
-        for(var i = 0; i < modules.length; i++) {
-            var earlyExecutedModule = path.join(node_modules_path, modules[i], "__snapshot/android/early_executed_module.js");
-            if (fs.existsSync(earlyExecutedModule)) {
-                earlyModules.push(earlyExecutedModule);
-            }
-        }
 
-        if (earlyModules.length > 0)
-            this.options.webpackConfig.entry["tns-java-classes"] = earlyModules;
+        this.options.webpackConfig.entry["tns-java-classes"] = ProjectSnapshotGenerator.TNS_JAVA_CLASSES_BUILD_PATH;
     }
 }
 
-// inherit SingleFileSnapshotGenerator
+// inherit ProjectSnapshotGenerator
 SnapshotWebpackPlugin.prototype = Object.create(ProjectSnapshotGenerator.prototype);
 SnapshotWebpackPlugin.prototype.constructor = SnapshotWebpackPlugin;
 
@@ -54,12 +41,13 @@ SnapshotWebpackPlugin.prototype.generate = function(webpackChunk) {
     var preparedAppRootPath = path.join(options.projectRoot, "platforms/android/src/main/assets");
     var preprocessedInputFile = path.join(preparedAppRootPath, "app/_embedded_script_.js");
 
-    var generatorBuildPath = ProjectSnapshotGenerator.prototype.generate.call(this, {
+    ProjectSnapshotGenerator.prototype.generate.call(this, {
         inputFile: inputFile,
         targetArchs: options.targetArchs,
         preprocessedInputFile: preprocessedInputFile,
         useLibs: options.useLibs,
-        androidNdkPath: options.androidNdkPath
+        androidNdkPath: options.androidNdkPath,
+        tnsJavaClassesPath: ProjectSnapshotGenerator.TNS_JAVA_CLASSES_BUILD_PATH
     });
 
     // Make the original file empty
@@ -71,6 +59,9 @@ SnapshotWebpackPlugin.prototype.generate = function(webpackChunk) {
 SnapshotWebpackPlugin.prototype.apply = function(compiler) {
     var options = this.options;
 
+    // Generate tns-java-classes.js file
+    debugger;
+    ProjectSnapshotGenerator.prototype.generateTnsJavaClassesFile.call(this, { output: ProjectSnapshotGenerator.TNS_JAVA_CLASSES_BUILD_PATH, options: options.tnsJavaClassesOptions });
     
     // Run the snapshot tool when the packing is done
     compiler.plugin('done', function(result) {
