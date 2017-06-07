@@ -61,7 +61,7 @@ module.exports = env => {
         plugins,
     };
 
-    if (isSnapshotEnabled(env)) {
+    if (env.snapshot) {
         plugins.push(new AndroidSnapshotPlugin({ 
             chunk: "vendor", 
             projectRoot: __dirname, 
@@ -188,8 +188,4 @@ function getExtensions(platform) {
         ".css",
         `.${platform}.css`,
     ]);
-}
-
-function isSnapshotEnabled(env) {
-    return getPlatform(env) === "android";
 }
