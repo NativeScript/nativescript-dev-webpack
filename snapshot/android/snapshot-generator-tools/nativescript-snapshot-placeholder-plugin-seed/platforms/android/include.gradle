@@ -1,7 +1,7 @@
 android {
     productFlavors {
-        "nativescript-generated-snapshot" {
-            dimension "nativescript-generated-snapshot"
+        "nativescript-snapshot-placeholder" {
+            dimension "nativescript-snapshot-placeholder"
         }
     }
 }

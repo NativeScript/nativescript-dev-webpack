@@ -62,8 +62,8 @@ ProjectSnapshotGenerator.prototype.installSnapshotLibsPlugin = function(generato
     var packageJsonContent = shelljs.test("-e", packageJsonPath) ? JSON.parse(fs.readFileSync(packageJsonPath, 'utf8')) : {};
 
     packageJsonContent["dependencies"] = packageJsonContent["dependencies"] || {};
-    // TODO: publish nativescript-generated-snaphsot in npm and use it from there
-    packageJsonContent["dependencies"][SnapshotGenerator.SNAPSHOT_PACKAGE_NANE] = "ivanbuhov/nativescript-generated-snaphsot#master";
+    // TODO: publish nativescript-snapshot-placeholder in npm and use it from there
+    packageJsonContent["dependencies"][SnapshotGenerator.SNAPSHOT_PACKAGE_NANE] = "~0.0.1";
 
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJsonContent, null, 2));
 

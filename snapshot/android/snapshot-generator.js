@@ -21,7 +21,7 @@ SnapshotGenerator.BUILD_PATH = path.join(__dirname, "build");
 SnapshotGenerator.MKSNAPSHOT_TOOLS_PATH = path.join(__dirname, "snapshot-generator-tools/mksnapshot");
 SnapshotGenerator.NDK_BUILD_SEED_PATH = path.join(__dirname, "snapshot-generator-tools/ndk-build");
 SnapshotGenerator.BUNDLE_PREAMBLE_PATH = path.join(__dirname, "snapshot-generator-tools/bundle-preamble.js");
-SnapshotGenerator.SNAPSHOT_PACKAGE_NANE = "nativescript-generated-snapshot";
+SnapshotGenerator.SNAPSHOT_PACKAGE_NANE = "nativescript-snapshot-placeholder";
 SnapshotGenerator.SNAPSHOT_PLUGIN_SEED_PATH = path.join(__dirname, "snapshot-generator-tools", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE + "-plugin-seed");
 
 SnapshotGenerator.prototype.preprocessInputFile = function(inputFile, outputFile) {
