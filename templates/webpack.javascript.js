@@ -62,7 +62,13 @@ module.exports = env => {
     };
 
     if (isSnapshotEnabled(env)) {
-        plugins.push(new AndroidSnapshotPlugin({ chunk: "vendor", projectRoot: __dirname, webpackConfig: config, useLibs: false }));
+        plugins.push(new AndroidSnapshotPlugin({ 
+            chunk: "vendor", 
+            projectRoot: __dirname, 
+            webpackConfig: config, 
+            tnsJavaClassesOptions: { packages: ["tns-core-modules" ] }, 
+            useLibs: false 
+        }));
     }
 
     return config;
