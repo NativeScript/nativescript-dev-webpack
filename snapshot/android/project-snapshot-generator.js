@@ -9,7 +9,6 @@ const { getPackageJson } = require("../../projectHelpers");
 
 const MIN_ANDROID_RUNTIME_VERSION = "3.0.0";
 const VALID_ANDROID_RUNTIME_TAGS = Object.freeze(["next", "rc"]);
-const TNS_JAVA_CLASSES_BUILD_PATH = path.join(SnapshotGenerator.BUILD_PATH, "tns-java-classes.js");
 
 function ProjectSnapshotGenerator (options) {
     this.options = options = options || {};
@@ -20,8 +19,19 @@ function ProjectSnapshotGenerator (options) {
 
     this.validateAndroidRuntimeVersion();
 }
-
 module.exports = ProjectSnapshotGenerator;
+
+ProjectSnapshotGenerator.calculateBuildPath = function(projectRoot) {
+    return path.join(projectRoot, "platforms/android/snapshot-build");
+}
+
+ProjectSnapshotGenerator.prototype.getBuildPath = function() {
+    return ProjectSnapshotGenerator.calculateBuildPath(this.options.projectRoot);
+}
+
+ProjectSnapshotGenerator.prototype.getTnsJavaClassesBuildPath = function() {
+    return path.join(this.getBuildPath(), "tns-java-classes.js");
+}
 
 ProjectSnapshotGenerator.cleanSnapshotArtefacts = function(projectRoot) {
     var platformPath = path.join(projectRoot, "platforms/android");
@@ -34,7 +44,7 @@ ProjectSnapshotGenerator.cleanSnapshotArtefacts = function(projectRoot) {
 }
 
 ProjectSnapshotGenerator.installSnapshotArtefacts = function(projectRoot) {
-    var buildPath = SnapshotGenerator.BUILD_PATH;
+    var buildPath = ProjectSnapshotGenerator.calculateBuildPath(projectRoot);
     
     if (shelljs.test("-e", path.join(buildPath, "ndk-build/libs"))) {
         // useLibs = true
@@ -122,7 +132,7 @@ ProjectSnapshotGenerator.prototype.generateTnsJavaClassesFile = function(generat
 
 ProjectSnapshotGenerator.prototype.cleanBuildFolder = function() {
     // Clean build folder
-    shelljs.rm("-rf", SnapshotGenerator.BUILD_PATH);
+    shelljs.rm("-rf", this.getBuildPath());
 }
 
 ProjectSnapshotGenerator.prototype.generate = function(generationOptions) {
@@ -130,16 +140,16 @@ ProjectSnapshotGenerator.prototype.generate = function(generationOptions) {
 
     // Generate tns-java-classes.js if needed
     if (generationOptions.tnsJavaClassesPath) {
-        if (generationOptions.tnsJavaClassesPath != TNS_JAVA_CLASSES_BUILD_PATH) {
-            shelljs.cp(generationOptions.tnsJavaClassesPath, TNS_JAVA_CLASSES_BUILD_PATH);
+        if (generationOptions.tnsJavaClassesPath != this.getTnsJavaClassesBuildPath()) {
+            shelljs.cp(generationOptions.tnsJavaClassesPath, this.getTnsJavaClassesBuildPath());
         }
     }
     else {
-        this.generateTnsJavaClassesFile({ output: TNS_JAVA_CLASSES_BUILD_PATH, options: generationOptions.tnsJavaClassesOptions });
+        this.generateTnsJavaClassesFile({ output: this.getTnsJavaClassesBuildPath(), options: generationOptions.tnsJavaClassesOptions });
     }
 
     // Generate snapshots
-    var generator = new SnapshotGenerator();
+    var generator = new SnapshotGenerator({ buildPath: this.getBuildPath() });
     var generatorBuildPath = generator.generate({
         inputFile: generationOptions.inputFile || path.join(this.options.projectRoot, "__snapshot.js"),
         targetArchs: generationOptions.targetArchs || ["arm", "arm64", "ia32"],

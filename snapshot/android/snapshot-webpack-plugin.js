@@ -21,7 +21,7 @@ function SnapshotWebpackPlugin(options) {
                 this.options.webpackConfig.entry = { bundle: this.options.webpackConfig.entry };
         }
 
-        this.options.webpackConfig.entry["tns-java-classes"] = ProjectSnapshotGenerator.TNS_JAVA_CLASSES_BUILD_PATH;
+        this.options.webpackConfig.entry["tns-java-classes"] = this.getTnsJavaClassesBuildPath();
     }
 }
 
@@ -47,7 +47,7 @@ SnapshotWebpackPlugin.prototype.generate = function(webpackChunk) {
         preprocessedInputFile: preprocessedInputFile,
         useLibs: options.useLibs,
         androidNdkPath: options.androidNdkPath,
-        tnsJavaClassesPath: ProjectSnapshotGenerator.TNS_JAVA_CLASSES_BUILD_PATH
+        tnsJavaClassesPath: this.getTnsJavaClassesBuildPath()
     });
 
     // Make the original file empty
@@ -62,7 +62,7 @@ SnapshotWebpackPlugin.prototype.apply = function(compiler) {
     // Generate tns-java-classes.js file
     debugger;
     ProjectSnapshotGenerator.prototype.cleanBuildFolder.call(this);
-    ProjectSnapshotGenerator.prototype.generateTnsJavaClassesFile.call(this, { output: ProjectSnapshotGenerator.TNS_JAVA_CLASSES_BUILD_PATH, options: options.tnsJavaClassesOptions });
+    ProjectSnapshotGenerator.prototype.generateTnsJavaClassesFile.call(this, { output: this.getTnsJavaClassesBuildPath(), options: options.tnsJavaClassesOptions });
     
     // Run the snapshot tool when the packing is done
     compiler.plugin('done', function(result) {

@@ -14,10 +14,11 @@ var shellJsExecuteInDir = function(dir, action) {
     }
 }
 
-function SnapshotGenerator() {}
+function SnapshotGenerator(options) {
+    this.buildPath = options.buildPath || path.join(__dirname, "build");
+}
 module.exports = SnapshotGenerator;
 
-SnapshotGenerator.BUILD_PATH = path.join(__dirname, "build");
 SnapshotGenerator.MKSNAPSHOT_TOOLS_PATH = path.join(__dirname, "snapshot-generator-tools/mksnapshot");
 SnapshotGenerator.NDK_BUILD_SEED_PATH = path.join(__dirname, "snapshot-generator-tools/ndk-build");
 SnapshotGenerator.BUNDLE_PREAMBLE_PATH = path.join(__dirname, "snapshot-generator-tools/bundle-preamble.js");
@@ -52,7 +53,7 @@ SnapshotGenerator.prototype.convertToAndroidArchName = function(archName) {
 
 SnapshotGenerator.prototype.runMksnapshotTool = function(inputFile, v8Version, targetArchs, buildCSource) {
     // Cleans the snapshot build folder
-    shelljs.rm("-rf", path.join(SnapshotGenerator.BUILD_PATH, "snapshots"));
+    shelljs.rm("-rf", path.join(this.buildPath, "snapshots"));
 
     var mksnapshotToolsDir = this.getMksnapshotToolsDirOrThrow(v8Version);
     for (var index in targetArchs) {
@@ -67,13 +68,13 @@ SnapshotGenerator.prototype.runMksnapshotTool = function(inputFile, v8Version, t
         console.log("***** Generating snapshot for " + androidArch + " *****");
         
         // Generate .blob file
-        var currentArchBlobOutputPath = path.join(SnapshotGenerator.BUILD_PATH, "snapshots/blobs", androidArch);
+        var currentArchBlobOutputPath = path.join(this.buildPath, "snapshots/blobs", androidArch);
         shelljs.mkdir("-p", currentArchBlobOutputPath);
         child_process.execSync(currentArchMksnapshotToolPath + " " + inputFile + " --startup_blob " + path.join(currentArchBlobOutputPath, "TNSSnapshot.blob") + " --profile_deserialization", {encoding: "utf8", stdio: 'inherit'});
 
         // Generate .c file
         if (buildCSource) {
-            var currentArchSrcOutputPath = path.join(SnapshotGenerator.BUILD_PATH, "snapshots/src", androidArch);
+            var currentArchSrcOutputPath = path.join(this.buildPath, "snapshots/src", androidArch);
             shelljs.mkdir("-p", currentArchSrcOutputPath);
             shellJsExecuteInDir(currentArchBlobOutputPath, function(){
                 shelljs.exec("xxd -i TNSSnapshot.blob > " + path.join(currentArchSrcOutputPath, "TNSSnapshot.c"));
@@ -85,10 +86,10 @@ SnapshotGenerator.prototype.runMksnapshotTool = function(inputFile, v8Version, t
 
 SnapshotGenerator.prototype.buildSnapshotLibs = function(androidNdkBuildPath) {
     // Compile *.c files to produce *.so libraries with ndk-build tool
-    var ndkBuildPath = path.join(SnapshotGenerator.BUILD_PATH, "ndk-build");
+    var ndkBuildPath = path.join(this.buildPath, "ndk-build");
     shelljs.rm("-rf", ndkBuildPath);
     shelljs.cp("-r", SnapshotGenerator.NDK_BUILD_SEED_PATH, ndkBuildPath);
-    shelljs.mv(path.join(SnapshotGenerator.BUILD_PATH, "snapshots/src/*"), path.join(ndkBuildPath, "jni"));
+    shelljs.mv(path.join(this.buildPath, "snapshots/src/*"), path.join(ndkBuildPath, "jni"));
     shellJsExecuteInDir(ndkBuildPath, function(){
         shelljs.exec(androidNdkBuildPath);
     });
@@ -96,7 +97,7 @@ SnapshotGenerator.prototype.buildSnapshotLibs = function(androidNdkBuildPath) {
 }
 
 SnapshotGenerator.prototype.buildIncludeGradle = function() {
-    shelljs.cp(SnapshotGenerator.INCLUDE_GRADLE_PATH, path.join(SnapshotGenerator.BUILD_PATH, "include.gradle"));
+    shelljs.cp(SnapshotGenerator.INCLUDE_GRADLE_PATH, path.join(this.buildPath, "include.gradle"));
 }
 
 SnapshotGenerator.prototype.generate = function(options) {
@@ -116,5 +117,5 @@ SnapshotGenerator.prototype.generate = function(options) {
         this.buildSnapshotLibs(androidNdkBuildPath);
         this.buildIncludeGradle();
     }
-    return SnapshotGenerator.BUILD_PATH;
+    return this.buildPath;
 }

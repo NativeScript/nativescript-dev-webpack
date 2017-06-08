@@ -56,8 +56,6 @@ function execute(options) {
     }
 
     if (shouldSnapshot(platform)) {
-        // running prepare will prevent cleaning the include.gradle file on "tns build/run"
-        commands.push(() => runTns("prepare", platform));
         commands.push(() => installSnapshotArtefacts());
     }
     
