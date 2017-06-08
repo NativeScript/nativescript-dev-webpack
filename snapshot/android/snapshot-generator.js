@@ -1,10 +1,10 @@
-var fs = require("fs");
-var shelljs = require("shelljs");
-var path = require("path");
-var os = require("os");
-var child_process = require("child_process");
+const fs = require("fs");
+const shelljs = require("shelljs");
+const path = require("path");
+const os = require("os");
+const child_process = require("child_process");
 
-var shellJsExecuteInDir = function(dir, action) {
+const shellJsExecuteInDir = function(dir, action) {
     var currentDir = shelljs.pwd();
     shelljs.cd(dir);
     try {
@@ -55,7 +55,7 @@ SnapshotGenerator.prototype.runMksnapshotTool = function(inputFile, v8Version, t
     // Cleans the snapshot build folder
     shelljs.rm("-rf", path.join(this.buildPath, "snapshots"));
 
-    var mksnapshotToolsDir = this.getMksnapshotToolsDirOrThrow(v8Version);
+    const mksnapshotToolsDir = this.getMksnapshotToolsDirOrThrow(v8Version);
     for (var index in targetArchs) {
         var arch = targetArchs[index];
         var currentArchMksnapshotToolPath = path.join(mksnapshotToolsDir, "mksnapshot-" + arch);
@@ -86,7 +86,7 @@ SnapshotGenerator.prototype.runMksnapshotTool = function(inputFile, v8Version, t
 
 SnapshotGenerator.prototype.buildSnapshotLibs = function(androidNdkBuildPath) {
     // Compile *.c files to produce *.so libraries with ndk-build tool
-    var ndkBuildPath = path.join(this.buildPath, "ndk-build");
+    const ndkBuildPath = path.join(this.buildPath, "ndk-build");
     shelljs.rm("-rf", ndkBuildPath);
     shelljs.cp("-r", SnapshotGenerator.NDK_BUILD_SEED_PATH, ndkBuildPath);
     shelljs.mv(path.join(this.buildPath, "snapshots/src/*"), path.join(ndkBuildPath, "jni"));
@@ -113,7 +113,7 @@ SnapshotGenerator.prototype.generate = function(options) {
     this.runMksnapshotTool(preprocessedInputFile, options.v8Version, options.targetArchs, options.useLibs); // generates the actual .blob and .c files
 
     if (options.useLibs) {
-        var androidNdkBuildPath = options.androidNdkPath ? path.join(options.androidNdkPath, "ndk-build") : "ndk-build";
+        const androidNdkBuildPath = options.androidNdkPath ? path.join(options.androidNdkPath, "ndk-build") : "ndk-build";
         this.buildSnapshotLibs(androidNdkBuildPath);
         this.buildIncludeGradle();
     }

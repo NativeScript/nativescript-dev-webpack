@@ -34,7 +34,7 @@ ProjectSnapshotGenerator.prototype.getTnsJavaClassesBuildPath = function() {
 }
 
 ProjectSnapshotGenerator.cleanSnapshotArtefacts = function(projectRoot) {
-    var platformPath = path.join(projectRoot, "platforms/android");
+    const platformPath = path.join(projectRoot, "platforms/android");
 
     // Remove blob files from prepared folder
     shelljs.rm("-rf", path.join(platformPath, "src/main/assets/snapshots"));
@@ -44,12 +44,12 @@ ProjectSnapshotGenerator.cleanSnapshotArtefacts = function(projectRoot) {
 }
 
 ProjectSnapshotGenerator.installSnapshotArtefacts = function(projectRoot) {
-    var buildPath = ProjectSnapshotGenerator.calculateBuildPath(projectRoot);
+    const buildPath = ProjectSnapshotGenerator.calculateBuildPath(projectRoot);
     
     if (shelljs.test("-e", path.join(buildPath, "ndk-build/libs"))) {
         // useLibs = true
-        var libsDestinationPath = path.join(projectRoot, "platforms/android/src", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE, "jniLibs");
-        var configDestinationPath = path.join(projectRoot, "platforms/android/configurations", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE);
+        const libsDestinationPath = path.join(projectRoot, "platforms/android/src", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE, "jniLibs");
+        const configDestinationPath = path.join(projectRoot, "platforms/android/configurations", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE);
 
         // Copy the libs to the specified destination in the platforms folder
         shelljs.mkdir("-p", libsDestinationPath);
@@ -61,10 +61,10 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function(projectRoot) {
     }
     else {
         // useLibs = false
-        var assetsPath = path.join(projectRoot, "platforms/android/src/main/assets");
-        var blobsSrcPath = path.join(buildPath, "snapshots/blobs");
-        var blobsDestinationPath = path.join(assetsPath, "snapshots");
-        var appPackageJsonPath = path.join(assetsPath, "app/package.json");
+        const assetsPath = path.join(projectRoot, "platforms/android/src/main/assets");
+        const blobsSrcPath = path.join(buildPath, "snapshots/blobs");
+        const blobsDestinationPath = path.join(assetsPath, "snapshots");
+        const appPackageJsonPath = path.join(assetsPath, "app/package.json");
         
         // Copy the blobs in the prepared app folder
         shelljs.cp("-R", blobsSrcPath + "/", path.join(assetsPath, "snapshots"));
@@ -83,13 +83,13 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function(projectRoot) {
 }
 
 ProjectSnapshotGenerator.prototype.getV8Version = function() {
-    var nativescriptLibraryPath = path.join(this.options.projectRoot, "platforms/android/libs/runtime-libs/nativescript-regular.aar");
+    const nativescriptLibraryPath = path.join(this.options.projectRoot, "platforms/android/libs/runtime-libs/nativescript-regular.aar");
     if (!fs.existsSync(nativescriptLibraryPath)) {
         nativescriptLibraryPath = path.join(options.projectRoot, "platforms/android/libs/runtime-libs/nativescript.aar");
     }
 
-    var zip = new require("adm-zip")(nativescriptLibraryPath);
-    var config = zip.readAsText("config.json");
+    const zip = new require("adm-zip")(nativescriptLibraryPath);
+    const config = zip.readAsText("config.json");
     return config ? JSON.parse(config)["v8-version"] : "4.7.80";
 }
 
@@ -122,7 +122,7 @@ ProjectSnapshotGenerator.prototype.validateAndroidRuntimeVersion = function() {
 }
 
 ProjectSnapshotGenerator.prototype.generateTnsJavaClassesFile = function(generationOptions) {
-    var tnsJavaClassesGenerator = new TnsJavaClassesGenerator();
+    const tnsJavaClassesGenerator = new TnsJavaClassesGenerator();
     return tnsJavaClassesGenerator.generate({
         projectRoot: this.options.projectRoot, 
         output: generationOptions.output,
@@ -149,8 +149,8 @@ ProjectSnapshotGenerator.prototype.generate = function(generationOptions) {
     }
 
     // Generate snapshots
-    var generator = new SnapshotGenerator({ buildPath: this.getBuildPath() });
-    var generatorBuildPath = generator.generate({
+    const generator = new SnapshotGenerator({ buildPath: this.getBuildPath() });
+    const generatorBuildPath = generator.generate({
         inputFile: generationOptions.inputFile || path.join(this.options.projectRoot, "__snapshot.js"),
         targetArchs: generationOptions.targetArchs || ["arm", "arm64", "ia32"],
         v8Version: generationOptions.v8Version || this.getV8Version(),

@@ -1,6 +1,6 @@
-var fs = require("fs");
-var path = require("path");
-var shelljs = require("shelljs");
+const fs = require("fs");
+const path = require("path");
+const shelljs = require("shelljs");
 
 function TnsJavaClassesGenerator() {}
 module.exports = TnsJavaClassesGenerator;
@@ -13,8 +13,8 @@ TnsJavaClassesGenerator.prototype.generate = function(generationOptions) {
     initialSettings.modules = initialSettings.modules || [];
     initialSettings.packages = initialSettings.packages || [];
 
-    var packageJsonPath = path.join(generationOptions.projectRoot, "package.json");
-    var nodeModulesPath = path.join(generationOptions.projectRoot, "node_modules");
+    const packageJsonPath = path.join(generationOptions.projectRoot, "package.json");
+    const nodeModulesPath = path.join(generationOptions.projectRoot, "node_modules");
 
     /*
     "tns-java-classes": {

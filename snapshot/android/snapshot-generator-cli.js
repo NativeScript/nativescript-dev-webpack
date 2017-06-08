@@ -1,5 +1,5 @@
-var SnapshotGenerator = require("./snapshot-generator");
-var args = require("./process-args-parser")();
+const SnapshotGenerator = require("./snapshot-generator");
+const args = require("./process-args-parser")();
 
-var generator = new SnapshotGenerator(args);
+const generator = new SnapshotGenerator(args);
 generator.generate(args);

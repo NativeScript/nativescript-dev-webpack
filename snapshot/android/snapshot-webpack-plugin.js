@@ -1,7 +1,7 @@
-var path = require('path');
-var fs = require('fs');
-var shelljs = require("shelljs");
-var ProjectSnapshotGenerator = require("./project-snapshot-generator");
+const path = require('path');
+const fs = require('fs');
+const shelljs = require("shelljs");
+const ProjectSnapshotGenerator = require("./project-snapshot-generator");
 
 function SnapshotWebpackPlugin(options) {
     ProjectSnapshotGenerator.call(this, options); // Call the parent constructor
@@ -32,14 +32,14 @@ SnapshotWebpackPlugin.prototype.constructor = SnapshotWebpackPlugin;
 module.exports = SnapshotWebpackPlugin;
 
 SnapshotWebpackPlugin.prototype.generate = function(webpackChunk) {
-    var options = this.options;
+    const options = this.options;
 
-    var inputFile = path.join(options.webpackConfig.output.path, webpackChunk.files[0]);
+    const inputFile = path.join(options.webpackConfig.output.path, webpackChunk.files[0]);
 
     console.log("\n Snapshotting bundle at " + inputFile);
 
-    var preparedAppRootPath = path.join(options.projectRoot, "platforms/android/src/main/assets");
-    var preprocessedInputFile = path.join(preparedAppRootPath, "app/_embedded_script_.js");
+    const preparedAppRootPath = path.join(options.projectRoot, "platforms/android/src/main/assets");
+    const preprocessedInputFile = path.join(preparedAppRootPath, "app/_embedded_script_.js");
 
     ProjectSnapshotGenerator.prototype.generate.call(this, {
         inputFile: inputFile,
@@ -57,7 +57,7 @@ SnapshotWebpackPlugin.prototype.generate = function(webpackChunk) {
 }
 
 SnapshotWebpackPlugin.prototype.apply = function(compiler) {
-    var options = this.options;
+    const options = this.options;
 
     // Generate tns-java-classes.js file
     debugger;
@@ -67,7 +67,7 @@ SnapshotWebpackPlugin.prototype.apply = function(compiler) {
     // Run the snapshot tool when the packing is done
     compiler.plugin('done', function(result) {
         debugger;
-        var chunkToSnapshot = result.compilation.chunks.find(function(chunk) { return chunk.name == options.chunk; });
+        const chunkToSnapshot = result.compilation.chunks.find(function(chunk) { return chunk.name == options.chunk; });
         if (!chunkToSnapshot) {
             throw new Error("No chunk named '" + options.chunk + "' found.");
         }
