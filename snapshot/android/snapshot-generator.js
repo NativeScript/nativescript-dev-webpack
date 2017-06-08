@@ -107,7 +107,7 @@ SnapshotGenerator.prototype.generate = function(options) {
     if (!shelljs.test("-e", options.inputFile)) { throw new Error("Can't find V8 snapshot input file: '" + options.inputFile + "'."); }
     if (!options.targetArchs || options.targetArchs.length == 0) { throw new Error("No target archs specified."); }
     if (!options.v8Version) { throw new Error("No v8 version specified."); }
-    var preprocessedInputFile = options.preprocessedInputFile || options.inputFile + ".preprocessed";
+    var preprocessedInputFile = options.preprocessedInputFile ||  path.join(this.buildPath, "inputFile.preprocessed");
 
     this.preprocessInputFile(options.inputFile, preprocessedInputFile);
     this.runMksnapshotTool(preprocessedInputFile, options.v8Version, options.targetArchs, options.useLibs); // generates the actual .blob and .c files

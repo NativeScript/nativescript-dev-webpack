@@ -13,24 +13,29 @@ const VALID_ANDROID_RUNTIME_TAGS = Object.freeze(["next", "rc"]);
 function ProjectSnapshotGenerator (options) {
     this.options = options = options || {};
 
+    options.projectRoot = options.projectRoot ? 
+        (path.isAbsolute(options.projectRoot) ? 
+            options.projectRoot : 
+            path.resolve(process.cwd(), options.projectRoot)) : 
+        process.cwd();
+
     if (!options.projectRoot) {
         throw new Error("The project root is not specified.");
     }
+
+    console.log("Project root: " + options.projectRoot);
+    console.log("Build path: " + this.getBuildPath());
 
     this.validateAndroidRuntimeVersion();
 }
 module.exports = ProjectSnapshotGenerator;
 
 ProjectSnapshotGenerator.calculateBuildPath = function(projectRoot) {
-    return path.join(projectRoot, "platforms/android/snapshot-build");
+    return path.join(projectRoot, "platforms/android/snapshot-build/build");
 }
 
 ProjectSnapshotGenerator.prototype.getBuildPath = function() {
     return ProjectSnapshotGenerator.calculateBuildPath(this.options.projectRoot);
-}
-
-ProjectSnapshotGenerator.prototype.getTnsJavaClassesBuildPath = function() {
-    return path.join(this.getBuildPath(), "tns-java-classes.js");
 }
 
 ProjectSnapshotGenerator.cleanSnapshotArtefacts = function(projectRoot) {
@@ -130,22 +135,22 @@ ProjectSnapshotGenerator.prototype.generateTnsJavaClassesFile = function(generat
     });
 }
 
-ProjectSnapshotGenerator.prototype.cleanBuildFolder = function() {
-    // Clean build folder
-    shelljs.rm("-rf", this.getBuildPath());
-}
-
 ProjectSnapshotGenerator.prototype.generate = function(generationOptions) {
     generationOptions = generationOptions || {};
 
+    // Clean build folder
+    shelljs.rm("-rf", this.getBuildPath());
+    shelljs.mkdir("-p", this.getBuildPath());
+
     // Generate tns-java-classes.js if needed
+    var tnsJavaClassesDestination = path.join(this.getBuildPath(), "tns-java-classes.js");
     if (generationOptions.tnsJavaClassesPath) {
-        if (generationOptions.tnsJavaClassesPath != this.getTnsJavaClassesBuildPath()) {
-            shelljs.cp(generationOptions.tnsJavaClassesPath, this.getTnsJavaClassesBuildPath());
+        if (generationOptions.tnsJavaClassesPath != tnsJavaClassesDestination) {
+            shelljs.cp(generationOptions.tnsJavaClassesPath, tnsJavaClassesDestination);
         }
     }
     else {
-        this.generateTnsJavaClassesFile({ output: this.getTnsJavaClassesBuildPath(), options: generationOptions.tnsJavaClassesOptions });
+        this.generateTnsJavaClassesFile({ output: tnsJavaClassesDestination, options: generationOptions.tnsJavaClassesOptions });
     }
 
     // Generate snapshots
@@ -158,6 +163,11 @@ ProjectSnapshotGenerator.prototype.generate = function(generationOptions) {
         useLibs: generationOptions.useLibs || false,
         androidNdkPath: generationOptions.androidNdkPath
     });
+
+    if (generationOptions.install) {
+        ProjectSnapshotGenerator.cleanSnapshotArtefacts(this.options.projectRoot);
+        ProjectSnapshotGenerator.installSnapshotArtefacts(this.options.projectRoot);
+    }
 
     console.log(generationOptions.useLibs ? 
         "Snapshot is included in the app as dynamically linked library (.so file)." :

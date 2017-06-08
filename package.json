@@ -22,7 +22,8 @@
     "remove-ns-webpack": "./bin/remove-ns-webpack",
     "update-ns-webpack": "./bin/update-ns-webpack",
     "ns-bundle": "./bin/ns-bundle",
-    "ns-verify-bundle": "./bin/ns-verify-bundle"
+    "ns-verify-bundle": "./bin/ns-verify-bundle",
+    "generate-android-snapshot": "./bin/generate-android-snapshot"
   },
   "dependencies": {
     "adm-zip": "^0.4.7",

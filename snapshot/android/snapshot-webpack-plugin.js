@@ -31,6 +31,10 @@ SnapshotWebpackPlugin.prototype.constructor = SnapshotWebpackPlugin;
 
 module.exports = SnapshotWebpackPlugin;
 
+SnapshotWebpackPlugin.prototype.getTnsJavaClassesBuildPath = function() {
+    return path.resolve(this.getBuildPath(), "../tns-java-classes.js");
+}
+
 SnapshotWebpackPlugin.prototype.generate = function(webpackChunk) {
     const options = this.options;
 
@@ -61,7 +65,6 @@ SnapshotWebpackPlugin.prototype.apply = function(compiler) {
 
     // Generate tns-java-classes.js file
     debugger;
-    ProjectSnapshotGenerator.prototype.cleanBuildFolder.call(this);
     ProjectSnapshotGenerator.prototype.generateTnsJavaClassesFile.call(this, { output: this.getTnsJavaClassesBuildPath(), options: options.tnsJavaClassesOptions });
     
     // Run the snapshot tool when the packing is done
