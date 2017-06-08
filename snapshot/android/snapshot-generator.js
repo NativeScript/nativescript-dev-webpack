@@ -21,8 +21,8 @@ SnapshotGenerator.BUILD_PATH = path.join(__dirname, "build");
 SnapshotGenerator.MKSNAPSHOT_TOOLS_PATH = path.join(__dirname, "snapshot-generator-tools/mksnapshot");
 SnapshotGenerator.NDK_BUILD_SEED_PATH = path.join(__dirname, "snapshot-generator-tools/ndk-build");
 SnapshotGenerator.BUNDLE_PREAMBLE_PATH = path.join(__dirname, "snapshot-generator-tools/bundle-preamble.js");
+SnapshotGenerator.INCLUDE_GRADLE_PATH = path.join(__dirname, "snapshot-generator-tools/include.gradle");
 SnapshotGenerator.SNAPSHOT_PACKAGE_NANE = "nativescript-snapshot-placeholder";
-SnapshotGenerator.SNAPSHOT_PLUGIN_SEED_PATH = path.join(__dirname, "snapshot-generator-tools", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE + "-plugin-seed");
 
 SnapshotGenerator.prototype.preprocessInputFile = function(inputFile, outputFile) {
     // Make some modifcations on the original bundle and save it on the specified path
@@ -95,14 +95,8 @@ SnapshotGenerator.prototype.buildSnapshotLibs = function(androidNdkBuildPath) {
     return path.join(ndkBuildPath, "libs");
 }
 
-SnapshotGenerator.prototype.buildSnapshotLibsPlugin = function(builtLibsPath) {
-    var pluginBuildPath = path.join(SnapshotGenerator.BUILD_PATH, SnapshotGenerator.SNAPSHOT_PACKAGE_NANE);
-    shelljs.rm("-rf", pluginBuildPath);
-    shelljs.cp("-r", SnapshotGenerator.SNAPSHOT_PLUGIN_SEED_PATH, pluginBuildPath);
-    if (builtLibsPath) {
-        shelljs.cp("-r", builtLibsPath, path.join(pluginBuildPath, "platforms/android/jniLibs" + "/"));
-    }
-    return pluginBuildPath;
+SnapshotGenerator.prototype.buildIncludeGradle = function() {
+    shelljs.cp(SnapshotGenerator.INCLUDE_GRADLE_PATH, path.join(SnapshotGenerator.BUILD_PATH, "include.gradle"));
 }
 
 SnapshotGenerator.prototype.generate = function(options) {
@@ -119,8 +113,8 @@ SnapshotGenerator.prototype.generate = function(options) {
 
     if (options.useLibs) {
         var androidNdkBuildPath = options.androidNdkPath ? path.join(options.androidNdkPath, "ndk-build") : "ndk-build";
-        libsPath = this.buildSnapshotLibs(androidNdkBuildPath);
-        this.buildSnapshotLibsPlugin(libsPath);
+        this.buildSnapshotLibs(androidNdkBuildPath);
+        this.buildIncludeGradle();
     }
     return SnapshotGenerator.BUILD_PATH;
 }

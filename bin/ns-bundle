@@ -39,24 +39,31 @@ function getTnsArgs(args) {
 execute(options);
 
 function execute(options) {
-    let commands = [];
     const platform = options.platform;
+    let commands = [ 
+        () => runTns("prepare", platform) 
+    ];
 
     if (options.bundle) {
         commands = [
+            ...commands,
             () => cleanApp(platform),
+            () => cleanSnapshotArtefacts(),
             () => cleanBuildArtifacts(platform),
             () => webpack(platform),
         ];
     }
 
+    if (shouldSnapshot(platform)) {
+        // running prepare will prevent cleaning the include.gradle file on "tns build/run"
+        commands.push(() => runTns("prepare", platform));
+        commands.push(() => installSnapshotArtefacts());
+    }
+    
     // If "build-app" or "start-app" is specified,
     // the respective command should be run last.
-    // Otherwise, the app should be just prepared.
     if (options.command) {
         commands.push(() => runTns(options.command, platform));
-    } else {
-        commands.shift(() => runTns("prepare", platform))
     }
     return commands.reduce((current, next) => current.then(next), Promise.resolve());
 }
@@ -79,6 +86,14 @@ function cleanBuildArtifacts(platform) {
             }
         }).catch(throwError);
     });
+}
+
+function cleanSnapshotArtefacts() {
+    require("../snapshot/android/project-snapshot-generator").cleanSnapshotArtefacts(PROJECT_DIR);
+}
+
+function installSnapshotArtefacts() {
+    require("../snapshot/android/project-snapshot-generator").installSnapshotArtefacts(PROJECT_DIR);
 }
 
 function gradlewClean() {

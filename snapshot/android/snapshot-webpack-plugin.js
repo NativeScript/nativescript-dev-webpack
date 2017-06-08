@@ -61,6 +61,7 @@ SnapshotWebpackPlugin.prototype.apply = function(compiler) {
 
     // Generate tns-java-classes.js file
     debugger;
+    ProjectSnapshotGenerator.prototype.cleanBuildFolder.call(this);
     ProjectSnapshotGenerator.prototype.generateTnsJavaClassesFile.call(this, { output: ProjectSnapshotGenerator.TNS_JAVA_CLASSES_BUILD_PATH, options: options.tnsJavaClassesOptions });
     
     // Run the snapshot tool when the packing is done
