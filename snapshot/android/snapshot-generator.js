@@ -23,7 +23,7 @@ SnapshotGenerator.MKSNAPSHOT_TOOLS_PATH = path.join(__dirname, "snapshot-generat
 SnapshotGenerator.NDK_BUILD_SEED_PATH = path.join(__dirname, "snapshot-generator-tools/ndk-build");
 SnapshotGenerator.BUNDLE_PREAMBLE_PATH = path.join(__dirname, "snapshot-generator-tools/bundle-preamble.js");
 SnapshotGenerator.INCLUDE_GRADLE_PATH = path.join(__dirname, "snapshot-generator-tools/include.gradle");
-SnapshotGenerator.SNAPSHOT_PACKAGE_NANE = "nativescript-snapshot-placeholder";
+SnapshotGenerator.SNAPSHOT_PACKAGE_NANE = "nativescript-android-snapshot";
 
 SnapshotGenerator.prototype.preprocessInputFile = function(inputFile, outputFile) {
     // Make some modifcations on the original bundle and save it on the specified path
