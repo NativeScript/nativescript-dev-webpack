@@ -1,11 +1,17 @@
-var path = require("path");
-var fs = require('fs');
-var shelljs = require("shelljs");
-var semver = require("semver");
-var SnapshotGenerator = require("./snapshot-generator");
-var TnsJavaClassesGenerator = require("./tns-java-classes-generator");
+const path = require("path");
+const fs = require("fs");
+const shelljs = require("shelljs");
 
-function ProjectSnapshotGenerator(options) {
+const SnapshotGenerator = require("./snapshot-generator");
+const TnsJavaClassesGenerator = require("./tns-java-classes-generator");
+const { isVersionGte } = require("../../utils");
+const { getPackageJson } = require("../../projectHelpers");
+
+const MIN_ANDROID_RUNTIME_VERSION = "3.0.0";
+const VALID_ANDROID_RUNTIME_TAGS = Object.freeze(["next", "rc"]);
+const TNS_JAVA_CLASSES_BUILD_PATH = path.join(SnapshotGenerator.BUILD_PATH, "tns-java-classes.js");
+
+function ProjectSnapshotGenerator (options) {
     this.options = options = options || {};
 
     if (!options.projectRoot) {
@@ -14,10 +20,8 @@ function ProjectSnapshotGenerator(options) {
 
     this.validateAndroidRuntimeVersion();
 }
-module.exports = ProjectSnapshotGenerator;
 
-ProjectSnapshotGenerator.MIN_ANDROID_RUNTIME_VERSION_WITH_SNAPSHOT_SUPPORT = "3.0.0";
-ProjectSnapshotGenerator.TNS_JAVA_CLASSES_BUILD_PATH = path.join(SnapshotGenerator.BUILD_PATH, "tns-java-classes.js");
+module.exports = ProjectSnapshotGenerator;
 
 ProjectSnapshotGenerator.cleanSnapshotArtefacts = function(projectRoot) {
     var platformPath = path.join(projectRoot, "platforms/android");
@@ -81,27 +85,29 @@ ProjectSnapshotGenerator.prototype.getV8Version = function() {
 
 ProjectSnapshotGenerator.prototype.getAndroidRuntimeVersion = function() {
     try {
-        var projectPackageJSON = JSON.parse(fs.readFileSync(path.join(this.options.projectRoot, "package.json"), "utf8"));
-        var version = projectPackageJSON["nativescript"]["tns-android"]["version"];
-        return version.replace(/\-.*/, ""); // e.g. -rc
+        const projectPackageJSON = getPackageJson(this.options.projectRoot);
+
+        return projectPackageJSON["nativescript"]["tns-android"]["version"];
     } catch(e) {
         return null;
     }
 }
 
 ProjectSnapshotGenerator.prototype.validateAndroidRuntimeVersion = function() {
-    var currentRuntimeVersion = this.getAndroidRuntimeVersion();
+    const currentRuntimeVersion = this.getAndroidRuntimeVersion();
 
-    if (!currentRuntimeVersion || !fs.existsSync(path.join(this.options.projectRoot, "platforms/android"))) {
+    if (!currentRuntimeVersion ||
+        !fs.existsSync(path.join(this.options.projectRoot, "platforms/android"))) {
+
         throw new Error("In order to generate a V8 snapshot you must have the \"android\" platform installed - to do so please run \"tns platform add android\".");
     }
 
     // The version could be "next"
-    if (semver.valid(currentRuntimeVersion)) {
-        if (!semver.gte(currentRuntimeVersion, ProjectSnapshotGenerator.MIN_ANDROID_RUNTIME_VERSION_WITH_SNAPSHOT_SUPPORT)) {
-            throw new Error("In order to support heap snapshots, you must have at least tns-android@" + ProjectSnapshotGenerator.MIN_ANDROID_RUNTIME_VERSION_WITH_SNAPSHOT_SUPPORT +
-                " installed. Current Android Runtime version is: " + currentRuntimeVersion + ".");
-        }
+    if (VALID_ANDROID_RUNTIME_TAGS.includes(currentRuntimeVersion) ||
+        isVersionGte(MIN_ANDROID_RUNTIME_VERSION, currentRuntimeVersion)) {
+
+        throw new Error("In order to support heap snapshots, you must have at least tns-android@" + MIN_ANDROID_RUNTIME_VERSION +
+            " installed. Current Android Runtime version is: " + currentRuntimeVersion + ".");
     }
 }
 
@@ -124,12 +130,12 @@ ProjectSnapshotGenerator.prototype.generate = function(generationOptions) {
 
     // Generate tns-java-classes.js if needed
     if (generationOptions.tnsJavaClassesPath) {
-        if (generationOptions.tnsJavaClassesPath != ProjectSnapshotGenerator.TNS_JAVA_CLASSES_BUILD_PATH) {
-            shelljs.cp(generationOptions.tnsJavaClassesPath, ProjectSnapshotGenerator.TNS_JAVA_CLASSES_BUILD_PATH);
+        if (generationOptions.tnsJavaClassesPath != TNS_JAVA_CLASSES_BUILD_PATH) {
+            shelljs.cp(generationOptions.tnsJavaClassesPath, TNS_JAVA_CLASSES_BUILD_PATH);
         }
     }
     else {
-        this.generateTnsJavaClassesFile({ output: ProjectSnapshotGenerator.TNS_JAVA_CLASSES_BUILD_PATH, options: generationOptions.tnsJavaClassesOptions });
+        this.generateTnsJavaClassesFile({ output: TNS_JAVA_CLASSES_BUILD_PATH, options: generationOptions.tnsJavaClassesOptions });
     }
 
     // Generate snapshots

@@ -4,6 +4,7 @@ const { spawn } = require("child_process");
 const { resolve: pathResolve } = require("path");
 const { existsSync } = require("fs");
 const { getPackageJson } = require("../projectHelpers");
+const { isVersionGte } = require("../utils");
 
 const PROJECT_DIR = pathResolve(__dirname, "../../../");
 const packageJson = getPackageJson(PROJECT_DIR);
@@ -74,12 +75,10 @@ function cleanBuildArtifacts(platform) {
             return resolve();
         }
 
-        getTnsVersion().then(versionString => {
-            const version = versionToNumber(versionString);
-
+        getTnsVersion().then(version => {
             // the android build artifacts should be cleaned manually
             // for nativescript-cli v3.0.1 and below or if using uglify
-            if (version <= 301 || shouldUglify()) {
+            if (isVersionGte(version, "3.0.1") || shouldUglify()) {
                 gradlewClean().then(resolve).catch(throwError);
             } else {
                 return resolve();
