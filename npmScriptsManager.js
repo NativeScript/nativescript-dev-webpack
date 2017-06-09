@@ -17,14 +17,10 @@ const DEPRECATED_SCRIPT_TEMPLATES = Object.freeze([
 
 const PLATFORMS = Object.freeze(["android", "ios"]);
 
-function addNpmScripts(scripts) {
-    scripts = scripts || {};
-
+function addNpmScripts(scripts = {}) {
     Object.keys(SCRIPT_TEMPLATES).forEach(name => {
-        packageJson = addPlatformScript(scripts, name, SCRIPT_TEMPLATES[name]);
+        addPlatformScript(scripts, name, SCRIPT_TEMPLATES[name]);
     });
-
-    return scripts;
 }
 
 function removeDeprecatedNpmScripts(scripts) {
@@ -32,15 +28,13 @@ function removeDeprecatedNpmScripts(scripts) {
 }
 
 function removeNpmScripts(scripts, scriptTemplates = Object.keys(SCRIPT_TEMPLATES)) {
-    scriptTemplates.forEach(function(templateName) {
-        scripts = removePlatformScripts(scripts, templateName);
+    scriptTemplates.forEach(templateName => {
+        removePlatformScripts(scripts, templateName);
     });
-
-    return scripts;
 }
 
 function addPlatformScript(scripts, nameTemplate, commandTemplate) {
-    PLATFORMS.forEach(function (platform) {
+    PLATFORMS.forEach(platform => {
         const name = nameTemplate.replace(/\[PLATFORM\]/g, platform);
         const command = commandTemplate.replace(/\[PLATFORM\]/g, platform);
 
@@ -49,25 +43,13 @@ function addPlatformScript(scripts, nameTemplate, commandTemplate) {
             scripts[name] = command;
         }
     });
-
-    return scripts;
 }
 
 function removePlatformScripts(scripts, nameTemplate) {
-    if (!scripts || Object.keys(SCRIPT_TEMPLATES).includes(nameTemplate)) {
-        return scripts;
-    }
-
-    PLATFORMS.forEach(function (platform) {
+    PLATFORMS.forEach(platform => {
         const name = nameTemplate.replace(/\[PLATFORM\]/g, platform);
-
-        if (scripts[name]) {
-            console.info(`Removing script: ${name}`);
-            delete scripts[name];
-        }
+        delete scripts[name];
     });
-
-    return scripts;
 }
 
 module.exports = {
