@@ -1,3 +1,13 @@
+<a name="0.6.3"></a>
+## [0.6.3](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.6.2...0.6.3) (2017-06-09)
+
+
+### Bug Fixes
+
+* **npm scripts:** replace deprecated build-app script on postinstall ([#184](https://github.com/NativeScript/nativescript-dev-webpack/issues/184)) ([a4e7f1c](https://github.com/NativeScript/nativescript-dev-webpack/commit/a4e7f1c)), closes [#183](https://github.com/NativeScript/nativescript-dev-webpack/issues/183)
+
+
+
 <a name="0.6.2"></a>
 ## [0.6.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.6.1...0.6.2) (2017-06-06)
 
