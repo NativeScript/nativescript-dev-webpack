@@ -47,6 +47,7 @@ SnapshotGenerator.prototype.convertToAndroidArchName = function(archName) {
         case "arm": return "armeabi-v7a";
         case "arm64": return "arm64-v8a";
         case "ia32": return "x86";
+        case "x64": return "x64";
         default: return archName;
     }
 }
@@ -84,11 +85,14 @@ SnapshotGenerator.prototype.runMksnapshotTool = function(inputFile, v8Version, t
     console.log("***** Finished generating snapshots. *****");
 }
 
-SnapshotGenerator.prototype.buildSnapshotLibs = function(androidNdkBuildPath) {
+SnapshotGenerator.prototype.buildSnapshotLibs = function(androidNdkBuildPath, targetArchs) {
     // Compile *.c files to produce *.so libraries with ndk-build tool
     const ndkBuildPath = path.join(this.buildPath, "ndk-build");
+    const androidArchs = targetArchs.map(arch => this.convertToAndroidArchName(arch));
+    console.log("Building native libraries for " + androidArchs.join());
     shelljs.rm("-rf", ndkBuildPath);
     shelljs.cp("-r", SnapshotGenerator.NDK_BUILD_SEED_PATH, ndkBuildPath);
+    fs.writeFileSync(path.join(ndkBuildPath, "jni/Application.mk"), "APP_ABI := " + androidArchs.join(" ")); // create Application.mk file
     shelljs.mv(path.join(this.buildPath, "snapshots/src/*"), path.join(ndkBuildPath, "jni"));
     shellJsExecuteInDir(ndkBuildPath, function(){
         shelljs.exec(androidNdkBuildPath);
@@ -114,7 +118,7 @@ SnapshotGenerator.prototype.generate = function(options) {
 
     if (options.useLibs) {
         const androidNdkBuildPath = options.androidNdkPath ? path.join(options.androidNdkPath, "ndk-build") : "ndk-build";
-        this.buildSnapshotLibs(androidNdkBuildPath);
+        this.buildSnapshotLibs(androidNdkBuildPath, options.targetArchs);
         this.buildIncludeGradle();
     }
     return this.buildPath;

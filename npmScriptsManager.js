@@ -3,7 +3,7 @@ const SCRIPT_TEMPLATES = Object.freeze({
     "start-[PLATFORM]-bundle": "npm run ns-bundle --[PLATFORM] --run-app",
     "build-[PLATFORM]-bundle": "npm run ns-bundle --[PLATFORM] --build-app",
     "publish-ios-bundle": "npm run ns-bundle --ios --publish-app",
-    "generate-android-snapshot": "generate-android-snapshot --projectRoot . --install true"
+    "generate-android-snapshot": "generate-android-snapshot --projectRoot . --targetArchs arm,arm64 --install"
 });
 
 const DEPRECATED_SCRIPT_TEMPLATES = Object.freeze([

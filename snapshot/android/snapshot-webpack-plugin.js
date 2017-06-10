@@ -51,7 +51,7 @@ SnapshotWebpackPlugin.prototype.generate = function(webpackChunk) {
         preprocessedInputFile: preprocessedInputFile,
         useLibs: options.useLibs,
         androidNdkPath: options.androidNdkPath,
-        tnsJavaClassesPath: this.getTnsJavaClassesBuildPath()
+        tnsJavaClassesPath: path.join(preparedAppRootPath, "app/tns-java-classes.js")
     });
 
     // Make the original file empty

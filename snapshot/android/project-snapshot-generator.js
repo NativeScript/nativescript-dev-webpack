@@ -24,7 +24,7 @@ function ProjectSnapshotGenerator (options) {
     }
 
     console.log("Project root: " + options.projectRoot);
-    console.log("Build path: " + this.getBuildPath());
+    console.log("Snapshots build directory: " + this.getBuildPath());
 
     this.validateAndroidRuntimeVersion();
 }
@@ -50,6 +50,12 @@ ProjectSnapshotGenerator.cleanSnapshotArtefacts = function(projectRoot) {
 
 ProjectSnapshotGenerator.installSnapshotArtefacts = function(projectRoot) {
     const buildPath = ProjectSnapshotGenerator.calculateBuildPath(projectRoot);
+    const assetsPath = path.join(projectRoot, "platforms/android/src/main/assets");
+
+    // Copy tns-java-classes.js
+    if (shelljs.test("-e", path.join(buildPath, "tns-java-classes.js"))) {
+        shelljs.cp(path.join(buildPath, "tns-java-classes.js"), path.join(assetsPath, "app/tns-java-classes.js"));
+    }
     
     if (shelljs.test("-e", path.join(buildPath, "ndk-build/libs"))) {
         // useLibs = true
@@ -66,7 +72,6 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function(projectRoot) {
     }
     else {
         // useLibs = false
-        const assetsPath = path.join(projectRoot, "platforms/android/src/main/assets");
         const blobsSrcPath = path.join(buildPath, "snapshots/blobs");
         const blobsDestinationPath = path.join(assetsPath, "snapshots");
         const appPackageJsonPath = path.join(assetsPath, "app/package.json");
@@ -137,6 +142,9 @@ ProjectSnapshotGenerator.prototype.generateTnsJavaClassesFile = function(generat
 
 ProjectSnapshotGenerator.prototype.generate = function(generationOptions) {
     generationOptions = generationOptions || {};
+
+    console.log("Running snapshot generation with the following arguments: ");
+    console.log(JSON.stringify(generationOptions, null, '\t'));
 
     // Clean build folder
     shelljs.rm("-rf", this.getBuildPath());
