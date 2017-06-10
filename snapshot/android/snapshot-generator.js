@@ -57,6 +57,7 @@ SnapshotGenerator.prototype.runMksnapshotTool = function(inputFile, v8Version, t
     shelljs.rm("-rf", path.join(this.buildPath, "snapshots"));
 
     const mksnapshotToolsDir = this.getMksnapshotToolsDirOrThrow(v8Version);
+    const mksnapshotStdErrPath = path.join(this.buildPath, "mksnapshot-stderr.txt");
     for (var index in targetArchs) {
         var arch = targetArchs[index];
         var currentArchMksnapshotToolPath = path.join(mksnapshotToolsDir, "mksnapshot-" + arch);
@@ -71,7 +72,16 @@ SnapshotGenerator.prototype.runMksnapshotTool = function(inputFile, v8Version, t
         // Generate .blob file
         var currentArchBlobOutputPath = path.join(this.buildPath, "snapshots/blobs", androidArch);
         shelljs.mkdir("-p", currentArchBlobOutputPath);
-        child_process.execSync(currentArchMksnapshotToolPath + " " + inputFile + " --startup_blob " + path.join(currentArchBlobOutputPath, "TNSSnapshot.blob") + " --profile_deserialization", {encoding: "utf8", stdio: 'inherit'});
+        var stdErrorStream = fs.openSync(mksnapshotStdErrPath, 'w');
+        child_process.execSync(currentArchMksnapshotToolPath + " " + inputFile + " --startup_blob " + path.join(currentArchBlobOutputPath, "TNSSnapshot.blob") + " --profile_deserialization", {encoding: "utf8", stdio: [process.stdin, process.stdout, stdErrorStream]});
+        fs.closeSync(stdErrorStream);
+
+        if (fs.statSync(mksnapshotStdErrPath).size) {
+            console.error("***** SNAPSHOT GENERATION FOR " + androidArch + " FAILED! *****");
+            var errorMessage = fs.readFileSync(mksnapshotStdErrPath, "utf8");
+            // console.error(errorMessage);
+            throw new Error(errorMessage);
+        }
 
         // Generate .c file
         if (buildCSource) {
