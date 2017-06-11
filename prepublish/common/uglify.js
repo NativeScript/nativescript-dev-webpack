@@ -1,5 +1,4 @@
-module.exports = `
-    if (env.uglify) {
+module.exports = `if (env.uglify) {
         plugins.push(new webpack.LoaderOptionsPlugin({ minimize: true }));
 
         // Work around an Android issue by setting compress = false
@@ -8,4 +7,5 @@ module.exports = `
             mangle: { except: nsWebpack.uglifyMangleExcludes },
             compress,
         }));
-    }`;
+    }
+`;

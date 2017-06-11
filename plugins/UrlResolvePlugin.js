@@ -1,8 +1,8 @@
-const ts = require("typescript");
-const fs = require("fs");
-const path = require("path");
+const { forEachChild, SyntaxKind } = require("typescript");
+const { existsSync } = require("fs");
+const { resolve } = require("path");
 
-const UrlResolvePlugin = (function() {
+exports.UrlResolvePlugin = (function() {
     function UrlResolvePlugin(options) {
         if (!options || !options.platform) {
             throw new Error(`Target platform must be specified!`);
@@ -40,15 +40,15 @@ const UrlResolvePlugin = (function() {
 
     UrlResolvePlugin.prototype.usePlatformUrl = function(sourceFile) {
         this.setCurrentDirectory(sourceFile);
-        ts.forEachChild(sourceFile, node => this.traverseDecorators(node));
+        forEachChild(sourceFile, node => this.traverseDecorators(node));
     }
 
     UrlResolvePlugin.prototype.setCurrentDirectory = function(sourceFile) {
-        this.currentDirectory = path.resolve(sourceFile.path, "..");
+        this.currentDirectory = resolve(sourceFile.path, "..");
     }
 
     UrlResolvePlugin.prototype.traverseDecorators = function(node) {
-        if (node.kind !== ts.SyntaxKind.ClassDeclaration || !node.decorators) {
+        if (node.kind !== SyntaxKind.ClassDeclaration || !node.decorators) {
             return;
         }
 
@@ -90,9 +90,9 @@ const UrlResolvePlugin = (function() {
     }
 
     UrlResolvePlugin.prototype.noMultiplatformFile = function(url) {
-        let filePath = path.resolve(this.currentDirectory, url);
+        let filePath = resolve(this.currentDirectory, url);
 
-        return !fs.existsSync(filePath);
+        return !existsSync(filePath);
     }
 
     UrlResolvePlugin.prototype.replaceUrlsValue = function(element) {
@@ -105,5 +105,3 @@ const UrlResolvePlugin = (function() {
 
     return UrlResolvePlugin;
 })();
-
-module.exports = UrlResolvePlugin;
