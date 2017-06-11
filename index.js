@@ -1,17 +1,13 @@
-var sources = require("webpack-sources");
-var fs = require("fs");
-var path = require("path");
+const sources = require("webpack-sources");
+const fs = require("fs");
+const path = require("path");
 
-var projectDir = path.dirname(path.dirname(__dirname));
-var packageJsonPath = path.join(projectDir, "package.json");
-var packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+const { isAngular, getPackageJson } = require("./projectHelpers");
 
-var isAngular = Object.keys(packageJson.dependencies).filter(function (dependency) {
-    return /^@angular\b/.test(dependency);
-}).length > 0;
+const PROJECT_DIR = path.dirname(path.dirname(__dirname));
+const APP_DIR = path.join(PROJECT_DIR, "app");
 
-
-if (isAngular) {
+if (isAngular(PROJECT_DIR)) {
     exports.UrlResolvePlugin = require("./resource-resolver-plugins/UrlResolvePlugin");
 }
 
@@ -26,9 +22,9 @@ exports.NativeScriptJsonpPlugin.prototype.apply = function (compiler) {
             chunks.forEach(function (chunk) {
                 chunk.files.forEach(function (file) {
                     if (file === "vendor.js") {
-                        var src = compilation.assets[file];
-                        var code = src.source();
-                        var match = code.match(/window\["nativescriptJsonp"\]/);
+                        const src = compilation.assets[file];
+                        const code = src.source();
+                        const match = code.match(/window\["nativescriptJsonp"\]/);
                         if (match) {
                             compilation.assets[file] = new sources.ConcatSource(code.replace(/window\["nativescriptJsonp"\]/g, "global[\"nativescriptJsonp\"]"));
                         }
@@ -46,7 +42,7 @@ exports.GenerateBundleStarterPlugin = function (bundles) {
 
 exports.GenerateBundleStarterPlugin.prototype = {
     apply: function (compiler) {
-        var plugin = this;
+        const plugin = this;
         plugin.webpackContext = compiler.options.context;
 
         compiler.plugin("emit", function (compilation, cb) {
@@ -66,16 +62,16 @@ exports.GenerateBundleStarterPlugin.prototype = {
         }
     },
     generatePackageJson: function () {
-        var packageJsonPath = path.join(this.webpackContext, "package.json");
-        var packageData = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
-        packageData.main = "starter";
+        const packageJson = getPackageJson(this.webpackContext);
+        packageJson.main = "starter";
 
-        return new sources.RawSource(JSON.stringify(packageData, null, 4));
+        return new sources.RawSource(JSON.stringify(packageJson, null, 4));
     },
     generateStarterModule: function () {
-        var moduleSource = this.bundles.map(function (bundle) {
-            return "require(\"" + bundle + "\");";
-        }).join("\n");
+        const moduleSource = this.bundles
+            .map(bundle => `require("${bundle}")`)
+            .join("\n");
+
         return new sources.RawSource(moduleSource);
     },
 };
@@ -90,46 +86,34 @@ exports.getEntryModule = function () {
     return maybeAotEntry || maybePackageJsonEntry;
 };
 
-exports.getAppPath = function (platform) {
+exports.getAppPath = platform => {
     var projectDir = path.dirname(path.dirname(__dirname));
 
     if (/ios/i.test(platform)) {
-        var appName = path.basename(projectDir);
-        var sanitizedName = appName.split("").filter(function (c) {
-            return /[a-zA-Z0-9]/.test(c);
-        }).join("");
-        return "platforms/ios/" + sanitizedName + "/app";
+        const appName = path.basename(PROJECT_DIR);
+        const sanitizedName = sanitize(appName);
+
+        return `platforms/ios/${sanitizedName}/app`;
     } else if (/android/i.test(platform)) {
-        return path.join(projectDir, "platforms/android/src/main/assets/app");
+        return path.join(PROJECT_DIR, "platforms/android/src/main/assets/app");
     } else {
-        throw new Error("Invalid platform: " + platform);
+        throw new Error(`Invalid platform: ${platform}`);
     }
 };
 
 exports.uglifyMangleExcludes = require("./mangle-excludes");
 
 function getPackageJsonEntry() {
-    const packageJsonSource = getAppPackageJsonSource();
+    const packageJsonSource = getPackageJson(APP_DIR);
     const entry = packageJsonSource.main;
 
     return entry ? entry.replace(/\.js$/i, "") : null;
 }
 
-function getAppPackageJsonSource() {
-    const projectDir = getProjectDir();
-    const appPackageJsonPath = path.join(projectDir, "app", "package.json");
-
-    return JSON.parse(fs.readFileSync(appPackageJsonPath, "utf8"));
-}
-
 function getAotEntry(entry) {
     const aotEntry = `${entry}.aot.ts`;
-    const projectDir = getProjectDir();
-    const aotEntryPath = path.join(projectDir, "app", aotEntry);
+    const aotEntryPath = path.join(APP_DIR, aotEntry);
 
     return fs.existsSync(aotEntryPath) ? aotEntry : null;
 }
 
-function getProjectDir() {
-    return path.dirname(path.dirname(__dirname));
-}
