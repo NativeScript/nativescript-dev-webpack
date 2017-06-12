@@ -12,7 +12,6 @@ const APP_DIR = path.resolve(PROJECT_DIR, "app");
 function install() {
     let packageJson = helpers.getPackageJson(PROJECT_DIR);
 
-    projectFilesManager.editExistingProjectFiles(PROJECT_DIR);
     projectFilesManager.addProjectFiles(PROJECT_DIR, APP_DIR);
 
     let scripts = packageJson.scripts || {};

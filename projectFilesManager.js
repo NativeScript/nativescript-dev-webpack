@@ -152,19 +152,30 @@ function editFileContent(path, ...funcs) {
 }
 
 function replaceStyleUrlResolvePlugin(config) {
+    if (config.indexOf("StyleUrlResolvePlugin") === -1) {
+        return config;
+    }
+
+    console.info("Replacing deprecated StyleUrlsResolvePlugin with UrlResolvePlugin...");
     return config.replace(/StyleUrlResolvePlugin/g, "UrlResolvePlugin");
 }
 
 function addSnapshotPlugin(config) {
-    return config.indexOf("NativeScriptSnapshotPlugin") > -1 ?
-        config :
-        config.replace(CONFIG_MATCH, CONFIG_REPLACE);
+    if (config.indexOf("NativeScriptSnapshotPlugin") > -1) {
+        return config;
+    }
+
+    console.info("Adding NativeScriptSnapshotPlugin configuration...");
+    return config.replace(CONFIG_MATCH, CONFIG_REPLACE);
 }
 
 function addSnapshotToVendor(content) {
-    return content.indexOf("__snapshot") > -1 ?
-        content :
-        content.replace(FRAME_MATCH, SCOPED_FRAME);
+    if (content.indexOf("__snapshot") > -1) {
+        return content;
+    }
+
+    console.info("Adding __snapshot configuration to app/vendor-platform.android ...");
+    return content.replace(FRAME_MATCH, SCOPED_FRAME);
 }
 
 function getFullPath(projectDir, filePath) {
