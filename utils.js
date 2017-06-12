@@ -22,4 +22,13 @@ const isVersionGte = (first, second) => {
     ) >= 0;
 }
 
-module.exports = { isVersionGte };
+const sanitize = name => name
+    .split("")
+    .filter(char => /[a-zA-Z0-9]/.test(char))
+    .join("");
+
+module.exports = {
+    isVersionGte,
+    sanitize,
+};
+

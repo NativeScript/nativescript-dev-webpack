@@ -13,10 +13,10 @@ const VALID_ANDROID_RUNTIME_TAGS = Object.freeze(["next", "rc"]);
 function ProjectSnapshotGenerator (options) {
     this.options = options = options || {};
 
-    options.projectRoot = options.projectRoot ? 
-        (path.isAbsolute(options.projectRoot) ? 
-            options.projectRoot : 
-            path.resolve(process.cwd(), options.projectRoot)) : 
+    options.projectRoot = options.projectRoot ?
+        (path.isAbsolute(options.projectRoot) ?
+            options.projectRoot :
+            path.resolve(process.cwd(), options.projectRoot)) :
         process.cwd();
 
     if (!options.projectRoot) {
@@ -56,7 +56,7 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function(projectRoot) {
     if (shelljs.test("-e", path.join(buildPath, "tns-java-classes.js"))) {
         shelljs.cp(path.join(buildPath, "tns-java-classes.js"), path.join(assetsPath, "app/tns-java-classes.js"));
     }
-    
+
     if (shelljs.test("-e", path.join(buildPath, "ndk-build/libs"))) {
         // useLibs = true
         const libsDestinationPath = path.join(projectRoot, "platforms/android/src", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE, "jniLibs");
@@ -75,11 +75,11 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function(projectRoot) {
         const blobsSrcPath = path.join(buildPath, "snapshots/blobs");
         const blobsDestinationPath = path.join(assetsPath, "snapshots");
         const appPackageJsonPath = path.join(assetsPath, "app/package.json");
-        
+
         // Copy the blobs in the prepared app folder
         shelljs.cp("-R", blobsSrcPath + "/", path.join(assetsPath, "snapshots"));
 
-        /* 
+        /*
         Rename TNSSnapshot.blob files to snapshot.blob files. The xxd tool uses the file name for the name of the static array. This is why the *.blob files are initially named  TNSSnapshot.blob. After the xxd step, they must be renamed to snapshot.blob, because this is the filename that the Android runtime is looking for.
         */
         shelljs.exec("find " + blobsDestinationPath + " -name '*.blob' -execdir mv {} snapshot.blob ';'");
@@ -122,9 +122,8 @@ ProjectSnapshotGenerator.prototype.validateAndroidRuntimeVersion = function() {
         throw new Error("In order to generate a V8 snapshot you must have the \"android\" platform installed - to do so please run \"tns platform add android\".");
     }
 
-    // The version could be "next"
-    if (VALID_ANDROID_RUNTIME_TAGS.includes(currentRuntimeVersion) ||
-        isVersionGte(MIN_ANDROID_RUNTIME_VERSION, currentRuntimeVersion)) {
+    if (!VALID_ANDROID_RUNTIME_TAGS.includes(currentRuntimeVersion) &&
+        !isVersionGte(currentRuntimeVersion, MIN_ANDROID_RUNTIME_VERSION)) {
 
         throw new Error("In order to support heap snapshots, you must have at least tns-android@" + MIN_ANDROID_RUNTIME_VERSION +
             " installed. Current Android Runtime version is: " + currentRuntimeVersion + ".");
@@ -134,7 +133,7 @@ ProjectSnapshotGenerator.prototype.validateAndroidRuntimeVersion = function() {
 ProjectSnapshotGenerator.prototype.generateTnsJavaClassesFile = function(generationOptions) {
     const tnsJavaClassesGenerator = new TnsJavaClassesGenerator();
     return tnsJavaClassesGenerator.generate({
-        projectRoot: this.options.projectRoot, 
+        projectRoot: this.options.projectRoot,
         output: generationOptions.output,
         options: generationOptions.options
     });
@@ -177,7 +176,7 @@ ProjectSnapshotGenerator.prototype.generate = function(generationOptions) {
         ProjectSnapshotGenerator.installSnapshotArtefacts(this.options.projectRoot);
     }
 
-    console.log(generationOptions.useLibs ? 
+    console.log(generationOptions.useLibs ?
         "Snapshot is included in the app as dynamically linked library (.so file)." :
         "Snapshot is included in the app as binary .blob file. The more space-efficient option is to embed it in a dynamically linked library (.so file).");
 }

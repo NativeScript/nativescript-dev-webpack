@@ -5,7 +5,6 @@ const nsWebpack = require("nativescript-dev-webpack");
 const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const AndroidSnapshotPlugin = require("nativescript-dev-webpack/snapshot/android/snapshot-webpack-plugin");
 
 const { AotPlugin } = require("@ngtools/webpack");
 
@@ -32,7 +31,7 @@ module.exports = env => {
     const plugins = getPlugins(platform, env);
     const extensions = getExtensions(platform);
 
-    var config = {
+    const config = {
         context: resolve("./app"),
         target: nativescriptTarget,
         entry,
@@ -63,13 +62,13 @@ module.exports = env => {
     };
 
     if (env.snapshot) {
-        plugins.push(new AndroidSnapshotPlugin({ 
-            chunk: "vendor", 
-            projectRoot: __dirname, 
-            webpackConfig: config, 
+        plugins.push(new nsWebpack.NativeScriptSnapshotPlugin({
+            chunk: "vendor",
+            projectRoot: __dirname,
+            webpackConfig: config,
             targetArchs: ["arm", "arm64"],
-            tnsJavaClassesOptions: { packages: ["tns-core-modules" ] }, 
-            useLibs: false 
+            tnsJavaClassesOptions: { packages: ["tns-core-modules" ] },
+            useLibs: false
         }));
     }
 
@@ -182,7 +181,7 @@ function getPlugins(platform, env) {
         }),
 
     ];
-    
+
     if (env.uglify) {
         plugins.push(new webpack.LoaderOptionsPlugin({ minimize: true }));
 
