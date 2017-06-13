@@ -1,7 +1,35 @@
 const path = require("path");
 const fs = require("fs");
 
-const helpers = require("./projectHelpers");
+const { isTypeScript, isAngular } = require("./projectHelpers");
+
+const FRAME_MATCH = /(\s*)(require\("ui\/frame"\);)(\s*)(require\("ui\/frame\/activity"\);)/g;
+const SCOPED_FRAME = `
+if (!global["__snapshot"]) {
+    // In case snapshot generation is enabled these modules will get into the bundle
+    // but will not be required/evaluated.
+    // The snapshot webpack plugin will add them to the tns-java-classes.js bundle file.
+    // This way, they will be evaluated on app start as early as possible.
+$1\t$2$3\t$4
+}`;
+
+const CONFIG_MATCH = /(exports = [^]+?)\s*return ({[^]+target:\s*nativescriptTarget[^]+?};)/;
+const CONFIG_REPLACE = `$1
+
+    const config = $2
+
+    if (env.snapshot) {
+        plugins.push(new nsWebpack.NativeScriptSnapshotPlugin({
+            chunk: "vendor",
+            projectRoot: __dirname,
+            webpackConfig: config,
+            targetArchs: ["arm", "arm64"],
+            tnsJavaClassesOptions: { packages: ["tns-core-modules" ] },
+            useLibs: false
+        }));
+    }
+
+    return config;`;
 
 function addProjectFiles(projectDir, appDir) {
     const projectTemplates = getProjectTemplates(projectDir);
@@ -51,10 +79,10 @@ function copyTemplate(templateName, destinationPath) {
 function getProjectTemplates(projectDir) {
     let templates = {}
 
-    if (helpers.isAngular({projectDir})) {
+    if (isAngular({projectDir})) {
         templates["webpack.angular.js"] = "webpack.config.js";
         templates["tsconfig.aot.json"] = "tsconfig.aot.json";
-    } else if (helpers.isTypeScript({projectDir})) {
+    } else if (isTypeScript({projectDir})) {
         templates["webpack.typescript.js"] = "webpack.config.js";
     } else {
         templates["webpack.javascript.js"] = "webpack.config.js";
@@ -69,7 +97,7 @@ function getAppTemplates(projectDir, appDir) {
         "vendor-platform.ios.ts": tsOrJs(projectDir, "vendor-platform.ios"),
     };
 
-    if (helpers.isAngular({projectDir})) {
+    if (isAngular({projectDir})) {
         templates["vendor.angular.ts"] = tsOrJs(projectDir, "vendor");
     } else {
         templates["vendor.nativescript.ts"] = tsOrJs(projectDir, "vendor");
@@ -95,23 +123,59 @@ function editExistingProjectFiles(projectDir) {
     const webpackConfigPath = getFullPath(projectDir, "webpack.config.js");
     const webpackCommonPath = getFullPath(projectDir, "webpack.common.js");
 
-    editWebpackConfig(webpackConfigPath, replaceStyleUrlResolvePlugin);
-    editWebpackConfig(webpackCommonPath, replaceStyleUrlResolvePlugin);
+    const configChangeFunctions = [
+        replaceStyleUrlResolvePlugin,
+        addSnapshotPlugin,
+    ];
+
+    editFileContent(webpackConfigPath, ...configChangeFunctions);
+    editFileContent(webpackCommonPath, ...configChangeFunctions);
+
+    const extension = isAngular({projectDir}) ? "ts" : "js";
+    const vendorAndroidPath = getFullPath(
+        projectDir,
+        `app/vendor-platform.android.${extension}`
+    );
+
+    editFileContent(vendorAndroidPath, addSnapshotToVendor);
 }
 
-function editWebpackConfig(path, fn) {
+function editFileContent(path, ...funcs) {
     if (!fs.existsSync(path)) {
         return;
     }
 
-    const config = fs.readFileSync(path, "utf8");
-    const newConfig = fn(config);
+    let content = fs.readFileSync(path, "utf8");
+    funcs.forEach(fn => content = fn(content));
 
-    fs.writeFileSync(path, newConfig, "utf8");
+    fs.writeFileSync(path, content, "utf8");
 }
 
 function replaceStyleUrlResolvePlugin(config) {
+    if (config.indexOf("StyleUrlResolvePlugin") === -1) {
+        return config;
+    }
+
+    console.info("Replacing deprecated StyleUrlsResolvePlugin with UrlResolvePlugin...");
     return config.replace(/StyleUrlResolvePlugin/g, "UrlResolvePlugin");
+}
+
+function addSnapshotPlugin(config) {
+    if (config.indexOf("NativeScriptSnapshotPlugin") > -1) {
+        return config;
+    }
+
+    console.info("Adding NativeScriptSnapshotPlugin configuration...");
+    return config.replace(CONFIG_MATCH, CONFIG_REPLACE);
+}
+
+function addSnapshotToVendor(content) {
+    if (content.indexOf("__snapshot") > -1) {
+        return content;
+    }
+
+    console.info("Adding __snapshot configuration to app/vendor-platform.android ...");
+    return content.replace(FRAME_MATCH, SCOPED_FRAME);
 }
 
 function getFullPath(projectDir, filePath) {
@@ -119,7 +183,7 @@ function getFullPath(projectDir, filePath) {
 }
 
 function tsOrJs(projectDir, name) {
-    const extension = helpers.isTypeScript({projectDir}) ? "ts" : "js";
+    const extension = isTypeScript({projectDir}) ? "ts" : "js";
     return `${name}.${extension}`;
 }
 

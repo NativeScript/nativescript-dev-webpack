@@ -51,4 +51,3 @@ function getAotEntry(entry) {
 
     return existsSync(aotEntryPath) ? aotEntry : null;
 }
-

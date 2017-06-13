@@ -3,4 +3,3 @@ module.exports = Object.assign({},
     require("./NativeScriptJsonpPlugin"),
     require("./NativeScriptSnapshotPlugin")
 );
-

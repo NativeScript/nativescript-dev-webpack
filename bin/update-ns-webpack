@@ -1,14 +1,20 @@
 #!/usr/bin/env node
-const path = require("path");
-const fs = require("fs");
+const { resolve } = require("path");
 
-const helpers = require("../projectHelpers");
-const forceUpdateProjectDeps = require("../dependencyManager").forceUpdateProjectDeps;
+const { getPackageJson, writePackageJson } = require("../projectHelpers");
+const { forceUpdateProjectDeps } = require("../dependencyManager");
+const { editExistingProjectFiles } = require("../projectFilesManager");
 
-const PROJECT_DIR = path.resolve(__dirname, "../../../");
-const packageJson = helpers.getPackageJson(PROJECT_DIR);
+const PROJECT_DIR = resolve(__dirname, "../../../");
 
+console.info("Updating dev dependencies...");
+const packageJson = getPackageJson(PROJECT_DIR);
 const { deps } = forceUpdateProjectDeps(packageJson);
 packageJson.devDependencies = deps;
+writePackageJson(packageJson, PROJECT_DIR);
 
-helpers.writePackageJson(packageJson, PROJECT_DIR);
+console.info("\nUpdating configuration files...");
+editExistingProjectFiles(PROJECT_DIR);
+
+console.info("\nProject successfully updated! Don't forget to run `npm install`");
+
