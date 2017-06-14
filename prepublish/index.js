@@ -51,10 +51,11 @@ function isArray(resource) {
 
 function pluginsBuilder(plugins) {
     const uglify = require("./common/uglify");
+
     return `function getPlugins(platform, env) {
     let plugins = ${plugins};
-    ${uglify}
 
+    ${uglify}
     return plugins;
 }\n`;
 }

@@ -4,6 +4,7 @@ const { spawn } = require("child_process");
 const { resolve: pathResolve } = require("path");
 const { existsSync } = require("fs");
 const { getPackageJson } = require("../projectHelpers");
+const { isVersionGte } = require("../utils");
 
 const PROJECT_DIR = pathResolve(__dirname, "../../../");
 const packageJson = getPackageJson(PROJECT_DIR);
@@ -15,6 +16,7 @@ if (!process.env.npm_config_argv) {
 const escape = arg => `"${arg}"`;
 const isTnsCommand = flag => flag.endsWith("-app");
 const shouldUglify = () => process.env.npm_config_uglify;
+const shouldSnapshot = (platform) => platform == "android" && require("os").type() != "Windows_NT" && process.env.npm_config_snapshot;
 
 const npmArgs = JSON.parse(process.env.npm_config_argv).original;
 const tnsArgs = getTnsArgs(npmArgs).map(escape);
@@ -28,6 +30,7 @@ function getTnsArgs(args) {
         "--android",
         "--ios",
         "--uglify",
+        "--snapshot",
         "--nobundle",
     ];
 
@@ -37,24 +40,29 @@ function getTnsArgs(args) {
 execute(options);
 
 function execute(options) {
-    let commands = [];
     const platform = options.platform;
+    let commands = [ 
+        () => runTns("prepare", platform) 
+    ];
 
     if (options.bundle) {
         commands = [
+            ...commands,
             () => cleanApp(platform),
+            () => cleanSnapshotArtefacts(),
             () => cleanBuildArtifacts(platform),
             () => webpack(platform),
         ];
     }
 
+    if (shouldSnapshot(platform)) {
+        commands.push(() => installSnapshotArtefacts());
+    }
+    
     // If "build-app" or "start-app" is specified,
     // the respective command should be run last.
-    // Otherwise, the app should be just prepared.
     if (options.command) {
         commands.push(() => runTns(options.command, platform));
-    } else {
-        commands.shift(() => runTns("prepare", platform))
     }
     return commands.reduce((current, next) => current.then(next), Promise.resolve());
 }
@@ -65,18 +73,24 @@ function cleanBuildArtifacts(platform) {
             return resolve();
         }
 
-        getTnsVersion().then(versionString => {
-            const version = versionToNumber(versionString);
-
+        getTnsVersion().then(version => {
             // the android build artifacts should be cleaned manually
             // for nativescript-cli v3.0.1 and below or if using uglify
-            if (version <= 301 || shouldUglify()) {
+            if (isVersionGte(version, "3.0.1") || shouldUglify()) {
                 gradlewClean().then(resolve).catch(throwError);
             } else {
                 return resolve();
             }
         }).catch(throwError);
     });
+}
+
+function cleanSnapshotArtefacts() {
+    require("../snapshot/android/project-snapshot-generator").cleanSnapshotArtefacts(PROJECT_DIR);
+}
+
+function installSnapshotArtefacts() {
+    require("../snapshot/android/project-snapshot-generator").installSnapshotArtefacts(PROJECT_DIR);
 }
 
 function gradlewClean() {
@@ -135,6 +149,7 @@ function webpack(platform) {
             `--progress`,
             `--env.${platform}`,
             shouldUglify() && `--env.uglify`,
+            shouldSnapshot(platform) && `--env.snapshot`
         ];
 
         spawnChildProcess(...args)

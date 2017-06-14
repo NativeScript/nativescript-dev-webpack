@@ -13,7 +13,6 @@ function install() {
     const packageJson = helpers.getPackageJson(PROJECT_DIR);
 
     projectFilesManager.addProjectFiles(PROJECT_DIR, APP_DIR);
-    projectFilesManager.editExistingProjectFiles(PROJECT_DIR);
 
     const scripts = packageJson.scripts || {};
     npmScriptsManager.removeDeprecatedNpmScripts(scripts);
