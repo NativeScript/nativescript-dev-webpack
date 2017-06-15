@@ -1,6 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const shelljs = require("shelljs");
+const os = require("os");
 
 const SnapshotGenerator = require("./snapshot-generator");
 const TnsJavaClassesGenerator = require("./tns-java-classes-generator");
@@ -160,23 +161,33 @@ ProjectSnapshotGenerator.prototype.generate = function(generationOptions) {
         this.generateTnsJavaClassesFile({ output: tnsJavaClassesDestination, options: generationOptions.tnsJavaClassesOptions });
     }
 
+    var snapshotToolsPath = generationOptions.snapshotToolsPath ?
+        (path.isAbsolute(generationOptions.snapshotToolsPath) ? 
+            generationOptions.snapshotToolsPath : 
+            path.resolve(process.cwd(), generationOptions.snapshotToolsPath)) : 
+        path.join(os.tmpdir(), "snapshot-tools");
+
+    console.log("Snapshot tools path: " + snapshotToolsPath);
+
     // Generate snapshots
     const generator = new SnapshotGenerator({ buildPath: this.getBuildPath() });
-    const generatorBuildPath = generator.generate({
+    return generator.generate({
+        snapshotToolsPath: snapshotToolsPath,
         inputFile: generationOptions.inputFile || path.join(this.options.projectRoot, "__snapshot.js"),
         targetArchs: generationOptions.targetArchs || ["arm", "arm64", "ia32"],
         v8Version: generationOptions.v8Version || this.getV8Version(),
         preprocessedInputFile: generationOptions.preprocessedInputFile,
         useLibs: generationOptions.useLibs || false,
         androidNdkPath: generationOptions.androidNdkPath
+    }).then(() => {
+        console.log("Snapshots build finished succesfully!");
+
+        if (generationOptions.install) {
+            ProjectSnapshotGenerator.cleanSnapshotArtefacts(this.options.projectRoot);
+            ProjectSnapshotGenerator.installSnapshotArtefacts(this.options.projectRoot);
+            console.log(generationOptions.useLibs ? 
+                "Snapshot is included in the app as dynamically linked library (.so file)." :
+                "Snapshot is included in the app as binary .blob file. The more space-efficient option is to embed it in a dynamically linked library (.so file).");
+        }
     });
-
-    if (generationOptions.install) {
-        ProjectSnapshotGenerator.cleanSnapshotArtefacts(this.options.projectRoot);
-        ProjectSnapshotGenerator.installSnapshotArtefacts(this.options.projectRoot);
-    }
-
-    console.log(generationOptions.useLibs ?
-        "Snapshot is included in the app as dynamically linked library (.so file)." :
-        "Snapshot is included in the app as binary .blob file. The more space-efficient option is to embed it in a dynamically linked library (.so file).");
 }

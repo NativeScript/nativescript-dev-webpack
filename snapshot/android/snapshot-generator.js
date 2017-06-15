@@ -3,6 +3,8 @@ const shelljs = require("shelljs");
 const path = require("path");
 const os = require("os");
 const child_process = require("child_process");
+const https = require("https");
+
 
 const shellJsExecuteInDir = function(dir, action) {
     var currentDir = shelljs.pwd();
@@ -32,14 +34,57 @@ SnapshotGenerator.prototype.preprocessInputFile = function(inputFile, outputFile
     fs.writeFileSync(outputFile, snapshotFileContent, { encoding: "utf8" });
 }
 
-SnapshotGenerator.prototype.getMksnapshotToolsDirOrThrow = function(v8Version) {
+var snapshotToolsDownloads = {};
+
+SnapshotGenerator.prototype.downloadMksnapshotTool = function(snapshotToolsPath, v8Version, targetArch) {
     var hostOS = os.type().toLowerCase();
     hostOS = /^darwin/.test(hostOS) ? "darwin" : (/^linux/.test(hostOS) ? "linux" : (/^win/.test(hostOS) ? "win" : hostOS));
-    var mksnapshotToolsDir = path.join(SnapshotGenerator.MKSNAPSHOT_TOOLS_PATH, "mksnapshot-" + v8Version, hostOS + "-" + os.arch());
-    if (!fs.existsSync(mksnapshotToolsDir)) {
-        throw new Error("No snapshot tools available for v8 v" + v8Version + " on " + os.type() + " OS.");
-    }
-    return mksnapshotToolsDir;
+    const mksnapshotToolRelativePath = path.join("mksnapshot-tools", "v8-v" + v8Version, hostOS + "-" + os.arch(), "mksnapshot-" + targetArch);
+    const mksnapshotToolPath = path.join(snapshotToolsPath, mksnapshotToolRelativePath);
+    if (fs.existsSync(mksnapshotToolPath))
+        return Promise.resolve(mksnapshotToolPath);
+
+    if (snapshotToolsDownloads[mksnapshotToolPath])
+        return snapshotToolsDownloads[mksnapshotToolPath];
+
+    shelljs.mkdir("-p", path.dirname(mksnapshotToolPath));
+
+    snapshotToolsDownloads[mksnapshotToolPath] = new Promise((resolve, reject) => {
+
+        var download = function(url) {
+            var request = https.get(url, (response) => {
+                switch (response.statusCode) {
+                    case 200:
+                        var file = fs.createWriteStream(mksnapshotToolPath);
+                        file.on("finish", function(){
+                            file.close();
+                            fs.chmodSync(mksnapshotToolPath, 0755);
+                            resolve(mksnapshotToolPath);
+                        });
+                        response.pipe(file);
+                        break;
+                    case 301:
+                    case 302:
+                    case 303:
+                        var redirectUrl = response.headers.location;
+                        return download(redirectUrl);
+                    default:
+                        reject(new Error("Unable to download file at " + url + ". Status code: " + response.statusCode));
+                }
+            });
+
+            request.end();
+
+            request.on('error', function(err) {
+                reject(err);
+            });
+        }
+
+        var downloadUrl = "https://raw.githubusercontent.com/NativeScript/mksnapshot-tools/production/" + mksnapshotToolRelativePath;
+        download(downloadUrl);
+    });
+
+    return snapshotToolsDownloads[mksnapshotToolPath];
 }
 
 SnapshotGenerator.prototype.convertToAndroidArchName = function(archName) {
@@ -52,47 +97,47 @@ SnapshotGenerator.prototype.convertToAndroidArchName = function(archName) {
     }
 }
 
-SnapshotGenerator.prototype.runMksnapshotTool = function(inputFile, v8Version, targetArchs, buildCSource) {
+SnapshotGenerator.prototype.runMksnapshotTool = function(snapshotToolsPath, inputFile, v8Version, targetArchs, buildCSource) {
     // Cleans the snapshot build folder
     shelljs.rm("-rf", path.join(this.buildPath, "snapshots"));
 
-    const mksnapshotToolsDir = this.getMksnapshotToolsDirOrThrow(v8Version);
     const mksnapshotStdErrPath = path.join(this.buildPath, "mksnapshot-stderr.txt");
-    for (var index in targetArchs) {
-        var arch = targetArchs[index];
-        var currentArchMksnapshotToolPath = path.join(mksnapshotToolsDir, "mksnapshot-" + arch);
-        if (!fs.existsSync(currentArchMksnapshotToolPath)) {
-            console.log("***** Skipping " + arch + ". Unable to find mksnapshot tool for " + arch + ". *****");
-            continue;
-        }
 
-        var androidArch = this.convertToAndroidArchName(arch);
-        console.log("***** Generating snapshot for " + androidArch + " *****");
-        
-        // Generate .blob file
-        var currentArchBlobOutputPath = path.join(this.buildPath, "snapshots/blobs", androidArch);
-        shelljs.mkdir("-p", currentArchBlobOutputPath);
-        var stdErrorStream = fs.openSync(mksnapshotStdErrPath, 'w');
-        child_process.execSync(currentArchMksnapshotToolPath + " " + inputFile + " --startup_blob " + path.join(currentArchBlobOutputPath, "TNSSnapshot.blob") + " --profile_deserialization", {encoding: "utf8", stdio: [process.stdin, process.stdout, stdErrorStream]});
-        fs.closeSync(stdErrorStream);
+    return Promise.all(targetArchs.map((arch) => {
+        return this.downloadMksnapshotTool(snapshotToolsPath, v8Version, arch).then((currentArchMksnapshotToolPath) => {
+            if (!fs.existsSync(currentArchMksnapshotToolPath)) {
+                throw new Error("Can't find mksnapshot tool for " + arch + " at path " + currentArchMksnapshotToolPath);
+            }
 
-        if (fs.statSync(mksnapshotStdErrPath).size) {
-            console.error("***** SNAPSHOT GENERATION FOR " + androidArch + " FAILED! *****");
-            var errorMessage = fs.readFileSync(mksnapshotStdErrPath, "utf8");
-            // console.error(errorMessage);
-            throw new Error(errorMessage);
-        }
+            var androidArch = this.convertToAndroidArchName(arch);
+            console.log("***** Generating snapshot for " + androidArch + " *****");
+            
+            // Generate .blob file
+            var currentArchBlobOutputPath = path.join(this.buildPath, "snapshots/blobs", androidArch);
+            shelljs.mkdir("-p", currentArchBlobOutputPath);
+            var stdErrorStream = fs.openSync(mksnapshotStdErrPath, 'w');
+            child_process.execSync(currentArchMksnapshotToolPath + " " + inputFile + " --startup_blob " + path.join(currentArchBlobOutputPath, "TNSSnapshot.blob") + " --profile_deserialization", {encoding: "utf8", stdio: [process.stdin, process.stdout, stdErrorStream]});
+            fs.closeSync(stdErrorStream);
 
-        // Generate .c file
-        if (buildCSource) {
-            var currentArchSrcOutputPath = path.join(this.buildPath, "snapshots/src", androidArch);
-            shelljs.mkdir("-p", currentArchSrcOutputPath);
-            shellJsExecuteInDir(currentArchBlobOutputPath, function(){
-                shelljs.exec("xxd -i TNSSnapshot.blob > " + path.join(currentArchSrcOutputPath, "TNSSnapshot.c"));
-            });
-        }
-    }
-    console.log("***** Finished generating snapshots. *****");
+            if (fs.statSync(mksnapshotStdErrPath).size) {
+                console.error("***** SNAPSHOT GENERATION FOR " + androidArch + " FAILED! *****");
+                var errorMessage = fs.readFileSync(mksnapshotStdErrPath, "utf8");
+                // console.error(errorMessage);
+                throw new Error(errorMessage);
+            }
+
+            // Generate .c file
+            if (buildCSource) {
+                var currentArchSrcOutputPath = path.join(this.buildPath, "snapshots/src", androidArch);
+                shelljs.mkdir("-p", currentArchSrcOutputPath);
+                shellJsExecuteInDir(currentArchBlobOutputPath, function(){
+                    shelljs.exec("xxd -i TNSSnapshot.blob > " + path.join(currentArchSrcOutputPath, "TNSSnapshot.c"));
+                });
+            }
+        });
+    })).then(() => {
+        console.log("***** Finished generating snapshots. *****");
+    });
 }
 
 SnapshotGenerator.prototype.buildSnapshotLibs = function(androidNdkBuildPath, targetArchs) {
@@ -121,15 +166,18 @@ SnapshotGenerator.prototype.generate = function(options) {
     if (!shelljs.test("-e", options.inputFile)) { throw new Error("Can't find V8 snapshot input file: '" + options.inputFile + "'."); }
     if (!options.targetArchs || options.targetArchs.length == 0) { throw new Error("No target archs specified."); }
     if (!options.v8Version) { throw new Error("No v8 version specified."); }
+    if (!options.snapshotToolsPath) { throw new Error("snapshotToolsPath option is not specified."); }
     var preprocessedInputFile = options.preprocessedInputFile ||  path.join(this.buildPath, "inputFile.preprocessed");
 
     this.preprocessInputFile(options.inputFile, preprocessedInputFile);
-    this.runMksnapshotTool(preprocessedInputFile, options.v8Version, options.targetArchs, options.useLibs); // generates the actual .blob and .c files
 
-    if (options.useLibs) {
-        const androidNdkBuildPath = options.androidNdkPath ? path.join(options.androidNdkPath, "ndk-build") : "ndk-build";
-        this.buildSnapshotLibs(androidNdkBuildPath, options.targetArchs);
-        this.buildIncludeGradle();
-    }
-    return this.buildPath;
+    // generates the actual .blob and .c files
+    return this.runMksnapshotTool(options.snapshotToolsPath, preprocessedInputFile, options.v8Version, options.targetArchs, options.useLibs).then(() => {
+        if (options.useLibs) {
+            const androidNdkBuildPath = options.androidNdkPath ? path.join(options.androidNdkPath, "ndk-build") : "ndk-build";
+            this.buildSnapshotLibs(androidNdkBuildPath, options.targetArchs);
+            this.buildIncludeGradle();
+        }
+        return this.buildPath;
+    });
 }
