@@ -51,7 +51,11 @@ ProjectSnapshotGenerator.cleanSnapshotArtefacts = function(projectRoot) {
 
 ProjectSnapshotGenerator.installSnapshotArtefacts = function(projectRoot) {
     const buildPath = ProjectSnapshotGenerator.calculateBuildPath(projectRoot);
-    const assetsPath = path.join(projectRoot, "platforms/android/src/main/assets");
+    const platformPath = path.join(projectRoot, "platforms/android");
+    const assetsPath = path.join(platformPath, "src/main/assets");
+
+    // Remove build folder to make sure that the apk will be fully rebuild
+    shelljs.rm("-rf", path.join(platformPath, "build"));
 
     // Copy tns-java-classes.js
     if (shelljs.test("-e", path.join(buildPath, "tns-java-classes.js"))) {
