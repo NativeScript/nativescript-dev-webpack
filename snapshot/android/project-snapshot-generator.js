@@ -53,9 +53,14 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function(projectRoot) {
     const buildPath = ProjectSnapshotGenerator.calculateBuildPath(projectRoot);
     const platformPath = path.join(projectRoot, "platforms/android");
     const assetsPath = path.join(platformPath, "src/main/assets");
+    const configDestinationPath = path.join(platformPath, "configurations", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE);
 
     // Remove build folder to make sure that the apk will be fully rebuild
     shelljs.rm("-rf", path.join(platformPath, "build"));
+
+    // Copy include.gradle to the specified destination in the platforms folder
+    shelljs.mkdir("-p", configDestinationPath);
+    shelljs.cp(path.join(buildPath, "include.gradle"), path.join(configDestinationPath, "include.gradle"));
 
     // Copy tns-java-classes.js
     if (shelljs.test("-e", path.join(buildPath, "tns-java-classes.js"))) {
@@ -64,16 +69,11 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function(projectRoot) {
 
     if (shelljs.test("-e", path.join(buildPath, "ndk-build/libs"))) {
         // useLibs = true
-        const libsDestinationPath = path.join(projectRoot, "platforms/android/src", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE, "jniLibs");
-        const configDestinationPath = path.join(projectRoot, "platforms/android/configurations", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE);
+        const libsDestinationPath = path.join(platformPath, "src", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE, "jniLibs");
 
         // Copy the libs to the specified destination in the platforms folder
         shelljs.mkdir("-p", libsDestinationPath);
         shelljs.cp("-R", path.join(buildPath, "ndk-build/libs") + "/", libsDestinationPath);
-
-        // Copy include.gradle to the specified destination in the platforms folder
-        shelljs.mkdir("-p", configDestinationPath);
-        shelljs.cp(path.join(buildPath, "include.gradle"), path.join(configDestinationPath, "include.gradle"));
     }
     else {
         // useLibs = false

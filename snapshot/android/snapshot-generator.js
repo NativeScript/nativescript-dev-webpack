@@ -175,10 +175,10 @@ SnapshotGenerator.prototype.generate = function(options) {
 
     // generates the actual .blob and .c files
     return this.runMksnapshotTool(options.snapshotToolsPath, preprocessedInputFile, options.v8Version, options.targetArchs, options.useLibs).then(() => {
+        this.buildIncludeGradle();
         if (options.useLibs) {
             const androidNdkBuildPath = options.androidNdkPath ? path.join(options.androidNdkPath, "ndk-build") : "ndk-build";
             this.buildSnapshotLibs(androidNdkBuildPath, options.targetArchs);
-            this.buildIncludeGradle();
         }
         return this.buildPath;
     });
