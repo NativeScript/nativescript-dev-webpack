@@ -1,0 +1,21 @@
+env:
+  global:
+  - DATE=$(date +%Y-%m-%d)
+  - PACKAGE_VERSION=$DATE-$TRAVIS_BUILD_NUMBER
+language: node_js
+node_js:
+- '6'
+install:
+- npm install --ignore-scripts
+script:
+- npm --no-git-tag-version version minor
+- node ./build/prepublish-next.js $PACKAGE_VERSION
+- npm pack
+deploy:
+  provider: npm
+  email: nativescript@telerik.com
+  skip_cleanup: true
+  on:
+    branch: master
+  api_key:
+    secure: HYqLXOd6FqNrOO0KTseros1LTkQ+OdZIzL1lncg+3RAcb/pxViVSUHbXZ9ml3ubVFU/ZN6n4l2snmjzCCYlkQ3CeeI6qqLMsXN2ywUFFdDJyFkz7VD0jyxoilS7HXY2TqFWtF58OeBFG5woY2OdfL2dzxrM2hsbs8ODvuUhoA1g0Y4DgH9W/RQK/8Ml+jII16/bzpKNCCI45zxRzzTW80QyxFR1Q2ABXVUQDBQa0LJ38eo8WDl8Jh1RdUTFJwicQG14WZTC69b1Sr4BHpm5nFExp7XX8gbmu6fcMyItGvbIhTqDA02CmjL7MYm5349SiJh+y9wLkxbBIH8rmY3pL3NIL9pBkPoYbWU/ZoG5e1iqc+2RoZjw7VW969IokeFiQV4QiNLEbFC9PnlXQJDmeKQXSh+aRKST6CKxDZxisp4gmt7h+4Rp7gU8BTVGbN0by15S7ab+CL8ZGa8gUqtGHwEjmFEpE0fQvcaZYVQHWO4kw4cwmwqXiyvnF2o5LYjjY4gjGnOOiKS2qZmABjftdUvKc5N0vZ2Vyq1O657EP8RFUAcvIJlZ1dBKDYq/vGr0hQ4iReJXyTYdCWHSNgzq4boAsdes3kHK8I9VBMrlUWmA9Ba/lMAaBgW5qOEQhdtWYKjHwmFadWwHfQocGLqp5TBTqWZF1sCC0OFybsME7SdU=
