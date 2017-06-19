@@ -65,7 +65,7 @@ module.exports = env => {
             chunk: "vendor",
             projectRoot: __dirname,
             webpackConfig: config,
-            targetArchs: ["arm", "arm64"],
+            targetArchs: ["arm", "arm64", "ia32"],
             tnsJavaClassesOptions: { packages: ["tns-core-modules" ] },
             useLibs: false
         }));
