@@ -1,4 +1,4 @@
-const path = require("path");
+const { join, isAbsolute, resolve } = require("path");
 const fs = require("fs");
 const shelljs = require("shelljs");
 const os = require("os");
@@ -11,18 +11,16 @@ const { getPackageJson } = require("../../projectHelpers");
 const MIN_ANDROID_RUNTIME_VERSION = "3.0.0";
 const VALID_ANDROID_RUNTIME_TAGS = Object.freeze(["next", "rc"]);
 
+const resolveRelativePath = (path) => {
+    if (path)
+        return isAbsolute(path) ? path : resolve(process.cwd(), path);
+    return null;
+};
+
 function ProjectSnapshotGenerator (options) {
     this.options = options = options || {};
 
-    options.projectRoot = options.projectRoot ?
-        (path.isAbsolute(options.projectRoot) ?
-            options.projectRoot :
-            path.resolve(process.cwd(), options.projectRoot)) :
-        process.cwd();
-
-    if (!options.projectRoot) {
-        throw new Error("The project root is not specified.");
-    }
+    options.projectRoot = resolveRelativePath(options.projectRoot) ||  process.cwd();
 
     console.log("Project root: " + options.projectRoot);
     console.log("Snapshots build directory: " + this.getBuildPath());
@@ -32,7 +30,7 @@ function ProjectSnapshotGenerator (options) {
 module.exports = ProjectSnapshotGenerator;
 
 ProjectSnapshotGenerator.calculateBuildPath = function(projectRoot) {
-    return path.join(projectRoot, "platforms/android/snapshot-build/build");
+    return join(projectRoot, "platforms/android/snapshot-build/build");
 }
 
 ProjectSnapshotGenerator.prototype.getBuildPath = function() {
@@ -40,49 +38,49 @@ ProjectSnapshotGenerator.prototype.getBuildPath = function() {
 }
 
 ProjectSnapshotGenerator.cleanSnapshotArtefacts = function(projectRoot) {
-    const platformPath = path.join(projectRoot, "platforms/android");
+    const platformPath = join(projectRoot, "platforms/android");
 
     // Remove blob files from prepared folder
-    shelljs.rm("-rf", path.join(platformPath, "src/main/assets/snapshots"));
+    shelljs.rm("-rf", join(platformPath, "src/main/assets/snapshots"));
 
     // Remove prepared include.gradle configurations
-    shelljs.rm("-rf", path.join(platformPath, "configurations/", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE));
+    shelljs.rm("-rf", join(platformPath, "configurations/", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE));
 }
 
 ProjectSnapshotGenerator.installSnapshotArtefacts = function(projectRoot) {
     const buildPath = ProjectSnapshotGenerator.calculateBuildPath(projectRoot);
-    const platformPath = path.join(projectRoot, "platforms/android");
-    const assetsPath = path.join(platformPath, "src/main/assets");
-    const configDestinationPath = path.join(platformPath, "configurations", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE);
+    const platformPath = join(projectRoot, "platforms/android");
+    const assetsPath = join(platformPath, "src/main/assets");
+    const configDestinationPath = join(platformPath, "configurations", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE);
 
     // Remove build folder to make sure that the apk will be fully rebuild
-    shelljs.rm("-rf", path.join(platformPath, "build"));
+    shelljs.rm("-rf", join(platformPath, "build"));
 
     // Copy include.gradle to the specified destination in the platforms folder
     shelljs.mkdir("-p", configDestinationPath);
-    shelljs.cp(path.join(buildPath, "include.gradle"), path.join(configDestinationPath, "include.gradle"));
+    shelljs.cp(join(buildPath, "include.gradle"), join(configDestinationPath, "include.gradle"));
 
     // Copy tns-java-classes.js
-    if (shelljs.test("-e", path.join(buildPath, "tns-java-classes.js"))) {
-        shelljs.cp(path.join(buildPath, "tns-java-classes.js"), path.join(assetsPath, "app/tns-java-classes.js"));
+    if (shelljs.test("-e", join(buildPath, "tns-java-classes.js"))) {
+        shelljs.cp(join(buildPath, "tns-java-classes.js"), join(assetsPath, "app/tns-java-classes.js"));
     }
 
-    if (shelljs.test("-e", path.join(buildPath, "ndk-build/libs"))) {
+    if (shelljs.test("-e", join(buildPath, "ndk-build/libs"))) {
         // useLibs = true
-        const libsDestinationPath = path.join(platformPath, "src", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE, "jniLibs");
+        const libsDestinationPath = join(platformPath, "src", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE, "jniLibs");
 
         // Copy the libs to the specified destination in the platforms folder
         shelljs.mkdir("-p", libsDestinationPath);
-        shelljs.cp("-R", path.join(buildPath, "ndk-build/libs") + "/", libsDestinationPath);
+        shelljs.cp("-R", join(buildPath, "ndk-build/libs") + "/", libsDestinationPath);
     }
     else {
         // useLibs = false
-        const blobsSrcPath = path.join(buildPath, "snapshots/blobs");
-        const blobsDestinationPath = path.join(assetsPath, "snapshots");
-        const appPackageJsonPath = path.join(assetsPath, "app/package.json");
+        const blobsSrcPath = join(buildPath, "snapshots/blobs");
+        const blobsDestinationPath = join(assetsPath, "snapshots");
+        const appPackageJsonPath = join(assetsPath, "app/package.json");
 
         // Copy the blobs in the prepared app folder
-        shelljs.cp("-R", blobsSrcPath + "/", path.join(assetsPath, "snapshots"));
+        shelljs.cp("-R", blobsSrcPath + "/", join(assetsPath, "snapshots"));
 
         /*
         Rename TNSSnapshot.blob files to snapshot.blob files. The xxd tool uses the file name for the name of the static array. This is why the *.blob files are initially named  TNSSnapshot.blob. After the xxd step, they must be renamed to snapshot.blob, because this is the filename that the Android runtime is looking for.
@@ -90,7 +88,7 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function(projectRoot) {
         shelljs.exec("find " + blobsDestinationPath + " -name '*.blob' -execdir mv {} snapshot.blob ';'");
 
         // Update the package.json file
-        var appPackageJson = shelljs.test("-e", appPackageJsonPath) ? JSON.parse(fs.readFileSync(appPackageJsonPath, 'utf8')) : {};
+        const appPackageJson = shelljs.test("-e", appPackageJsonPath) ? JSON.parse(fs.readFileSync(appPackageJsonPath, 'utf8')) : {};
         appPackageJson["android"] = appPackageJson["android"] || {};
         appPackageJson["android"]["heapSnapshotBlob"] = "../snapshots";
         fs.writeFileSync(appPackageJsonPath, JSON.stringify(appPackageJson, null, 2));
@@ -98,9 +96,9 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function(projectRoot) {
 }
 
 ProjectSnapshotGenerator.prototype.getV8Version = function() {
-    const nativescriptLibraryPath = path.join(this.options.projectRoot, "platforms/android/libs/runtime-libs/nativescript-regular.aar");
+    const nativescriptLibraryPath = join(this.options.projectRoot, "platforms/android/libs/runtime-libs/nativescript-regular.aar");
     if (!fs.existsSync(nativescriptLibraryPath)) {
-        nativescriptLibraryPath = path.join(options.projectRoot, "platforms/android/libs/runtime-libs/nativescript.aar");
+        nativescriptLibraryPath = join(options.projectRoot, "platforms/android/libs/runtime-libs/nativescript.aar");
     }
 
     const zip = new require("adm-zip")(nativescriptLibraryPath);
@@ -122,7 +120,7 @@ ProjectSnapshotGenerator.prototype.validateAndroidRuntimeVersion = function() {
     const currentRuntimeVersion = this.getAndroidRuntimeVersion();
 
     if (!currentRuntimeVersion ||
-        !fs.existsSync(path.join(this.options.projectRoot, "platforms/android"))) {
+        !fs.existsSync(join(this.options.projectRoot, "platforms/android"))) {
 
         throw new Error("In order to generate a V8 snapshot you must have the \"android\" platform installed - to do so please run \"tns platform add android\".");
     }
@@ -155,7 +153,7 @@ ProjectSnapshotGenerator.prototype.generate = function(generationOptions) {
     shelljs.mkdir("-p", this.getBuildPath());
 
     // Generate tns-java-classes.js if needed
-    const tnsJavaClassesDestination = path.join(this.getBuildPath(), "tns-java-classes.js");
+    const tnsJavaClassesDestination = join(this.getBuildPath(), "tns-java-classes.js");
     if (generationOptions.tnsJavaClassesPath) {
         if (generationOptions.tnsJavaClassesPath != tnsJavaClassesDestination) {
             shelljs.cp(generationOptions.tnsJavaClassesPath, tnsJavaClassesDestination);
@@ -165,12 +163,7 @@ ProjectSnapshotGenerator.prototype.generate = function(generationOptions) {
         this.generateTnsJavaClassesFile({ output: tnsJavaClassesDestination, options: generationOptions.tnsJavaClassesOptions });
     }
 
-    var snapshotToolsPath = generationOptions.snapshotToolsPath ?
-        (path.isAbsolute(generationOptions.snapshotToolsPath) ? 
-            generationOptions.snapshotToolsPath : 
-            path.resolve(process.cwd(), generationOptions.snapshotToolsPath)) : 
-        path.join(os.tmpdir(), "snapshot-tools");
-
+    const snapshotToolsPath = resolveRelativePath(generationOptions.snapshotToolsPath) || join(os.tmpdir(), "snapshot-tools");
     const androidNdkPath = generationOptions.androidNdkPath || process.env.ANDROID_NDK_HOME;
 
     console.log("Snapshot tools path: " + snapshotToolsPath);
@@ -178,8 +171,8 @@ ProjectSnapshotGenerator.prototype.generate = function(generationOptions) {
     // Generate snapshots
     const generator = new SnapshotGenerator({ buildPath: this.getBuildPath() });
     return generator.generate({
-        snapshotToolsPath: snapshotToolsPath,
-        inputFile: generationOptions.inputFile || path.join(this.options.projectRoot, "__snapshot.js"),
+        snapshotToolsPath,
+        inputFile: generationOptions.inputFile || join(this.options.projectRoot, "__snapshot.js"),
         targetArchs: generationOptions.targetArchs || ["arm", "arm64", "ia32"],
         v8Version: generationOptions.v8Version || this.getV8Version(),
         preprocessedInputFile: generationOptions.preprocessedInputFile,

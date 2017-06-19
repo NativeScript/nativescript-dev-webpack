@@ -71,7 +71,7 @@ exports.NativeScriptSnapshotPlugin = (function() {
             options: options.tnsJavaClassesOptions
         });
 
-        // Run the snapshot tool when the packing is done
+        // Generate snapshots
         compiler.plugin("after-emit", function(compilation, callback) {
             debugger;
             const chunkToSnapshot = compilation.chunks.find(chunk => chunk.name == options.chunk);

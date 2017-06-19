@@ -1,5 +1,5 @@
 const fs = require("fs");
-const path = require("path");
+const { join, dirname } = require("path");
 const shelljs = require("shelljs");
 
 function TnsJavaClassesGenerator() {}
@@ -13,8 +13,8 @@ TnsJavaClassesGenerator.prototype.generate = function(generationOptions) {
     initialSettings.modules = initialSettings.modules || [];
     initialSettings.packages = initialSettings.packages || [];
 
-    const packageJsonPath = path.join(generationOptions.projectRoot, "package.json");
-    const nodeModulesPath = path.join(generationOptions.projectRoot, "node_modules");
+    const packageJsonPath = join(generationOptions.projectRoot, "package.json");
+    const nodeModulesPath = join(generationOptions.projectRoot, "node_modules");
 
     /*
     "tns-java-classes": {
@@ -29,7 +29,7 @@ TnsJavaClassesGenerator.prototype.generate = function(generationOptions) {
     var nodeModules = fs.readdirSync(nodeModulesPath).filter((moduleName) => initialSettings.packages.indexOf(moduleName) >= 0);
     for(var i = 0; i < nodeModules.length; i++) {
         var moduleName = nodeModules[i];
-        var modulePackageJsonPath = path.join(nodeModulesPath, moduleName, "package.json");
+        var modulePackageJsonPath = join(nodeModulesPath, moduleName, "package.json");
         var moduleTnsJavaClassesSettings = this.getTnsJavaClassesSettings(modulePackageJsonPath);
         // Backward compatibilty with modules 3.0.1 and below
         if (moduleName == "tns-core-modules" && moduleTnsJavaClassesSettings.modules.length == 0) {
@@ -41,7 +41,7 @@ TnsJavaClassesGenerator.prototype.generate = function(generationOptions) {
     // Generate the file
     var tnsJavaClassesFileContent = initialSettings.modules.map(moduleName => "require(\"" + moduleName + "\");").join("\n");
     if (generationOptions.output) {
-        shelljs.mkdir("-p", path.dirname(generationOptions.output));
+        shelljs.mkdir("-p", dirname(generationOptions.output));
         if (generationOptions.outputAppend) {
             var currentFileContent = shelljs.test("-e", generationOptions.output) ? fs.readFileSync(generationOptions.output, "utf8") : "";
             tnsJavaClassesFileContent = currentFileContent + tnsJavaClassesFileContent;
