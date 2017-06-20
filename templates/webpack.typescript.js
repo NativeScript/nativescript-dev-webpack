@@ -5,6 +5,7 @@ const nsWebpack = require("nativescript-dev-webpack");
 const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
 
 const mainSheet = `app.css`;
@@ -163,6 +164,15 @@ function getPlugins(platform, env) {
             "./vendor",
             "./bundle",
         ]),
+
+        // Generate report files for bundles content
+        new BundleAnalyzerPlugin({
+            analyzerMode: "static",
+            openAnalyzer: false,
+            generateStatsFile: true,
+            reportFilename: join(__dirname, "report", `report.html`),
+            statsFilename: join(__dirname, "report", `stats.json`),
+        }),
     ];
 
     if (env.uglify) {

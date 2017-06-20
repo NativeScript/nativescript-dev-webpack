@@ -25,4 +25,13 @@ module.exports = `
         new nsWebpack.GenerateBundleStarterPlugin([
             "./vendor",
             "./bundle",
-        ]),`;
+        ]),
+
+        // Generate report files for bundles content
+        new BundleAnalyzerPlugin({
+            analyzerMode: "static",
+            openAnalyzer: false,
+            generateStatsFile: true,
+            reportFilename: join(__dirname, "report", \`report.html\`),
+            statsFilename: join(__dirname, "report", \`stats.json\`),
+        }),`;
