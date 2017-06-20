@@ -46,19 +46,19 @@ exports.NativeScriptSnapshotPlugin = (function() {
         const preparedAppRootPath = join(options.projectRoot, "platforms/android/src/main/assets");
         const preprocessedInputFile = join(preparedAppRootPath, "app/_embedded_script_.js");
 
-        ProjectSnapshotGenerator.prototype.generate.call(this, {
+        return ProjectSnapshotGenerator.prototype.generate.call(this, {
             inputFile,
             preprocessedInputFile,
             targetArchs: options.targetArchs,
             useLibs: options.useLibs,
             androidNdkPath: options.androidNdkPath,
             tnsJavaClassesPath: join(preparedAppRootPath, "app/tns-java-classes.js")
+        }).then(() => {
+            // Make the original file empty
+            if (inputFile !== preprocessedInputFile) {
+                closeSync(openSync(inputFile, "w")); // truncates the input file content
+            }
         });
-
-        // Make the original file empty
-        if (inputFile !== preprocessedInputFile) {
-            closeSync(openSync(inputFile, "w")); // truncates the input file content
-        }
     }
 
     NativeScriptSnapshotPlugin.prototype.apply = function(compiler) {
@@ -71,15 +71,24 @@ exports.NativeScriptSnapshotPlugin = (function() {
             options: options.tnsJavaClassesOptions
         });
 
-        // Run the snapshot tool when the packing is done
-        compiler.plugin("done", function(result) {
+        // Generate snapshots
+        compiler.plugin("after-emit", function(compilation, callback) {
             debugger;
-            const chunkToSnapshot = result.compilation.chunks.find(chunk => chunk.name == options.chunk);
+            const chunkToSnapshot = compilation.chunks.find(chunk => chunk.name == options.chunk);
             if (!chunkToSnapshot) {
                 throw new Error(`No chunk named '${options.chunk}' found.`);
             }
 
-            this.generate(chunkToSnapshot);
+            this.generate(chunkToSnapshot)
+                .then(() => {
+                    console.log("Successfully generated snapshots!");
+                    callback();
+                })
+                .catch((error) => {
+                    console.error("Snapshot generation failed with the following error:");
+                    console.error(error);
+                    callback();
+                });
 
         }.bind(this));
     }
