@@ -1,4 +1,4 @@
-const helpers = require("./projectHelpers");
+const { isAngular, isTypeScript } = require("./projectHelpers");
 
 const NEW_DEPS_MESSAGE = `\
 A few new dependencies were added. \
@@ -57,7 +57,7 @@ function addDependency(deps, name, version, force) {
 }
 
 function getRequiredDeps(packageJson) {
-    let deps = {
+    const deps = {
         "webpack": "~3.0.0",
         "webpack-bundle-analyzer": "^2.8.2",
         "webpack-sources": "~1.0.1",
@@ -68,18 +68,18 @@ function getRequiredDeps(packageJson) {
         "extract-text-webpack-plugin": "~2.1.0",
     };
 
-    if (helpers.isAngular({packageJson})) {
+    if (isAngular({packageJson})) {
         const angularDeps = resolveAngularDeps(packageJson.dependencies);
-        deps = Object.assign(deps, angularDeps);
-    } else if (helpers.isTypeScript({packageJson})) {
-        deps["awesome-typescript-loader"] = "~3.1.3";
+        Object.assign(deps, angularDeps);
+    } else if (isTypeScript({packageJson})) {
+        Object.assign(deps, { "awesome-typescript-loader": "~3.1.3" });
     }
 
     return deps;
 }
 
 function resolveAngularDeps(usedDependencies) {
-    let depsToAdd = {
+    const depsToAdd = {
         "@angular/compiler-cli": usedDependencies["@angular/core"],
     };
     const tnsModulesVersion = getVersionWithoutPatch(usedDependencies["tns-core-modules"]);
@@ -105,22 +105,21 @@ function resolveAngularDeps(usedDependencies) {
     return depsToAdd; 
 }
 
-function getVersionWithoutPatch(version) {
-    if (!version) {
+function getVersionWithoutPatch(fullVersion) {
+    if (!fullVersion) {
         return "";
     }
     
-    if (version === "next" || version === "latest" || version === "rc") {
-        return version;
+    const prereleaseVersions = Object.freeze(["next", "latest", "rc"]);
+    if (prereleaseVersions.includes(fullVersion)) {
+        return fullVersion;
     }
 
-    version = version.substring(0, version.lastIndexOf("."));
+    const version = fullVersion.substring(0, fullVersion.lastIndexOf("."));
 
-    if (version.startsWith("~") || version.startsWith("^")) {
-        return version.substring(1);
-    } else {
-        return version;
-    }
+    return version.startsWith("~") || version.startsWith("^") ?
+        version.substring(1) :
+        version;
 }
 
 function showHelperMessages({ newDepsAdded, hasOldDeps }) {
