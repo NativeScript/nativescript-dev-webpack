@@ -1,3 +1,19 @@
+<a name="0.7.1"></a>
+## [0.7.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.6.3...0.7.1) (2017-06-22)
+
+
+### Bug Fixes
+
+* **mangle-excludes:** add Compat Query and Close listener classes ([#190](https://github.com/NativeScript/nativescript-dev-webpack/issues/190)) ([5791cfc](https://github.com/NativeScript/nativescript-dev-webpack/commit/5791cfc))
+
+
+### Features
+
+* introduce support for v8 heap snapshot generation ([1b5dcdc](https://github.com/NativeScript/nativescript-dev-webpack/commit/1b5dcdc))
+* add BundleAnalyzerPlugin to webpack config ([ac32b14](https://github.com/NativeScript/nativescript-dev-webpack/commit/ac32b14))
+
+
+
 <a name="0.6.3"></a>
 ## [0.6.3](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.6.2...0.6.3) (2017-06-09)
 
