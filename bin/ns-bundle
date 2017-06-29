@@ -15,6 +15,7 @@ if (!process.env.npm_config_argv) {
 
 const escape = arg => `"${arg}"`;
 const isTnsCommand = flag => flag.endsWith("-app");
+const isEnvCommand = flag => flag.indexOf("env.") > -1;
 const shouldUglify = () => process.env.npm_config_uglify;
 const shouldSnapshot = (platform) => platform == "android" && require("os").type() != "Windows_NT" && process.env.npm_config_snapshot;
 
@@ -34,7 +35,7 @@ function getTnsArgs(args) {
         "--nobundle",
     ];
 
-    return args.filter(a => !other.includes(a) && !isTnsCommand(a));
+    return args.filter(a => !other.includes(a) && !isTnsCommand(a) && !isEnvCommand(a));
 }
 
 execute(options);
@@ -51,7 +52,7 @@ function execute(options) {
             () => cleanApp(platform),
             () => cleanSnapshotArtefacts(),
             () => cleanBuildArtifacts(platform),
-            () => webpack(platform),
+            () => webpack(platform, options.env),
         ];
     }
 
@@ -139,7 +140,7 @@ function cleanApp(platform) {
     });
 }
 
-function webpack(platform) {
+function webpack(platform, env) {
     return new Promise(function (resolve, reject) {
         console.log(`Running webpack for ${platform}...`);
 
@@ -148,6 +149,7 @@ function webpack(platform) {
             `--config=webpack.config.js`,
             `--progress`,
             `--env.${platform}`,
+            ...env.map(item => `--${item}`),
             shouldUglify() && `--env.uglify`,
             shouldSnapshot(platform) && `--env.snapshot`
         ];
@@ -172,9 +174,14 @@ function getOptions(flags) {
     let options = {};
     options.platform = getPlatform(flags);
     options.command = getCommand(flags);
+    options.env = getEnv(flags);
     options.bundle = !flags.includes("nobundle");
 
     return options;
+}
+
+function getEnv(flags) {
+    return flags.filter(item => isEnvCommand(item));    
 }
 
 function getPlatform(flags) {
