@@ -79,7 +79,7 @@ function cleanBuildArtefacts(platform) {
         getTnsVersion().then(version => {
             // the android build artefacts should be cleaned manually
             // for nativescript-cli v3.0.1 and below or if using uglify
-            if (isVersionGte(version, "3.0.1") || shouldUglify()) {
+            if (!isVersionGte(version, "3.0.1") || shouldUglify()) {
                 gradlewClean().then(resolve).catch(throwError);
             } else {
                 return resolve();
@@ -155,7 +155,7 @@ function webpack(platform, env) {
             ...env.map(item => `--${item}`),
             shouldUglify() && `--env.uglify`,
             shouldSnapshot(platform) && `--env.snapshot`
-        ];
+        ].filter(a => !!a);
 
         spawnChildProcess(...args)
             .then(resolve)
