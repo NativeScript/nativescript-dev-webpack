@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const { spawn } = require("child_process");
-const { resolve: pathResolve } = require("path");
+const { resolve: pathResolve, join } = require("path");
 const { existsSync } = require("fs");
 const { getPackageJson } = require("../projectHelpers");
 const { isVersionGte } = require("../utils");
@@ -13,14 +13,16 @@ if (!process.env.npm_config_argv) {
     throwError({message: "No flags provided."});
 }
 
-const escape = arg => `"${arg}"`;
+const escapeWithQuotes = arg => `"${arg}"`;
 const isTnsCommand = flag => flag.endsWith("-app");
 const isEnvCommand = flag => flag.indexOf("env.") > -1;
 const shouldUglify = () => process.env.npm_config_uglify;
-const shouldSnapshot = (platform) => platform == "android" && require("os").type() != "Windows_NT" && process.env.npm_config_snapshot;
+const shouldSnapshot = platform => platform == "android" &&
+    require("os").type() != "Windows_NT" &&
+    process.env.npm_config_snapshot;
 
 const npmArgs = JSON.parse(process.env.npm_config_argv).original;
-const tnsArgs = getTnsArgs(npmArgs).map(escape);
+const tnsArgs = getTnsArgs(npmArgs).map(escapeWithQuotes);
 const flags = npmArgs.filter(a => a.startsWith("--")).map(a => a.substring(2));
 const options = getOptions(flags);
 
@@ -51,7 +53,7 @@ function execute(options) {
             ...commands,
             () => cleanApp(platform),
             () => cleanSnapshotArtefacts(),
-            () => cleanBuildArtifacts(platform),
+            () => cleanBuildArtefacts(platform),
             () => webpack(platform, options.env),
         ];
     }
@@ -68,14 +70,14 @@ function execute(options) {
     return commands.reduce((current, next) => current.then(next), Promise.resolve());
 }
 
-function cleanBuildArtifacts(platform) {
+function cleanBuildArtefacts(platform) {
     return new Promise((resolve, reject) => {
         if (platform !== "android") {
             return resolve();
         }
 
         getTnsVersion().then(version => {
-            // the android build artifacts should be cleaned manually
+            // the android build artefacts should be cleaned manually
             // for nativescript-cli v3.0.1 and below or if using uglify
             if (isVersionGte(version, "3.0.1") || shouldUglify()) {
                 gradlewClean().then(resolve).catch(throwError);
@@ -96,7 +98,7 @@ function installSnapshotArtefacts() {
 
 function gradlewClean() {
     return new Promise((resolve, reject) => {
-        const platformsPath = pathResolve(PROJECT_DIR, "platforms", "android")
+        const platformsPath = join(PROJECT_DIR, "platforms", "android")
         const gradlew = pathResolve(platformsPath, "gradlew");
         if (!existsSync(gradlew)) {
             return resolve();
@@ -134,6 +136,7 @@ function versionToNumber(version) {
 // Clear platform/**/app folder contents
 function cleanApp(platform) {
     return new Promise((resolve, reject) => {
+
         spawnChildProcess("tns", "clean-app", platform)
             .then(resolve)
             .catch(throwError)
@@ -171,18 +174,14 @@ function runTns(command, platform) {
 }
 
 function getOptions(flags) {
-    let options = {};
-    options.platform = getPlatform(flags);
-    options.command = getCommand(flags);
-    options.env = getEnv(flags);
-    options.bundle = !flags.includes("nobundle");
-
-    return options;
+    return {
+        platform: getPlatform(flags),
+        command: getCommand(flags),
+        env: flags.filter(isEnvCommand),
+        bundle: !flags.includes("nobundle"),
+    };
 }
 
-function getEnv(flags) {
-    return flags.filter(item => isEnvCommand(item));    
-}
 
 function getPlatform(flags) {
     if (flags.includes("android") && flags.includes("ios")) {
@@ -194,7 +193,9 @@ function getPlatform(flags) {
     } else if (flags.includes("ios")) {
         return "ios";
     } else {
-        throwError({message: "You must provide a target platform! Use either --android, or --ios flag."});
+        throwError({message:
+            "You must provide a target platform! " +
+            "Use either --android, or --ios flag."});
     }
 }
 
@@ -209,7 +210,10 @@ function getCommand(flags) {
 
 function spawnChildProcess(command, ...args) {
     return new Promise((resolve, reject) => {
-        const childProcess = spawn(command, args, {
+        const escapedArgs = args.map(escapeWithQuotes)
+        const escapedCommand = escapeWithQuotes(command)
+
+        const childProcess = spawn(escapedCommand, escapedArgs, {
             stdio: "inherit",
             pwd: PROJECT_DIR,
             shell: true,
