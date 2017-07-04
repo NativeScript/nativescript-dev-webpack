@@ -21,7 +21,7 @@ $ npm run start-ios-bundle
 
 # Documentation
 
-For details, see the [NativeScript docs](http://docs.nativescript.org/angular/tooling/bundling-with-webpack.html).
+For details, see the [NativeScript docs](http://docs.nativescript.org/angular/best-practices/bundling-with-webpack.html).
 
 # Note about dependencies.
 
