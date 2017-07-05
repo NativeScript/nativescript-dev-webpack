@@ -1,3 +1,22 @@
+<a name="0.7.2"></a>
+## [0.7.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.6.3...0.7.2) (2017-07-05)
+
+
+### Bug Fixes
+
+* **mangle-excludes:** add Compat Query and Close listener classes ([#190](https://github.com/NativeScript/nativescript-dev-webpack/issues/190)) ([5791cfc](https://github.com/NativeScript/nativescript-dev-webpack/commit/5791cfc))
+* **ns-bundle:** escape command and args when spawning child process ([c3e7376](https://github.com/NativeScript/nativescript-dev-webpack/commit/c3e7376)), closes [#209](https://github.com/NativeScript/nativescript-dev-webpack/issues/209)
+* run gradlew clean only for tns <=3.0.1 ([efea463](https://github.com/NativeScript/nativescript-dev-webpack/commit/efea463))
+
+
+### Features
+
+* add BundleAnalyzerPlugin to webpack config ([ac32b14](https://github.com/NativeScript/nativescript-dev-webpack/commit/ac32b14))
+* add support for passing params via --env to webpack ([#204](https://github.com/NativeScript/nativescript-dev-webpack/issues/204)) ([4921321](https://github.com/NativeScript/nativescript-dev-webpack/commit/4921321))
+* alias tilde to point to the app root ([#201](https://github.com/NativeScript/nativescript-dev-webpack/issues/201)) ([3fb865d](https://github.com/NativeScript/nativescript-dev-webpack/commit/3fb865d))
+
+
+
 <a name="0.7.1"></a>
 ## [0.7.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.6.3...0.7.1) (2017-06-22)
 
