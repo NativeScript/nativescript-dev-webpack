@@ -1,5 +1,14 @@
+<a name="0.7.3"></a>
+## [0.7.3](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.7.2...0.7.3) (2017-07-12)
+
+
+### Bug Fixes
+
+* **ns-bundle:** remove command escaping when spawning child process ([#218](https://github.com/NativeScript/nativescript-dev-webpack/issues/218)) ([28e3aad](https://github.com/NativeScript/nativescript-dev-webpack/commit/28e3aad)), closes [#214](https://github.com/NativeScript/nativescript-dev-webpack/issues/214)
+
+
 <a name="0.7.2"></a>
-## [0.7.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.6.3...0.7.2) (2017-07-05)
+## [0.7.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.7.1...0.7.2) (2017-07-05)
 
 
 ### Bug Fixes
