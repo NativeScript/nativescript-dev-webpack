@@ -211,9 +211,8 @@ function getCommand(flags) {
 function spawnChildProcess(command, ...args) {
     return new Promise((resolve, reject) => {
         const escapedArgs = args.map(escapeWithQuotes)
-        const escapedCommand = escapeWithQuotes(command)
 
-        const childProcess = spawn(escapedCommand, escapedArgs, {
+        const childProcess = spawn(command, escapedArgs, {
             stdio: "inherit",
             pwd: PROJECT_DIR,
             shell: true,
