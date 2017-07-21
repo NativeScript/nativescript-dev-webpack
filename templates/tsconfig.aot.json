@@ -29,9 +29,8 @@
     },
     "skipLibCheck": true
   },
-  "exclude": [
-    "node_modules",
-    "platforms"
+  "files": [
+      "./app/main.ts"
   ],
   "angularCompilerOptions": {
     "skipMetadataEmit": true,
