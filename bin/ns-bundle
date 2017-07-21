@@ -22,7 +22,7 @@ const shouldSnapshot = platform => platform == "android" &&
     process.env.npm_config_snapshot;
 
 const npmArgs = JSON.parse(process.env.npm_config_argv).original;
-const tnsArgs = getTnsArgs(npmArgs).map(escapeWithQuotes);
+const tnsArgs = getTnsArgs(npmArgs);
 const flags = npmArgs.filter(a => a.startsWith("--")).map(a => a.substring(2));
 const options = getOptions(flags);
 
