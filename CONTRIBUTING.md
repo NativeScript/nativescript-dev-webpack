@@ -5,21 +5,19 @@ Contributing
 
 First of all, thank you for taking the time to contribute!
 
-Before starting, make yourself familiar with the `nativescript-dev-webpack`'s [documentation](http://docs.nativescript.org/best-practices/bundling-with-webpack) and the official NativeScript [Contributing guide](https://github.com/NativeScript/NativeScript/blob/master/CONTRIBUTING.md).
+Before starting, make yourself familiar with the `nativescript-dev-webpack`'s [documentation](http://docs.nativescript.org/best-practices/bundling-with-webpack) and the official [NativeScript Code Of Conduct]( https://github.com/NativeScript/codeofconduct).
 
 ## Project Structure
 
 The repository contains several ingredients:
 *   `installer.js` - combination of postinstall scripts for adding or removing webpack configurations and necessary dependecies when installing the plugin.
-*	`prepublish` - [Webpack config](https://webpack.js.org/concepts/configuration/) snippets used for generating webpack configuration templates. The latter are generated with the npm's `prepublishOnly` script. **If you want to modify the distributed webpack configurations - that's the right place to do it.**
+*    `prepublish` - [Webpack config](https://webpack.js.org/concepts/configuration/) snippets used for generating webpack configuration templates. The latter are generated with the npm's `prepublishOnly` script. **If you want to modify the distributed webpack configurations - that's the right place to do it.**
 *   `templates` - webpack config templates for different types of projects - NativeScript with JavaScript, NativeScript with TypeScript and NativeScript Angular projects.
 *   `plugins` - several [Webpack plugins](https://webpack.js.org/concepts/plugins/) necessary for bundling NativeScript applications.
 *   `snapshot/android` - tools used with the `NativeScriptSnapshot` plugin for generating V8 Heap Snapshots.
 *   `nativescript-target` - configuration of a [Webpack deployment target](https://webpack.js.org/concepts/targets/) for building NativeScript applications.
 *   `bin` - helper node/npm scripts for projects using the plugin.
 *   `bin/ns-bundle` - node script used for bundling the project with Webpack and building the native Android/iOS application with NativeScript CLI.   
-
-
 ## Setup
 [Fork](https://help.github.com/articles/fork-a-repo/) and clone the GitHub repository:
 ```bash
@@ -57,13 +55,25 @@ rm -rf node_modules platforms webpack.* app/vendor*
 npm i # install new dependencies
 ```
 
+## Reporting Bugs
+
+1. Always update to the most recent master release; the bug may already be resolved.
+2. Search for similar issues in the issues list for this repo; it may already be an identified problem.
+3. If this is a bug or problem that is clear, simple, and is unlikely to require any discussion -- it is OK to open an issue on GitHub with a reproduction of the bug including workflows and screenshots. If possible, submit a Pull Request with a failing test, entire application or module. If you'd rather take matters into your own hands, fix the bug yourself (jump down to the [Submitting a PR](#pr) section).
+
+## Requesting Features
+
+1. Use Github Issues to submit feature requests.
+2. First, search for a similar request and extend it if applicable. This way it would be easier for the community to track the features.
+3. When requesting a new feature, please provide as much detail as possible about why you need the feature in your apps. We prefer that you explain a need rather than explain a technical solution for it. That might trigger a nice conversation on finding the best and broadest technical solution to a specific need.
+
 ## Submitting PR
 
 * Create one or several commits describing your changes. Follow the [Angular Commit message guidelines](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#heading=h.uyo6cb12dt6w).
 
 *   Push your branch to GitHub:
 
-    ```source-shell
+    ```bash
     git push origin my-fix-branch
     ```
 
