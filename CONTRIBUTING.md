@@ -19,48 +19,49 @@ The repository contains several ingredients:
 *   `bin` - helper node/npm scripts for projects using the plugin.
 *   `bin/ns-bundle` - node script used for bundling the project with Webpack and building the native Android/iOS application with NativeScript CLI.   
 ## Setup
-[Fork](https://help.github.com/articles/fork-a-repo/) and clone the GitHub repository:
-```bash
-git clone https://github.com/your-username/nativescript-dev-webpack.git
-```
+1. [Fork](https://help.github.com/articles/fork-a-repo/) and clone the GitHub repository:
+    ```bash
+    git clone https://github.com/your-username/nativescript-dev-webpack.git
+    ```
 
-Add an "upstream" remote pointing to the original repository:
-```bash
-cd nativescript-dev-webpack
-git remote add upstream https://github.com/NativeScript/nativescript-dev-webpack.git
-```
+2. Add an 'upstream' remote pointing to the original repository:
+    ```bash
+    cd nativescript-dev-webpack
+    git remote add upstream https://github.com/NativeScript/nativescript-dev-webpack.git
+    ```
 
-Create a branch for your changes:
-```bash
-git checkout -b <my-fix-branch> master
-```
+3. Create a branch for your changes:
+    ```bash
+    git checkout -b <my-fix-branch> master
+    ```
 
-Install devDependencies:
-```bash
-npm install
-```
+4. Install devDependencies:
+    ```bash
+    npm install
+    ```
 
 You are good to go! The plugin is written in plain JavaScript. You're strongly encouraged to follow the official NativeScript [Coding Conventions](https://github.com/NativeScript/NativeScript/blob/master/CodingConvention.md) and to use ES features available in NodeJS v6. If unsure, check on [node.green](http://node.green/).
 
 ## Testing locally
 
-Create a new NativeScript project with NativeScript CLI:
-``` bash
-tns create testapp # pass --ng/--tsc for Angular/TypeScript app
-```
+1. Create a new NativeScript project with NativeScript CLI:
+    ``` bash
+    tns create testapp # pass --ng/--tsc for Angular/TypeScript app
+    ```
 
-Install your local copy of the plugin using either `npm install` or `npm link`.
-``` bash
-npm install/link /path/to/repo/nativescript-dev-webpack
-```
-The first command will copy the files, while the second one will create a symlink to the local directory. Because of the symlink, all the changes you make in `node_modules/nativescript-dev-webpack` will be 'synced' with `/path/to/repo/nativescript-dev-webpack` and vice-versa.
+2. Install your local copy of the plugin using either `npm install` or `npm link`.
+    ``` bash
+    npm install/link /path/to/repo/nativescript-dev-webpack
+    ```
 
-Make sure to force-update the project's configuration files if it's already using Webpack.
-``` bash
-rm -rf node_modules platforms webpack.* app/vendor*
-./node_modules/.bin/update-ns-webpack # force update dependecies and add the new configurations
-npm i # install the new dependencies
-```
+3. The first command will copy the files, while the second one will create a symlink to the local directory. Because of the symlink, all the changes you make in `node_modules/nativescript-dev-webpack` will be 'synced' with `/path/to/repo/nativescript-dev-webpack` and vice-versa.
+
+4. Make sure to force-update the project's configuration files if it's already using Webpack.
+    ``` bash
+    rm -rf node_modules platforms webpack.* app/vendor*
+    ./node_modules/.bin/update-ns-webpack # force update dependecies and add the new configurations
+    npm i # install the new dependencies
+    ```
 
 ## Reporting Bugs
 
@@ -76,29 +77,44 @@ npm i # install the new dependencies
 
 ## Submitting PR
 
-* Create one or several commits describing your changes. Follow the [Angular Commit message guidelines](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#heading=h.uyo6cb12dt6w).
+1. Create one or several commits describing your changes. Follow the [Angular Commit message guidelines](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#heading=h.uyo6cb12dt6w).
 
-*   Push your branch to GitHub:
-
+2. Push your branch to GitHub:
     ```bash
     git push origin my-fix-branch
     ```
 
-In GitHub, send a pull request to `nativescript-dev-webpack:master`. If we suggest changes, then:
+3. In GitHub, send a pull request to `nativescript-dev-webpack:master`. If we suggest changes, then:
 
-*   Make the required updates.
-*   Commit the changes to your branch (e.g. `my-fix-branch`).
-*   Push the changes to your GitHub repository (this will update your PR).
+    *   Make the required updates.
+    *   Commit the changes to your branch (e.g. `my-fix-branch`).
+    *   Push the changes to your GitHub repository (this will update your PR).
 
-If your branch gets too outdated you may need to rebase it on top of the upstream master and force push to update your PR:
+4. If your branch gets too outdated you may need to rebase it on top of the upstream master and force push to update your PR:
 
-```bash
-git fetch upstream # fetch the latest changes
-git checkout master # check out to your fork's local master branch
-git merge upstream/master # merge the original repo changes into your local master branch
-git checkout my-fix-branch # go back to your PR branch
-git rebase -i master # rebase it on top of master
-git push -f origin my-fix-branch # update your PR with force push
-```
+    1. Fetch the latest changes
+        ```bash
+        git fetch upstream
+        ```
+
+    2. Check out to your fork's local `master` branch
+        ```bash
+        git checkout master
+        ```
+
+    3. Merge the original repo changes into your local `master` branch
+        ```bash
+        git merge upstream/master
+        ```
+
+    4. Rebase it on top of `master`
+        ```bash
+        git rebase -i master
+        ```
+
+    5. Update your PR with force push
+        ```bash
+        git push -f origin my-fix-branch
+        ```
 
 Thank you for your contribution!
