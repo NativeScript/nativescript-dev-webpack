@@ -24,6 +24,12 @@ The repository contains several ingredients:
 git clone https://github.com/your-username/nativescript-dev-webpack.git
 ```
 
+Add an "upstream" remote pointing to the original repository:
+```bash
+cd nativescript-dev-webpack
+git remote add upstream https://github.com/NativeScript/nativescript-dev-webpack.git
+```
+
 Create a branch for your changes:
 ```bash
 git checkout -b <my-fix-branch> master
@@ -84,11 +90,15 @@ In GitHub, send a pull request to `nativescript-dev-webpack:master`. If we sugge
 *   Commit the changes to your branch (e.g. `my-fix-branch`).
 *   Push the changes to your GitHub repository (this will update your PR).
 
-If the PR gets too outdated you may need to rebase and force push to update the PR:
+If your branch gets too outdated you may need to rebase it on top of the upstream master and force push to update your PR:
 
 ```bash
-git rebase -i master
-git push -f origin my-fix-branch
+git fetch upstream # fetch the latest changes
+git checkout master # check out to your fork's local master branch
+git merge upstream/master # merge the original repo changes into your local master branch
+git checkout my-fix-branch # go back to your PR branch
+git rebase -i master # rebase it on top of master
+git push -f origin my-fix-branch # update your PR with force push
 ```
 
 Thank you for your contribution!
