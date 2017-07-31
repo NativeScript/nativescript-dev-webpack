@@ -43,16 +43,17 @@ Create a new NativeScript project with NativeScript CLI:
 tns create testapp # pass --ng/--tsc for Angular/TypeScript app
 ```
 
-Install/Link your local copy of the plugin:
+Install your local copy of the plugin using either `npm install` or `npm link`.
 ``` bash
 npm install/link /path/to/repo/nativescript-dev-webpack
 ```
+The first command will copy the files, while the second one will create a symlink to the local directory. Because of the symlink, all the changes you make in `node_modules/nativescript-dev-webpack` will be 'synced' with `/path/to/repo/nativescript-dev-webpack` and vice-versa.
 
-Make sure to force-update the project's configuration files if it's already using webpack.
+Make sure to force-update the project's configuration files if it's already using Webpack.
 ``` bash
 rm -rf node_modules platforms webpack.* app/vendor*
-./node_modules/.bin/update-ns-webpack # force update dependecies and add the new configs
-npm i # install new dependencies
+./node_modules/.bin/update-ns-webpack # force update dependecies and add the new configurations
+npm i # install the new dependencies
 ```
 
 ## Reporting Bugs
@@ -91,4 +92,3 @@ git push -f origin my-fix-branch
 ```
 
 Thank you for your contribution!
-
