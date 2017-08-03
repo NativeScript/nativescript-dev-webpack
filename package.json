@@ -26,7 +26,6 @@
     "generate-android-snapshot": "./bin/generate-android-snapshot"
   },
   "dependencies": {
-    "adm-zip": "^0.4.7",
     "shelljs": "^0.6.0"
   },
   "devDependencies": {}
