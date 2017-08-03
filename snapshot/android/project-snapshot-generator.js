@@ -1,11 +1,12 @@
 const { join, isAbsolute, resolve } = require("path");
 const fs = require("fs");
-const shelljs = require("shelljs");
 const os = require("os");
+
+const shelljs = require("shelljs");
+const semver = require("semver");
 
 const SnapshotGenerator = require("./snapshot-generator");
 const TnsJavaClassesGenerator = require("./tns-java-classes-generator");
-const { isVersionGte } = require("../../utils");
 const { getPackageJson } = require("../../projectHelpers");
 
 const MIN_ANDROID_RUNTIME_VERSION = "3.0.0";
@@ -102,12 +103,13 @@ ProjectSnapshotGenerator.prototype.getV8Version = function() {
         return;
     } else if (
         VALID_ANDROID_RUNTIME_TAGS.includes(runtimeVersion) ||
-        isVersionGte(runtimeVersion, "3.1.0")
+
+        semver.gte(runtimeVersion, "3.1.0")
     ) {
        return "5.5.372";
-    } else if (isVersionGte(runtimeVersion, "2.4.0")) {
+    } else if (semver.gte(runtimeVersion, "2.4.0")) {
         return "5.2.361";
-    } else if (isVersionGte(runtimeVersion, "2.0.0")) {
+    } else if (semver.gte(runtimeVersion, "2.0.0")) {
         return "4.7.80";
     }
 }
@@ -122,7 +124,7 @@ ProjectSnapshotGenerator.prototype.validateAndroidRuntimeVersion = function() {
     }
 
     if (!VALID_ANDROID_RUNTIME_TAGS.includes(currentRuntimeVersion) &&
-        !isVersionGte(currentRuntimeVersion, MIN_ANDROID_RUNTIME_VERSION)) {
+        !semver.gte(currentRuntimeVersion, MIN_ANDROID_RUNTIME_VERSION)) {
 
         throw new Error("In order to support heap snapshots, you must have at least tns-android@" + MIN_ANDROID_RUNTIME_VERSION +
             " installed. Current Android Runtime version is: " + currentRuntimeVersion + ".");

@@ -2,7 +2,6 @@ const path = require("path");
 const { existsSync } = require("fs");
 
 const { getPackageJson, isAngular } = require("./projectHelpers");
-const { sanitize } = require("./utils");
 
 const PROJECT_DIR = path.dirname(path.dirname(__dirname));
 const APP_DIR = path.join(PROJECT_DIR, "app");
@@ -37,6 +36,11 @@ exports.getAppPath = platform => {
         throw new Error(`Invalid platform: ${platform}`);
     }
 };
+
+const sanitize = name => name
+    .split("")
+    .filter(char => /[a-zA-Z0-9]/.test(char))
+    .join("");
 
 function getPackageJsonEntry() {
     const packageJsonSource = getPackageJson(APP_DIR);
