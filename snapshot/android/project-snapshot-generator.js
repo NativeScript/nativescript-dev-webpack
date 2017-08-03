@@ -102,10 +102,8 @@ ProjectSnapshotGenerator.prototype.getV8Version = function() {
         return;
     } else if (
         VALID_ANDROID_RUNTIME_TAGS.includes(runtimeVersion) ||
-        isVersionGte(runtimeVersion, "3.2.0")
+        isVersionGte(runtimeVersion, "3.1.0")
     ) {
-        return "5.9.211";
-    } else if (isVersionGte(runtimeVersion, "3.1.0")) {
        return "5.5.372";
     } else if (isVersionGte(runtimeVersion, "2.4.0")) {
         return "5.2.361";
