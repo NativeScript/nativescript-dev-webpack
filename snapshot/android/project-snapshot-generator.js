@@ -96,23 +96,21 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function(projectRoot) {
 }
 
 ProjectSnapshotGenerator.prototype.getV8Version = function() {
-    const nativescriptLibraryPath = join(this.options.projectRoot, "platforms/android/libs/runtime-libs/nativescript-regular.aar");
-    if (!fs.existsSync(nativescriptLibraryPath)) {
-        nativescriptLibraryPath = join(options.projectRoot, "platforms/android/libs/runtime-libs/nativescript.aar");
-    }
+    const runtimeVersion = this.getAndroidRuntimeVersion();
 
-    const zip = new require("adm-zip")(nativescriptLibraryPath);
-    const config = zip.readAsText("config.json");
-    return config ? JSON.parse(config)["v8-version"] : "4.7.80";
-}
-
-ProjectSnapshotGenerator.prototype.getAndroidRuntimeVersion = function() {
-    try {
-        const projectPackageJSON = getPackageJson(this.options.projectRoot);
-
-        return projectPackageJSON["nativescript"]["tns-android"]["version"];
-    } catch(e) {
-        return null;
+    if (!runtimeVersion) {
+        return;
+    } else if (
+        VALID_ANDROID_RUNTIME_TAGS.includes(runtimeVersion) ||
+        isVersionGte(runtimeVersion, "3.2.0")
+    ) {
+        return "5.9.211";
+    } else if (isVersionGte(runtimeVersion, "3.1.0")) {
+       return "5.5.372";
+    } else if (isVersionGte(runtimeVersion, "2.4.0")) {
+        return "5.2.361";
+    } else if (isVersionGte(runtimeVersion, "2.0.0")) {
+        return "4.7.80";
     }
 }
 
@@ -130,6 +128,16 @@ ProjectSnapshotGenerator.prototype.validateAndroidRuntimeVersion = function() {
 
         throw new Error("In order to support heap snapshots, you must have at least tns-android@" + MIN_ANDROID_RUNTIME_VERSION +
             " installed. Current Android Runtime version is: " + currentRuntimeVersion + ".");
+    }
+}
+
+ProjectSnapshotGenerator.prototype.getAndroidRuntimeVersion = function() {
+    try {
+        const projectPackageJSON = getPackageJson(this.options.projectRoot);
+
+        return projectPackageJSON["nativescript"]["tns-android"]["version"];
+    } catch(e) {
+        return null;
     }
 }
 
