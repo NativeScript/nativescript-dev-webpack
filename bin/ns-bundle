@@ -47,7 +47,7 @@ execute(options);
 function execute(options) {
     const platform = options.platform;
     let commands = [ 
-        // () => runTns("prepare", platform) 
+        () => runTns("prepare", platform) 
     ];
 
     if (options.bundle) {
@@ -117,7 +117,7 @@ function getTnsVersion() {
     return new Promise((resolve, reject) => {
         const childProcess = spawn("tns", ["--version"], { shell: true });
 
-        childProcess.stdout.on("data", version => resolve(String(version)));
+        childProcess.stdout.on("data", version => resolve(version.toString()));
 
         childProcess.on("close", code => {
             if (code) {

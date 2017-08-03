@@ -108,11 +108,10 @@ ProjectSnapshotGenerator.prototype.getV8Version = function(generationOptions) {
         getJsonFile(V8_VERSIONS_URL).then(v8VersionsMap => {
             const runtimeVersion = this.getAndroidRuntimeVersion().replace(/-.*/, "");
 
-            const runtimeRange = Object.keys(v8VersionsMap).find(range => {
-                return semver.satisfies(runtimeVersion, range)
-            });
-
+            const runtimeRange = Object.keys(v8VersionsMap)
+                .find(range => semver.satisfies(runtimeVersion, range));
             const v8Version = v8VersionsMap[runtimeRange];
+
             return resolve(v8Version);
         }).catch(reject);
     });
@@ -204,7 +203,7 @@ ProjectSnapshotGenerator.prototype.generate = function(generationOptions) {
             }
         });
     }).catch(error => {
-        throw new Error("Cannot find suitable v8 version!");
+        throw new Error(`Cannot find suitable v8 version! Original error: ${error.message || error}`);
     });
 }
 
