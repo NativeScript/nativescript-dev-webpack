@@ -3,8 +3,10 @@
 const { spawn } = require("child_process");
 const { resolve: pathResolve, join } = require("path");
 const { existsSync } = require("fs");
+
+const semver = require("semver");
+
 const { getPackageJson } = require("../projectHelpers");
-const { isVersionGte } = require("../utils");
 
 const PROJECT_DIR = pathResolve(__dirname, "../../../");
 const packageJson = getPackageJson(PROJECT_DIR);
@@ -45,7 +47,7 @@ execute(options);
 function execute(options) {
     const platform = options.platform;
     let commands = [ 
-        () => runTns("prepare", platform) 
+        // () => runTns("prepare", platform) 
     ];
 
     if (options.bundle) {
@@ -79,7 +81,8 @@ function cleanBuildArtefacts(platform) {
         getTnsVersion().then(version => {
             // the android build artefacts should be cleaned manually
             // for nativescript-cli v3.0.1 and below or if using uglify
-            if (!isVersionGte(version, "3.0.1") || shouldUglify()) {
+
+            if (!semver.gte(version, "3.0.1") || shouldUglify()) {
                 gradlewClean().then(resolve).catch(throwError);
             } else {
                 return resolve();
@@ -114,7 +117,7 @@ function getTnsVersion() {
     return new Promise((resolve, reject) => {
         const childProcess = spawn("tns", ["--version"], { shell: true });
 
-        childProcess.stdout.on("data", resolve);
+        childProcess.stdout.on("data", version => resolve(String(version)));
 
         childProcess.on("close", code => {
             if (code) {
@@ -125,12 +128,6 @@ function getTnsVersion() {
             }
         });
     });
-}
-
-function versionToNumber(version) {
-    const VERSION_MATCHER = /(\d+)\.(\d+)\.(\d+)/;
-
-    return Number(VERSION_MATCHER.exec(version).splice(1).join(""));
 }
 
 // Clear platform/**/app folder contents
