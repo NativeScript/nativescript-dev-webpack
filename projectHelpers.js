@@ -4,15 +4,19 @@ const fs = require("fs");
 const isTypeScript = ({projectDir, packageJson} = {}) => {
     packageJson = packageJson || getPackageJson(projectDir);
 
-    return packageJson.dependencies.hasOwnProperty("typescript") ||
-        packageJson.devDependencies.hasOwnProperty("typescript") ||
-        isAngular({packageJson});
+    return (
+        packageJson.dependencies &&
+        packageJson.dependencies.hasOwnProperty("typescript")
+    ) || (
+        packageJson.devDependencies &&
+        packageJson.devDependencies.hasOwnProperty("typescript")
+    ) || isAngular({packageJson});
 };
 
 const isAngular = ({projectDir, packageJson} = {}) => {
     packageJson = packageJson || getPackageJson(projectDir);
 
-    return Object.keys(packageJson.dependencies)
+    return packageJson.dependencies && Object.keys(packageJson.dependencies)
         .some(dependency => /^@angular\b/.test(dependency));
 };
 
