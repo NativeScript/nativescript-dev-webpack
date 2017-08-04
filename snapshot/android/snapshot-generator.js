@@ -1,9 +1,11 @@
 const fs = require("fs");
-const shelljs = require("shelljs");
 const { join, dirname } = require("path");
 const os = require("os");
 const child_process = require("child_process");
-const https = require("https");
+
+const shelljs = require("shelljs");
+
+const { downloadFile } = require("./utils");
 
 const NDK_BUILD_SEED_PATH = join(__dirname, "snapshot-generator-tools/ndk-build");
 const BUNDLE_PREAMBLE_PATH = join(__dirname, "snapshot-generator-tools/bundle-preamble.js");
@@ -61,43 +63,8 @@ SnapshotGenerator.prototype.downloadMksnapshotTool = function(snapshotToolsPath,
         return snapshotToolsDownloads[mksnapshotToolPath];
 
     const downloadUrl = MKSNAPSHOT_TOOLS_DOWNLOAD_ROOT_URL + mksnapshotToolRelativePath;
-    snapshotToolsDownloads[mksnapshotToolPath] = this.downloadExecFile(downloadUrl, mksnapshotToolPath);
+    snapshotToolsDownloads[mksnapshotToolPath] = downloadFile(downloadUrl, mksnapshotToolPath);
     return snapshotToolsDownloads[mksnapshotToolPath];
-}
-
-SnapshotGenerator.prototype.downloadExecFile = function(url, destinationFilePath) {
-    return new Promise((resolve, reject) => {
-        const request = https.get(url, (response) => {
-            switch (response.statusCode) {
-                case 200:
-                    shelljs.mkdir("-p", dirname(destinationFilePath));
-                    const file = fs.createWriteStream(destinationFilePath);
-                    file.on('error', function (error) {
-                        return reject(error);
-                    });
-                    file.on("finish", function() {
-                        file.close();
-                        fs.chmodSync(destinationFilePath, 0755);
-                        return resolve(destinationFilePath);
-                    });
-                    response.pipe(file);
-                    break;
-                case 301:
-                case 302:
-                case 303:
-                    const redirectUrl = response.headers.location;
-                    return this.downloadExecFile(redirectUrl, destinationFilePath);
-                default:
-                    return reject(new Error("Unable to download file at " + url + ". Status code: " + response.statusCode));
-            }
-        });
-
-        request.end();
-
-        request.on('error', function(err) {
-            return reject(err);
-        });
-    });
 }
 
 SnapshotGenerator.prototype.convertToAndroidArchName = function(archName) {

@@ -26,6 +26,7 @@
     "generate-android-snapshot": "./bin/generate-android-snapshot"
   },
   "dependencies": {
+    "semver": "^5.4.1",
     "shelljs": "^0.6.0"
   },
   "devDependencies": {}
