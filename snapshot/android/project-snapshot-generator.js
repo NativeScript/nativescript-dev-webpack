@@ -187,7 +187,7 @@ ProjectSnapshotGenerator.prototype.generate = function(generationOptions) {
             snapshotToolsPath,
             inputFile: generationOptions.inputFile || join(this.options.projectRoot, "__snapshot.js"),
             targetArchs: generationOptions.targetArchs || ["arm", "arm64", "ia32"],
-            v8Version: generationOptions.v8Version || this.getV8Version(),
+            v8Version: generationOptions.v8Version || v8Version,
             preprocessedInputFile: generationOptions.preprocessedInputFile,
             useLibs: generationOptions.useLibs || false,
             androidNdkPath

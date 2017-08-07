@@ -1,20 +1,22 @@
-const https = require("https");
+const { get: httpsGet } = require("https");
+const { dirname } = require("path");
+const { chmodSync, createWriteStream } = require("fs");
 
-const shelljs = require("shelljs");
+const { mkdir } = require("shelljs");
 
 const downloadFile = (url, destinationFilePath) =>
     new Promise((resolve, reject) => {
-        const request = https.get(url, response => {
+        const request = httpsGet(url, response => {
             switch (response.statusCode) {
                 case 200:
-                    shelljs.mkdir("-p", dirname(destinationFilePath));
-                    const file = fs.createWriteStream(destinationFilePath);
+                    mkdir("-p", dirname(destinationFilePath));
+                    const file = createWriteStream(destinationFilePath);
                     file.on('error', function (error) {
                         return reject(error);
                     });
                     file.on("finish", function() {
                         file.close();
-                        fs.chmodSync(destinationFilePath, 0755);
+                        chmodSync(destinationFilePath, 0755);
                         return resolve(destinationFilePath);
                     });
                     response.pipe(file);
@@ -38,7 +40,7 @@ const downloadFile = (url, destinationFilePath) =>
 
 const getJsonFile = url =>
     new Promise((resolve, reject) => {
-        https.get(url, res => {
+        httpsGet(url, res => {
             let body = "";
             res.on("data", chunk => {
                 body += chunk;
