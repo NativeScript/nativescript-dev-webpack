@@ -54,6 +54,9 @@ module.exports = [
     "TextWatcher",
     "ValueChangeListenerImpl",
 
+    "AnimationListnerImpl",
+    "AnimationListenerImpl",
+    "TransitionListenerImpl",
     "CheckedChangeListenerImpl",
     "ClickListenerImpl",
     "CompatCloseListenerImpl",
