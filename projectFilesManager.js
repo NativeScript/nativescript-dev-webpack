@@ -4,13 +4,12 @@ const fs = require("fs");
 const { isTypeScript, isAngular } = require("./projectHelpers");
 
 const FRAME_MATCH = /(\s*)(require\("ui\/frame"\);)(\s*)(require\("ui\/frame\/activity"\);)/g;
-const SCOPED_FRAME = `
-if (!global["__snapshot"]) {
+const SCOPED_FRAME = `if (!global["__snapshot"]) {
     // In case snapshot generation is enabled these modules will get into the bundle
     // but will not be required/evaluated.
     // The snapshot webpack plugin will add them to the tns-java-classes.js bundle file.
     // This way, they will be evaluated on app start as early as possible.
-$1\t$2$3\t$4
+$1    $2$3    $4
 }`;
 
 const CONFIG_MATCH = /(exports = [^]+?)\s*return ({[^]+target:\s*nativescriptTarget[^]+?};)/;
