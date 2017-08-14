@@ -98,7 +98,7 @@ function resolveAngularDeps(usedDependencies) {
     } else {
           Object.assign(depsToAdd, {
             "typescript": "~2.3.4",
-            "@ngtools/webpack": "~1.5.0",
+            "@ngtools/webpack": "~1.6.0",
         });
     }
 
