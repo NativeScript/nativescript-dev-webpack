@@ -4,6 +4,10 @@ const { chmodSync, createWriteStream } = require("fs");
 
 const { mkdir } = require("shelljs");
 
+const CONSTANTS = {
+    SNAPSHOT_TMP_DIR: join(os.tmpdir(), "snapshot-tools"),
+};
+
 const downloadFile = (url, destinationFilePath) =>
     new Promise((resolve, reject) => {
         const request = httpsGet(url, response => {
@@ -54,7 +58,7 @@ const getJsonFile = url =>
     });
 
 module.exports = {
+    CONSTANTS,
     downloadFile,
     getJsonFile,
 };
-
