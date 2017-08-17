@@ -1,11 +1,11 @@
 const fs = require("fs");
-const { join, dirname } = require("path");
+const { dirname, join } = require("path");
 const os = require("os");
 const child_process = require("child_process");
 
 const shelljs = require("shelljs");
 
-const { downloadFile } = require("./utils");
+const { createDirectory, downloadFile } = require("./utils");
 
 const NDK_BUILD_SEED_PATH = join(__dirname, "snapshot-generator-tools/ndk-build");
 const BUNDLE_PREAMBLE_PATH = join(__dirname, "snapshot-generator-tools/bundle-preamble.js");
@@ -63,6 +63,7 @@ SnapshotGenerator.prototype.downloadMksnapshotTool = function(snapshotToolsPath,
         return snapshotToolsDownloads[mksnapshotToolPath];
 
     const downloadUrl = MKSNAPSHOT_TOOLS_DOWNLOAD_ROOT_URL + mksnapshotToolRelativePath;
+    createDirectory(dirname(mksnapshotToolPath));
     snapshotToolsDownloads[mksnapshotToolPath] = downloadFile(downloadUrl, mksnapshotToolPath);
     return snapshotToolsDownloads[mksnapshotToolPath];
 }
