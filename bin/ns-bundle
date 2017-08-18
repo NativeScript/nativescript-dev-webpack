@@ -19,9 +19,16 @@ const escapeWithQuotes = arg => `"${arg}"`;
 const isTnsCommand = flag => flag.endsWith("-app");
 const isEnvCommand = flag => flag.indexOf("env.") > -1;
 const shouldUglify = () => process.env.npm_config_uglify;
-const shouldSnapshot = platform => platform == "android" &&
-    require("os").type() != "Windows_NT" &&
-    process.env.npm_config_snapshot;
+
+const platformSupportsSnapshot = platform => platform === "android";
+const osSupportsSnapshot = () => require("os").type() != "Windows_NT";
+const snapshotOption = env =>
+    process.env.npm_config_snapshot || (env && env.includes("env.snapshot"));
+
+const shouldSnapshot = (platform, env) =>
+    platformSupportsSnapshot(platform) &&
+    osSupportsSnapshot() &&
+    snapshotOption(env);
 
 const npmArgs = JSON.parse(process.env.npm_config_argv).original;
 const tnsArgs = getTnsArgs(npmArgs);
@@ -60,7 +67,7 @@ function execute(options) {
         ];
     }
 
-    if (shouldSnapshot(platform)) {
+    if (shouldSnapshot(platform, options.env)) {
         commands.push(() => installSnapshotArtefacts());
     }
     
