@@ -5,7 +5,18 @@ const { dirname, join } = require("path");
 const { mkdir } = require("shelljs");
 
 const CONSTANTS = {
+    BUNDLE_ENDING_PATH: join(__dirname, "snapshot-generator-tools/bundle-ending.js"),
+    BUNDLE_PREAMBLE_PATH: join(__dirname, "snapshot-generator-tools/bundle-preamble.js"),
+    INCLUDE_GRADLE_PATH: join(__dirname, "snapshot-generator-tools/include.gradle"),
+    MIN_ANDROID_RUNTIME_VERSION: "3.0.0",
+    MKSNAPSHOT_TOOLS_DOWNLOAD_ROOT_URL: "https://raw.githubusercontent.com/NativeScript/mksnapshot-tools/master/",
+    NDK_BUILD_SEED_PATH: join(__dirname, "snapshot-generator-tools/ndk-build"),
+    SNAPSHOT_BLOB_NAME: "TNSSnapshot",
     SNAPSHOT_TMP_DIR: join(tmpdir(), "snapshot-tools"),
+    VALID_ANDROID_RUNTIME_TAGS: Object.freeze(["next", "rc"]),
+    V8_VERSIONS_FILE_NAME: "v8-versions.json",
+    V8_VERSIONS_LOCAL_PATH: resolve(SNAPSHOT_TMP_DIR, V8_VERSIONS_FILE_NAME),
+    V8_VERSIONS_URL: `https://raw.githubusercontent.com/NativeScript/android-runtime/master/${V8_VERSIONS_FILE_NAME}`,
 };
 
 const createDirectory = dir => mkdir('-p', dir);
