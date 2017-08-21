@@ -1,15 +1,20 @@
+const { chmodSync, createWriteStream, existsSync } = require("fs");
 const { get: httpsGet } = require("https");
-const { dirname } = require("path");
-const { chmodSync, createWriteStream } = require("fs");
-
+const { tmpdir } = require("os");
+const { dirname, join } = require("path");
 const { mkdir } = require("shelljs");
+
+const CONSTANTS = {
+    SNAPSHOT_TMP_DIR: join(tmpdir(), "snapshot-tools"),
+};
+
+const createDirectory = dir => mkdir('-p', dir);
 
 const downloadFile = (url, destinationFilePath) =>
     new Promise((resolve, reject) => {
         const request = httpsGet(url, response => {
             switch (response.statusCode) {
                 case 200:
-                    mkdir("-p", dirname(destinationFilePath));
                     const file = createWriteStream(destinationFilePath);
                     file.on('error', function (error) {
                         return reject(error);
@@ -54,7 +59,8 @@ const getJsonFile = url =>
     });
 
 module.exports = {
+    CONSTANTS,
+    createDirectory,
     downloadFile,
     getJsonFile,
 };
-

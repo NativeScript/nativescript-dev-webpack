@@ -1,18 +1,23 @@
-const { join, isAbsolute, resolve } = require("path");
-const fs = require("fs");
-const os = require("os");
+const { dirname, isAbsolute, join, resolve } = require("path");
+const { existsSync, readFileSync, writeFileSync } = require("fs");
 
 const shelljs = require("shelljs");
 const semver = require("semver");
 
 const SnapshotGenerator = require("./snapshot-generator");
 const TnsJavaClassesGenerator = require("./tns-java-classes-generator");
-const { getJsonFile } = require("./utils");
+const {
+    CONSTANTS,
+    createDirectory,
+    getJsonFile,
+} = require("./utils");
 const { getPackageJson } = require("../../projectHelpers");
 
 const MIN_ANDROID_RUNTIME_VERSION = "3.0.0";
 const VALID_ANDROID_RUNTIME_TAGS = Object.freeze(["next", "rc"]);
-const V8_VERSIONS_URL = "https://raw.githubusercontent.com/NativeScript/android-runtime/master/v8-versions.json";
+const V8_VERSIONS_FILE_NAME = "v8-versions.json";
+const V8_VERSIONS_URL = `https://raw.githubusercontent.com/NativeScript/android-runtime/master/${V8_VERSIONS_FILE_NAME}`;
+const V8_VERSIONS_LOCAL_PATH = resolve(CONSTANTS.SNAPSHOT_TMP_DIR, V8_VERSIONS_FILE_NAME);
 
 const resolveRelativePath = (path) => {
     if (path)
@@ -91,12 +96,48 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function(projectRoot) {
         shelljs.exec("find " + blobsDestinationPath + " -name '*.blob' -execdir mv {} snapshot.blob ';'");
 
         // Update the package.json file
-        const appPackageJson = shelljs.test("-e", appPackageJsonPath) ? JSON.parse(fs.readFileSync(appPackageJsonPath, 'utf8')) : {};
+        const appPackageJson = shelljs.test("-e", appPackageJsonPath) ? JSON.parse(readFileSync(appPackageJsonPath, 'utf8')) : {};
         appPackageJson["android"] = appPackageJson["android"] || {};
         appPackageJson["android"]["heapSnapshotBlob"] = "../snapshots";
-        fs.writeFileSync(appPackageJsonPath, JSON.stringify(appPackageJson, null, 2));
+        writeFileSync(appPackageJsonPath, JSON.stringify(appPackageJson, null, 2));
     }
 }
+
+const versionIsPrerelease = version => version.indexOf("-") > -1;
+const v8VersionsFileExists = () => existsSync(V8_VERSIONS_LOCAL_PATH);
+const saveV8VersionsFile = versionsMap =>
+    writeFileSync(V8_VERSIONS_LOCAL_PATH, JSON.stringify(versionsMap));
+const readV8VersionsFile = () => JSON.parse(readFileSync(V8_VERSIONS_LOCAL_PATH));
+const fetchV8VersionsFile = () =>
+    new Promise((resolve, reject) => {
+        getJsonFile(V8_VERSIONS_URL)
+            .then(versionsMap => {
+                createDirectory(dirname(V8_VERSIONS_LOCAL_PATH));
+                saveV8VersionsFile(versionsMap);
+                return resolve(versionsMap);
+            })
+            .catch(reject);
+    });
+
+const findV8Version = (runtimeVersion, v8VersionsMap) => {
+    const runtimeReleaseVersion = runtimeVersion.replace(/-.*/, "");
+    const runtimeRange = Object.keys(v8VersionsMap)
+        .find(range => semver.satisfies(runtimeReleaseVersion, range));
+
+    return v8VersionsMap[runtimeRange];
+}
+
+const getV8VersionsMap = runtimeVersion =>
+    new Promise((resolve, reject) => {
+        if (!v8VersionsFileExists() || versionIsPrerelease(runtimeVersion)) {
+            fetchV8VersionsFile()
+                .then(versionsMap => resolve({ versionsMap, latest: true }))
+                .catch(reject);
+        } else {
+            const versionsMap = readV8VersionsFile();
+            return resolve({ versionsMap, latest: false });
+        }
+    });
 
 ProjectSnapshotGenerator.prototype.getV8Version = function(generationOptions) {
     return new Promise((resolve, reject) => {
@@ -105,15 +146,22 @@ ProjectSnapshotGenerator.prototype.getV8Version = function(generationOptions) {
             return resolve(maybeV8Version);
         }
 
-        getJsonFile(V8_VERSIONS_URL).then(v8VersionsMap => {
-            const runtimeVersion = this.getAndroidRuntimeVersion().replace(/-.*/, "");
+        const runtimeVersion = this.getAndroidRuntimeVersion();
+        getV8VersionsMap(runtimeVersion)
+            .then(({ versionsMap, latest}) => {
+                const v8Version = findV8Version(runtimeVersion, versionsMap);
 
-            const runtimeRange = Object.keys(v8VersionsMap)
-                .find(range => semver.satisfies(runtimeVersion, range));
-            const v8Version = v8VersionsMap[runtimeRange];
-
-            return resolve(v8Version);
-        }).catch(reject);
+                if (!v8Version && !latest) {
+                    fetchV8VersionsFile().then(latestVersionsMap => {
+                        const version = findV8Version(runtimeVersion, latestVersionsMap)
+                        return resolve(version);
+                    })
+                    .catch(reject);
+                } else {
+                    return resolve(v8Version);
+                }
+            })
+            .catch(reject);
     });
 }
 
@@ -121,7 +169,7 @@ ProjectSnapshotGenerator.prototype.validateAndroidRuntimeVersion = function() {
     const currentRuntimeVersion = this.getAndroidRuntimeVersion();
 
     if (!currentRuntimeVersion ||
-        !fs.existsSync(join(this.options.projectRoot, "platforms/android"))) {
+        !existsSync(join(this.options.projectRoot, "platforms/android"))) {
 
         throw new Error("In order to generate a V8 snapshot you must have the \"android\" platform installed - to do so please run \"tns platform add android\".");
     }
@@ -174,7 +222,7 @@ ProjectSnapshotGenerator.prototype.generate = function(generationOptions) {
         this.generateTnsJavaClassesFile({ output: tnsJavaClassesDestination, options: generationOptions.tnsJavaClassesOptions });
     }
 
-    const snapshotToolsPath = resolveRelativePath(generationOptions.snapshotToolsPath) || join(os.tmpdir(), "snapshot-tools");
+    const snapshotToolsPath = resolveRelativePath(generationOptions.snapshotToolsPath) || CONSTANTS.SNAPSHOT_TMP_DIR;
     const androidNdkPath = generationOptions.androidNdkPath || process.env.ANDROID_NDK_HOME;
 
     console.log("Snapshot tools path: " + snapshotToolsPath);
@@ -206,4 +254,3 @@ ProjectSnapshotGenerator.prototype.generate = function(generationOptions) {
         throw new Error(`Cannot find suitable v8 version! Original error: ${error.message || error}`);
     });
 }
-
