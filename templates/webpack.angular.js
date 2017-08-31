@@ -9,6 +9,8 @@ const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
 const { AotPlugin } = require("@ngtools/webpack");
 
+const ngToolsWebpackOptions = { tsConfigPath: "tsconfig.aot.json" };
+
 const mainSheet = `app.css`;
 
 module.exports = env => {
@@ -131,12 +133,15 @@ function getRules() {
 
         // Compile TypeScript files with ahead-of-time compiler.
         {
-            test: /\.ts$/,
-            loaders: [
-                "nativescript-dev-webpack/tns-aot-loader",
-                "@ngtools/webpack",
+            test: /.ts$/,
+            use: [
+                { loader: "nativescript-dev-webpack/tns-aot-loader" },
+                {
+                    loader: "@ngtools/webpack",
+                    options: ngToolsWebpackOptions,
+                },
             ]
-        }
+        },
 
     ];
 }
@@ -181,11 +186,12 @@ function getPlugins(platform, env) {
         }),
 
         // Angular AOT compiler
-        new AotPlugin({
-            tsConfigPath: "tsconfig.aot.json",
-            entryModule: resolve(__dirname, "app/app.module#AppModule"),
-            typeChecking: false
-        }),
+        new AotPlugin(
+            Object.assign({
+                entryModule: resolve(__dirname, "app/app.module#AppModule"),
+                typeChecking: false
+            }, ngToolsWebpackOptions)
+        ),
 
         // Resolve .ios.css and .android.css component stylesheets, and .ios.html and .android component views
         new nsWebpack.UrlResolvePlugin({

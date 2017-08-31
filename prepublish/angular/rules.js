@@ -1,10 +1,13 @@
 module.exports = `
         // Compile TypeScript files with ahead-of-time compiler.
         {
-            test: /\\.ts$/,
-            loaders: [
-                "nativescript-dev-webpack/tns-aot-loader",
-                "@ngtools/webpack",
+            test: /\.ts$/,
+            use: [
+                { loader: "nativescript-dev-webpack/tns-aot-loader" },
+                {
+                    loader: "@ngtools/webpack",
+                    options: ngToolsWebpackOptions,
+                },
             ]
-        }
+        },
 `;
