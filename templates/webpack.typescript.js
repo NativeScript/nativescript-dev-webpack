@@ -6,6 +6,7 @@ const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
+const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
 
 
 const mainSheet = `app.css`;
@@ -168,6 +169,9 @@ function getPlugins(platform, env) {
             "./vendor",
             "./bundle",
         ]),
+        
+        // Support for web workers since v3.2
+        new NativeScriptWorkerPlugin(),
 
         // Generate report files for bundles content
         new BundleAnalyzerPlugin({

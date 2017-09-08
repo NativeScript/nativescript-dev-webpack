@@ -64,6 +64,7 @@ function getRequiredDeps(packageJson) {
         "copy-webpack-plugin": "~4.0.1",
         "raw-loader": "~0.5.1",
         "nativescript-css-loader": "~0.26.0",
+        "nativescript-worker-loader": "~0.8.1",
         "resolve-url-loader": "~2.1.0",
         "extract-text-webpack-plugin": "~3.0.0",
     };
