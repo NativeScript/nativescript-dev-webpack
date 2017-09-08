@@ -1,3 +1,11 @@
+<a name="0.8.0"></a>
+# [0.8.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.7.3...0.8.0) (2017-09-08)
+
+### Features
+
+* add support for web workers to default template ([#269](https://github.com/NativeScript/nativescript-dev-webpack/issues/269)) ([494ccbb](https://github.com/NativeScript/nativescript-dev-webpack/commit/494ccbb))
+
+
 <a name="0.7.3"></a>
 ## [0.7.3](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.7.2...0.7.3) (2017-07-12)
 
