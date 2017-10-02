@@ -1,10 +1,5 @@
 const { isAngular, isTypeScript } = require("./projectHelpers");
 
-const NEW_DEPS_MESSAGE = `\
-A few new dependencies were added. \
-Run "npm install" before building your project.
-`;
-
 const ALREADY_ADDED_MESSAGE = `\
 Some dependencies have already been added. \
 If you want to force update them, please run "node_modules/.bin/update-ns-webpack".
@@ -128,10 +123,6 @@ function showHelperMessages({ newDepsAdded, hasOldDeps }) {
 
     if (hasOldDeps) {
         console.info(ALREADY_ADDED_MESSAGE);
-    }
-
-    if (newDepsAdded) {
-        console.info(NEW_DEPS_MESSAGE);
     }
 }
 
