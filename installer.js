@@ -6,7 +6,25 @@ const projectFilesManager = require("./projectFilesManager");
 const npmScriptsManager = require("./npmScriptsManager");
 const dependencyManager = require("./dependencyManager");
 
-const PROJECT_DIR = path.dirname(path.dirname(__dirname));
+// INIT_CWD is available since npm 5.4
+const initCwd = process.env.INIT_CWD;
+const shouldUseInitCwd = () => {
+    if (!initCwd) {
+        return false;
+    }
+
+    const installedPackage = path.resolve(initCwd, "node_modules", "nativescript-dev-webpack");
+    if (!fs.existsSync(installedPackage)) {
+        return false;
+    }
+
+    const stat = fs.lstatSync(installedPackage);
+    return stat.isSymbolicLink();
+};
+
+const PROJECT_DIR = shouldUseInitCwd() ?
+    initCwd :
+    path.dirname(path.dirname(__dirname));
 const APP_DIR = path.resolve(PROJECT_DIR, "app");
 
 function install() {
