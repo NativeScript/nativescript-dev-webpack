@@ -8,7 +8,7 @@ const semver = require("semver");
 
 const { getPackageJson, getProjectDir } = require("../projectHelpers");
 
-const PROJECT_DIR = getProjectDir({ nestingLvl: 3 });
+const PROJECT_DIR = getProjectDir({ nestingLvl: 2 });
 const packageJson = getPackageJson(PROJECT_DIR);
 
 if (!process.env.npm_config_argv) {
@@ -152,7 +152,9 @@ function webpack(platform, env) {
         console.log(`Running webpack for ${platform}...`);
 
         const args = [
-            `webpack`,
+            `node`,
+            `--preserve-symlinks`,
+            `./node_modules/.bin/webpack`,
             `--config=webpack.config.js`,
             `--progress`,
             `--env.${platform}`,
