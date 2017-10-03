@@ -6,9 +6,9 @@ const { existsSync } = require("fs");
 
 const semver = require("semver");
 
-const { getPackageJson } = require("../projectHelpers");
+const { getPackageJson, getProjectDir } = require("../projectHelpers");
 
-const PROJECT_DIR = pathResolve(__dirname, "../../../");
+const PROJECT_DIR = getProjectDir({ nestingLvl: 3 });
 const packageJson = getPackageJson(PROJECT_DIR);
 
 if (!process.env.npm_config_argv) {
