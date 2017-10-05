@@ -3,7 +3,9 @@
 const path = require("path");
 const fs = require("fs");
 
-const PROJECT_DIR = path.resolve(__dirname, "../../../");
+const { getProjectDir } = require("../projectHelpers");
+
+const PROJECT_DIR = getProjectDir({ nestingLvl: 2 });
 const APP_ID = require(path.resolve(PROJECT_DIR, "./package.json")).nativescript.id;
 const APP_NAME = APP_ID.substring(APP_ID.lastIndexOf(".") + 1);
 const PROJECT_PATHS = {
