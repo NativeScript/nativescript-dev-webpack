@@ -62,6 +62,11 @@ module.exports = env => {
             // and will enable us to work with symlinked packages during development.
             symlinks: false
         },
+        resolveLoader: {
+            // This will not follow symlinks to their original location,
+            // and will enable us to work with symlinked loader packages during development.
+            symlinks: false
+        },
         node: {
             // Disable node shims that conflict with NativeScript
             "http": false,
