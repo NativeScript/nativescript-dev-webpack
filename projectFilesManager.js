@@ -59,6 +59,11 @@ function removeProjectFiles(projectDir, appDir) {
     });
 }
 
+function forceUpdateProjectFiles(projectDir, appDir) {
+    removeProjectFiles(projectDir, appDir);
+    addProjectFiles(projectDir, appDir);
+}
+
 function deleteFile(destinationPath) {
     if (fs.existsSync(destinationPath)) {
         console.info(`Deleting file: ${destinationPath}`);
@@ -189,5 +194,7 @@ function tsOrJs(projectDir, name) {
 module.exports = {
     addProjectFiles,
     removeProjectFiles,
+    forceUpdateProjectFiles,
     editExistingProjectFiles,
 };
+
