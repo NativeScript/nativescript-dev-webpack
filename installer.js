@@ -32,9 +32,12 @@ function uninstall() {
 
     projectFilesManager.removeProjectFiles(PROJECT_DIR, APP_DIR);
 
-    console.log("Removing npm scripts...");
-    npmScriptsManager.removeDeprecatedNpmScripts(packageJson);
-    npmScriptsManager.removeNpmScripts(packageJson.scripts);
+    const scripts = packageJson.scripts;
+    if (scripts) {
+        console.log("Removing npm scripts...");
+        npmScriptsManager.removeDeprecatedNpmScripts(scripts);
+        npmScriptsManager.removeNpmScripts(scripts);
+    }
 
     helpers.writePackageJson(packageJson, PROJECT_DIR);
 

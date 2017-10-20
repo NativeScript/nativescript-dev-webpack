@@ -53,8 +53,16 @@ function removePlatformScripts(scripts, nameTemplate) {
     });
 }
 
+function forceUpdateNpmScripts(scripts) {
+    removeDeprecatedNpmScripts(scripts);
+    removeNpmScripts(scripts);
+
+    addNpmScripts(scripts);
+}
+
 module.exports = {
     addNpmScripts,
     removeDeprecatedNpmScripts,
     removeNpmScripts,
+    forceUpdateNpmScripts,
 };
