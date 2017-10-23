@@ -1,0 +1,14 @@
+<ActionBar title="My App">
+</ActionBar>
+
+<StackLayout class="page">
+    <Button [nsRouterLink]="['/ninjas']" text="Ninjas"></Button>
+    <ListView [items]="items" class="list-group">
+        <ng-template let-item="item">
+            <GridLayout columns="auto, *">
+                <Label text="(Android)" verticalAlignment="center"></Label>
+                <Label col="1" [nsRouterLink]="['/item', item.id]" [text]="item.name" class="list-group-item"></Label>
+            </GridLayout>
+        </ng-template>
+    </ListView>
+</StackLayout>

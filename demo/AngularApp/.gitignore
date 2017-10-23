@@ -1,0 +1,9 @@
+node_modules
+platforms
+hooks
+
+app/**/*.js
+e2e/**/*.js
+e2e/reports/
+test-results.xml
+

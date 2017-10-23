@@ -1,0 +1,14 @@
+webpack.config.js
+
+platforms
+report
+
+vendor.js
+vendor-platform.android.js
+vendor-platform.ios.js
+
+vendor.ts
+vendor-platform.android.ts
+vendor-platform.ios.ts
+
+tsconfig.aot.json

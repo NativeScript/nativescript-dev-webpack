@@ -1,0 +1,47 @@
+{
+  "description": "NativeScript Application",
+  "license": "SEE LICENSE IN <your-license-filename>",
+  "readme": "NativeScript Application",
+  "repository": "<fill-your-repository-here>",
+  "nativescript": {
+    "id": "org.nativescript.JavaScriptApp",
+    "tns-android": {
+      "version": "3.4.0-2017-11-13-2"
+    },
+    "tns-ios": {
+      "version": "3.4.0-2017-11-9-1"
+    }
+  },
+  "dependencies": {
+    "nativescript-theme-core": "~1.0.2",
+    "tns-core-modules": "file:../../../NativeScript/tns-core-modules",
+    "tns-core-modules-widgets": "^3.4.0-2017-11-2-1"
+  },
+  "devDependencies": {
+    "babel-traverse": "6.26.0",
+    "babel-types": "6.26.0",
+    "babylon": "6.18.0",
+    "copy-webpack-plugin": "~4.0.1",
+    "css-loader": "~0.28.7",
+    "extract-text-webpack-plugin": "~3.0.0",
+    "lazy": "1.0.11",
+    "nativescript-dev-webpack": "file:../..",
+    "nativescript-worker-loader": "~0.8.1",
+    "node-sass": "^4.7.1",
+    "raw-loader": "~0.5.1",
+    "resolve-url-loader": "~2.1.0",
+    "sass-loader": "^6.0.6",
+    "webpack": "~3.8.1",
+    "webpack-bundle-analyzer": "^2.8.2",
+    "webpack-sources": "~1.0.1"
+  },
+  "scripts": {
+    "ns-bundle": "ns-bundle",
+    "start-android-bundle": "npm run ns-bundle --android --run-app",
+    "start-ios-bundle": "npm run ns-bundle --ios --run-app",
+    "build-android-bundle": "npm run ns-bundle --android --build-app",
+    "build-ios-bundle": "npm run ns-bundle --ios --build-app",
+    "publish-ios-bundle": "npm run ns-bundle --ios --publish-app",
+    "generate-android-snapshot": "generate-android-snapshot --targetArchs arm,arm64,ia32 --install"
+  }
+}

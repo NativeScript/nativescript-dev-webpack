@@ -1,4 +1,3 @@
 module.exports = Object.assign({},
-    require("./UrlResolvePlugin")
+    require("./NativeScriptAngularCompilerPlugin")
 );
-

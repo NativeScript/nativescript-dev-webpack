@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "declaration": true,
+        "lib": [ "es6" ],
+        "sourceMap": true,
+        "skipLibCheck": true
+    },
+    "files": [
+        "plugins/NativeScriptAngularCompilerPlugin.ts",
+        "plugins/PlatformFSPlugin.ts",
+        "plugins/WatchStateLoggerPlugin.ts"
+    ]
+}

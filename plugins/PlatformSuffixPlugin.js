@@ -1,14 +1,12 @@
 const parseFile = require("path").parse;
 
-function PlatformSuffixPlugin(platform, platforms) {
+function PlatformSuffixPlugin(platform) {
     this.platform = platform;
-    this.platforms = platforms || ["ios", "android"];
 }
 exports.PlatformSuffixPlugin = PlatformSuffixPlugin;
 
 PlatformSuffixPlugin.prototype.apply = function(resolver) {
     var platform = this.platform;
-    var platforms = this.platforms;
 
     resolver.plugin("file", function(request, callback) {
         const fs = this.fileSystem;
