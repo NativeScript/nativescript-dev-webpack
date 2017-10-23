@@ -1,6 +1,6 @@
 {
   "name": "nativescript-dev-webpack",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "main": "index",
   "description": "",
   "homepage": "http://www.telerik.com",
@@ -8,6 +8,20 @@
   "contributors": [
     "Hristo Deshev <hristo.deshev@telerik.com>"
   ],
+  "nativescript": {
+    "hooks": [
+      {
+        "type": "before-prepareJSApp",
+        "script": "lib/before-prepareJS.js",
+        "inject": true
+      },
+      {
+        "type": "after-prepare",
+        "script": "lib/after-prepare.js",
+        "inject": true
+      }
+    ]
+  },
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -28,7 +42,8 @@
   "dependencies": {
     "minimatch": "^3.0.4",
     "semver": "^5.4.1",
-    "shelljs": "^0.6.0"
+    "shelljs": "^0.6.0",
+    "nativescript-hook": "0.2.1"
   },
   "devDependencies": {}
 }
