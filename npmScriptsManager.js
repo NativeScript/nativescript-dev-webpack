@@ -11,9 +11,7 @@ const DEPRECATED_SCRIPT_TEMPLATES = Object.freeze([
     "prewebpack-[PLATFORM]",
     "webpack-[PLATFORM]",
     "prestart-[PLATFORM]-bundle",
-    "start-[PLATFORM]-bundle",
     "prebuild-[PLATFORM]-bundle",
-    "build-[PLATFORM]-bundle",
 ]);
 
 const PLATFORMS = Object.freeze(["android", "ios"]);
