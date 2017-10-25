@@ -1,16 +1,21 @@
 #!/usr/bin/env node
+const { resolve } = require("path");
 
-const update = require("../verify/update");
+const { getPackageJson, getProjectDir, writePackageJson } = require("../projectHelpers");
+const { forceUpdateProjectDeps } = require("../dependencyManager");
+const { editExistingProjectFiles } = require("../projectFilesManager");
 
-const flags = JSON.parse(process.env.npm_config_argv).original
-    .filter(f => f.startsWith("--"))
-    .map(f => f.substring(2));
+const PROJECT_DIR = getProjectDir({ nestingLvl: 2 });
+const packageJson = getPackageJson(PROJECT_DIR);
 
-function addOption(all, current) {
-    all[current] = true;
-    return all;
-}
-const options = flags.reduce(addOption, {});
+console.info("Updating dev dependencies...");
 
-update(options);
+const { deps } = forceUpdateProjectDeps(packageJson);
+packageJson.devDependencies = deps;
+writePackageJson(packageJson, PROJECT_DIR);
+
+console.info("\nUpdating configuration files...");
+editExistingProjectFiles(PROJECT_DIR);
+
+console.info("\nProject successfully updated! Don't forget to run `npm install`");
 
