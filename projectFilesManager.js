@@ -62,7 +62,7 @@ function removeProjectFiles(projectDir, appDir) {
 function deleteFile(destinationPath) {
     if (fs.existsSync(destinationPath)) {
         console.info(`Deleting file: ${destinationPath}`);
-        fs.unlinkSync(destinationPath);
+        fs.unlink(destinationPath);
     }
 }
 
