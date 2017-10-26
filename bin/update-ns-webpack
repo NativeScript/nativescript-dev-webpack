@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 const { resolve } = require("path");
 
-const { getPackageJson, writePackageJson } = require("../projectHelpers");
+const { getPackageJson, getProjectDir, writePackageJson } = require("../projectHelpers");
 const { forceUpdateProjectDeps } = require("../dependencyManager");
 const { editExistingProjectFiles } = require("../projectFilesManager");
 
-const PROJECT_DIR = resolve(__dirname, "../../../");
+const PROJECT_DIR = getProjectDir({ nestingLvl: 2 });
+const packageJson = getPackageJson(PROJECT_DIR);
 
 console.info("Updating dev dependencies...");
-const packageJson = getPackageJson(PROJECT_DIR);
+
 const { deps } = forceUpdateProjectDeps(packageJson);
 packageJson.devDependencies = deps;
 writePackageJson(packageJson, PROJECT_DIR);

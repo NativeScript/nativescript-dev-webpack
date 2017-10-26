@@ -26,6 +26,9 @@ module.exports = `
             "./vendor",
             "./bundle",
         ]),
+        
+        // Support for web workers since v3.2
+        new NativeScriptWorkerPlugin(),
 
         // Generate report files for bundles content
         new BundleAnalyzerPlugin({

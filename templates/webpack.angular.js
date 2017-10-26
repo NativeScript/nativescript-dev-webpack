@@ -7,6 +7,7 @@ const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
+const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
 
 const { AotPlugin } = require("@ngtools/webpack");
 
@@ -59,6 +60,15 @@ module.exports = env => {
             alias: {
                 '~': resolve("./app")
             },
+
+            // This will not follow symlinks to their original location,
+            // and will enable us to work with symlinked packages during development.
+            symlinks: false
+        },
+        resolveLoader: {
+            // This will not follow symlinks to their original location,
+            // and will enable us to work with symlinked loader packages during development.
+            symlinks: false
         },
         node: {
             // Disable node shims that conflict with NativeScript
@@ -184,6 +194,9 @@ function getPlugins(platform, env) {
             "./vendor",
             "./bundle",
         ]),
+        
+        // Support for web workers since v3.2
+        new NativeScriptWorkerPlugin(),
 
         // Generate report files for bundles content
         new BundleAnalyzerPlugin({

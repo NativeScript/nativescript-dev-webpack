@@ -30,11 +30,36 @@ const writePackageJson = (content, projectDir) => {
     fs.writeFileSync(packageJsonPath, JSON.stringify(content, null, 2))
 }
 
+const getProjectDir = ({ nestingLvl } = { nestingLvl: 0 }) => {
+    // INIT_CWD is available since npm 5.4
+    const initCwd = process.env.INIT_CWD;
+    const shouldUseInitCwd = (() => {
+        if (!initCwd) {
+            return false;
+        }
+
+        const installedPackage = path.resolve(initCwd, "node_modules", "nativescript-dev-webpack");
+        if (!fs.existsSync(installedPackage)) {
+            return false;
+        }
+
+        const stat = fs.lstatSync(installedPackage);
+        return stat.isSymbolicLink();
+    })();
+
+    return shouldUseInitCwd ?
+        initCwd :
+        Array
+            .from(Array(nestingLvl))
+            .reduce(dir => path.dirname(dir), __dirname);
+};
+
 const getPackageJsonPath = projectDir => path.resolve(projectDir, "package.json");
 
 module.exports = {
     isTypeScript,
     isAngular,
-    getPackageJson,
     writePackageJson,
+    getPackageJson,
+    getProjectDir,
 };
