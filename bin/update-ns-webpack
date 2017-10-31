@@ -2,11 +2,19 @@
 
 const update = require("../verify/update");
 
-const options = {
-    pluginVersion: process.env.npm_config_plugin_version,
-    deps: process.env.npm_config_deps,
-    scripts: process.env.npm_config_scripts,
-    configs: process.env.npm_config_configs,
+const { original: npmArgs = [] } = JSON.parse(process.env.npm_config_argv || {});
+const [, , ...processArgs ] = process.argv;
+
+const flags = [ ...npmArgs, ...processArgs ]
+    .filter(f => f.startsWith("--"))
+    .map(f => f.substring(2));
+
+function addOption(all, current) {
+    all[current] = true;
+    return all;
 }
 
+const options = flags.reduce(addOption, {});
+
 update(options);
+
