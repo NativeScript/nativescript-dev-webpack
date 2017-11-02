@@ -43,7 +43,7 @@
     "minimatch": "^3.0.4",
     "semver": "^5.4.1",
     "shelljs": "^0.6.0",
-    "nativescript-hook": "0.2.1"
+    "nativescript-hook": "^0.2.2"
   },
   "devDependencies": {}
 }
