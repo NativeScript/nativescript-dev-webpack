@@ -3,5 +3,5 @@ module.exports = Object.assign({},
     require("./NativeScriptJsonpPlugin"),
     require("./NativeScriptSnapshotPlugin"),
     require("./PlatformSuffixPlugin"),
-    require("./PlatformFSPlugin"),
+    require("./PlatformFSPlugin")
 );
