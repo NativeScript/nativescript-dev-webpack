@@ -1,5 +1,6 @@
 const path = require("path");
 const fs = require("fs");
+const semver = require("semver");
 
 const isTypeScript = ({ projectDir, packageJson } = {}) => {
     packageJson = packageJson || getPackageJson(projectDir);
@@ -63,6 +64,19 @@ const getProjectDir = ({ nestingLvl } = { nestingLvl: 0 }) => {
             .reduce(dir => path.dirname(dir), __dirname);
 };
 
+const resolveAndroidAppPath = (projectDir) => {
+    const androidPackageVersion = getAndroidRuntimeVersion(projectDir);
+    const RESOURCES_PATH = "src/main/assets/app";
+    const PROJECT_ROOT_PATH = "platforms/android";
+
+    const normalizedPlatformVersion = `${semver.major(androidPackageVersion)}.${semver.minor(androidPackageVersion)}.0`;
+    const appPath = semver.lt(normalizedPlatformVersion, "3.4.0") ?
+        path.join(PROJECT_ROOT_PATH, RESOURCES_PATH) :
+        path.join(PROJECT_ROOT_PATH, "app", RESOURCES_PATH);
+
+    return path.join(projectDir, appPath);
+};
+
 const getPackageJsonPath = projectDir => path.resolve(projectDir, "package.json");
 
 module.exports = {
@@ -72,4 +86,5 @@ module.exports = {
     getPackageJson,
     getProjectDir,
     getAndroidRuntimeVersion,
+    resolveAndroidAppPath,
 };

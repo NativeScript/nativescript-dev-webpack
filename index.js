@@ -1,8 +1,7 @@
 const path = require("path");
 const { existsSync } = require("fs");
-const semver = require("semver");
 
-const { getPackageJson, getProjectDir, isAngular, getAndroidRuntimeVersion } = require("./projectHelpers");
+const { getPackageJson, getProjectDir, isAngular, resolveAndroidAppPath } = require("./projectHelpers");
 
 const PROJECT_DIR = getProjectDir({ nestingLvl: 2 });
 const APP_DIR = path.join(PROJECT_DIR, "app");
@@ -32,16 +31,7 @@ exports.getAppPath = platform => {
 
         return `platforms/ios/${sanitizedName}/app`;
     } else if (/android/i.test(platform)) {
-        const androidPackageVersion = getAndroidRuntimeVersion(PROJECT_DIR);
-        const RESOURCES_PATH = "src/main/assets/app";
-        const PROJECT_ROOT_PATH = "platforms/android";
-
-        const normalizedPlatformVersion = `${semver.major(androidPackageVersion)}.${semver.minor(androidPackageVersion)}.0`;
-        const appPath = semver.lt(normalizedPlatformVersion, "3.4.0") ?
-            path.join(PROJECT_ROOT_PATH, RESOURCES_PATH) :
-            path.join(PROJECT_ROOT_PATH, "app", RESOURCES_PATH);
-
-        return path.join(PROJECT_DIR, appPath);
+        return resolveAndroidAppPath(PROJECT_DIR);
     } else {
         throw new Error(`Invalid platform: ${platform}`);
     }

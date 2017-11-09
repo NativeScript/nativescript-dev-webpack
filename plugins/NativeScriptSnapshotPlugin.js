@@ -2,6 +2,7 @@ const { resolve, join } = require("path");
 const { closeSync, openSync } = require("fs");
 
 const ProjectSnapshotGenerator = require("../snapshot/android/project-snapshot-generator");
+const { resolveAndroidAppPath } = require("../projectHelpers");
 
 exports.NativeScriptSnapshotPlugin = (function() {
     function NativeScriptSnapshotPlugin(options) {
@@ -43,8 +44,8 @@ exports.NativeScriptSnapshotPlugin = (function() {
 
         console.log(`\n Snapshotting bundle at ${inputFile}`);
 
-        const preparedAppRootPath = join(options.projectRoot, "platforms/android/src/main/assets");
-        const preprocessedInputFile = join(preparedAppRootPath, "app/_embedded_script_.js");
+        const preparedAppRootPath = resolveAndroidAppPath(this.options.projectRoot);
+        const preprocessedInputFile = join(preparedAppRootPath, "_embedded_script_.js");
 
         return ProjectSnapshotGenerator.prototype.generate.call(this, {
             inputFile,
@@ -52,7 +53,7 @@ exports.NativeScriptSnapshotPlugin = (function() {
             targetArchs: options.targetArchs,
             useLibs: options.useLibs,
             androidNdkPath: options.androidNdkPath,
-            tnsJavaClassesPath: join(preparedAppRootPath, "app/tns-java-classes.js")
+            tnsJavaClassesPath: join(preparedAppRootPath, "tns-java-classes.js")
         }).then(() => {
             // Make the original file empty
             if (inputFile !== preprocessedInputFile) {

@@ -6,6 +6,8 @@ const semver = require("semver");
 
 const SnapshotGenerator = require("./snapshot-generator");
 const TnsJavaClassesGenerator = require("./tns-java-classes-generator");
+const { resolveAndroidAppPath } = require("../../projectHelpers");
+
 const {
     CONSTANTS,
     createDirectory,
@@ -27,7 +29,6 @@ const resolveRelativePath = (path) => {
 
 function ProjectSnapshotGenerator(options) {
     this.options = options = options || {};
-
     options.projectRoot = resolveRelativePath(options.projectRoot) || process.cwd();
 
     console.log("Project root: " + options.projectRoot);
@@ -58,7 +59,8 @@ ProjectSnapshotGenerator.cleanSnapshotArtefacts = function (projectRoot) {
 ProjectSnapshotGenerator.installSnapshotArtefacts = function (projectRoot) {
     const buildPath = ProjectSnapshotGenerator.calculateBuildPath(projectRoot);
     const platformPath = join(projectRoot, "platforms/android");
-    const assetsPath = join(platformPath, "src/main/assets");
+
+    const appPath = resolveAndroidAppPath(projectRoot);
     const configDestinationPath = join(platformPath, "configurations", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE);
 
     // Remove build folder to make sure that the apk will be fully rebuild
@@ -70,7 +72,7 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function (projectRoot) {
 
     // Copy tns-java-classes.js
     if (shelljs.test("-e", join(buildPath, "tns-java-classes.js"))) {
-        shelljs.cp(join(buildPath, "tns-java-classes.js"), join(assetsPath, "app/tns-java-classes.js"));
+        shelljs.cp(join(buildPath, "tns-java-classes.js"), join(appPath, "tns-java-classes.js"));
     }
 
     if (shelljs.test("-e", join(buildPath, "ndk-build/libs"))) {
@@ -84,11 +86,11 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function (projectRoot) {
     else {
         // useLibs = false
         const blobsSrcPath = join(buildPath, "snapshots/blobs");
-        const blobsDestinationPath = join(assetsPath, "snapshots");
-        const appPackageJsonPath = join(assetsPath, "app/package.json");
+        const blobsDestinationPath = resolve(appPath, "../snapshots");
+        const appPackageJsonPath = join(appPath, "package.json");
 
         // Copy the blobs in the prepared app folder
-        shelljs.cp("-R", blobsSrcPath + "/", join(assetsPath, "snapshots"));
+        shelljs.cp("-R", blobsSrcPath + "/", resolve(appPath, "../snapshots"));
 
         /*
         Rename TNSSnapshot.blob files to snapshot.blob files. The xxd tool uses the file name for the name of the static array. This is why the *.blob files are initially named  TNSSnapshot.blob. After the xxd step, they must be renamed to snapshot.blob, because this is the filename that the Android runtime is looking for.
@@ -146,7 +148,7 @@ ProjectSnapshotGenerator.prototype.getV8Version = function (generationOptions) {
             return resolve(maybeV8Version);
         }
 
-        const runtimeVersion = this.getAndroidRuntimeVersion(this.options.projectRoot);
+        const runtimeVersion = getAndroidRuntimeVersion(this.options.projectRoot);
         getV8VersionsMap(runtimeVersion)
             .then(({ versionsMap, latest }) => {
                 const v8Version = findV8Version(runtimeVersion, versionsMap);
