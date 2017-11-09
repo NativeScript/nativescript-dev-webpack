@@ -1,5 +1,7 @@
 module.exports = Object.assign({},
     require("./GenerateBundleStarterPlugin"),
     require("./NativeScriptJsonpPlugin"),
-    require("./NativeScriptSnapshotPlugin")
+    require("./NativeScriptSnapshotPlugin"),
+    require("./PlatformSuffixPlugin"),
+    require("./PlatformFSPlugin"),
 );
