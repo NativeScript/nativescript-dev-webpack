@@ -36,7 +36,8 @@ exports.getAppPath = platform => {
         const RESOURCES_PATH = "src/main/assets/app";
         const PROJECT_ROOT_PATH = "platforms/android";
 
-        const appPath = semver.lt(androidPackageVersion, "3.4.0") ?
+        const normalizedPlatformVersion = `${semver.major(androidPackageVersion)}.${semver.minor(androidPackageVersion)}.0`;
+        const appPath = semver.lt(normalizedPlatformVersion, "3.4.0") ?
             path.join(PROJECT_ROOT_PATH, RESOURCES_PATH) :
             path.join(PROJECT_ROOT_PATH, "app", RESOURCES_PATH);
 
