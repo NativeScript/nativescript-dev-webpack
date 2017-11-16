@@ -81,7 +81,6 @@ SnapshotGenerator.prototype.convertToAndroidArchName = function(archName) {
 SnapshotGenerator.prototype.runMksnapshotTool = function(snapshotToolsPath, inputFile, v8Version, targetArchs, buildCSource) {
     // Cleans the snapshot build folder
     shelljs.rm("-rf", join(this.buildPath, "snapshots"));
-    console.log("000 v8 version" + v8Version);
 
     const mksnapshotStdErrPath = join(this.buildPath, "mksnapshot-stderr.txt");
 

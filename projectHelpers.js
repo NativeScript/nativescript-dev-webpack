@@ -2,7 +2,6 @@ const path = require("path");
 const fs = require("fs");
 const semver = require("semver");
 
-
 const isTypeScript = ({ projectDir, packageJson } = {}) => {
     packageJson = packageJson || getPackageJson(projectDir);
 
