@@ -2,6 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const semver = require("semver");
 
+
 const isTypeScript = ({ projectDir, packageJson } = {}) => {
     packageJson = packageJson || getPackageJson(projectDir);
 
@@ -25,7 +26,8 @@ const getAndroidRuntimeVersion = (projectDir) => {
     try {
         const projectPackageJSON = getPackageJson(projectDir);
 
-        return projectPackageJSON["nativescript"]["tns-android"]["version"];
+        const version = projectPackageJSON["nativescript"]["tns-android"]["version"];
+        return version && toReleaseVersion(version);
     } catch (e) {
         return null;
     }
@@ -64,17 +66,39 @@ const getProjectDir = ({ nestingLvl } = { nestingLvl: 0 }) => {
             .reduce(dir => path.dirname(dir), __dirname);
 };
 
-const resolveAndroidAppPath = (projectDir) => {
-    const androidPackageVersion = getAndroidRuntimeVersion(projectDir);
+const toReleaseVersion = version =>
+    version.replace(/-.*/, "");
+
+const getAndroidProjectPath = ({androidPackageVersion, projectRoot}) => {
+    const ANDROID_PROJECT_PATH = "platforms/android";
+    if (projectRoot) {
+        androidPackageVersion = getAndroidRuntimeVersion(projectRoot);
+    }
+
+    return semver.lt(androidPackageVersion, "3.4.0") ?
+        ANDROID_PROJECT_PATH :
+        path.join(ANDROID_PROJECT_PATH, "app");
+};
+
+
+const resolveAndroidAppPath = projectDir => {
     const RESOURCES_PATH = "src/main/assets/app";
-    const PROJECT_ROOT_PATH = "platforms/android";
+    const androidPackageVersion = getAndroidRuntimeVersion(projectDir);
+    const androidProjectPath = getAndroidProjectPath({androidPackageVersion});
 
-    const normalizedPlatformVersion = `${semver.major(androidPackageVersion)}.${semver.minor(androidPackageVersion)}.0`;
-    const appPath = semver.lt(normalizedPlatformVersion, "3.4.0") ?
-        path.join(PROJECT_ROOT_PATH, RESOURCES_PATH) :
-        path.join(PROJECT_ROOT_PATH, "app", RESOURCES_PATH);
+    return path.join(projectDir, androidProjectPath, RESOURCES_PATH);
+};
 
-    return path.join(projectDir, appPath);
+const resolveAndroidConfigurationsPath = projectDir => {
+    const CONFIGURATIONS_DIR = "configurations";
+    const androidPackageVersion = getAndroidRuntimeVersion(projectDir);
+    const androidProjectPath = getAndroidProjectPath({androidPackageVersion});
+
+    const configurationsPath = semver.lt(androidPackageVersion, "3.3.0") ?
+        path.join(androidProjectPath, CONFIGURATIONS_DIR):
+        path.join(androidProjectPath, "build", CONFIGURATIONS_DIR);
+
+    return path.join(projectDir, configurationsPath);
 };
 
 const getPackageJsonPath = projectDir => path.resolve(projectDir, "package.json");
@@ -86,5 +110,7 @@ module.exports = {
     getPackageJson,
     getProjectDir,
     getAndroidRuntimeVersion,
+    getAndroidProjectPath,
     resolveAndroidAppPath,
+    resolveAndroidConfigurationsPath,
 };

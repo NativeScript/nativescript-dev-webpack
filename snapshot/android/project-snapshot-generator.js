@@ -6,14 +6,18 @@ const semver = require("semver");
 
 const SnapshotGenerator = require("./snapshot-generator");
 const TnsJavaClassesGenerator = require("./tns-java-classes-generator");
-const { resolveAndroidAppPath } = require("../../projectHelpers");
-
 const {
     CONSTANTS,
     createDirectory,
     getJsonFile,
 } = require("./utils");
-const { getPackageJson, getAndroidRuntimeVersion } = require("../../projectHelpers");
+const {
+    getPackageJson,
+    getAndroidRuntimeVersion,
+    getAndroidProjectPath,
+    resolveAndroidAppPath,
+    resolveAndroidConfigurationsPath,
+} = require("../../projectHelpers");
 
 const MIN_ANDROID_RUNTIME_VERSION = "3.0.0";
 const VALID_ANDROID_RUNTIME_TAGS = Object.freeze(["next", "rc"]);
@@ -39,29 +43,44 @@ function ProjectSnapshotGenerator(options) {
 module.exports = ProjectSnapshotGenerator;
 
 ProjectSnapshotGenerator.calculateBuildPath = function (projectRoot) {
-    return join(projectRoot, "platforms/android/snapshot-build/build");
+    return join(
+        ProjectSnapshotGenerator.calculateProjectPath(projectRoot),
+        "snapshot-build",
+        "build"
+    );
 }
 
 ProjectSnapshotGenerator.prototype.getBuildPath = function () {
     return ProjectSnapshotGenerator.calculateBuildPath(this.options.projectRoot);
 }
 
+ProjectSnapshotGenerator.calculateProjectPath = function (projectRoot) {
+    const projectPath = getAndroidProjectPath({projectRoot});
+    return join(projectRoot, projectPath);
+}
+
+ProjectSnapshotGenerator.prototype.getProjectPath = function () {
+    return ProjectSnapshotGenerator.calculateProjectPath(this.options.projectRoot);
+}
+
 ProjectSnapshotGenerator.cleanSnapshotArtefacts = function (projectRoot) {
-    const platformPath = join(projectRoot, "platforms/android");
+    const platformPath = ProjectSnapshotGenerator.calculateProjectPath(projectRoot);
 
     // Remove blob files from prepared folder
     shelljs.rm("-rf", join(platformPath, "src/main/assets/snapshots"));
 
     // Remove prepared include.gradle configurations
-    shelljs.rm("-rf", join(platformPath, "configurations/", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE));
+    const configurationsPath = resolveAndroidConfigurationsPath(projectRoot);
+    shelljs.rm("-rf", join(configurationsPath, SnapshotGenerator.SNAPSHOT_PACKAGE_NANE));
 }
 
 ProjectSnapshotGenerator.installSnapshotArtefacts = function (projectRoot) {
     const buildPath = ProjectSnapshotGenerator.calculateBuildPath(projectRoot);
-    const platformPath = join(projectRoot, "platforms/android");
+    const platformPath = ProjectSnapshotGenerator.calculateProjectPath(projectRoot);
 
     const appPath = resolveAndroidAppPath(projectRoot);
-    const configDestinationPath = join(platformPath, "configurations", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE);
+    const configurationsPath = resolveAndroidConfigurationsPath(projectRoot);
+    const configDestinationPath = join(configurationsPath, SnapshotGenerator.SNAPSHOT_PACKAGE_NANE);
 
     // Remove build folder to make sure that the apk will be fully rebuild
     shelljs.rm("-rf", join(platformPath, "build"));
@@ -122,9 +141,8 @@ const fetchV8VersionsFile = () =>
     });
 
 const findV8Version = (runtimeVersion, v8VersionsMap) => {
-    const runtimeReleaseVersion = runtimeVersion.replace(/-.*/, "");
     const runtimeRange = Object.keys(v8VersionsMap)
-        .find(range => semver.satisfies(runtimeReleaseVersion, range));
+        .find(range => semver.satisfies(runtimeVersion, range));
 
     return v8VersionsMap[runtimeRange];
 }
@@ -170,9 +188,7 @@ ProjectSnapshotGenerator.prototype.getV8Version = function (generationOptions) {
 ProjectSnapshotGenerator.prototype.validateAndroidRuntimeVersion = function () {
     const currentRuntimeVersion = getAndroidRuntimeVersion(this.options.projectRoot);
 
-    if (!currentRuntimeVersion ||
-        !existsSync(join(this.options.projectRoot, "platforms/android"))) {
-
+    if (!currentRuntimeVersion || !this.getProjectPath()) {
         throw new Error("In order to generate a V8 snapshot you must have the \"android\" platform installed - to do so please run \"tns platform add android\".");
     }
 
