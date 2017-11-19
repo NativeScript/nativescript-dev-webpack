@@ -11,7 +11,13 @@ const {
     createDirectory,
     getJsonFile,
 } = require("./utils");
-const { getPackageJson } = require("../../projectHelpers");
+const {
+    getPackageJson,
+    getAndroidRuntimeVersion,
+    getAndroidProjectPath,
+    resolveAndroidAppPath,
+    resolveAndroidConfigurationsPath,
+} = require("../../projectHelpers");
 
 const MIN_ANDROID_RUNTIME_VERSION = "3.0.0";
 const VALID_ANDROID_RUNTIME_TAGS = Object.freeze(["next", "rc"]);
@@ -25,10 +31,9 @@ const resolveRelativePath = (path) => {
     return null;
 };
 
-function ProjectSnapshotGenerator (options) {
+function ProjectSnapshotGenerator(options) {
     this.options = options = options || {};
-
-    options.projectRoot = resolveRelativePath(options.projectRoot) ||  process.cwd();
+    options.projectRoot = resolveRelativePath(options.projectRoot) || process.cwd();
 
     console.log("Project root: " + options.projectRoot);
     console.log("Snapshots build directory: " + this.getBuildPath());
@@ -37,29 +42,45 @@ function ProjectSnapshotGenerator (options) {
 }
 module.exports = ProjectSnapshotGenerator;
 
-ProjectSnapshotGenerator.calculateBuildPath = function(projectRoot) {
-    return join(projectRoot, "platforms/android/snapshot-build/build");
+ProjectSnapshotGenerator.calculateBuildPath = function (projectRoot) {
+    return join(
+        ProjectSnapshotGenerator.calculateProjectPath(projectRoot),
+        "snapshot-build",
+        "build"
+    );
 }
 
-ProjectSnapshotGenerator.prototype.getBuildPath = function() {
+ProjectSnapshotGenerator.prototype.getBuildPath = function () {
     return ProjectSnapshotGenerator.calculateBuildPath(this.options.projectRoot);
 }
 
-ProjectSnapshotGenerator.cleanSnapshotArtefacts = function(projectRoot) {
-    const platformPath = join(projectRoot, "platforms/android");
+ProjectSnapshotGenerator.calculateProjectPath = function (projectRoot) {
+    const projectPath = getAndroidProjectPath({projectRoot});
+    return join(projectRoot, projectPath);
+}
+
+ProjectSnapshotGenerator.prototype.getProjectPath = function () {
+    return ProjectSnapshotGenerator.calculateProjectPath(this.options.projectRoot);
+}
+
+ProjectSnapshotGenerator.cleanSnapshotArtefacts = function (projectRoot) {
+    const platformPath = ProjectSnapshotGenerator.calculateProjectPath(projectRoot);
 
     // Remove blob files from prepared folder
     shelljs.rm("-rf", join(platformPath, "src/main/assets/snapshots"));
 
     // Remove prepared include.gradle configurations
-    shelljs.rm("-rf", join(platformPath, "configurations/", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE));
+    const configurationsPath = resolveAndroidConfigurationsPath(projectRoot);
+    shelljs.rm("-rf", join(configurationsPath, SnapshotGenerator.SNAPSHOT_PACKAGE_NANE));
 }
 
-ProjectSnapshotGenerator.installSnapshotArtefacts = function(projectRoot) {
+ProjectSnapshotGenerator.installSnapshotArtefacts = function (projectRoot) {
     const buildPath = ProjectSnapshotGenerator.calculateBuildPath(projectRoot);
-    const platformPath = join(projectRoot, "platforms/android");
-    const assetsPath = join(platformPath, "src/main/assets");
-    const configDestinationPath = join(platformPath, "configurations", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE);
+    const platformPath = ProjectSnapshotGenerator.calculateProjectPath(projectRoot);
+
+    const appPath = resolveAndroidAppPath(projectRoot);
+    const configurationsPath = resolveAndroidConfigurationsPath(projectRoot);
+    const configDestinationPath = join(configurationsPath, SnapshotGenerator.SNAPSHOT_PACKAGE_NANE);
 
     // Remove build folder to make sure that the apk will be fully rebuild
     shelljs.rm("-rf", join(platformPath, "build"));
@@ -70,7 +91,7 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function(projectRoot) {
 
     // Copy tns-java-classes.js
     if (shelljs.test("-e", join(buildPath, "tns-java-classes.js"))) {
-        shelljs.cp(join(buildPath, "tns-java-classes.js"), join(assetsPath, "app/tns-java-classes.js"));
+        shelljs.cp(join(buildPath, "tns-java-classes.js"), join(appPath, "tns-java-classes.js"));
     }
 
     if (shelljs.test("-e", join(buildPath, "ndk-build/libs"))) {
@@ -84,11 +105,11 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function(projectRoot) {
     else {
         // useLibs = false
         const blobsSrcPath = join(buildPath, "snapshots/blobs");
-        const blobsDestinationPath = join(assetsPath, "snapshots");
-        const appPackageJsonPath = join(assetsPath, "app/package.json");
+        const blobsDestinationPath = resolve(appPath, "../snapshots");
+        const appPackageJsonPath = join(appPath, "package.json");
 
         // Copy the blobs in the prepared app folder
-        shelljs.cp("-R", blobsSrcPath + "/", join(assetsPath, "snapshots"));
+        shelljs.cp("-R", blobsSrcPath + "/", resolve(appPath, "../snapshots"));
 
         /*
         Rename TNSSnapshot.blob files to snapshot.blob files. The xxd tool uses the file name for the name of the static array. This is why the *.blob files are initially named  TNSSnapshot.blob. After the xxd step, they must be renamed to snapshot.blob, because this is the filename that the Android runtime is looking for.
@@ -120,9 +141,8 @@ const fetchV8VersionsFile = () =>
     });
 
 const findV8Version = (runtimeVersion, v8VersionsMap) => {
-    const runtimeReleaseVersion = runtimeVersion.replace(/-.*/, "");
     const runtimeRange = Object.keys(v8VersionsMap)
-        .find(range => semver.satisfies(runtimeReleaseVersion, range));
+        .find(range => semver.satisfies(runtimeVersion, range));
 
     return v8VersionsMap[runtimeRange];
 }
@@ -139,16 +159,16 @@ const getV8VersionsMap = runtimeVersion =>
         }
     });
 
-ProjectSnapshotGenerator.prototype.getV8Version = function(generationOptions) {
+ProjectSnapshotGenerator.prototype.getV8Version = function (generationOptions) {
     return new Promise((resolve, reject) => {
         const maybeV8Version = generationOptions.v8Version;
         if (maybeV8Version) {
             return resolve(maybeV8Version);
         }
 
-        const runtimeVersion = this.getAndroidRuntimeVersion();
+        const runtimeVersion = getAndroidRuntimeVersion(this.options.projectRoot);
         getV8VersionsMap(runtimeVersion)
-            .then(({ versionsMap, latest}) => {
+            .then(({ versionsMap, latest }) => {
                 const v8Version = findV8Version(runtimeVersion, versionsMap);
 
                 if (!v8Version && !latest) {
@@ -165,12 +185,10 @@ ProjectSnapshotGenerator.prototype.getV8Version = function(generationOptions) {
     });
 }
 
-ProjectSnapshotGenerator.prototype.validateAndroidRuntimeVersion = function() {
-    const currentRuntimeVersion = this.getAndroidRuntimeVersion();
+ProjectSnapshotGenerator.prototype.validateAndroidRuntimeVersion = function () {
+    const currentRuntimeVersion = getAndroidRuntimeVersion(this.options.projectRoot);
 
-    if (!currentRuntimeVersion ||
-        !existsSync(join(this.options.projectRoot, "platforms/android"))) {
-
+    if (!currentRuntimeVersion || !this.getProjectPath()) {
         throw new Error("In order to generate a V8 snapshot you must have the \"android\" platform installed - to do so please run \"tns platform add android\".");
     }
 
@@ -182,17 +200,7 @@ ProjectSnapshotGenerator.prototype.validateAndroidRuntimeVersion = function() {
     }
 }
 
-ProjectSnapshotGenerator.prototype.getAndroidRuntimeVersion = function() {
-    try {
-        const projectPackageJSON = getPackageJson(this.options.projectRoot);
-
-        return projectPackageJSON["nativescript"]["tns-android"]["version"];
-    } catch(e) {
-        return null;
-    }
-}
-
-ProjectSnapshotGenerator.prototype.generateTnsJavaClassesFile = function(generationOptions) {
+ProjectSnapshotGenerator.prototype.generateTnsJavaClassesFile = function (generationOptions) {
     const tnsJavaClassesGenerator = new TnsJavaClassesGenerator();
     return tnsJavaClassesGenerator.generate({
         projectRoot: this.options.projectRoot,
@@ -201,7 +209,7 @@ ProjectSnapshotGenerator.prototype.generateTnsJavaClassesFile = function(generat
     });
 }
 
-ProjectSnapshotGenerator.prototype.generate = function(generationOptions) {
+ProjectSnapshotGenerator.prototype.generate = function (generationOptions) {
     generationOptions = generationOptions || {};
 
     console.log("Running snapshot generation with the following arguments: ");

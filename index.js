@@ -1,14 +1,14 @@
 const path = require("path");
 const { existsSync } = require("fs");
 
-const { getPackageJson, getProjectDir, isAngular } = require("./projectHelpers");
+const { getPackageJson, getProjectDir, isAngular, resolveAndroidAppPath } = require("./projectHelpers");
 
 const PROJECT_DIR = getProjectDir({ nestingLvl: 2 });
 const APP_DIR = path.join(PROJECT_DIR, "app");
 
 Object.assign(exports, require('./plugins'));
 
-if (isAngular({projectDir: PROJECT_DIR})) {
+if (isAngular({ projectDir: PROJECT_DIR })) {
     Object.assign(exports, require('./plugins/angular'));
 }
 
@@ -31,7 +31,7 @@ exports.getAppPath = platform => {
 
         return `platforms/ios/${sanitizedName}/app`;
     } else if (/android/i.test(platform)) {
-        return path.join(PROJECT_DIR, "platforms/android/src/main/assets/app");
+        return resolveAndroidAppPath(PROJECT_DIR);
     } else {
         throw new Error(`Invalid platform: ${platform}`);
     }
