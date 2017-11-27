@@ -19,14 +19,14 @@ module.exports = `
             { from: "**/*.jpg" },
             { from: "**/*.png" },
             { from: "**/*.xml" },
-        ], { ignore: ["App_Resources/**"] }),
+        ]),
 
         // Generate a bundle starter script and activate it in package.json
         new nsWebpack.GenerateBundleStarterPlugin([
             "./vendor",
             "./bundle",
         ]),
-        
+
         // Support for web workers since v3.2
         new NativeScriptWorkerPlugin(),
 
