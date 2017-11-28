@@ -1,4 +1,5 @@
 const { resolve, join  } = require("path");
+const fs = require('fs');
 
 const webpack = require("webpack");
 const nsWebpack = require("nativescript-dev-webpack");
@@ -12,10 +13,12 @@ const { AotPlugin } = require("@ngtools/webpack");
 
 const ngToolsWebpackOptions = { tsConfigPath: "tsconfig.aot.json" };
 
-const mainSheet = `app.css`;
+let mainSheet = '';
 
 module.exports = env => {
     const platform = getPlatform(env);
+
+    mainSheet = getMainSheet(platform);
 
     // Default destination inside platforms/<platform>/...
     const path = resolve(nsWebpack.getAppPath(platform));
@@ -92,6 +95,12 @@ module.exports = env => {
     return config;
 };
 
+
+function getMainSheet(platform) {
+    const mainSheet = `app.${platform}.css`;
+    return fs.existsSync(join(__dirname, 'app', mainSheet)) ?
+        mainSheet : 'app.css';
+}
 
 function getPlatform(env) {
     return env.android ? "android" :
