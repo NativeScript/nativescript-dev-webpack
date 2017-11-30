@@ -34,14 +34,14 @@ describe("sample scenario", () => {
         await btnNav.tap();
 
         const secondPage = await driver.findElementByText("Second Page");
-        const btn = await driver.findElementByText("btn");
+        const btnZero = await driver.findElementByText("0");
+        await btnZero.tap();
 
-        const result = await driver.compareElement(btn, getButtonImageName());
-        assert.isTrue(result);
-
-        await btn.tap();
-        assert.equal(await btn.text(), 1);
-
+        // In iOS, the `automationText` property applies on both `name` and `label`:
+        // https://github.com/NativeScript/NativeScript/issues/3150
+        // <XCUIElementTypeButton type="XCUIElementTypeButton" name="0" label="0" enabled="true" visible="true" x="132" y="395" width="111" height="110"/>
+        // <XCUIElementTypeButton type="XCUIElementTypeButton" name="btn" label="btn" enabled="true" visible="true" x="132" y="395" width="111" height="110"/>
+        const btnOne = await driver.findElementByText("1");
         await driver.navBack();
     });
 
@@ -63,12 +63,10 @@ describe("sample scenario", () => {
     for (let styleType in styleTypes) {
         it(`should find an element with ${styleType} style applied`, async function () {
             const element = await driver.findElementByText(styleTypes[styleType]);
-            const result = await driver.compareElement(element, getPlatformImageName());
+            const result = await driver.compareElement(element, "style");
             assert.isTrue(result);
         });
     }
 
-    const getButtonImageName = () => { return driver.isAndroid ? "btnAndroid" : "btnIOS"; }
-    const getPlatformImageName = () => { return driver.isAndroid ? "styleAndroid" : "styleIOS"; }
     const getPlatformLabel = async () => { return driver.isAndroid ? await driver.findElementByText("android") : await driver.findElementByText("ios"); }
 });

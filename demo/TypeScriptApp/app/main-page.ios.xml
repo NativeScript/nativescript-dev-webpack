@@ -24,12 +24,12 @@ https://docs.nativescript.org/ui/components.
     class names available for styling your app at https://docs.nativescript.org/ui/theme.
     -->
     <StackLayout class="p-20">
-        <GridLayout rows="auto, auto, auto" columns="auto, auto">
-            <GridLayout row="0" automationText="styleInline" width="30px" height="30px" backgroundColor="#999" margin="10px" />
+        <GridLayout rows="50px, 50px, 50px" columns="50px, auto">
+            <GridLayout row="0" automationText="styleInline" width="30px" height="30px" backgroundColor="#999" />
             <Label row="0" col="1" text="inline style" verticalAlignment="center" />
-            <GridLayout row="1" automationText="stylePage" width="30px" height="30px" class="page-class" margin="10px" />
+            <GridLayout row="1" automationText="stylePage" width="30px" height="30px" class="page-class" />
             <Label row="1" col="1" text="page style" verticalAlignment="center" />
-            <GridLayout row="2" automationText="styleApp" width="30px" height="30px" class="app-class" margin="10px" />
+            <GridLayout row="2" automationText="styleApp" width="30px" height="30px" class="app-class" />
             <Label row="2" col="1" text="app style" verticalAlignment="center" />
         </GridLayout>
         <Label text="Tap the button" class="h1 text-center"/>
