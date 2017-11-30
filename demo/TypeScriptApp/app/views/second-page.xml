@@ -4,6 +4,6 @@
         </ActionBar>
     </Page.actionBar>
     <GridLayout>
-        <Button text="0" width="110" height="110" tap="secondPageTap" />
+        <Button automationText="btn" text="0" width="110" height="110" tap="secondPageTap" />
     </GridLayout>
 </Page>

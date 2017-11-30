@@ -10,8 +10,7 @@ https://docs.nativescript.org/ui/components.
     http://docs.nativescript.org/ui/action-bar
     -->
     <Page.actionBar>
-        <ActionBar title="My App" icon="">
-        </ActionBar>
+        <ActionBar title="My App" icon=""></ActionBar>
     </Page.actionBar>
     <!--
     The StackLayout stacks UI components on the screen—either vertically or horizontally.
@@ -25,15 +24,18 @@ https://docs.nativescript.org/ui/components.
     class names available for styling your app at https://docs.nativescript.org/ui/theme.
     -->
     <StackLayout class="p-20">
-        <StackLayout horizontalAlignment="left" verticalAlignment="top" orientation="horizontal">
-            <GridLayout width="30px" height="30px" backgroundColor="#999" margin="10px" />
-            <GridLayout width="30px" height="30px" class="app-class" margin="10px" />
-            <GridLayout width="30px" height="30px" class="page-class" margin="10px" />
-        </StackLayout>
+        <GridLayout rows="auto, auto, auto" columns="auto, auto">
+            <GridLayout row="0" automationText="styleInline" width="30px" height="30px" backgroundColor="#999" margin="10px" />
+            <Label row="0" col="1" text="inline style" verticalAlignment="center" />
+            <GridLayout row="1" automationText="stylePage" width="30px" height="30px" class="page-class" margin="10px" />
+            <Label row="1" col="1" text="page style" verticalAlignment="center" />
+            <GridLayout row="2" automationText="styleApp" width="30px" height="30px" class="app-class" margin="10px" />
+            <Label row="2" col="1" text="app style" verticalAlignment="center" />
+        </GridLayout>
         <Label text="Tap the button" class="h1 text-center"/>
         <Button text="TAP" tap="{{ onTap }}" class="btn btn-primary btn-active"/>
         <Label text="{{ message }}" class="h2 text-center" textWrap="true"/>
-        <Button text="iOS, Navigate to second-page.xml" tap="goToSecondPage" />
+        <Button automationText="btnNav" text="iOS, Navigate to second-page.xml" tap="goToSecondPage" />
         <Label id="platform" text="-" />
     </StackLayout>
 </Page>

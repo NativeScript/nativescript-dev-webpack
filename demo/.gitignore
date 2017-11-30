@@ -1,7 +1,14 @@
-webpack.config.js
-
+node_modules
 platforms
+hooks
 report
+
+**/*.map
+
+reports/
+test-results.xml
+
+tsconfig.aot.json
 
 vendor.js
 vendor-platform.android.js
@@ -11,4 +18,4 @@ vendor.ts
 vendor-platform.android.ts
 vendor-platform.ios.ts
 
-tsconfig.aot.json
+webpack.config.js
