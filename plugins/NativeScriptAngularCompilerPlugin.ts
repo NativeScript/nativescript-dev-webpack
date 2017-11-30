@@ -11,7 +11,9 @@ const appNgToolsWebpack: typeof ngToolsWebpack = require(ngToolsWebpackDir);
 
 export const AngularCompilerPlugin: typeof ngToolsWebpack.AngularCompilerPlugin = appNgToolsWebpack.AngularCompilerPlugin;
 
-export type NativeScriptAngularCompilerPluginOptions = ngToolsWebpack.AngularCompilerPluginOptions & { platformOptions?: PlatformFSPluginOptions };
+export interface NativeScriptAngularCompilerPluginOptions extends ngToolsWebpack.AngularCompilerPluginOptions {
+    platformOptions?: PlatformFSPluginOptions;
+}
 
 export interface CompiledFile {
     outputText: string;
@@ -47,7 +49,7 @@ export class NativeScriptAngularCompilerPlugin extends AngularCompilerPlugin {
                 }
             };
             this.__compilerHost.resourceNameToFileName = function(file, relativeTo) {
-                const parsed= path.parse(file);
+                const parsed = path.parse(file);
                 const platformFile = parsed.name + "." + platform + parsed.ext;
                 let resolved;
                 try {
@@ -63,7 +65,7 @@ export class NativeScriptAngularCompilerPlugin extends AngularCompilerPlugin {
     getCompiledFile(this: NativeScriptAngularCompilerPlugin, file: string): CompiledFile {
         try {
             if (this.platform) {
-                const parsed= path.parse(file);
+                const parsed = path.parse(file);
                 const platformFile = parsed.dir + path.sep + parsed.name + "." + this.platform + parsed.ext;
                 const result = super.getCompiledFile(platformFile);
                 return result;

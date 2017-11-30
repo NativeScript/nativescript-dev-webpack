@@ -65,12 +65,9 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
     const isIgnored = file => minimatchFileFilters.some(filter => filter(file));
 
     const alienPlatforms = platforms.filter(p => p !== platform);
-    const alienPlatformFilters = alienPlatforms.map(platform => ({
-            endsWithSuffix: `.${platform}`,
-            contains: `.${platform}.`
-        })).map(({endsWithSuffix, contains}) => baseFileName =>
-            baseFileName.endsWith(endsWithSuffix) ||
-            baseFileName.indexOf(contains) != -1);
+    const alienPlatformFilters = alienPlatforms
+        .map(platform => `.${platform}.`)
+        .map(contains => baseFileName => baseFileName.indexOf(contains) !== -1);
 
     const isNotAlienPlatformFile = file => !alienPlatformFilters.some(filter => filter(basename(file)));
 
@@ -78,9 +75,7 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
 
     const trimPlatformSuffix = file => {
         const {dir, name, ext} = parseFile(file);
-        if (ext === currentPlatformExt) {
-            return join(dir, name);
-        } else if (name.endsWith(currentPlatformExt)) {
+        if (name.endsWith(currentPlatformExt)) {
             return join(dir, name.substr(0, name.length - currentPlatformExt.length) + ext);
         }
         return file;
@@ -99,7 +94,7 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
 
     function platformSpecificFile(file: string): string {
         const {dir, name, ext} = parseFile(file);
-        const platformFilePath = join(dir, name + ("." + platform) + ext);
+        const platformFilePath = join(dir, `${name}.${platform}${ext}`);
         return platformFilePath;
     }
 
@@ -117,7 +112,7 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
      * Expects array with absolute paths.
      * Returns array with absolute paths.
      */
-    function filterAlienFilesAndMap(files: string[]): string[] {
+    function filterIgnoredFilesAlienFilesAndMap(files: string[]): string[] {
         const mappedFiles = files
             .filter(isNotIgnored)
             .filter(isNotAlienPlatformFile)
@@ -152,10 +147,10 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
                 fileTimestamps,
                 contextTimestamps) {
 
-            const mappedFilesModified = filterAlienFilesAndMap(filesModified);
+            const mappedFilesModified = filterIgnoredFilesAlienFilesAndMap(filesModified);
 
             const mappedTimestamps = {};
-            for(var file in fileTimestamps) {
+            for(const file in fileTimestamps) {
                 const timestamp = fileTimestamps[file];
                 mappedTimestamps[file] = timestamp;
                 const platformSuffixIndex = file.lastIndexOf(platformSuffix);
@@ -173,8 +168,6 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
         fs.watch(mappedFiles, dirs, missing, startTime, watchOptions, callbackCalled);
     }
 
-    return mappedFS;
-
     /**
      * For FS functions that get as first argument a file path,
      * this will map it to a platform specific file if such file exists or fallback to the default.
@@ -183,7 +176,7 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
      */
     function mapPath(fName) {
         const base = fs[fName];
-        mappedFS[fName] = platform ? function() {
+        mappedFS[fName] = function() {
             const args = arguments;
             const originalFilePath = args[0];
             const callback = args[args.length - 1];
@@ -198,7 +191,7 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
                 }
                 base.apply(fs, args);
             });
-        } : base;
+        };
     }
 
     /**
@@ -209,8 +202,8 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
     function filterResultingFiles(name) {
         const base = fs[name];
         mappedFS[name] = function() {
-            const callback = arguments[arguments.length - 1];
             const dir = arguments[0];
+            const callback = arguments[arguments.length - 1];
             if (isIgnored(dir)) {
                 // Return empty file list for filtered directories.
                 callback(null, []);
@@ -222,7 +215,7 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
                 } else {
                     // Create absolute paths for "ignored" testing, map platforms, and return back the base name.
                     const absoluteFilePaths = files.map(file => join(dir, file));
-                    const resultAbsolute = filterAlienFilesAndMap(absoluteFilePaths);
+                    const resultAbsolute = filterIgnoredFilesAlienFilesAndMap(absoluteFilePaths);
                     const resultFileNames = resultAbsolute.map(f => basename(f));
                     callback(null, resultFileNames);
                 }
@@ -230,4 +223,6 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
             base.apply(fs, arguments);
         }
     }
+
+    return mappedFS;
 }

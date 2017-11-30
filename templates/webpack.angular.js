@@ -15,14 +15,14 @@ module.exports = env => {
     }
     const platforms = ["ios", "android"];
     const mainSheet = "app.css";
-    const { snapshot, uglify, report, skipCodeGeneration } = env;
-    const ngToolsWebpackOptions = { tsConfigPath: skipCodeGeneration ? "tsconfig.json" : "tsconfig.aot.json"};
+    const { snapshot, uglify, report, aot } = env;
+    const ngToolsWebpackOptions = { tsConfigPath: aot ? "tsconfig.aot.json" : "tsconfig.json"};
 
     const config = {
         context: resolve("./app"),
         target: nativescriptTarget,
         entry: {
-            bundle: skipCodeGeneration ? "./main.ts" : "./main.aot.ts",
+            bundle: aot ? "./main.aot.ts" : "./main.ts",
             vendor: "./vendor",
         },
         output: {
@@ -80,7 +80,6 @@ module.exports = env => {
             }),
             // Copy assets to out dir. Add your own globs as needed.
             new CopyWebpackPlugin([
-                { from: "css/**" },
                 { from: "fonts/**" },
                 { from: "**/*.jpg" },
                 { from: "**/*.png" },
@@ -97,7 +96,7 @@ module.exports = env => {
             new nsWebpack.NativeScriptAngularCompilerPlugin(
                 Object.assign({
                     entryModule: resolve(__dirname, "app/app.module#AppModule"),
-                    skipCodeGeneration,
+                    skipCodeGeneration: !aot,
                     platformOptions: {
                         platform,
                         platforms,
