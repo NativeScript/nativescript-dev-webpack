@@ -69,7 +69,7 @@ function execute(command) {
     return new Promise((resolve, reject) => {
         const args = command.split(" ");
         spawnChildProcess(...args)
-            .then(resolve) 
+            .then(resolve)
             .catch(throwError)
     });
 }
@@ -80,7 +80,7 @@ function spawnChildProcess(command, ...args) {
 
         const childProcess = spawn(command, escapedArgs, {
             stdio: "inherit",
-            pwd: PROJECT_DIR,
+            cwd: PROJECT_DIR,
             shell: true,
         });
 
