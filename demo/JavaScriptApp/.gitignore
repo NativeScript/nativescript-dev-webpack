@@ -1,5 +1,2 @@
-app/**/*.js
-e2e/**/*.js
-
 app/main-page.android.css
 app/main-page.ios.css

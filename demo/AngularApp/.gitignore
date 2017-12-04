@@ -8,3 +8,5 @@ e2e/**/*.map
 e2e/reports/
 test-results.xml
 
+app/item/items.component.android.css
+app/item/items.component.ios.css

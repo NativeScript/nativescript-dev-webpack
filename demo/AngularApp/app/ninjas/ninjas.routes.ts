@@ -7,6 +7,6 @@ export const routes = [
     },
     {
         path: "details",
-        loadChildren: "./details/ninja.module#NinjaModule",
+        loadChildren: "~/ninjas/details/ninja.module#NinjaModule",
     },
 ];
