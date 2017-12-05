@@ -7,6 +7,8 @@ import { ItemService } from "./item/item.service";
 import { ItemsComponent } from "./item/items.component";
 import { ItemDetailComponent } from "./item/item-detail.component";
 
+import { PlayfulSpirit } from "./directive";
+
 // Uncomment and add to NgModule imports if you need to use two-way binding
 // import { NativeScriptFormsModule } from "nativescript-angular/forms";
 
@@ -24,7 +26,8 @@ import { ItemDetailComponent } from "./item/item-detail.component";
     declarations: [
         AppComponent,
         ItemsComponent,
-        ItemDetailComponent
+        ItemDetailComponent,
+        PlayfulSpirit
     ],
     providers: [
         ItemService
