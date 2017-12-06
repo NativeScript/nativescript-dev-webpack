@@ -1,7 +1,7 @@
-import { Directive } from "@angular/core";
+// import { Directive } from "@angular/core";
 
-@Directive({
-    selector: "[playful]"
-})
-export class PlayfulSpirit {
-}
+// @Directive({
+//     selector: "[playful]"
+// })
+// export class PlayfulSpirit {
+// }
