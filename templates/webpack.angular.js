@@ -80,6 +80,7 @@ module.exports = env => {
             }),
             // Copy assets to out dir. Add your own globs as needed.
             new CopyWebpackPlugin([
+                { from: "App_Resources/**" },
                 { from: "fonts/**" },
                 { from: "**/*.jpg" },
                 { from: "**/*.png" },
@@ -100,7 +101,7 @@ module.exports = env => {
                     platformOptions: {
                         platform,
                         platforms,
-                        ignore: ["App_Resources"]
+                        // ignore: ["App_Resources"]
                     },
                 }, ngToolsWebpackOptions)
             ),

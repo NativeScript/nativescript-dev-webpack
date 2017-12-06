@@ -78,6 +78,7 @@ module.exports = env => {
             }),
             // Copy assets to out dir. Add your own globs as needed.
             new CopyWebpackPlugin([
+                { from: "App_Resources/**" },
                 { from: "fonts/**" },
                 { from: "**/*.jpg" },
                 { from: "**/*.png" },
@@ -91,7 +92,9 @@ module.exports = env => {
             // Support for web workers since v3.2
             new NativeScriptWorkerPlugin(),
             new nsWebpack.PlatformFSPlugin({
-                platform, platforms, ignore: ["App_Resources"]
+                platform,
+                platforms,
+                // ignore: ["App_Resources"]
             }),
             // Does IPC communication with the {N} CLI to notify events when running in watch mode.
             new nsWebpack.WatchStateLoggerPlugin(),
