@@ -2,7 +2,6 @@ import { AppiumDriver, createDriver, SearchOptions } from "nativescript-dev-appi
 import { assert } from "chai";
 
 describe("sample scenario", () => {
-    const defaultWaitTime = 5000;
     let driver: AppiumDriver;
 
     before(async () => {
@@ -20,6 +19,7 @@ describe("sample scenario", () => {
 
     afterEach(async function () {
         if (this.currentTest.state === "failed") {
+            await driver.logPageSource(this.currentTest.title);
             await driver.logScreenshot(this.currentTest.title);
         }
     });
