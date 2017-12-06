@@ -1,0 +1,8 @@
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" navigatingTo="onNavigatingTo" class="page">
+    <Page.actionBar>
+        <ActionBar title="Second Page" icon="" class="action-bar"></ActionBar>
+    </Page.actionBar>
+    <GridLayout>
+        <Button text="0" width="110" height="110" tap="secondPageTap" />
+    </GridLayout>
+</Page>

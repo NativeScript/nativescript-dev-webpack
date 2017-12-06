@@ -225,7 +225,7 @@ function spawnChildProcess(command, ...args) {
 
         const childProcess = spawn(command, escapedArgs, {
             stdio: "inherit",
-            pwd: PROJECT_DIR,
+            cwd: PROJECT_DIR,
             shell: true,
         });
 

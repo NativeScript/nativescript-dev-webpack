@@ -1,0 +1,9 @@
+@import '~nativescript-theme-core/css/core.light.css';
+
+ActionBar {
+  background-color: #999;
+}
+
+.app-class{
+  background-color:#999
+}
