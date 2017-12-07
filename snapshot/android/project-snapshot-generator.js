@@ -19,12 +19,6 @@ const {
     resolveAndroidConfigurationsPath,
 } = require("../../projectHelpers");
 
-const MIN_ANDROID_RUNTIME_VERSION = "3.0.0";
-const VALID_ANDROID_RUNTIME_TAGS = Object.freeze(["next", "rc"]);
-const V8_VERSIONS_FILE_NAME = "v8-versions.json";
-const V8_VERSIONS_URL = `https://raw.githubusercontent.com/NativeScript/android-runtime/master/${V8_VERSIONS_FILE_NAME}`;
-const V8_VERSIONS_LOCAL_PATH = resolve(CONSTANTS.SNAPSHOT_TMP_DIR, V8_VERSIONS_FILE_NAME);
-
 const resolveRelativePath = (path) => {
     if (path)
         return isAbsolute(path) ? path : resolve(process.cwd(), path);
@@ -125,15 +119,15 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function (projectRoot) {
 }
 
 const versionIsPrerelease = version => version.indexOf("-") > -1;
-const v8VersionsFileExists = () => existsSync(V8_VERSIONS_LOCAL_PATH);
+const v8VersionsFileExists = () => existsSync(CONSTANTS.V8_VERSIONS_LOCAL_PATH);
 const saveV8VersionsFile = versionsMap =>
-    writeFileSync(V8_VERSIONS_LOCAL_PATH, JSON.stringify(versionsMap));
-const readV8VersionsFile = () => JSON.parse(readFileSync(V8_VERSIONS_LOCAL_PATH));
+    writeFileSync(CONSTANTS.V8_VERSIONS_LOCAL_PATH, JSON.stringify(versionsMap));
+const readV8VersionsFile = () => JSON.parse(readFileSync(CONSTANTS.V8_VERSIONS_LOCAL_PATH));
 const fetchV8VersionsFile = () =>
     new Promise((resolve, reject) => {
-        getJsonFile(V8_VERSIONS_URL)
+        getJsonFile(CONSTANTS.V8_VERSIONS_URL)
             .then(versionsMap => {
-                createDirectory(dirname(V8_VERSIONS_LOCAL_PATH));
+                createDirectory(dirname(CONSTANTS.V8_VERSIONS_LOCAL_PATH));
                 saveV8VersionsFile(versionsMap);
                 return resolve(versionsMap);
             })
@@ -192,10 +186,10 @@ ProjectSnapshotGenerator.prototype.validateAndroidRuntimeVersion = function () {
         throw new Error("In order to generate a V8 snapshot you must have the \"android\" platform installed - to do so please run \"tns platform add android\".");
     }
 
-    if (!VALID_ANDROID_RUNTIME_TAGS.includes(currentRuntimeVersion) &&
-        !semver.gte(currentRuntimeVersion, MIN_ANDROID_RUNTIME_VERSION)) {
+    if (!CONSTANTS.VALID_ANDROID_RUNTIME_TAGS.includes(currentRuntimeVersion) &&
+        !semver.gte(currentRuntimeVersion, CONSTANTS.MIN_ANDROID_RUNTIME_VERSION)) {
 
-        throw new Error("In order to support heap snapshots, you must have at least tns-android@" + MIN_ANDROID_RUNTIME_VERSION +
+        throw new Error("In order to support heap snapshots, you must have at least tns-android@" + CONSTANTS.MIN_ANDROID_RUNTIME_VERSION +
             " installed. Current Android Runtime version is: " + currentRuntimeVersion + ".");
     }
 }

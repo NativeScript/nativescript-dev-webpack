@@ -2,17 +2,13 @@ const fs = require("fs");
 const { dirname, join } = require("path");
 const os = require("os");
 const child_process = require("child_process");
-
 const shelljs = require("shelljs");
 
-const { createDirectory, downloadFile } = require("./utils");
-
-const NDK_BUILD_SEED_PATH = join(__dirname, "snapshot-generator-tools/ndk-build");
-const BUNDLE_PREAMBLE_PATH = join(__dirname, "snapshot-generator-tools/bundle-preamble.js");
-const BUNDLE_ENDING_PATH = join(__dirname, "snapshot-generator-tools/bundle-ending.js");
-const INCLUDE_GRADLE_PATH = join(__dirname, "snapshot-generator-tools/include.gradle");
-const MKSNAPSHOT_TOOLS_DOWNLOAD_ROOT_URL = "https://raw.githubusercontent.com/NativeScript/mksnapshot-tools/production/";
-const SNAPSHOT_BLOB_NAME = "TNSSnapshot";
+const {
+    CONSTANTS,
+    createDirectory,
+    downloadFile,
+} = require("./utils");
 
 function shellJsExecuteInDir(dir, action) {
     const currentDir = shelljs.pwd();
@@ -44,8 +40,8 @@ SnapshotGenerator.SNAPSHOT_PACKAGE_NANE = "nativescript-android-snapshot";
 
 SnapshotGenerator.prototype.preprocessInputFile = function(inputFile, outputFile) {
     // Make some modifcations on the original bundle and save it on the specified path
-    const bundlePreambleContent = fs.readFileSync(BUNDLE_PREAMBLE_PATH, "utf8");
-    const bundleEndingContent = fs.readFileSync(BUNDLE_ENDING_PATH, "utf8");
+    const bundlePreambleContent = fs.readFileSync(CONSTANTS.BUNDLE_PREAMBLE_PATH, "utf8");
+    const bundleEndingContent = fs.readFileSync(CONSTANTS.BUNDLE_ENDING_PATH, "utf8");
     const snapshotFileContent = bundlePreambleContent + "\n" + fs.readFileSync(inputFile, "utf8") + "\n" + bundleEndingContent;
     fs.writeFileSync(outputFile, snapshotFileContent, { encoding: "utf8" });
 }
@@ -62,7 +58,7 @@ SnapshotGenerator.prototype.downloadMksnapshotTool = function(snapshotToolsPath,
     if (snapshotToolsDownloads[mksnapshotToolPath])
         return snapshotToolsDownloads[mksnapshotToolPath];
 
-    const downloadUrl = MKSNAPSHOT_TOOLS_DOWNLOAD_ROOT_URL + mksnapshotToolRelativePath;
+    const downloadUrl = CONSTANTS.MKSNAPSHOT_TOOLS_DOWNLOAD_ROOT_URL + mksnapshotToolRelativePath;
     createDirectory(dirname(mksnapshotToolPath));
     snapshotToolsDownloads[mksnapshotToolPath] = downloadFile(downloadUrl, mksnapshotToolPath);
     return snapshotToolsDownloads[mksnapshotToolPath];
@@ -96,7 +92,7 @@ SnapshotGenerator.prototype.runMksnapshotTool = function(snapshotToolsPath, inpu
             // Generate .blob file
             const currentArchBlobOutputPath = join(this.buildPath, "snapshots/blobs", androidArch);
             shelljs.mkdir("-p", currentArchBlobOutputPath);
-            const command = `${currentArchMksnapshotToolPath} ${inputFile} --startup_blob ${join(currentArchBlobOutputPath, `${SNAPSHOT_BLOB_NAME}.blob`)} --profile_deserialization`;
+            const command = `${currentArchMksnapshotToolPath} ${inputFile} --startup_blob ${join(currentArchBlobOutputPath, `${CONSTANTS.SNAPSHOT_BLOB_NAME}.blob`)} --profile_deserialization`;
 
             return new Promise((resolve, reject) => {
                 const child = child_process.exec(command, {encoding: "utf8"}, (error, stdout, stderr) => {
@@ -117,7 +113,7 @@ SnapshotGenerator.prototype.runMksnapshotTool = function(snapshotToolsPath, inpu
                     const currentArchSrcOutputPath = join(this.buildPath, "snapshots/src", androidArch);
                     shelljs.mkdir("-p", currentArchSrcOutputPath);
                     shellJsExecuteInDir(currentArchBlobOutputPath, function() {
-                        shelljs.exec(`xxd -i ${SNAPSHOT_BLOB_NAME}.blob > ${join(currentArchSrcOutputPath, `${SNAPSHOT_BLOB_NAME}.c`)}`);
+                        shelljs.exec(`xxd -i ${CONSTANTS.SNAPSHOT_BLOB_NAME}.blob > ${join(currentArchSrcOutputPath, `${CONSTANTS.SNAPSHOT_BLOB_NAME}.c`)}`);
                     });
                 }
             });
@@ -133,7 +129,7 @@ SnapshotGenerator.prototype.buildSnapshotLibs = function(androidNdkBuildPath, ta
     const androidArchs = targetArchs.map(arch => this.convertToAndroidArchName(arch));
     console.log("Building native libraries for " + androidArchs.join());
     shelljs.rm("-rf", ndkBuildPath);
-    shelljs.cp("-r", NDK_BUILD_SEED_PATH, ndkBuildPath);
+    shelljs.cp("-r", CONSTANTS.NDK_BUILD_SEED_PATH, ndkBuildPath);
     fs.writeFileSync(join(ndkBuildPath, "jni/Application.mk"), "APP_ABI := " + androidArchs.join(" ")); // create Application.mk file
     shelljs.mv(join(this.buildPath, "snapshots/src/*"), join(ndkBuildPath, "jni"));
     shellJsExecuteInDir(ndkBuildPath, function(){
@@ -143,7 +139,7 @@ SnapshotGenerator.prototype.buildSnapshotLibs = function(androidNdkBuildPath, ta
 }
 
 SnapshotGenerator.prototype.buildIncludeGradle = function() {
-    shelljs.cp(INCLUDE_GRADLE_PATH, join(this.buildPath, "include.gradle"));
+    shelljs.cp(CONSTANTS.INCLUDE_GRADLE_PATH, join(this.buildPath, "include.gradle"));
 }
 
 SnapshotGenerator.prototype.generate = function(options) {
