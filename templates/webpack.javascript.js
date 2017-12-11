@@ -13,7 +13,6 @@ module.exports = env => {
         throw new Error("You need to provide a target platform!");
     }
     const platforms = ["ios", "android"];
-    const mainSheet = "app.css";
     const { snapshot, uglify, report } = env;
 
     const config = {
@@ -56,13 +55,10 @@ module.exports = env => {
         },
         module: {
             rules: [
-                { test: /\.html$|\.xml$/, use: "raw-loader" },
-                // Root stylesheet gets extracted with bundled dependencies
-                { test: new RegExp(mainSheet), use: "css-loader?url=false" },
-                // Other CSS files get bundled using the raw loader
-                { test: /\.css$/, exclude: new RegExp(mainSheet), use: "raw-loader" },
-                // SASS support
-                { test: /\.scss$/, use: ["raw-loader", "resolve-url-loader", "sass-loader"] },
+                { test: /\.(html|xml)$/, use: "raw-loader" },
+
+                { test: /\.css$/, use: "css-loader?url=false" },
+                { test: /\.scss$/, use: ["css-loader?url=false", "sass-loader"] },
             ]
         },
         plugins: [
