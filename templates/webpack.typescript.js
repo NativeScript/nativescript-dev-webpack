@@ -56,14 +56,11 @@ module.exports = env => {
         },
         module: {
             rules: [
-                { test: /\.html$|\.xml$/, use: "raw-loader" },
-                // Root stylesheet gets extracted with bundled dependencies
-                { test: new RegExp(mainSheet), use: "css-loader?url=false" },
-                // Other CSS files get bundled using the raw loader
-                { test: /\.css$/, exclude: new RegExp(mainSheet), use: "raw-loader" },
-                // SASS support
-                { test: /\.scss$/, use: ["raw-loader", "resolve-url-loader", "sass-loader"] },
-                // Compile TypeScript files, replace templateUrl and styleUrls.
+                { test: /\.(html|xml)$/, use: "raw-loader" },
+
+                { test: /\.css$/, use: "css-loader?url=false" },
+                { test: /\.scss$/, use: ["css-loader?url=false", "sass-loader"] },
+
                 { test: /\.ts$/, use: "awesome-typescript-loader" }
             ]
         },
