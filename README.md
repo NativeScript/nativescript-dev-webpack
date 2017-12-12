@@ -12,7 +12,6 @@ A package to help with webpacking NativeScript apps.
 
 ```sh
 $ npm install --save-dev nativescript-dev-webpack
-$ npm install
 
 $ tns run android --bundle
 or
