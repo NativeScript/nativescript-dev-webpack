@@ -6,7 +6,11 @@ export const routes = [
         component: NinjasComponent
     },
     {
-        path: "details",
+        path: "details1",
+        loadChildren: "./ninjas/details/ninja.module#NinjaModule",
+    },
+    {
+        path: "details2",
         loadChildren: "~/ninjas/details/ninja.module#NinjaModule",
     },
 ];
