@@ -5,7 +5,7 @@ import { ItemService } from "./item.service";
 
 @Component({
     selector: "ns-items",
-    moduleId: __filename,
+    moduleId: module.id,
     styleUrls: ["./items.component.scss"],
     templateUrl: "./items.component.html",
 })

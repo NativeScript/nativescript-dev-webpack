@@ -68,7 +68,7 @@ module.exports = env => {
                 { test: /\.scss$/, exclude: /^.\/app\.scss$/, use: ["raw-loader", "resolve-url-loader", "sass-loader"] },
 
                 // Compile TypeScript files with ahead-of-time compiler.
-                { test: /.ts$/, loader: "@ngtools/webpack" },
+                { test: /.ts$/, use: ["nativescript-dev-webpack/moduleid-compat-loader", "@ngtools/webpack"] },
             ],
         },
         plugins: [
