@@ -2,7 +2,7 @@
 
 const update = require("../verify/update");
 
-const { original: npmArgs = [] } = JSON.parse(process.env.npm_config_argv || {});
+const { original: npmArgs = [] } = JSON.parse(process.env.npm_config_argv || "{}");
 const [, , ...processArgs ] = process.argv;
 
 const flags = [ ...npmArgs, ...processArgs ]
