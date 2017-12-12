@@ -15,12 +15,11 @@ const downloadFile = (url, destinationFilePath) =>
         const request = httpsGet(url, response => {
             switch (response.statusCode) {
                 case 200:
-                    const file = createWriteStream(destinationFilePath);
+                    const file = createWriteStream(destinationFilePath, {autoClose: true});
                     file.on('error', function (error) {
                         return reject(error);
                     });
                     file.on("finish", function() {
-                        file.close();
                         chmodSync(destinationFilePath, 0755);
                         return resolve(destinationFilePath);
                     });
