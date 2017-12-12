@@ -12,12 +12,12 @@ If you want to force update them, please run "node_modules/.bin/update-ns-webpac
 
 const USAGE_MESSAGE = `
 NativeScript Webpack plugin was successfully added.
-You can now bundle your project with the following npm scripts:
-    - "npm run build-android-bundle" to build for android.
-    - "npm run build-ios-bundle" to build for ios.
-    - "npm run start-android-bundle" to run on android.
-    - "npm run start-ios-bundle" to run on ios.
-You can also pass the "--uglify" flag to use UglifyJS for minification.
+You can now bundle your project by passing --bundle flag to NativeScript CLI commands:
+    - tns build android --bundle
+    - tns build ios --bundle
+    - tns run android --bundle
+    - tns run ios --bundle
+You can also pass the "--env.uglify" flag to use UglifyJS for minification.
 For more information check out https://docs.nativescript.org/tooling/bundling-with-webpack#bundling.
 `;
 
@@ -103,14 +103,14 @@ function resolveAngularDeps(usedDependencies) {
         });
     }
 
-    return depsToAdd; 
+    return depsToAdd;
 }
 
 function getVersionWithoutPatch(fullVersion) {
     if (!fullVersion) {
         return "";
     }
-    
+
     const prereleaseVersions = Object.freeze(["next", "latest", "rc"]);
     if (prereleaseVersions.includes(fullVersion)) {
         return fullVersion;
