@@ -60,12 +60,12 @@ module.exports = env => {
                 { test: /\.html$|\.xml$/, use: "raw-loader" },
 
                 // tns-core-modules reads the app.css and its imports using css-loader
-                { test: /^.\/app\.css$/, use: "css-loader?url=false" },
-                { test: /^.\/app\.scss$/, use: ["css-loader?url=false", "sass-loader"] },
+                { test: /\/app\.css$/, use: "css-loader?url=false" },
+                { test: /\/app\.scss$/, use: ["css-loader?url=false", "sass-loader"] },
 
                 // Angular components reference css files and their imports using raw-loader
-                { test: /\.css$/, exclude: /^.\/app\.css$/, use: "raw-loader" },
-                { test: /\.scss$/, exclude: /^.\/app\.scss$/, use: ["raw-loader", "resolve-url-loader", "sass-loader"] },
+                { test: /\.css$/, exclude: /\/app\.css$/, use: "raw-loader" },
+                { test: /\.scss$/, exclude: /\/app\.scss$/, use: ["raw-loader", "resolve-url-loader", "sass-loader"] },
 
                 // Compile TypeScript files with ahead-of-time compiler.
                 { test: /.ts$/, use: ["nativescript-dev-webpack/moduleid-compat-loader", "@ngtools/webpack"] },
