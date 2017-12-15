@@ -21,6 +21,18 @@ const isAngular = ({ projectDir, packageJson } = {}) => {
         .some(dependency => /^@angular\b/.test(dependency));
 };
 
+const isSass = ({ projectDir, packageJson } = {}) => {
+    packageJson = packageJson || getPackageJson(projectDir);
+
+    return (
+        packageJson.dependencies &&
+        packageJson.dependencies.hasOwnProperty("nativescript-dev-sass")
+    ) || (
+            packageJson.devDependencies &&
+            packageJson.devDependencies.hasOwnProperty("nativescript-dev-sass")
+        );
+};
+
 const getAndroidRuntimeVersion = (projectDir) => {
     try {
         const projectPackageJSON = getPackageJson(projectDir);
@@ -105,6 +117,7 @@ const getPackageJsonPath = projectDir => path.resolve(projectDir, "package.json"
 module.exports = {
     isTypeScript,
     isAngular,
+    isSass,
     writePackageJson,
     getPackageJson,
     getProjectDir,
