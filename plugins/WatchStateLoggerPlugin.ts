@@ -9,15 +9,22 @@ export enum messages {
  * So the {N} CLI can get some idea when compilation completes.
  */
 export class WatchStateLoggerPlugin {
+    isRunningWatching: boolean;
     apply(compiler) {
+        const plugin = this;
         compiler.plugin("watch-run", function(compiler, callback) {
-            console.log(messages.changeDetected);
+            plugin.isRunningWatching = true;
+            if (plugin.isRunningWatching) {
+                console.log(messages.changeDetected);
+            }
             process.send && process.send(messages.changeDetected, error => null);
             callback();
         });
         compiler.plugin("after-emit", function(compilation, callback) {
             callback();
-            console.log(messages.compilationComplete);
+            if (plugin.isRunningWatching) {
+                console.log(messages.compilationComplete);
+            }
             process.send && process.send(messages.compilationComplete, error => null);
         });
     }
