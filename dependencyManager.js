@@ -1,4 +1,4 @@
-const { isAngular, isTypeScript } = require("./projectHelpers");
+const { isAngular, isTypeScript, isSass } = require("./projectHelpers");
 
 const NEW_DEPS_MESSAGE = `\
 A few new dependencies were added. \
@@ -74,6 +74,10 @@ function getRequiredDeps(packageJson) {
         Object.assign(deps, angularDeps);
     } else if (isTypeScript({packageJson})) {
         Object.assign(deps, { "awesome-typescript-loader": "~3.1.3" });
+    }
+
+    if (isSass({packageJson})) {
+        Object.assign(deps, { "sass-loader": "~6.0.6" });
     }
 
     return deps;
