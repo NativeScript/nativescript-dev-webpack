@@ -85,7 +85,6 @@ function getProjectTemplates(projectDir) {
 
     if (isAngular({projectDir})) {
         templates["webpack.angular.js"] = "webpack.config.js";
-        templates["tsconfig.aot.json"] = "tsconfig.aot.json";
     } else if (isTypeScript({projectDir})) {
         templates["webpack.typescript.js"] = "webpack.config.js";
     } else {
