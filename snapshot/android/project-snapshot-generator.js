@@ -238,7 +238,14 @@ ProjectSnapshotGenerator.prototype.generate = function (generationOptions) {
     // Generate snapshots
     const generator = new SnapshotGenerator({ buildPath: this.getBuildPath() });
 
+    const noV8VersionFoundMessage = `Cannot find suitable v8 version!`;
+    let shouldRethrow = false;
     return this.getV8Version(generationOptions).then(v8Version => {
+        shouldRethrow = true;
+        if (!v8Version) {
+            throw new Error(noV8VersionFoundMessage);
+        }
+
         return generator.generate({
             snapshotToolsPath,
             inputFile: generationOptions.inputFile || join(this.options.projectRoot, "__snapshot.js"),
@@ -259,6 +266,8 @@ ProjectSnapshotGenerator.prototype.generate = function (generationOptions) {
             }
         });
     }).catch(error => {
-        throw new Error(`Cannot find suitable v8 version! Original error: ${error.message || error}`);
+        throw shouldRethrow ?
+            error :
+            new Error(`${noV8VersionFoundMessage} Original error: ${error.message || error}`);
     });
 }
