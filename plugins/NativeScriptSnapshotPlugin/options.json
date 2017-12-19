@@ -1,0 +1,31 @@
+{
+  "type": "object",
+  "properties": {
+    "chunk": {
+      "type": "string"
+    },
+    "projectRoot": {
+      "type": "string"
+    },
+    "webpackConfig": {},
+    "targetArchs": {
+      "type": "array"
+    },
+    "tnsJavaClassesOptions": {
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "modules": {
+          "type": "array"
+        },
+        "packages": {
+          "type": "array"
+        }
+      }
+    },
+    "useLibs": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false
+}

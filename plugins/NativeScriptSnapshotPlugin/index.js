@@ -1,18 +1,16 @@
 const { resolve, join } = require("path");
 const { closeSync, openSync } = require("fs");
+const validateOptions = require("schema-utils");
 
-const ProjectSnapshotGenerator = require("../snapshot/android/project-snapshot-generator");
-const { resolveAndroidAppPath } = require("../projectHelpers");
-
+const ProjectSnapshotGenerator = require("../../snapshot/android/project-snapshot-generator");
+const { resolveAndroidAppPath } = require("../../projectHelpers");
+const schema = require("./options.json");
 
 exports.NativeScriptSnapshotPlugin = (function() {
     function NativeScriptSnapshotPlugin(options) {
-        ProjectSnapshotGenerator.call(this, options); // Call the parent constructor
+        NativeScriptSnapshotPlugin.validateSchema(options);
 
-        if (!this.options.chunk) {
-            const error = NativeScriptSnapshotPlugin.extendError({ message: `No chunk specified!` });
-            throw error;
-        }
+        ProjectSnapshotGenerator.call(this, options); // Call the parent constructor
 
         if (this.options.webpackConfig) {
             if (this.options.webpackConfig.output && this.options.webpackConfig.output.libraryTarget) {
@@ -26,6 +24,19 @@ exports.NativeScriptSnapshotPlugin = (function() {
             }
 
             this.options.webpackConfig.entry["tns-java-classes"] = this.getTnsJavaClassesBuildPath();
+        }
+    }
+
+    NativeScriptSnapshotPlugin.validateSchema = function(options) {
+        if (!options.chunk) {
+            const error = NativeScriptSnapshotPlugin.extendError({ message: `No chunk specified!` });
+            throw error;
+        }
+
+        try {
+            validateOptions(schema, options, "NativeScriptSnapshotPlugin");
+        } catch (error) {
+           throw new Error(error.message);
         }
     }
 
