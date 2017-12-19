@@ -4,14 +4,12 @@ const { resolve: pathResolve } = require("path");
 const { getPackageJson, getProjectDir, writePackageJson } = require("../projectHelpers");
 const { forceUpdateProjectFiles } = require("../projectFilesManager");
 const { forceUpdateProjectDeps } = require("../dependencyManager");
-const { forceUpdateNpmScripts } = require("../npmScriptsManager");
 
 const PLUGIN_NAME = "nativescript-dev-webpack";
 const PROJECT_DIR = getProjectDir({ nestingLvl: 2 });
 
 function update({
     deps: shouldUpdateDeps,
-    scripts: shouldUpdateScripts,
     configs: shouldUpdateConfigs,
     projectDir = PROJECT_DIR
 } = {}) {
@@ -22,26 +20,11 @@ function update({
         commands.push(() => updateDeps(projectDir));
     }
 
-    if (shouldUpdateScripts) {
-        commands.push(() => Promise.resolve(updateScripts(projectDir)));
-    }
-
     if (shouldUpdateConfigs) {
         commands.push(() => Promise.resolve(updateConfigs(projectDir)));
     }
 
     return commands.reduce((current, next) => current.then(next), Promise.resolve());
-}
-
-function updateScripts(projectDir) {
-    console.info("Updating npm scripts...");
-
-    const packageJson = getPackageJson(projectDir);
-    const scripts = packageJson.scripts || {};
-
-    forceUpdateNpmScripts(scripts);
-    packageJson.scripts = scripts;
-    writePackageJson(packageJson, projectDir);
 }
 
 function updateDeps(projectDir) {
