@@ -1,3 +1,28 @@
+<a name="0.9.0"></a>
+# [0.9.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.8.0...v0.9.0) (2017-12-20)
+
+
+### Bug Fixes
+
+* **compiler:** reject promise with real error ([#350](https://github.com/NativeScript/nativescript-dev-webpack/issues/350)) ([0b9febe](https://github.com/NativeScript/nativescript-dev-webpack/commit/0b9febe))
+* **configs:** don't follow symlinks for loaders ([#287](https://github.com/NativeScript/nativescript-dev-webpack/issues/287)) ([7deb117](https://github.com/NativeScript/nativescript-dev-webpack/commit/7deb117))
+* **ns-bundle:** support for Node.js 9 ([#321](https://github.com/NativeScript/nativescript-dev-webpack/issues/321)) ([b4800c8](https://github.com/NativeScript/nativescript-dev-webpack/commit/b4800c8))
+* **postinstall:** stop removing "start/run-platform-bundle" scripts ([#301](https://github.com/NativeScript/nativescript-dev-webpack/issues/301)) ([ddecb56](https://github.com/NativeScript/nativescript-dev-webpack/commit/ddecb56))
+* **snapshot:** interrupt the webpack build on error ([#369](https://github.com/NativeScript/nativescript-dev-webpack/issues/369)) ([0a6d1b9](https://github.com/NativeScript/nativescript-dev-webpack/commit/0a6d1b9))
+* **snapshot:** use autoclose option on writestream ([#345](https://github.com/NativeScript/nativescript-dev-webpack/issues/345)) ([3967d79](https://github.com/NativeScript/nativescript-dev-webpack/commit/3967d79))
+* **update-ns-webpack:** make it possible to call as executable ([#347](https://github.com/NativeScript/nativescript-dev-webpack/issues/347)) ([9fa7656](https://github.com/NativeScript/nativescript-dev-webpack/commit/9fa7656))
+
+
+### Features
+
+* Angular 5 support ([#328](https://github.com/NativeScript/nativescript-dev-webpack/issues/328)) ([5539ddb](https://github.com/NativeScript/nativescript-dev-webpack/commit/5539ddb))
+* add FS, PlatformSuffixPlugin and css2json-loader ([#290](https://github.com/NativeScript/nativescript-dev-webpack/issues/290)) ([ea29bb6](https://github.com/NativeScript/nativescript-dev-webpack/commit/ea29bb6))
+* Configure the vendor scripts to also use less, sass, scss for app.css ([#343](https://github.com/NativeScript/nativescript-dev-webpack/issues/343)) ([273dbd5](https://github.com/NativeScript/nativescript-dev-webpack/commit/273dbd5))
+* enable plugin to run through {N} CLI hooks ([#299](https://github.com/NativeScript/nativescript-dev-webpack/issues/299)) ([9a57a53](https://github.com/NativeScript/nativescript-dev-webpack/commit/9a57a53))
+* **sass:** add conditional sass deps for webpack ([#355](https://github.com/NativeScript/nativescript-dev-webpack/issues/355)) ([f51241c](https://github.com/NativeScript/nativescript-dev-webpack/commit/f51241c))
+
+
+
 <a name="0.8.0"></a>
 # [0.8.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.7.3...0.8.0) (2017-09-08)
 
