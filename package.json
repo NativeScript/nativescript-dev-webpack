@@ -41,9 +41,10 @@
   },
   "dependencies": {
     "minimatch": "^3.0.4",
+    "nativescript-hook": "0.2.2",
+    "schema-utils": "^0.4.3",
     "semver": "^5.4.1",
-    "shelljs": "^0.6.0",
-    "nativescript-hook": "0.2.2"
+    "shelljs": "^0.6.0"
   },
   "devDependencies": {
     "@ngtools/webpack": "^1.8.0",

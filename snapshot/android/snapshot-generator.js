@@ -100,16 +100,18 @@ SnapshotGenerator.prototype.runMksnapshotTool = function(snapshotToolsPath, inpu
 
             return new Promise((resolve, reject) => {
                 const child = child_process.exec(command, {encoding: "utf8"}, (error, stdout, stderr) => {
-                    console.log(`${stdout}`);
+                    const errorHeader = `Target architecture: ${androidArch}\n`;
+
                     if (stderr.length) {
-                        console.error("***** SNAPSHOT GENERATION FOR " + androidArch + " FAILED! *****");
-                        console.error(stderr);
-                        return reject(stderr);
+                        const message = `${errorHeader}${stderr}`;
+                        reject(new Error(message));
+                    } else if (error) {
+                        error.message = `${errorHeader}${error.message}`;
+                        reject(error);
+                    } else {
+                        console.log(stdout);
+                        resolve();
                     }
-                    if (error) {
-                        return reject(error);
-                    }
-                    return resolve();
                 })
             }).then(() => {
                 // Generate .c file
