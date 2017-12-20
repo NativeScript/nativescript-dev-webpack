@@ -1,6 +1,7 @@
 
 export enum messages {
-    compilationComplete = "Webpack compilation complete. Watching for file changes.",
+    compilationComplete = "Webpack compilation complete.",
+    startWatching = "Webpack compilation complete. Watching for file changes.",
     changeDetected = "File change detected. Starting incremental webpack compilation..."
 }
 
@@ -23,6 +24,8 @@ export class WatchStateLoggerPlugin {
         compiler.plugin("after-emit", function(compilation, callback) {
             callback();
             if (plugin.isRunningWatching) {
+                console.log(messages.startWatching);
+            } else {
                 console.log(messages.compilationComplete);
             }
             process.send && process.send(messages.compilationComplete, error => null);
