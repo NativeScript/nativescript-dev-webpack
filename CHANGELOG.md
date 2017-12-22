@@ -1,6 +1,8 @@
 <a name="0.9.0"></a>
 # [0.9.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.8.0...v0.9.0) (2017-12-20)
 
+> You can follow the [Migration guide](https://www.nativescript.org/blog/nativescript-webpack-0.9.0-what-changed-and-how-to-upgrade) for upgrading to this version.
+
 
 ### Bug Fixes
 
