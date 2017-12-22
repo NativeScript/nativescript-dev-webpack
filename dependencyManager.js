@@ -58,15 +58,15 @@ function addDependency(deps, name, version, force) {
 
 function getRequiredDeps(packageJson) {
     const deps = {
-        "webpack": "~3.8.1",
-        "webpack-bundle-analyzer": "^2.8.2",
-        "webpack-sources": "~1.0.1",
-        "copy-webpack-plugin": "~4.0.1",
+        "webpack": "~3.10.0",
+        "webpack-bundle-analyzer": "^2.9.1",
+        "webpack-sources": "~1.1.0",
+        "copy-webpack-plugin": "~4.3.0",
         "raw-loader": "~0.5.1",
         "css-loader": "~0.28.7",
         "nativescript-worker-loader": "~0.8.1",
-        "resolve-url-loader": "~2.1.0",
-        "extract-text-webpack-plugin": "~3.0.0",
+        "resolve-url-loader": "~2.2.1",
+        "extract-text-webpack-plugin": "~3.0.2",
     };
 
     if (isAngular({packageJson})) {
@@ -100,10 +100,15 @@ function resolveAngularDeps(usedDependencies) {
             "typescript": "~2.1.6",
             "@ngtools/webpack": "1.2.13",
         });
-    } else {
-          Object.assign(depsToAdd, {
+    } else if (angularCoreVersion.startsWith("5.0")) {
+        Object.assign(depsToAdd, {
             "typescript": "~2.4.2",
             "@ngtools/webpack": "~1.8.2",
+        });
+    } else {
+        Object.assign(depsToAdd, {
+            "typescript": "~2.4.2",
+            "@ngtools/webpack": "~1.9.1",
         });
     }
 
