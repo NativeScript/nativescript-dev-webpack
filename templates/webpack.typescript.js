@@ -57,8 +57,24 @@ module.exports = env => {
             rules: [
                 { test: /\.(html|xml)$/, use: "raw-loader" },
 
-                { test: /\.css$/, use: "css-loader?url=false" },
-                { test: /\.scss$/, use: ["css-loader?url=false", "sass-loader"] },
+                {
+                    test: /\.css$/,
+                    use: {
+                        loader: "css-loader",
+                        options: { minimize: false, url: false },
+                    }
+                },
+
+                {
+                    test: /\.scss$/,
+                    use: [
+                        {
+                            loader: "css-loader",
+                            options: { minimize: false, url: false },
+                        },
+                        "sass-loader"
+                    ]
+                },
 
                 { test: /\.ts$/, use: "awesome-typescript-loader" }
             ]
