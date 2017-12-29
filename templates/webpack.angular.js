@@ -70,10 +70,7 @@ module.exports = env => {
                 {
                     test: /[\/|\\]app\.scss$/,
                     use: [
-                        {
-                            loader: "css-loader",
-                            options: { minimize: false, url: false },
-                        },
+                        { loader: "css-loader", options: { minimize: false, url: false } },
                         "sass-loader"
                     ]
                 },

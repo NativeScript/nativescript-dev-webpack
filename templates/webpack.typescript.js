@@ -59,19 +59,13 @@ module.exports = env => {
 
                 {
                     test: /\.css$/,
-                    use: {
-                        loader: "css-loader",
-                        options: { minimize: false, url: false },
-                    }
+                    use: { loader: "css-loader", options: { minimize: false, url: false } }
                 },
 
                 {
                     test: /\.scss$/,
                     use: [
-                        {
-                            loader: "css-loader",
-                            options: { minimize: false, url: false },
-                        },
+                        { loader: "css-loader", options: { minimize: false, url: false } },
                         "sass-loader"
                     ]
                 },
