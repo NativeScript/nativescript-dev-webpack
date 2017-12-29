@@ -1,3 +1,5 @@
+This is a test.
+
 # nativescript-dev-webpack
 
 A package to help with webpacking NativeScript apps.
