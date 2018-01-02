@@ -13,7 +13,6 @@ module.exports = env => {
         throw new Error("You need to provide a target platform!");
     }
     const platforms = ["ios", "android"];
-    const mainSheet = "app.css";
     const { snapshot, uglify, report } = env;
 
     const config = {
