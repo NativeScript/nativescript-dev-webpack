@@ -26,7 +26,7 @@
     "lazy": "1.0.11",
     "nativescript-dev-appium": "next",
     "nativescript-dev-sass": "^1.3.5",
-    "nativescript-dev-webpack": "file:../..",
+    "nativescript-dev-webpack": "file:../../src",
     "nativescript-worker-loader": "~0.8.1",
     "node-sass": "^4.7.1",
     "raw-loader": "~0.5.1",
