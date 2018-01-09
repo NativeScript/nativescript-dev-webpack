@@ -67,6 +67,7 @@ function getRequiredDeps(packageJson) {
         "nativescript-worker-loader": "~0.8.1",
         "resolve-url-loader": "~2.2.1",
         "extract-text-webpack-plugin": "~3.0.2",
+        "uglifyjs-webpack-plugin": "~1.1.6",
     };
 
     if (isAngular({packageJson})) {
