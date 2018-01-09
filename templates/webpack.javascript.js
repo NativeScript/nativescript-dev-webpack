@@ -6,6 +6,7 @@ const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 module.exports = env => {
     const platform = env && (env.android && "android" || env.ios && "ios");
@@ -129,9 +130,11 @@ module.exports = env => {
 
         // Work around an Android issue by setting compress = false
         const compress = platform !== "android";
-        config.plugins.push(new webpack.optimize.UglifyJsPlugin({
-            mangle: { except: nsWebpack.uglifyMangleExcludes },
-            compress,
+        config.plugins.push(new UglifyJsPlugin({
+            uglifyOptions: {
+                mangle: { reserved: nsWebpack.uglifyMangleExcludes },
+                compress,
+            }
         }));
     }
     return config;
