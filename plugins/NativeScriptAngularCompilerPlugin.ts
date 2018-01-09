@@ -57,6 +57,7 @@ export class NativeScriptAngularCompilerPlugin extends AngularCompilerPlugin {
                 } catch(e) {
                 }
                 resolved = resolved || resourceNameToFileName.call(this, file, relativeTo);
+                resolved = resolved && resolved.replace(/\\/g, "/");
                 return resolved;
             };
         }
