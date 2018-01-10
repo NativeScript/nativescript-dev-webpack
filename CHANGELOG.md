@@ -1,3 +1,21 @@
+<a name="0.9.1"></a>
+## [0.9.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.9.0...0.9.1) (2018-01-10)
+
+
+### Bug Fixes
+
+* respect windows paths in /app.css regex ([#385](https://github.com/NativeScript/nativescript-dev-webpack/issues/385)) ([a37cca0](https://github.com/NativeScript/nativescript-dev-webpack/commit/a37cca0))
+* support aot on windows ([#392](https://github.com/NativeScript/nativescript-dev-webpack/issues/392)) ([8a20502](https://github.com/NativeScript/nativescript-dev-webpack/commit/8a20502))
+* **css:** disable minification when using uglify ([#383](https://github.com/NativeScript/nativescript-dev-webpack/issues/383)) ([8e1a5a6](https://github.com/NativeScript/nativescript-dev-webpack/commit/8e1a5a6)), closes [#377](https://github.com/NativeScript/nativescript-dev-webpack/issues/377)
+
+
+### Features
+
+* support for Angular 5.1 ([#374](https://github.com/NativeScript/nativescript-dev-webpack/issues/374)) ([5a40330](https://github.com/NativeScript/nativescript-dev-webpack/commit/5a40330))
+* use UglifyJsPlugin which support es6 code ([#401](https://github.com/NativeScript/nativescript-dev-webpack/issues/401)) ([34b1b9d](https://github.com/NativeScript/nativescript-dev-webpack/commit/34b1b9d))
+
+
+
 <a name="0.9.0"></a>
 # [0.9.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.8.0...v0.9.0) (2017-12-20)
 
