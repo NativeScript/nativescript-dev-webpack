@@ -11,14 +11,16 @@ Before starting, make yourself familiar with the `nativescript-dev-webpack`'s [d
 
 The repository contains several ingredients:
 *   `installer.js` - combination of postinstall scripts for adding or removing webpack configurations and necessary dependecies when installing the plugin.
-*    `prepublish` - [Webpack config](https://webpack.js.org/concepts/configuration/) snippets used for generating webpack configuration templates. The latter are generated with the npm's `prepublishOnly` script. **If you want to modify the distributed webpack configurations - that's the right place to do it.**
-*   `templates` - webpack config templates for different types of projects - NativeScript with JavaScript, NativeScript with TypeScript and NativeScript Angular projects.
-*   `plugins` - several [Webpack plugins](https://webpack.js.org/concepts/plugins/) necessary for bundling NativeScript applications.
-*   `snapshot/android` - tools used with the `NativeScriptSnapshot` plugin for generating V8 Heap Snapshots.
-*   `nativescript-target` - configuration of a [Webpack deployment target](https://webpack.js.org/concepts/targets/) for building NativeScript applications.
-*   `bin` - helper node/npm scripts for projects using the plugin.
-*   `bin/ns-bundle` - node script used for bundling the project with Webpack and building the native Android/iOS application with NativeScript CLI.   
+*   `templates/` - webpack config templates for different types of projects - NativeScript with JavaScript, NativeScript with TypeScript and NativeScript Angular projects.
+*   `plugins/` - several [Webpack plugins](https://webpack.js.org/concepts/plugins/) necessary for bundling NativeScript applications.
+*   `snapshot/android/` - tools used with the `NativeScriptSnapshot` plugin for generating V8 Heap Snapshots.
+*   `nativescript-target/` - configuration of a [Webpack deployment target](https://webpack.js.org/concepts/targets/) for building NativeScript applications.
+*   `bin/` - helper node/npm scripts for projects using the plugin.
+*   `demo/` - resides several NativeScript applications, testing different scenarios. You can execute each app's tests by navigating to its directory and running `npm run e2e -- --runType nameOfRuntype`. For more information on runTypes, check out the [nativescript-dev-appium](https://github.com/NativeScript/nativescript-dev-appium#custom-appium-capabilities) plugin.
+
 ## Setup
+
+> Note that you need npm 5+ for local development of the plugin.
 1. [Fork](https://help.github.com/articles/fork-a-repo/) and clone the GitHub repository:
     ```bash
     git clone https://github.com/your-username/nativescript-dev-webpack.git
@@ -35,32 +37,30 @@ The repository contains several ingredients:
     git checkout -b <my-fix-branch> master
     ```
 
-4. Install devDependencies:
+4. Install dependencies:
     ```bash
     npm install
     ```
 
-You are good to go! The plugin is written in plain JavaScript. You're strongly encouraged to follow the official NativeScript [Coding Conventions](https://github.com/NativeScript/NativeScript/blob/master/CodingConvention.md) and to use ES features available in NodeJS v6. If unsure, check on [node.green](http://node.green/).
+The last command also runs `npm prepare` which compiles the TypeScript files in the plugin. 
+You are good to go! You're strongly encouraged to follow the official NativeScript [Coding Conventions](https://github.com/NativeScript/NativeScript/blob/master/CodingConvention.md) and to use ES features available in NodeJS v6. If unsure, check on [node.green](http://node.green/).
 
 ## Testing locally
 
+There are three apps in the repository, located in 
 1. Create a new NativeScript project with NativeScript CLI:
     ``` bash
     tns create testapp # pass --ng/--tsc for Angular/TypeScript app
     ```
 
-2. Install your local copy of the plugin using either `npm install` or `npm link`.
+2. Install your local copy of the plugin.
     ``` bash
-    npm install/link /path/to/repo/nativescript-dev-webpack
+    npm install /path/to/repo/nativescript-dev-webpack
     ```
 
-3. The first command will copy the files, while the second one will create a symlink to the local directory. Because of the symlink, all the changes you make in `node_modules/nativescript-dev-webpack` will be 'synced' with `/path/to/repo/nativescript-dev-webpack` and vice-versa.
-
-4. Make sure to force-update the project's configuration files if it's already using Webpack.
+3. Make sure to force-update the project's configuration files if it's already using Webpack.
     ``` bash
-    rm -rf node_modules platforms webpack.* app/vendor*
-    ./node_modules/.bin/update-ns-webpack # force update dependecies and add the new configurations
-    npm i # install the new dependencies
+    ./node_modules/.bin/update-ns-webpack --deps --configs
     ```
 
 ## Reporting Bugs
