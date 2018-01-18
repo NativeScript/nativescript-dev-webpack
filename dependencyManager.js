@@ -72,7 +72,7 @@ function getRequiredDeps(packageJson) {
 
     if (isAngular({packageJson})) {
         Object.assign(deps, {
-            "angular/compiler-cli": packageJson.dependencies["@angular/core"],
+            "@angular/compiler-cli": packageJson.dependencies["@angular/core"],
             "@ngtools/webpack": "~1.9.4",
         });
     } else if (isTypeScript({packageJson})) {
