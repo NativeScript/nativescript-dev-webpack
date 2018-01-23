@@ -47,7 +47,7 @@ You are good to go! You're strongly encouraged to follow the official NativeScri
 
 ## Testing locally
 
-There are three apps in the repository, located in 
+There are three apps in the repository, located in the `/demo` directory.
 1. Create a new NativeScript project with NativeScript CLI:
     ``` bash
     tns create testapp # pass --ng/--tsc for Angular/TypeScript app
