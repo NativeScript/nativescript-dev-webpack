@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+console.error("The ns-verify-bundle script is deprecated!")
+
 const path = require("path");
 const fs = require("fs");
 
