@@ -71,8 +71,10 @@ function getRequiredDeps(packageJson) {
     };
 
     if (isAngular({packageJson})) {
-        const angularDeps = resolveAngularDeps(packageJson.dependencies);
-        Object.assign(deps, angularDeps);
+        Object.assign(deps, {
+            "@angular/compiler-cli": packageJson.dependencies["@angular/core"],
+            "@ngtools/webpack": "~1.9.4",
+        });
     } else if (isTypeScript({packageJson})) {
         Object.assign(deps, { "awesome-typescript-loader": "~3.1.3" });
     }
@@ -82,55 +84,6 @@ function getRequiredDeps(packageJson) {
     }
 
     return deps;
-}
-
-function resolveAngularDeps(usedDependencies) {
-    const depsToAdd = {
-        "@angular/compiler-cli": usedDependencies["@angular/core"],
-    };
-    const tnsModulesVersion = getVersionWithoutPatch(usedDependencies["tns-core-modules"]);
-    const angularCoreVersion = getVersionWithoutPatch(usedDependencies["@angular/core"]);
-
-    if (angularCoreVersion.startsWith("2.")) {
-        Object.assign(depsToAdd, {
-            "typescript": "~2.1.6",
-            "@ngtools/webpack": "1.2.10",
-        });
-    } else if (tnsModulesVersion.startsWith("2.")) {
-         Object.assign(depsToAdd, {
-            "typescript": "~2.1.6",
-            "@ngtools/webpack": "1.2.13",
-        });
-    } else if (angularCoreVersion.startsWith("5.0")) {
-        Object.assign(depsToAdd, {
-            "typescript": "~2.4.2",
-            "@ngtools/webpack": "~1.8.2",
-        });
-    } else {
-        Object.assign(depsToAdd, {
-            "typescript": "~2.4.2",
-            "@ngtools/webpack": "~1.9.1",
-        });
-    }
-
-    return depsToAdd;
-}
-
-function getVersionWithoutPatch(fullVersion) {
-    if (!fullVersion) {
-        return "";
-    }
-
-    const prereleaseVersions = Object.freeze(["next", "latest", "rc"]);
-    if (prereleaseVersions.includes(fullVersion)) {
-        return fullVersion;
-    }
-
-    const version = fullVersion.substring(0, fullVersion.lastIndexOf("."));
-
-    return version.startsWith("~") || version.startsWith("^") ?
-        version.substring(1) :
-        version;
 }
 
 function showHelperMessages({ newDepsAdded, hasOldDeps }) {
