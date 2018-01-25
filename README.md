@@ -21,4 +21,3 @@ $ tns run ios --bundle
 # Documentation
 
 For details, see the [NativeScript docs](http://docs.nativescript.org/angular/best-practices/bundling-with-webpack.html).
-
