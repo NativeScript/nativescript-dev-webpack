@@ -16,6 +16,11 @@
         "inject": true
       },
       {
+        "type": "before-cleanApp",
+        "script": "lib/before-cleanApp.js",
+        "inject": true
+      },
+      {
         "type": "after-prepare",
         "script": "lib/after-prepare.js",
         "inject": true
