@@ -47,20 +47,35 @@ You are good to go! You're strongly encouraged to follow the official NativeScri
 
 ## Testing locally
 
-There are three apps in the repository, located in the `/demo` directory.
-1. Create a new NativeScript project with NativeScript CLI:
+There are three apps in the repository, located in the `/demo` directory. After cloning the repository, you can run the automated tests for each of them with the following steps:
+
+1. Navigate to one of the apps.
     ``` bash
-    tns create testapp # pass --ng/--tsc for Angular/TypeScript app
+    cd nativescript-dev-webpack/demo/AngularApp
     ```
 
-2. Install your local copy of the plugin.
+2. Install dependencies. This also installs your local copy of the nativescript-dev-webpack plugin.
     ``` bash
-    npm install /path/to/repo/nativescript-dev-webpack
+    npm install
     ```
 
-3. Make sure to force-update the project's configuration files if it's already using Webpack.
+3. Install appium globally.
     ``` bash
-    ./node_modules/.bin/update-ns-webpack --deps --configs
+    npm install -g appium
+    ```
+
+4. Create an emulator or connect a physical Android/iOS device.
+
+5. Build the app for Android or iOS.
+    ```bash
+    tns run android/ios
+    ```
+
+6. Follow the instructions in the [nativescript-dev-appium](https://github.com/nativescript/nativescript-dev-appium#custom-appium-capabilities) plugin to add an appium capability for your device inside `./e2e/config/appium.capabilities.json`.
+
+7. Run the automated tests. The value of the `runType` argument should match the name of the capability that you just added.
+    ``` bash
+    npm run e2e -- --runType capabilityName
     ```
 
 ## Reporting Bugs
