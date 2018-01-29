@@ -130,5 +130,12 @@ module.exports = [
     "UIViewControllerImpl",
     "UIWebViewDelegateImpl",
     "Window",
+
+    // Sidedrawer transitions
+    // Should be removed after {N} 4.0 is released
+    // See: https://github.com/telerik/nativescript-ui-feedback/issues/477#issuecomment-360772046
+    "PushTransition",
+    "FadeTransition",
+    "SlideInOnTopTransition",
 ];
 
