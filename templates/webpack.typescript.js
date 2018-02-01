@@ -18,6 +18,9 @@ module.exports = env => {
 
     const config = {
         context: resolve("./app"),
+        watchOptions: {
+            ignored: resolve("./app/App_Resources")
+        },
         target: nativescriptTarget,
         entry: {
             bundle: `./${nsWebpack.getEntryModule()}`,

@@ -21,6 +21,16 @@
         "inject": true
       },
       {
+        "type": "before-watch",
+        "script": "lib/before-watch.js",
+        "inject": true
+      },
+      {
+        "type": "before-watchPatterns",
+        "script": "lib/before-watchPatterns.js",
+        "inject": true
+      },
+      {
         "type": "after-prepare",
         "script": "lib/after-prepare.js",
         "inject": true

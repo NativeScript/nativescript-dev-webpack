@@ -13,7 +13,7 @@ export class WatchStateLoggerPlugin {
     isRunningWatching: boolean;
     apply(compiler) {
         const plugin = this;
-        compiler.plugin("watch-run", function(compiler, callback) {
+        compiler.plugin("watch-run", function (compiler, callback) {
             plugin.isRunningWatching = true;
             if (plugin.isRunningWatching) {
                 console.log(messages.changeDetected);
@@ -21,14 +21,21 @@ export class WatchStateLoggerPlugin {
             process.send && process.send(messages.changeDetected, error => null);
             callback();
         });
-        compiler.plugin("after-emit", function(compilation, callback) {
+        compiler.plugin("after-emit", function (compilation, callback) {
             callback();
             if (plugin.isRunningWatching) {
                 console.log(messages.startWatching);
             } else {
                 console.log(messages.compilationComplete);
             }
+
+            const emittedFiles = Object
+                .keys(compilation.assets)
+                .filter(assetKey => compilation.assets[assetKey].emitted);
+
             process.send && process.send(messages.compilationComplete, error => null);
+            // Send emitted files so they can be LiveSynced if need be
+            process.send && process.send({ emittedFiles }, error => null);
         });
     }
 }
