@@ -1,5 +1,17 @@
-Contributing
+# Contributing
 ====================
+
+<!-- TOC depthFrom:2 -->
+
+- [Introduction](#introduction)
+- [Project Structure](#project-structure)
+- [Setup](#setup)
+- [Testing locally](#testing-locally)
+- [Reporting Bugs](#reporting-bugs)
+- [Requesting Features](#requesting-features)
+- [Submitting PR](#submitting-pr)
+
+<!-- /TOC -->
 
 ## Introduction
 
@@ -67,7 +79,7 @@ There are three apps in the repository, located in the `/demo` directory.
 
 1. Always update to the most recent master release; the bug may already be resolved.
 2. Search for similar issues in the issues list for this repo; it may already be an identified problem.
-3. If this is a bug or problem that is clear, simple, and is unlikely to require any discussion -- it is OK to open an issue on GitHub with a reproduction of the bug including workflows and screenshots. If possible, submit a Pull Request with a failing test, entire application or module. If you'd rather take matters into your own hands, fix the bug yourself (jump down to the [Submitting a PR](#pr) section).
+3. If this is a bug or problem that is clear, simple, and is unlikely to require any discussion -- it is OK to open an issue on GitHub with a reproduction of the bug including workflows and screenshots. If possible, submit a Pull Request with a failing test, entire application or module. If you'd rather take matters into your own hands, fix the bug yourself (jump down to the [Submitting a PR](#submitting-pr) section).
 
 ## Requesting Features
 
@@ -77,7 +89,7 @@ There are three apps in the repository, located in the `/demo` directory.
 
 ## Submitting PR
 
-1. Create one or several commits describing your changes. Follow the [Angular Commit message guidelines](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#heading=h.uyo6cb12dt6w).
+1. Create one or several commits describing your changes. Follow the [Angular commit message guidelines](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#heading=h.uyo6cb12dt6w).
 
 2. Push your branch to GitHub:
     ```bash
