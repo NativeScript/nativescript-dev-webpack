@@ -42,6 +42,7 @@
   "dependencies": {
     "minimatch": "3.0.4",
     "nativescript-hook": "0.2.2",
+    "proxy-lib": "0.4.0",
     "request": "2.83.0",
     "schema-utils": "0.4.3",
     "semver": "5.4.1",
