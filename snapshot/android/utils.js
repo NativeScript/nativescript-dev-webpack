@@ -32,11 +32,11 @@ const getJsonFile = url =>
             .then(options =>
                 get(options, (error, response, body) => {
                     if (error) {
-                        reject(error);
+                        return reject(error);
                     }
 
                     if (!response || response.statusCode !== 200) {
-                        reject(`Couldn't fetch ${url}! Response:\n${response}`);
+                        return reject(`Couldn't fetch ${url}! Response:\n${response}`);
                     }
 
                     try {
