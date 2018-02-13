@@ -29,9 +29,8 @@ const getJsonFile = url =>
                 reject(error);
             }
 
-            const { statusCode } = response;
-            if (statusCode !== 200) {
-                reject(`Couldn't fetch ${url}! Response status code: ${statusCode}`)
+            if (!response || response.statusCode !== 200) {
+                reject(`Couldn't fetch ${url}! Response:\n${response}`);
             }
 
             try {
