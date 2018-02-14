@@ -4,16 +4,16 @@ const { getPackageJson } = require("../projectHelpers");
 exports.GenerateBundleStarterPlugin = (function() {
     function GenerateBundleStarterPlugin(bundles) {
         this.bundles = bundles;
+        this.files = {};
     };
 
     GenerateBundleStarterPlugin.prototype.apply = function(compiler) {
-        const plugin = this;
-        plugin.webpackContext = compiler.options.context;
+        this.webpackContext = compiler.options.context;
 
-        compiler.plugin("emit", function (compilation, cb) {
-            compilation.assets["package.json"] = plugin.generatePackageJson();
-            compilation.assets["starter.js"] = plugin.generateStarterModule();
-            plugin.generateTnsJavaClasses(compilation);
+        compiler.plugin("emit", (compilation, cb) => {
+            this.addAsset(compilation, "package.json", this.generatePackageJson());
+            this.addAsset(compilation, "starter.js", this.generateStarterModule());
+            this.generateTnsJavaClasses(compilation);
 
             cb();
         });
@@ -24,7 +24,7 @@ exports.GenerateBundleStarterPlugin = (function() {
         const isAndroid = path.indexOf("android") > -1;
 
         if (isAndroid && !compilation.assets["tns-java-classes.js"]) {
-            compilation.assets["tns-java-classes.js"] = new RawSource("");
+            this.addAsset(compilation, "tns-java-classes.js", "");
         }
     }
 
@@ -32,7 +32,7 @@ exports.GenerateBundleStarterPlugin = (function() {
         const packageJson = getPackageJson(this.webpackContext);
         packageJson.main = "starter";
 
-        return new RawSource(JSON.stringify(packageJson, null, 4));
+        return JSON.stringify(packageJson, null, 4);
     }
 
     GenerateBundleStarterPlugin.prototype.generateStarterModule = function () {
@@ -40,7 +40,14 @@ exports.GenerateBundleStarterPlugin = (function() {
             .map(bundle => `require("${bundle}")`)
             .join("\n");
 
-        return new RawSource(moduleSource);
+        return moduleSource;
+    }
+
+    GenerateBundleStarterPlugin.prototype.addAsset = function(compilation, name, content) {
+        if (this.files[name] !== content) {
+            this.files[name] = content;
+            compilation.assets[name] = new RawSource(content);
+        }
     }
 
     return GenerateBundleStarterPlugin;
