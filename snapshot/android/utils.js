@@ -1,8 +1,10 @@
 const { chmodSync, createWriteStream, existsSync } = require("fs");
-const { get: httpsGet } = require("https");
 const { tmpdir } = require("os");
 const { dirname, join } = require("path");
+
 const { mkdir } = require("shelljs");
+const { get } = require("request");
+const { getProxySettings } = require("proxy-lib");
 
 const CONSTANTS = {
     SNAPSHOT_TMP_DIR: join(tmpdir(), "snapshot-tools"),
@@ -12,49 +14,51 @@ const createDirectory = dir => mkdir('-p', dir);
 
 const downloadFile = (url, destinationFilePath) =>
     new Promise((resolve, reject) => {
-        const request = httpsGet(url, response => {
-            switch (response.statusCode) {
-                case 200:
-                    const file = createWriteStream(destinationFilePath, {autoClose: true});
-                    file.on('error', function (error) {
-                        return reject(error);
-                    });
-                    file.on("finish", function() {
+        getRequestOptions(url)
+            .then(options =>
+                get(options)
+                    .on("error", reject)
+                    .pipe(createWriteStream(destinationFilePath, { autoClose: true }))
+                    .on("finish", _ => {
                         chmodSync(destinationFilePath, 0755);
                         return resolve(destinationFilePath);
-                    });
-                    response.pipe(file);
-                    break;
-                case 301:
-                case 302:
-                case 303:
-                    const redirectUrl = response.headers.location;
-                    return this.downloadExecFile(redirectUrl, destinationFilePath);
-                default:
-                    return reject(new Error("Unable to download file at " + url + ". Status code: " + response.statusCode));
-            }
-        });
-
-        request.end();
-
-        request.on('error', function(err) {
-            return reject(err);
-        });
+                    })
+            ).catch(reject);
     });
 
 const getJsonFile = url =>
     new Promise((resolve, reject) => {
-        httpsGet(url, res => {
-            let body = "";
-            res.on("data", chunk => {
-                body += chunk;
-            })
+        getRequestOptions(url)
+            .then(options =>
+                get(options, (error, response, body) => {
+                    if (error) {
+                        return reject(error);
+                    }
 
-            res.on("end", () => {
-                const data = JSON.parse(body);
-                return resolve(data);
-            });
-        }).on("error", reject);
+                    if (!response || response.statusCode !== 200) {
+                        return reject(`Couldn't fetch ${url}! Response:\n${response}`);
+                    }
+
+                    try {
+                        const data = JSON.parse(body);
+                        resolve(data);
+                    } catch (error) {
+                        reject(`Couldn't parse json data! Original error:\n${error}`);
+                    }
+                })
+            ).catch(reject);
+    });
+
+const getRequestOptions = (url) =>
+    new Promise((resolve, reject) => {
+        const options = { url };
+        getProxySettings()
+            .then(proxySettings => {
+                const allOptions = Object.assign(options, proxySettings);
+                resolve(allOptions);
+            })
+            .catch(error =>
+                reject(`Couldn't get proxy settings! Original error:\n${error}`));
     });
 
 module.exports = {
