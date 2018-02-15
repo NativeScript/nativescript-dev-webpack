@@ -1,3 +1,15 @@
+<a name="0.9.2"></a>
+## [0.9.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.9.1...0.9.2) (2018-02-15)
+
+
+### Bug Fixes
+
+* clean snapshot artifacts on cleanApp hook ([#423](https://github.com/NativeScript/nativescript-dev-webpack/issues/423)) ([50c3ab9](https://github.com/NativeScript/nativescript-dev-webpack/commit/50c3ab9))
+* **snapshot:** use request module for http requests ([#428](https://github.com/NativeScript/nativescript-dev-webpack/issues/428)) ([01933e0](https://github.com/NativeScript/nativescript-dev-webpack/commit/01933e0)), closes [#389](https://github.com/NativeScript/nativescript-dev-webpack/issues/389)
+* **uglify:** prevent SideDrawer transition class names from being renamed ([#426](https://github.com/NativeScript/nativescript-dev-webpack/issues/426)) ([0120329](https://github.com/NativeScript/nativescript-dev-webpack/commit/0120329)), closes [#258](https://github.com/NativeScript/nativescript-dev-webpack/issues/258)
+
+
+
 <a name="0.9.1"></a>
 ## [0.9.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.9.0...0.9.1) (2018-01-10)
 
