@@ -57,22 +57,36 @@ The repository contains several ingredients:
 The last command also runs `npm prepare` which compiles the TypeScript files in the plugin. 
 You are good to go! You're strongly encouraged to follow the official NativeScript [Coding Conventions](https://github.com/NativeScript/NativeScript/blob/master/CodingConvention.md) and to use ES features available in NodeJS v6. If unsure, check on [node.green](http://node.green/).
 
-## Testing locally
+## Testing locally by running e2e tests
 
-There are three apps in the repository, located in the `/demo` directory.
-1. Create a new NativeScript project with NativeScript CLI:
+NOTE: There are three test apps in the repository, located in the `/demo` directory. The steps below describe how to run the tests for the `AngularApp`, but the same approach can be used to run any other `e2e` tests.
+
+1. Navigate to `demo/AngularApp`
     ``` bash
-    tns create testapp # pass --ng/--tsc for Angular/TypeScript app
+    cd demo/AngularApp
     ```
 
-2. Install your local copy of the plugin.
+2. Install dependencies. This also installs your local copy of the nativescript-angular plugin.
     ``` bash
-    npm install /path/to/repo/nativescript-dev-webpack
+    npm install
+    ```
+3. Make sure to have an emulator set up or connect a physical Android/iOS device.
+
+4. Build the app for Android or iOS
+    ``` bash
+    tns run android/ios
     ```
 
-3. Make sure to force-update the project's configuration files if it's already using Webpack.
+5. Install [appium](http://appium.io/) globally.
     ``` bash
-    ./node_modules/.bin/update-ns-webpack --deps --configs
+    npm install -g appium
+    ```
+
+6. Follow the instructions in the [nativescript-dev-appium](https://github.com/nativescript/nativescript-dev-appium#custom-appium-capabilities) plugin to add an appium capability for your device inside `./e2e/renderer/e2e/config/appium.capabilities.json`.
+
+7. Run the automated tests. The value of the `runType` argument should match the name of the capability that you just added.
+    ``` bash
+    npm run e2e -- --runType capabilityName
     ```
 
 ## Reporting Bugs
