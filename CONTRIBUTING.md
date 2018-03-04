@@ -6,7 +6,7 @@
 - [Introduction](#introduction)
 - [Project Structure](#project-structure)
 - [Setup](#setup)
-- [Testing locally](#testing-locally)
+- [Testing locally](#testing-locally-by-running-e2e-tests)
 - [Reporting Bugs](#reporting-bugs)
 - [Requesting Features](#requesting-features)
 - [Submitting PR](#submitting-pr)
