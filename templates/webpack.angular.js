@@ -4,7 +4,6 @@ const webpack = require("webpack");
 const nsWebpack = require("nativescript-dev-webpack");
 const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
@@ -15,21 +14,41 @@ module.exports = env => {
         throw new Error("You need to provide a target platform!");
     }
     const platforms = ["ios", "android"];
-    const { snapshot, uglify, report, aot } = env;
+    const {
+        // The 'appPath' and 'appResourcesDir' values are fetched from
+        // the nsconfig.json configuration file
+        // when bundling with `tns run android|ios --bundle`.
+        appPath = "app",
+        appResourcesPath = "app/App_Resources",
+
+        // Aot, snapshot, uglify and report can be enabled by providing
+        // the `--env.snapshot`, `--env.uglify` or `--env.report` flags
+        // when running 'tns run android|ios'
+        aot,
+        snapshot,
+        uglify,
+        report,
+    } = env;
     const ngToolsWebpackOptions = { tsConfigPath: join(__dirname, "tsconfig.json") };
 
+    const projectRoot = __dirname;
+    const appFullPath = resolve(projectRoot, appPath);
+    const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
+
     const config = {
-        context: resolve(__dirname, "app"),
+        context: appFullPath,
         watchOptions: {
             ignored: [
-                resolve(__dirname, "./app/App_Resources"),
+                appResourcesFullPath,
                 // Don't watch hidden files
                 "**/.*",
             ]
         },
         target: nativescriptTarget,
         entry: {
-            bundle: aot ? "./main.aot.ts" : "./main.ts",
+            bundle: aot ?
+                `./${nsWebpack.getAotEntryModule(appFullPath)}` :
+                `./${nsWebpack.getEntryModule(appFullPath)}`,
             vendor: "./vendor",
         },
         output: {
@@ -47,7 +66,7 @@ module.exports = env => {
                 "node_modules",
             ],
             alias: {
-                '~': resolve("./app")
+                '~': appFullPath
             },
             // don't resolve symlinks to symlinked modules
             symlinks: false
@@ -105,7 +124,7 @@ module.exports = env => {
             }),
             // Copy assets to out dir. Add your own globs as needed.
             new CopyWebpackPlugin([
-                { from: "App_Resources/**" },
+                { from: `${appResourcesFullPath}/**`, context: projectRoot },
                 { from: "fonts/**" },
                 { from: "**/*.jpg" },
                 { from: "**/*.png" },
@@ -140,14 +159,14 @@ module.exports = env => {
             analyzerMode: "static",
             openAnalyzer: false,
             generateStatsFile: true,
-            reportFilename: join(__dirname, "report", `report.html`),
-            statsFilename: join(__dirname, "report", `stats.json`),
+            reportFilename: resolve(projectRoot, "report", `report.html`),
+            statsFilename: resolve(projectRoot, "report", `stats.json`),
         }));
     }
     if (snapshot) {
         config.plugins.push(new nsWebpack.NativeScriptSnapshotPlugin({
             chunk: "vendor",
-            projectRoot: __dirname,
+            projectRoot,
             webpackConfig: config,
             targetArchs: ["arm", "arm64", "ia32"],
             tnsJavaClassesOptions: { packages: ["tns-core-modules" ] },

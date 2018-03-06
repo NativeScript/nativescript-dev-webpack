@@ -3,6 +3,10 @@ const fs = require("fs");
 const semver = require("semver");
 const { EOL } = require("os");
 
+const { getProjectData, PROJECT_DATA_GETTERS } = require("./nsCliHelpers");
+
+const APP_DIR = "app";
+
 const isTypeScript = ({ projectDir, packageJson } = {}) => {
     packageJson = packageJson || getPackageJson(projectDir);
 
@@ -48,6 +52,7 @@ const getAndroidRuntimeVersion = (projectDir) => {
 const getWebpackConfig = (projectDir, env, configPath = "webpack.config.js") => {
     const configAbsolutePath = path.resolve(projectDir, configPath);
     let config;
+
     try {
         config = require(configAbsolutePath);
     } catch (e) {
@@ -137,16 +142,58 @@ const resolveAndroidConfigurationsPath = projectDir => {
 
 const getPackageJsonPath = projectDir => path.resolve(projectDir, "package.json");
 
+const isAndroid = platform => /android/i.test(platform);
+const isIos = platform => /ios/i.test(platform);
+
+function getAppPath() {
+    const projectDir = getProjectDir();
+    const projectData = getProjectData(projectDir);
+    const appDir = getAppPathFromProjectData(projectData) || APP_DIR;
+
+    const appPath = path.resolve(projectDir, appDir);
+
+    return appPath;
+}
+
+function getAppPathFromProjectData(data) {
+    return safeGet(data, PROJECT_DATA_GETTERS.appPath);
+}
+
+function getAppResourcesPathFromProjectData(data) {
+    return safeGet(data, PROJECT_DATA_GETTERS.appResourcesPath);
+}
+
+function safeGet(object, property) {
+    if (!object) {
+        return;
+    }
+
+    const value = object[property];
+    if (!value) {
+        return;
+    }
+
+    return typeof value === "function" ?
+        value.bind(object)() :
+        value;
+}
+
 module.exports = {
+    getAppPath,
+    getAppPathFromProjectData,
+    getAppResourcesPathFromProjectData,
     getAndroidProjectPath,
     getAndroidRuntimeVersion,
     getPackageJson,
     getProjectDir,
     getWebpackConfig,
+    isAndroid,
+    isIos,
     isAngular,
     isSass,
     isTypeScript,
     resolveAndroidAppPath,
     resolveAndroidConfigurationsPath,
     writePackageJson,
+    safeGet,
 };
