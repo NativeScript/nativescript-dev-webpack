@@ -44,6 +44,28 @@ const getAndroidRuntimeVersion = (projectDir) => {
     }
 }
 
+const getWebpackConfig = (projectDir, configPath = "webpack.config.js") => {
+    const configAbsolutePath = path.resolve(projectDir, configPath);
+    let config;
+    try {
+        config = require(configAbsolutePath);
+    } catch (e) {
+        throw new Error(
+            `Couldn't load webpack config from ${configAbsolutePath}. ` +
+            `Original error:\n${e}`
+        );
+    }
+    if (typeof config === "function") {
+        config = config();
+    }
+
+    if (!config) {
+        throw new Error(`Webpack config from ${configAbsolutePath} is empty!`);
+    }
+
+    return config;
+};
+
 const getPackageJson = projectDir => {
     const packageJsonPath = getPackageJsonPath(projectDir);
     return JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
@@ -115,14 +137,15 @@ const resolveAndroidConfigurationsPath = projectDir => {
 const getPackageJsonPath = projectDir => path.resolve(projectDir, "package.json");
 
 module.exports = {
-    isTypeScript,
-    isAngular,
-    isSass,
-    writePackageJson,
+    getAndroidProjectPath,
+    getAndroidRuntimeVersion,
     getPackageJson,
     getProjectDir,
-    getAndroidRuntimeVersion,
-    getAndroidProjectPath,
+    getWebpackConfig,
+    isAngular,
+    isSass,
+    isTypeScript,
     resolveAndroidAppPath,
     resolveAndroidConfigurationsPath,
+    writePackageJson,
 };
