@@ -19,7 +19,12 @@ module.exports = env => {
     const config = {
         context: resolve("./app"),
         watchOptions: {
-            ignored: resolve("./app/App_Resources")
+            ignored: [
+                resolve("./app/App_Resources"),
+                // Don't watch hidden files
+                "**/.*",
+                ".*",
+            ]
         },
         target: nativescriptTarget,
         entry: {
