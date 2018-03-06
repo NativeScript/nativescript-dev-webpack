@@ -1,6 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const semver = require("semver");
+const { EOL } = require("os");
 
 const isTypeScript = ({ projectDir, packageJson } = {}) => {
     packageJson = packageJson || getPackageJson(projectDir);
@@ -52,7 +53,7 @@ const getWebpackConfig = (projectDir, env, configPath = "webpack.config.js") => 
     } catch (e) {
         throw new Error(
             `Couldn't load webpack config from ${configAbsolutePath}. ` +
-            `Original error:\n${e}`
+            `Original error:${EOL}${e}`
         );
     }
     if (typeof config === "function") {

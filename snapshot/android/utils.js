@@ -1,5 +1,5 @@
 const { chmodSync, createWriteStream, existsSync } = require("fs");
-const { tmpdir } = require("os");
+const { tmpdir, EOL } = require("os");
 const { dirname, join } = require("path");
 
 const { mkdir } = require("shelljs");
@@ -36,14 +36,14 @@ const getJsonFile = url =>
                     }
 
                     if (!response || response.statusCode !== 200) {
-                        return reject(`Couldn't fetch ${url}! Response:\n${response}`);
+                        return reject(`Couldn't fetch ${url}! Response:${EOL}${response}`);
                     }
 
                     try {
                         const data = JSON.parse(body);
                         resolve(data);
                     } catch (error) {
-                        reject(`Couldn't parse json data! Original error:\n${error}`);
+                        reject(`Couldn't parse json data! Original error:${EOL}${error}`);
                     }
                 })
             ).catch(reject);
@@ -58,7 +58,7 @@ const getRequestOptions = (url) =>
                 resolve(allOptions);
             })
             .catch(error =>
-                reject(`Couldn't get proxy settings! Original error:\n${error}`));
+                reject(`Couldn't get proxy settings! Original error:${EOL}${error}`));
     });
 
 module.exports = {
