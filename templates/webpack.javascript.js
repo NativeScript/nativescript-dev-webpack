@@ -23,7 +23,6 @@ module.exports = env => {
                 resolve("./app/App_Resources"),
                 // Don't watch hidden files
                 "**/.*",
-                ".*",
             ]
         },
         target: nativescriptTarget,
