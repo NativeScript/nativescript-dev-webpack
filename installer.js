@@ -5,7 +5,7 @@ const helpers = require("./projectHelpers");
 const projectFilesManager = require("./projectFilesManager");
 const dependencyManager = require("./dependencyManager");
 
-const PROJECT_DIR = helpers.getProjectDir({ nestingLvl: 2 });
+const PROJECT_DIR = helpers.getProjectDir();
 const APP_DIR = path.resolve(PROJECT_DIR, "app");
 
 function install() {
