@@ -19,10 +19,10 @@ module.exports = env => {
     const ngToolsWebpackOptions = { tsConfigPath: "tsconfig.json" };
 
     const config = {
-        context: resolve("./app"),
+        context: resolve(__dirname, "app"),
         watchOptions: {
             ignored: [
-                resolve("./app/App_Resources"),
+                resolve(__dirname, "./app/App_Resources"),
                 // Don't watch hidden files
                 "**/.*",
             ]
