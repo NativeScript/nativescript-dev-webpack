@@ -44,7 +44,7 @@ const getAndroidRuntimeVersion = (projectDir) => {
     }
 }
 
-const getWebpackConfig = (projectDir, configPath = "webpack.config.js") => {
+const getWebpackConfig = (projectDir, env, configPath = "webpack.config.js") => {
     const configAbsolutePath = path.resolve(projectDir, configPath);
     let config;
     try {
@@ -56,7 +56,7 @@ const getWebpackConfig = (projectDir, configPath = "webpack.config.js") => {
         );
     }
     if (typeof config === "function") {
-        config = config();
+        config = config(env);
     }
 
     if (!config) {
@@ -75,7 +75,7 @@ const writePackageJson = (content, projectDir) => {
     const packageJsonPath = getPackageJsonPath(projectDir);
     fs.writeFileSync(packageJsonPath, JSON.stringify(content, null, 2))
 }
-const getProjectDir = ({ nestingLvl } = { nestingLvl: 0 }) => {
+const getProjectDir = ({ nestingLvl } = { nestingLvl: 2 }) => {
     // INIT_CWD is available since npm 5.4
     const initCwd = process.env.INIT_CWD;
     const shouldUseInitCwd = (() => {

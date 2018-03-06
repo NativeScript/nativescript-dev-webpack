@@ -3,7 +3,7 @@ const { existsSync } = require("fs");
 
 const { getPackageJson, getProjectDir, isAngular, resolveAndroidAppPath } = require("./projectHelpers");
 
-const PROJECT_DIR = getProjectDir({ nestingLvl: 2 });
+const PROJECT_DIR = getProjectDir();
 const APP_DIR = path.join(PROJECT_DIR, "app");
 
 Object.assign(exports, require('./plugins'));
