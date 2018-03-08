@@ -9,9 +9,9 @@ To help the rest of the community review your issue, please follow the instructi
 
 ## Issue Checklist
 
-- [ ] You are submitting: <!-- a feature request; a bug report. For questions, please use the [NativeScript Forum](http://forum.nativescript.org). -->
-- [ ] You verified that this is a real problem by searching the [NativeScript Forum](http://forum.nativescript.org) and the 
-[other issues in this repo](https://github.com/nativescript/nativescript-dev-webpack/issues?utf8=✓&q=is%3Aissue).
+- [ ] You are submitting: <!-- a feature request; a bug report. For questions, please use the [NativeScript Forum]. -->
+- [ ] You verified that this is a real problem by searching the [NativeScript Forum] and the other [issues] in this repo.
+- [ ] You checked our [demo apps] and the [documentation] for sample usage.
 
 ## Tell us about the problem
 <!-- Describe the issue with a few words. Provide build log and steps to reproduce if relevant. -->
@@ -34,3 +34,7 @@ To help the rest of the community review your issue, please follow the instructi
 <!-- Provide the content of your webpack.config.js. -->
 ```
 
+[NativeScript Forum]: http://forum.nativescript.org
+[issues]: https://github.com/nativescript/nativescript-dev-webpack/issues?utf8=✓&q=is%3Aissue
+[demo apps]: ../demo
+[documentation]: https://docs.nativescript.org/best-practices/bundling-with-webpack
