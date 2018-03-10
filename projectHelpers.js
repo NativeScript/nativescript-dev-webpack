@@ -1,6 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const semver = require("semver");
+const { EOL } = require("os");
 
 const isTypeScript = ({ projectDir, packageJson } = {}) => {
     packageJson = packageJson || getPackageJson(projectDir);
@@ -44,6 +45,28 @@ const getAndroidRuntimeVersion = (projectDir) => {
     }
 }
 
+const getWebpackConfig = (projectDir, env, configPath = "webpack.config.js") => {
+    const configAbsolutePath = path.resolve(projectDir, configPath);
+    let config;
+    try {
+        config = require(configAbsolutePath);
+    } catch (e) {
+        throw new Error(
+            `Couldn't load webpack config from ${configAbsolutePath}. ` +
+            `Original error:${EOL}${e}`
+        );
+    }
+    if (typeof config === "function") {
+        config = config(env);
+    }
+
+    if (!config) {
+        throw new Error(`Webpack config from ${configAbsolutePath} is empty!`);
+    }
+
+    return config;
+};
+
 const getPackageJson = projectDir => {
     const packageJsonPath = getPackageJsonPath(projectDir);
     return JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
@@ -53,7 +76,7 @@ const writePackageJson = (content, projectDir) => {
     const packageJsonPath = getPackageJsonPath(projectDir);
     fs.writeFileSync(packageJsonPath, JSON.stringify(content, null, 2))
 }
-const getProjectDir = ({ nestingLvl } = { nestingLvl: 0 }) => {
+const getProjectDir = ({ nestingLvl } = { nestingLvl: 2 }) => {
     // INIT_CWD is available since npm 5.4
     const initCwd = process.env.INIT_CWD;
     const shouldUseInitCwd = (() => {
@@ -115,14 +138,15 @@ const resolveAndroidConfigurationsPath = projectDir => {
 const getPackageJsonPath = projectDir => path.resolve(projectDir, "package.json");
 
 module.exports = {
-    isTypeScript,
-    isAngular,
-    isSass,
-    writePackageJson,
+    getAndroidProjectPath,
+    getAndroidRuntimeVersion,
     getPackageJson,
     getProjectDir,
-    getAndroidRuntimeVersion,
-    getAndroidProjectPath,
+    getWebpackConfig,
+    isAngular,
+    isSass,
+    isTypeScript,
     resolveAndroidAppPath,
     resolveAndroidConfigurationsPath,
+    writePackageJson,
 };

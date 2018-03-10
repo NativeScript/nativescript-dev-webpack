@@ -6,7 +6,7 @@ const { forceUpdateProjectFiles } = require("../projectFilesManager");
 const { forceUpdateProjectDeps } = require("../dependencyManager");
 
 const PLUGIN_NAME = "nativescript-dev-webpack";
-const PROJECT_DIR = getProjectDir({ nestingLvl: 2 });
+const PROJECT_DIR = getProjectDir();
 
 function update({
     deps: shouldUpdateDeps,
