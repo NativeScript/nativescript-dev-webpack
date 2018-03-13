@@ -16,7 +16,7 @@ module.exports = env => {
     }
     const platforms = ["ios", "android"];
     const { snapshot, uglify, report, aot } = env;
-    const ngToolsWebpackOptions = { tsConfigPath: "tsconfig.json" };
+    const ngToolsWebpackOptions = { tsConfigPath: join(__dirname, "tsconfig.json") };
 
     const config = {
         context: resolve(__dirname, "app"),
