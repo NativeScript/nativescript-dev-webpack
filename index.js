@@ -12,8 +12,6 @@ if (isAngular({ projectDir: PROJECT_DIR })) {
     Object.assign(exports, require('./plugins/angular'));
 }
 
-exports.uglifyMangleExcludes = require("./mangle-excludes");
-
 exports.getEntryModule = function () {
     const maybePackageJsonEntry = getPackageJsonEntry();
     if (!maybePackageJsonEntry) {
