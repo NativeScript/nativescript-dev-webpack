@@ -3,6 +3,7 @@ const { resolve, join  } = require("path");
 const webpack = require("webpack");
 const nsWebpack = require("nativescript-dev-webpack");
 const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target");
+const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
@@ -13,6 +14,11 @@ module.exports = env => {
     if (!platform) {
         throw new Error("You need to provide a target platform!");
     }
+
+    const projectRoot = __dirname;
+    // Default destination inside platforms/<platform>/...
+    const dist = resolve(projectRoot, nsWebpack.getAppPath(platform));
+
     const platforms = ["ios", "android"];
     const {
         // The 'appPath' and 'appResourcesDir' values are fetched from
@@ -31,7 +37,6 @@ module.exports = env => {
     } = env;
     const ngToolsWebpackOptions = { tsConfigPath: join(__dirname, "tsconfig.json") };
 
-    const projectRoot = __dirname;
     const appFullPath = resolve(projectRoot, appPath);
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
 
@@ -53,8 +58,7 @@ module.exports = env => {
         },
         output: {
             pathinfo: true,
-            // Default destination inside platforms/<platform>/...
-            path: resolve(nsWebpack.getAppPath(platform)),
+            path: dist,
             libraryTarget: "commonjs2",
             filename: "[name].js",
         },
@@ -122,6 +126,8 @@ module.exports = env => {
             new webpack.DefinePlugin({
                 "global.TNS_WEBPACK": "true",
             }),
+            // Remove all files from the out dir.
+            new CleanWebpackPlugin([ `${dist}/**/*` ]),
             // Copy assets to out dir. Add your own globs as needed.
             new CopyWebpackPlugin([
                 { from: `${appResourcesFullPath}/**`, context: projectRoot },
