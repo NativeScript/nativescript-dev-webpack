@@ -61,6 +61,7 @@ function getRequiredDeps(packageJson) {
         "webpack": "~3.10.0",
         "webpack-bundle-analyzer": "^2.9.1",
         "webpack-sources": "~1.1.0",
+        "clean-webpack-plugin": "~0.1.19",
         "copy-webpack-plugin": "~4.3.0",
         "raw-loader": "~0.5.1",
         "css-loader": "~0.28.7",
