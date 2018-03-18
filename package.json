@@ -67,7 +67,8 @@
     "request": "2.83.0",
     "schema-utils": "0.4.3",
     "semver": "5.4.1",
-    "shelljs": "0.6.0"
+    "shelljs": "0.6.0",
+    "tapable": "^1.0.0"
   },
   "devDependencies": {
     "@ngtools/webpack": "~1.9.0",

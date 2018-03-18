@@ -1,17 +1,17 @@
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-var NsJsonpMainTemplatePlugin = require("./NsJsonpMainTemplatePlugin");
-var NsJsonpChunkTemplatePlugin = require("./NsJsonpChunkTemplatePlugin");
-var NsJsonpHotUpdateChunkTemplatePlugin = require("./NsJsonpHotUpdateChunkTemplatePlugin");
+const NsJsonpMainTemplatePlugin = require("./NsJsonpMainTemplatePlugin");
+const JsonpChunkTemplatePlugin = require("webpack/lib/web/JsonpChunkTemplatePlugin");
+const JsonpHotUpdateChunkTemplatePlugin = require("webpack/lib/web/JsonpHotUpdateChunkTemplatePlugin");
 
-function JsonpTemplatePlugin() {}
-module.exports = JsonpTemplatePlugin;
-JsonpTemplatePlugin.prototype.apply = function(compiler) {
-	compiler.plugin("this-compilation", function(compilation) {
-		compilation.mainTemplate.apply(new NsJsonpMainTemplatePlugin());
-		compilation.chunkTemplate.apply(new NsJsonpChunkTemplatePlugin());
-		compilation.hotUpdateChunkTemplate.apply(new NsJsonpHotUpdateChunkTemplatePlugin());
-	});
-};
+class NsJsonpTemplatePlugin {
+    apply(compiler) {
+        compiler.hooks.thisCompilation.tap("NsJsonpTemplatePlugin", compilation => {
+            new NsJsonpMainTemplatePlugin().apply(compilation.mainTemplate);
+            new JsonpChunkTemplatePlugin().apply(compilation.chunkTemplate);
+            new JsonpHotUpdateChunkTemplatePlugin().apply(
+                compilation.hotUpdateChunkTemplate
+            );
+        })
+    }
+}
+
+module.exports = NsJsonpTemplatePlugin;
