@@ -7,7 +7,8 @@ const PROJECT_DATA_GETTERS = {
 
 function getProjectData(projectDir) {
     const cli = getNsCli();
-    const projectData = cli.projectDataService.getProjectData(projectDir);
+    const projectDataService = cli.projectDataService;
+    const projectData = safeGet(cli, "getProjectData", projectDir);
 
     return projectData;
 }
@@ -19,7 +20,23 @@ function getNsCli() {
     return cli;
 }
 
+function safeGet(object, property, args) {
+    if (!object) {
+        return;
+    }
+
+    const value = object[property];
+    if (!value) {
+        return;
+    }
+
+    return typeof value === "function" ?
+        value.bind(object)(...args) :
+        value;
+}
+
 module.exports = {
     PROJECT_DATA_GETTERS,
     getProjectData,
+    safeGet,
 };
