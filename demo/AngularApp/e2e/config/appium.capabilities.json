@@ -81,7 +81,7 @@
     },
     "sim.iPhone8.iOS110": {
         "platformName": "iOS",
-        "platformVersion": "11.0",
+        "platformVersion": "11.2",
         "deviceName": "iPhone 8 110",
         "noReset": true,
         "fullReset": false,
@@ -89,7 +89,7 @@
     },
     "sim.iPhoneX.iOS110": {
         "platformName": "iOS",
-        "platformVersion": "11.0",
+        "platformVersion": "11.2",
         "deviceName": "iPhone X",
         "noReset": true,
         "fullReset": false,
