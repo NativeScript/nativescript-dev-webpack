@@ -20,7 +20,7 @@ function getNsCli() {
     return cli;
 }
 
-function safeGet(object, property, args) {
+function safeGet(object, property, args = []) {
     if (!object) {
         return;
     }
