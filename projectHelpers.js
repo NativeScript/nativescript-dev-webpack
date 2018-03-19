@@ -3,7 +3,11 @@ const fs = require("fs");
 const semver = require("semver");
 const { EOL } = require("os");
 
-const { getProjectData, PROJECT_DATA_GETTERS } = require("./nsCliHelpers");
+const {
+    PROJECT_DATA_GETTERS,
+    getProjectData,
+    safeGet,
+} = require("./nsCliHelpers");
 
 const APP_DIR = "app";
 
@@ -163,21 +167,6 @@ function getAppResourcesPathFromProjectData(data) {
     return safeGet(data, PROJECT_DATA_GETTERS.appResourcesPath);
 }
 
-function safeGet(object, property) {
-    if (!object) {
-        return;
-    }
-
-    const value = object[property];
-    if (!value) {
-        return;
-    }
-
-    return typeof value === "function" ?
-        value.bind(object)() :
-        value;
-}
-
 module.exports = {
     getAppPath,
     getAppPathFromProjectData,
@@ -195,5 +184,4 @@ module.exports = {
     resolveAndroidAppPath,
     resolveAndroidConfigurationsPath,
     writePackageJson,
-    safeGet,
 };
