@@ -168,6 +168,7 @@ function getAppResourcesPathFromProjectData(data) {
 }
 
 module.exports = {
+    APP_DIR,
     getAppPath,
     getAppPathFromProjectData,
     getAppResourcesPathFromProjectData,

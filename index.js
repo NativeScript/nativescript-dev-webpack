@@ -2,6 +2,7 @@ const path = require("path");
 const { existsSync } = require("fs");
 
 const {
+    APP_DIR,
     getPackageJson,
     getProjectDir,
     isAngular,
@@ -11,7 +12,7 @@ const {
 } = require("./projectHelpers");
 
 const PROJECT_DIR = getProjectDir();
-const APP_DIR = path.join(PROJECT_DIR, "app");
+const APP_PATH = path.join(PROJECT_DIR, APP_DIR);
 
 Object.assign(exports, require('./plugins'));
 
@@ -19,7 +20,7 @@ if (isAngular({ projectDir: PROJECT_DIR })) {
     Object.assign(exports, require('./plugins/angular'));
 }
 
-exports.getAotEntryModule = function (appDirectory = APP_DIR) {
+exports.getAotEntryModule = function (appDirectory = APP_PATH) {
     const entry = getPackageJsonEntry(appDirectory);
     const aotEntry = `${entry}.aot.ts`;
 
@@ -32,7 +33,7 @@ exports.getAotEntryModule = function (appDirectory = APP_DIR) {
     return aotEntry;
 }
 
-exports.getEntryModule = function (appDirectory = APP_DIR) {
+exports.getEntryModule = function (appDirectory = APP_PATH) {
     const entry = getPackageJsonEntry(appDirectory);
 
     const tsEntryPath = path.resolve(appDirectory, `${entry}.ts`);
