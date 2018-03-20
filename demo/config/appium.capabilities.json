@@ -79,6 +79,14 @@
         "fullReset": false,
         "app": ""
     },
+    "sim.iPhone7.iOS110": {
+        "platformName": "iOS",
+        "platformVersion": "11.2",
+        "deviceName": "iPhone 7 110",
+        "noReset": true,
+        "fullReset": false,
+        "app": ""
+    },
     "sim.iPhone8.iOS110": {
         "platformName": "iOS",
         "platformVersion": "11.2",
@@ -90,7 +98,11 @@
     "sim.iPhoneX.iOS110": {
         "platformName": "iOS",
         "platformVersion": "11.2",
+<<<<<<< HEAD:demo/AngularApp/e2e/config/appium.capabilities.json
         "deviceName": "iPhone X",
+=======
+        "deviceName": "iPhone X 110",
+>>>>>>> ee05e7a... test: set single appium configuration file for all demo apps:demo/config/appium.capabilities.json
         "noReset": true,
         "fullReset": false,
         "app": ""
@@ -98,7 +110,7 @@
     "sim.iPhoneX.iOS111": {
         "platformName": "iOS",
         "platformVersion": "11.1",
-        "deviceName": "iPhone X",
+        "deviceName": "iPhone X 111",
         "noReset": true,
         "fullReset": false,
         "app": ""
