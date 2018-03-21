@@ -3,6 +3,14 @@ const fs = require("fs");
 const semver = require("semver");
 const { EOL } = require("os");
 
+const {
+    PROJECT_DATA_GETTERS,
+    getProjectData,
+    safeGet,
+} = require("./nsCliHelpers");
+
+const APP_DIR = "app";
+
 const isTypeScript = ({ projectDir, packageJson } = {}) => {
     packageJson = packageJson || getPackageJson(projectDir);
 
@@ -48,6 +56,7 @@ const getAndroidRuntimeVersion = (projectDir) => {
 const getWebpackConfig = (projectDir, env, configPath = "webpack.config.js") => {
     const configAbsolutePath = path.resolve(projectDir, configPath);
     let config;
+
     try {
         config = require(configAbsolutePath);
     } catch (e) {
@@ -137,12 +146,39 @@ const resolveAndroidConfigurationsPath = projectDir => {
 
 const getPackageJsonPath = projectDir => path.resolve(projectDir, "package.json");
 
+const isAndroid = platform => /android/i.test(platform);
+const isIos = platform => /ios/i.test(platform);
+
+function getAppPath() {
+    const projectDir = getProjectDir();
+    const projectData = getProjectData(projectDir);
+    const appDir = getAppPathFromProjectData(projectData) || APP_DIR;
+
+    const appPath = path.resolve(projectDir, appDir);
+
+    return appPath;
+}
+
+function getAppPathFromProjectData(data) {
+    return safeGet(data, PROJECT_DATA_GETTERS.appPath);
+}
+
+function getAppResourcesPathFromProjectData(data) {
+    return safeGet(data, PROJECT_DATA_GETTERS.appResourcesPath);
+}
+
 module.exports = {
+    APP_DIR,
+    getAppPath,
+    getAppPathFromProjectData,
+    getAppResourcesPathFromProjectData,
     getAndroidProjectPath,
     getAndroidRuntimeVersion,
     getPackageJson,
     getProjectDir,
     getWebpackConfig,
+    isAndroid,
+    isIos,
     isAngular,
     isSass,
     isTypeScript,

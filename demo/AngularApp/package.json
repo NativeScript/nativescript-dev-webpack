@@ -68,7 +68,7 @@
     "build-ios-bundle": "npm run ns-bundle --ios --build-app",
     "publish-ios-bundle": "npm run ns-bundle --ios --publish-app",
     "generate-android-snapshot": "generate-android-snapshot --targetArchs arm,arm64,ia32 --install",
-    "e2e": "tsc -p e2e && mocha --opts ./e2e/config/mocha.opts",
+    "e2e": "tsc -p e2e && mocha --opts ../config/mocha.opts --recursive e2e --appiumCapsLocation ../config/appium.capabilities.json",
     "compile-tests": "tsc -p e2e --watch"
   }
 }

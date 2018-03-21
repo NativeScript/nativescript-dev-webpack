@@ -14,20 +14,37 @@ module.exports = env => {
         throw new Error("You need to provide a target platform!");
     }
     const platforms = ["ios", "android"];
-    const { snapshot, uglify, report } = env;
+    const {
+        // The 'appPath' and 'appResourcesPath' values are fetched from
+        // the nsconfig.json configuration file
+        // when bundling with `tns run android|ios --bundle`.
+        appPath = "app",
+        appResourcesPath = "app/App_Resources",
+
+        // Snapshot, uglify and report can be enabled by providing
+        // the `--env.snapshot`, `--env.uglify` or `--env.report` flags
+        // when running 'tns run android|ios'
+        snapshot,
+        uglify,
+        report,
+    } = env;
+
+    const projectRoot = __dirname;
+    const appFullPath = resolve(projectRoot, appPath);
+    const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
 
     const config = {
-        context: resolve(__dirname, "app"),
+        context: appFullPath,
         watchOptions: {
             ignored: [
-                resolve(__dirname, "./app/App_Resources"),
+                appResourcesFullPath,
                 // Don't watch hidden files
                 "**/.*",
             ]
         },
         target: nativescriptTarget,
         entry: {
-            bundle: `./${nsWebpack.getEntryModule()}`,
+            bundle: `./${nsWebpack.getEntryModule(appFullPath)}`,
             vendor: "./vendor"
         },
         output: {
@@ -45,7 +62,7 @@ module.exports = env => {
                 "node_modules",
             ],
             alias: {
-                '~': resolve("./app")
+                '~': appFullPath
             },
             // don't resolve symlinks to symlinked modules
             symlinks: false
@@ -90,7 +107,7 @@ module.exports = env => {
             }),
             // Copy assets to out dir. Add your own globs as needed.
             new CopyWebpackPlugin([
-                { from: "App_Resources/**" },
+                { from: `${appResourcesFullPath}/**`, context: projectRoot },
                 { from: "fonts/**" },
                 { from: "**/*.jpg" },
                 { from: "**/*.png" },
@@ -106,7 +123,6 @@ module.exports = env => {
             new nsWebpack.PlatformFSPlugin({
                 platform,
                 platforms,
-                // ignore: ["App_Resources"]
             }),
             // Does IPC communication with the {N} CLI to notify events when running in watch mode.
             new nsWebpack.WatchStateLoggerPlugin(),
@@ -118,14 +134,14 @@ module.exports = env => {
             analyzerMode: "static",
             openAnalyzer: false,
             generateStatsFile: true,
-            reportFilename: join(__dirname, "report", `report.html`),
-            statsFilename: join(__dirname, "report", `stats.json`),
+            reportFilename: resolve(projectRoot, "report", `report.html`),
+            statsFilename: resolve(projectRoot, "report", `stats.json`),
         }));
     }
     if (snapshot) {
         config.plugins.push(new nsWebpack.NativeScriptSnapshotPlugin({
             chunk: "vendor",
-            projectRoot: __dirname,
+            projectRoot,
             webpackConfig: config,
             targetArchs: ["arm", "arm64", "ia32"],
             tnsJavaClassesOptions: { packages: ["tns-core-modules" ] },

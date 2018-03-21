@@ -1,7 +1,12 @@
 const { spawn } = require("child_process");
 const { resolve: pathResolve } = require("path");
 
-const { getPackageJson, getProjectDir, writePackageJson } = require("../projectHelpers");
+const {
+    getAppPath,
+    getPackageJson,
+    getProjectDir,
+    writePackageJson,
+} = require("../projectHelpers");
 const { forceUpdateProjectFiles } = require("../projectFilesManager");
 const { forceUpdateProjectDeps } = require("../dependencyManager");
 
@@ -44,7 +49,7 @@ function updateDeps(projectDir) {
 function updateConfigs(projectDir) {
     console.info("Updating configuration files...");
 
-    const appDir = pathResolve(projectDir, "app");
+    const appDir = getAppPath();
     forceUpdateProjectFiles(projectDir, appDir);
 }
 
