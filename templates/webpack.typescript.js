@@ -40,6 +40,16 @@ module.exports = env => {
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
 
     const config = {
+        mode: "development",
+        devtool: "none",
+        optimization:  {
+            splitChunks: {
+                chunks: "all",
+                cacheGroups: {
+                    commons: { name: "commons" }
+                }
+            }
+        },
         context: appFullPath,
         watchOptions: {
             ignored: [
@@ -51,7 +61,6 @@ module.exports = env => {
         target: nativescriptTarget,
         entry: {
             bundle: `./${nsWebpack.getEntryModule(appFullPath)}`,
-            vendor: "./vendor"
         },
         output: {
             pathinfo: true,
@@ -104,10 +113,6 @@ module.exports = env => {
             ]
         },
         plugins: [
-            // Vendor libs go to the vendor.js chunk
-            new webpack.optimize.CommonsChunkPlugin({
-                name: ["vendor"],
-            }),
             // Define useful constants like TNS_WEBPACK
             new webpack.DefinePlugin({
                 "global.TNS_WEBPACK": "true",
@@ -131,7 +136,6 @@ module.exports = env => {
             ], { ignore: [`${relative(appPath, appResourcesFullPath)}/**`] }),
             // Generate a bundle starter script and activate it in package.json
             new nsWebpack.GenerateBundleStarterPlugin([
-                "./vendor",
                 "./bundle",
             ]),
             // Support for web workers since v3.2
@@ -156,7 +160,7 @@ module.exports = env => {
     }
     if (snapshot) {
         config.plugins.push(new nsWebpack.NativeScriptSnapshotPlugin({
-            chunk: "vendor",
+            chunk: "commons",
             projectRoot,
             webpackConfig: config,
             targetArchs: ["arm", "arm64", "ia32"],
