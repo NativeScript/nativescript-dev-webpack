@@ -41,15 +41,6 @@ module.exports = env => {
 
     const config = {
         mode: "development",
-        devtool: "none",
-        optimization:  {
-            splitChunks: {
-                chunks: "all",
-                cacheGroups: {
-                    commons: { name: "commons" }
-                }
-            }
-        },
         context: appFullPath,
         watchOptions: {
             ignored: [
@@ -67,6 +58,7 @@ module.exports = env => {
             path: dist,
             libraryTarget: "commonjs2",
             filename: "[name].js",
+            globalObject: "global",
         },
         resolve: {
             extensions: [".ts", ".js", ".scss", ".css"],
@@ -91,6 +83,15 @@ module.exports = env => {
             "timers": false,
             "setImmediate": false,
             "fs": "empty",
+        },
+        devtool: "none",
+        optimization:  {
+            splitChunks: {
+                chunks: "all",
+                cacheGroups: {
+                    commons: { name: "commons" }
+                }
+            }
         },
         module: {
             rules: [

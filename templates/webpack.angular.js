@@ -43,15 +43,6 @@ module.exports = env => {
 
     const config = {
         mode: "development",
-        devtool: "none",
-        optimization:  {
-            splitChunks: {
-                chunks: "all",
-                cacheGroups: {
-                    commons: { name: "commons" }
-                }
-            }
-        },
         context: appFullPath,
         watchOptions: {
             ignored: [
@@ -71,6 +62,7 @@ module.exports = env => {
             path: dist,
             libraryTarget: "commonjs2",
             filename: "[name].js",
+            globalObject: "global",
         },
         resolve: {
             extensions: [".ts", ".js", ".scss", ".css"],
@@ -95,6 +87,23 @@ module.exports = env => {
             "timers": false,
             "setImmediate": false,
             "fs": "empty",
+        },
+        devtool: "none",
+        optimization: {
+            splitChunks: {
+                chunks: "all",
+                cacheGroups: {
+                    vendors: false,
+                    vendor: {
+                        name: "commons",
+                        chunks: "initial",
+                        test: (module, chunks) => {
+                            const moduleName = module.nameForCondition ? module.nameForCondition() : '';
+                            return /[\\/]node_modules[\\/]/.test(moduleName);
+                        },
+                    },
+                }
+            },
         },
         module: {
             rules: [
@@ -121,10 +130,12 @@ module.exports = env => {
                 { test: /\.scss$/, exclude: /[\/|\\]app\.scss$/, use: ["raw-loader", "resolve-url-loader", "sass-loader"] },
 
                 // Compile TypeScript files with ahead-of-time compiler.
-                { test: /.ts$/, use: [
-                    "nativescript-dev-webpack/moduleid-compat-loader",
-                    { loader: "@ngtools/webpack", options: ngToolsWebpackOptions },
-                ]},
+                {
+                    test: /.ts$/, use: [
+                        "nativescript-dev-webpack/moduleid-compat-loader",
+                        { loader: "@ngtools/webpack", options: ngToolsWebpackOptions },
+                    ]
+                },
             ],
         },
         plugins: [
@@ -133,14 +144,14 @@ module.exports = env => {
                 "global.TNS_WEBPACK": "true",
             }),
             // Remove all files from the out dir.
-            new CleanWebpackPlugin([ `${dist}/**/*` ]),
+            new CleanWebpackPlugin([`${dist}/**/*`]),
             // Copy native app resources to out dir.
             new CopyWebpackPlugin([
-              {
-                from: `${appResourcesFullPath}/${appResourcesPlatformDir}`,
-                to: `${dist}/App_Resources/${appResourcesPlatformDir}`,
-                context: projectRoot
-              },
+                {
+                    from: `${appResourcesFullPath}/${appResourcesPlatformDir}`,
+                    to: `${dist}/App_Resources/${appResourcesPlatformDir}`,
+                    context: projectRoot
+                },
             ]),
             // Copy assets to out dir. Add your own globs as needed.
             new CopyWebpackPlugin([
