@@ -1,4 +1,4 @@
-const { resolve, join  } = require("path");
+const { relative, resolve, join  } = require("path");
 
 const webpack = require("webpack");
 const nsWebpack = require("nativescript-dev-webpack");
@@ -15,11 +15,12 @@ module.exports = env => {
         throw new Error("You need to provide a target platform!");
     }
 
+    const platforms = ["ios", "android"];
     const projectRoot = __dirname;
     // Default destination inside platforms/<platform>/...
     const dist = resolve(projectRoot, nsWebpack.getAppPath(platform));
+    const appResourcesPlatformDir = platform === "android" ? "Android" : "iOS";
 
-    const platforms = ["ios", "android"];
     const {
         // The 'appPath' and 'appResourcesPath' values are fetched from
         // the nsconfig.json configuration file
@@ -111,14 +112,21 @@ module.exports = env => {
             }),
             // Remove all files from the out dir.
             new CleanWebpackPlugin([ `${dist}/**/*` ]),
+           // Copy native app resources to out dir.
+            new CopyWebpackPlugin([
+              {
+                from: `${appResourcesFullPath}/${appResourcesPlatformDir}`,
+                to: `${dist}/App_Resources/${appResourcesPlatformDir}`,
+                context: projectRoot
+              },
+            ]),
             // Copy assets to out dir. Add your own globs as needed.
             new CopyWebpackPlugin([
-                { from: `${appResourcesFullPath}/**`, context: projectRoot },
                 { from: "fonts/**" },
                 { from: "**/*.jpg" },
                 { from: "**/*.png" },
                 { from: "**/*.xml" },
-            ]),
+            ], { ignore: [`${relative(appPath, appResourcesFullPath)}/**`] }),
             // Generate a bundle starter script and activate it in package.json
             new nsWebpack.GenerateBundleStarterPlugin([
                 "./vendor",
