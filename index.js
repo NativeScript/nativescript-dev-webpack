@@ -33,6 +33,9 @@ exports.getAotEntryModule = function (appDirectory = APP_PATH) {
     return aotEntry;
 }
 
+// Exported for backwards compatibility
+exports.uglifyMangleExcludes = [];
+
 exports.getEntryModule = function (appDirectory = APP_PATH) {
     const entry = getPackageJsonEntry(appDirectory);
 
