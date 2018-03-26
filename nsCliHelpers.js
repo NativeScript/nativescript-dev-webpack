@@ -7,6 +7,10 @@ const PROJECT_DATA_GETTERS = {
 
 function getProjectData(projectDir) {
     const cli = getNsCli();
+    if (!cli) {
+      return {};
+    }
+
     const projectDataService = cli.projectDataService;
     const projectData = safeGet(cli, "getProjectData", projectDir);
 
@@ -15,6 +19,10 @@ function getProjectData(projectDir) {
 
 function getNsCli() {
     const cliPath = getPath("nativescript", "tns");
+    if (!cliPath) {
+        return;
+    }
+
     const cli = require(cliPath);
 
     return cli;
