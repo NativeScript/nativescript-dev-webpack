@@ -33,8 +33,8 @@ exports.getAotEntryModule = function (appDirectory = APP_PATH) {
     return aotEntry;
 }
 
-// Exported for backwards compatibility
-exports.uglifyMangleExcludes = [];
+// Exported for backwards compatibility with {N} 3
+exports.uglifyMangleExcludes = require("./mangle-excludes");
 
 exports.getEntryModule = function (appDirectory = APP_PATH) {
     const entry = getPackageJsonEntry(appDirectory);
