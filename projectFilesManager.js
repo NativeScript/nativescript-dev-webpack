@@ -95,10 +95,7 @@ function getProjectTemplates(projectDir) {
 }
 
 function getAppTemplates(projectDir, appDir) {
-    const templates = {
-        "vendor-platform.android.ts": tsOrJs(projectDir, "vendor-platform.android"),
-        "vendor-platform.ios.ts": tsOrJs(projectDir, "vendor-platform.ios"),
-    };
+    const templates = {};
 
     if (isAngular({projectDir})) {
         templates["vendor.angular.ts"] = tsOrJs(projectDir, "vendor");

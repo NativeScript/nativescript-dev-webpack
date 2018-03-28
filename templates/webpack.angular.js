@@ -41,6 +41,12 @@ module.exports = env => {
     const appFullPath = resolve(projectRoot, appPath);
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
 
+    const entryModule = aot ?
+        nsWebpack.getAotEntryModule(appFullPath) :
+        nsWebpack.getEntryModule(appFullPath);
+    const entryPath = `./${entryModule}`;
+    const vendorPath = `./vendor`;
+
     const config = {
         mode: "development",
         context: appFullPath,
@@ -53,9 +59,8 @@ module.exports = env => {
         },
         target: nativescriptTarget,
         entry: {
-            bundle: aot ?
-                `./${nsWebpack.getAotEntryModule(appFullPath)}` :
-                `./${nsWebpack.getEntryModule(appFullPath)}`,
+            bundle: entryPath,
+            vendor: vendorPath,
         },
         output: {
             pathinfo: true,
@@ -90,17 +95,14 @@ module.exports = env => {
         },
         devtool: "none",
         optimization: {
+            runtimeChunk: { name: "vendor" },
             splitChunks: {
-                chunks: "all",
                 cacheGroups: {
-                    vendors: false,
-                    vendor: {
+                    common: {
                         name: "commons",
-                        chunks: "initial",
-                        test: (module, chunks) => {
-                            const moduleName = module.nameForCondition ? module.nameForCondition() : '';
-                            return /[\\/]node_modules[\\/]/.test(moduleName);
-                        },
+                        chunks: "all",
+                        test: /vendor/,
+                        enforce: true,
                     },
                 }
             },
@@ -162,6 +164,8 @@ module.exports = env => {
             ], { ignore: [`${relative(appPath, appResourcesFullPath)}/**`] }),
             // Generate a bundle starter script and activate it in package.json
             new nsWebpack.GenerateBundleStarterPlugin([
+                "./vendor",
+                "./commons",
                 "./bundle",
             ]),
             // Support for web workers since v3.2
@@ -174,7 +178,6 @@ module.exports = env => {
                     platformOptions: {
                         platform,
                         platforms,
-                        // ignore: ["App_Resources"]
                     },
                 }, ngToolsWebpackOptions)
             ),
@@ -182,6 +185,25 @@ module.exports = env => {
             new nsWebpack.WatchStateLoggerPlugin(),
         ],
     };
+
+    if (platform === "android") {
+        // Add your custom Activities, Services and other android app components here.
+        const appComponents = [
+            "tns-core-modules/ui/frame",
+            "tns-core-modules/ui/frame/activity",
+        ];
+
+        // Require all Android app components
+        // in the entry module (bundle.ts) and the vendor module (vendor.ts).
+        config.module.rules.push({
+            test: new RegExp(`${entryPath}.ts|${vendorPath}.ts`),
+            use: {
+                loader: "nativescript-dev-webpack/android-app-components-loader",
+                options: { modules: appComponents }
+            }
+        });
+    }
+
     if (report) {
         // Generate report files for bundles content
         config.plugins.push(new BundleAnalyzerPlugin({
@@ -192,16 +214,17 @@ module.exports = env => {
             statsFilename: resolve(projectRoot, "report", `stats.json`),
         }));
     }
+
     if (snapshot) {
         config.plugins.push(new nsWebpack.NativeScriptSnapshotPlugin({
-            chunk: "commons",
+            chunks: [ "vendor", "commons" ],
             projectRoot,
             webpackConfig: config,
             targetArchs: ["arm", "arm64", "ia32"],
-            tnsJavaClassesOptions: { packages: ["tns-core-modules" ] },
             useLibs: false
         }));
     }
+
     if (uglify) {
         config.plugins.push(new webpack.LoaderOptionsPlugin({ minimize: true }));
 
@@ -213,5 +236,6 @@ module.exports = env => {
             }
         }));
     }
+
     return config;
 };
