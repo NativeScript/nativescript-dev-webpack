@@ -42,11 +42,13 @@ module.exports = SnapshotGenerator;
 
 SnapshotGenerator.SNAPSHOT_PACKAGE_NANE = "nativescript-android-snapshot";
 
-SnapshotGenerator.prototype.preprocessInputFile = function(inputFile, outputFile) {
+SnapshotGenerator.prototype.preprocessInputFiles = function(inputFiles, outputFile) {
     // Make some modifcations on the original bundle and save it on the specified path
     const bundlePreambleContent = fs.readFileSync(BUNDLE_PREAMBLE_PATH, "utf8");
     const bundleEndingContent = fs.readFileSync(BUNDLE_ENDING_PATH, "utf8");
-    const snapshotFileContent = bundlePreambleContent + "\n" + fs.readFileSync(inputFile, "utf8") + "\n" + bundleEndingContent;
+
+    const inputFilesContent = inputFiles.map(file => fs.readFileSync(file, "utf8")).join("\n");
+    const snapshotFileContent = bundlePreambleContent + "\n" + inputFilesContent + "\n" + bundleEndingContent;
     fs.writeFileSync(outputFile, snapshotFileContent, { encoding: "utf8" });
 }
 
@@ -151,14 +153,11 @@ SnapshotGenerator.prototype.buildIncludeGradle = function() {
 SnapshotGenerator.prototype.generate = function(options) {
     // Arguments validation
     options = options || {};
-    if (!options.inputFile) { throw new Error("inputFile option is not specified."); }
-    if (!shelljs.test("-e", options.inputFile)) { throw new Error("Can't find V8 snapshot input file: '" + options.inputFile + "'."); }
-    if (!options.targetArchs || options.targetArchs.length == 0) { throw new Error("No target archs specified."); }
     if (!options.v8Version) { throw new Error("No v8 version specified."); }
     if (!options.snapshotToolsPath) { throw new Error("snapshotToolsPath option is not specified."); }
     const preprocessedInputFile = options.preprocessedInputFile ||  join(this.buildPath, "inputFile.preprocessed");
 
-    this.preprocessInputFile(options.inputFile, preprocessedInputFile);
+    this.preprocessInputFiles(options.inputFiles, preprocessedInputFile);
 
     // generates the actual .blob and .c files
     return this.runMksnapshotTool(
