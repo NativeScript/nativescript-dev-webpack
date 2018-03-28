@@ -2,6 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const semver = require("semver");
 const { EOL } = require("os");
+const hook = require("nativescript-hook")(__dirname);
 
 const {
     PROJECT_DATA_GETTERS,
@@ -85,29 +86,7 @@ const writePackageJson = (content, projectDir) => {
     const packageJsonPath = getPackageJsonPath(projectDir);
     fs.writeFileSync(packageJsonPath, JSON.stringify(content, null, 2))
 }
-const getProjectDir = ({ nestingLvl } = { nestingLvl: 2 }) => {
-    // INIT_CWD is available since npm 5.4
-    const initCwd = process.env.INIT_CWD;
-    const shouldUseInitCwd = (() => {
-        if (!initCwd) {
-            return false;
-        }
-
-        const installedPackage = path.resolve(initCwd, "node_modules", "nativescript-dev-webpack");
-        if (!fs.existsSync(installedPackage)) {
-            return false;
-        }
-
-        const stat = fs.lstatSync(installedPackage);
-        return stat.isSymbolicLink();
-    })();
-
-    return shouldUseInitCwd ?
-        initCwd :
-        Array
-            .from(Array(nestingLvl))
-            .reduce(dir => path.dirname(dir), __dirname);
-};
+const getProjectDir = hook.findProjectDir;
 
 const toReleaseVersion = version =>
     version.replace(/-.*/, "");
