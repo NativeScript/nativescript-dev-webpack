@@ -58,7 +58,7 @@ function addDependency(deps, name, version, force) {
 
 function getRequiredDeps(packageJson) {
     const deps = {
-        "webpack": "~4.1.0",
+        "webpack": "~4.3.0",
         "webpack-cli": "~2.0.12",
         "webpack-bundle-analyzer": "^2.9.1",
         "webpack-sources": "~1.1.0",
