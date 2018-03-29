@@ -75,7 +75,8 @@ function getRequiredDeps(packageJson) {
     if (isAngular({packageJson})) {
         Object.assign(deps, {
             "@angular/compiler-cli": packageJson.dependencies["@angular/core"],
-            "@ngtools/webpack": "~6.0.0-beta.5",
+            "@ngtools/webpack": "~6.0.0-beta.8",
+            "@angular-devkit/core": "~0.4.8",
         });
     } else if (isTypeScript({packageJson})) {
         Object.assign(deps, { "awesome-typescript-loader": "~5.0.0-1" });
