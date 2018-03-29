@@ -91,11 +91,10 @@ module.exports = env => {
         },
         devtool: "none",
         optimization:  {
+            runtimeChunk: { name: "runtime" },
             splitChunks: {
-                chunks: "all",
-                cacheGroups: {
-                    commons: { name: "commons" }
-                }
+                automaticNameDelimiter: "-",
+                chunks: "initial",
             }
         },
         module: {
