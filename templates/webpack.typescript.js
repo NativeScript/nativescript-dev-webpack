@@ -165,7 +165,7 @@ module.exports = env => {
 
         // Register all Android app components
         // in the entry module (bundle.js).
-        config.module.rules.push({
+        config.module.rules.unshift({
             test: new RegExp(`${entryPath}.ts|${vendorPath}.ts`),
             use: {
                 loader: "nativescript-dev-webpack/android-app-components-loader",

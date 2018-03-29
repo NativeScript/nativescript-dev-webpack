@@ -195,7 +195,7 @@ module.exports = env => {
 
         // Require all Android app components
         // in the entry module (bundle.ts) and the vendor module (vendor.ts).
-        config.module.rules.push({
+        config.module.rules.unshift({
             test: new RegExp(`${entryPath}.ts|${vendorPath}.ts`),
             use: {
                 loader: "nativescript-dev-webpack/android-app-components-loader",
