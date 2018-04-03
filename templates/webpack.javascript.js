@@ -40,8 +40,8 @@ module.exports = env => {
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
 
     const entryModule = nsWebpack.getEntryModule(appFullPath);
-    const entryPath = `./${entryModule}`;
-    const vendorPath = `./vendor`;
+    const entryPath = `./${entryModule}.js`;
+    const vendorPath = `./vendor.js`;
 
     const config = {
         mode: "development",
@@ -91,11 +91,26 @@ module.exports = env => {
         },
         devtool: "none",
         optimization:  {
-            runtimeChunk: { name: "runtime" },
+            runtimeChunk: { name: "vendor" },
             splitChunks: {
-                automaticNameDelimiter: "-",
-                chunks: "initial",
-            }
+                cacheGroups: {
+                    common: {
+                        name: "common",
+                        chunks: "all",
+                        test: /vendor/,
+                        enforce: true,
+                    },
+                }
+            },
+            minimize: !!uglify,
+            minimizer: [
+                // Override default minimizer to work around an Android issue by setting compress = false
+                new UglifyJsPlugin({
+                    uglifyOptions: {
+                        compress: platform !== "android"
+                    }
+                })
+            ],
         },
         module: {
             rules: [
@@ -139,8 +154,8 @@ module.exports = env => {
             ], { ignore: [`${relative(appPath, appResourcesFullPath)}/**`] }),
             // Generate a bundle starter script and activate it in package.json
             new nsWebpack.GenerateBundleStarterPlugin([
-                "./runtime", // install webpackJsonpCallback
-                "./vendor", // require app/vendor.js
+                "./vendor", // install webpackJsonpCallback
+                "./common", // require app/vendor.js
                 "./bundle", // require the entry module (app/app.js)
             ]),
             // Support for web workers since v3.2
@@ -161,10 +176,10 @@ module.exports = env => {
             "tns-core-modules/ui/frame/activity",
         ];
 
-        // Register all Android app components
-        // in the entry module (bundle.js).
+        // Require all Android app components
+        // in the entry module (bundle.js) and the vendor module (vendor.js).
         config.module.rules.unshift({
-            test: new RegExp(`${entryPath}.js|${vendorPath}.js`),
+            test: new RegExp(`${entryPath}|${vendorPath}`),
             use: {
                 loader: "nativescript-dev-webpack/android-app-components-loader",
                 options: { modules: appComponents }
@@ -186,26 +201,13 @@ module.exports = env => {
     if (snapshot) {
         config.plugins.push(new nsWebpack.NativeScriptSnapshotPlugin({
             chunks: [
-                "runtime",
-                "vendors-bundle-vendor",
+                "common",
                 "vendor",
             ],
             projectRoot,
             webpackConfig: config,
             targetArchs: ["arm", "arm64", "ia32"],
             useLibs: false
-        }));
-    }
-
-    if (uglify) {
-        config.plugins.push(new webpack.LoaderOptionsPlugin({ minimize: true }));
-
-        // Work around an Android issue by setting compress = false
-        const compress = platform !== "android";
-        config.plugins.push(new UglifyJsPlugin({
-            uglifyOptions: {
-                compress,
-            }
         }));
     }
 
