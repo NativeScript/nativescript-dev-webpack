@@ -26,6 +26,11 @@
         "inject": true
       },
       {
+        "type": "after-watch",
+        "script": "lib/after-watch.js",
+        "inject": true
+      },
+      {
         "type": "before-watchPatterns",
         "script": "lib/before-watchPatterns.js",
         "inject": true
