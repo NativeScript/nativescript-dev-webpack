@@ -3,9 +3,14 @@
 const { dirname } = require("path");
 const hook = require("nativescript-hook")(__dirname);
 
+const { compareProjectFiles } = require("./projectFilesManager");
 const { getProjectDir } = require("./projectHelpers");
 
-if (getProjectDir()) {
+const projectDir = getProjectDir();
+
+if (projectDir) {
+    compareProjectFiles(projectDir);
+
     hook.postinstall();
     const installer = require("./installer");
     installer.install();
