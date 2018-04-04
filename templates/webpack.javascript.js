@@ -88,6 +88,7 @@ module.exports = env => {
             "timers": false,
             "setImmediate": false,
             "fs": "empty",
+            "__dirname": false,
         },
         devtool: "none",
         optimization:  {

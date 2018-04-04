@@ -92,6 +92,7 @@ module.exports = env => {
             "timers": false,
             "setImmediate": false,
             "fs": "empty",
+            "__dirname": false,
         },
         devtool: "none",
         optimization: {
@@ -99,7 +100,7 @@ module.exports = env => {
             splitChunks: {
                 cacheGroups: {
                     common: {
-                        name: "commons",
+                        name: "common",
                         chunks: "all",
                         test: /vendor/,
                         enforce: true,
@@ -174,7 +175,7 @@ module.exports = env => {
             // Generate a bundle starter script and activate it in package.json
             new nsWebpack.GenerateBundleStarterPlugin([
                 "./vendor",
-                "./commons",
+                "./common",
                 "./bundle",
             ]),
             // Support for web workers since v3.2
@@ -226,7 +227,7 @@ module.exports = env => {
 
     if (snapshot) {
         config.plugins.push(new nsWebpack.NativeScriptSnapshotPlugin({
-            chunks: [ "vendor", "commons" ],
+            chunks: [ "vendor", "common" ],
             projectRoot,
             webpackConfig: config,
             targetArchs: ["arm", "arm64", "ia32"],
