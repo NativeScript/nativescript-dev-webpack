@@ -149,15 +149,15 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
 
             const mappedFilesModified = filterIgnoredFilesAlienFilesAndMap(filesModified);
 
-            const mappedTimestamps = {};
+            const mappedTimestamps = new Map();
             for(const file in fileTimestamps) {
                 const timestamp = fileTimestamps[file];
-                mappedTimestamps[file] = timestamp;
+                mappedTimestamps.set(file, timestamp);
                 const platformSuffixIndex = file.lastIndexOf(platformSuffix);
                 if (platformSuffixIndex != -1) {
                     const mappedFile = file.substr(0, platformSuffixIndex) + file.substr(platformSuffixIndex + platformSuffix.length - 1);
                     if (!(mappedFile in fileTimestamps)) {
-                        mappedTimestamps[mappedFile] = timestamp;
+                        mappedTimestamps.set(mappedFile, timestamp);
                     }
                 }
             }
