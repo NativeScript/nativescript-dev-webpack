@@ -12,7 +12,7 @@ function getProjectData(projectDir) {
     }
 
     const projectDataService = cli.projectDataService;
-    const projectData = safeGet(cli, "getProjectData", projectDir);
+    const projectData = safeGet(projectDataService, "getProjectData", projectDir);
 
     return projectData;
 }
@@ -28,7 +28,7 @@ function getNsCli() {
     return cli;
 }
 
-function safeGet(object, property, args = []) {
+function safeGet(object, property, ...args) {
     if (!object) {
         return;
     }
