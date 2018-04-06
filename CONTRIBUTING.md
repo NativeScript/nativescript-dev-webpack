@@ -10,6 +10,7 @@
 - [Reporting Bugs](#reporting-bugs)
 - [Requesting Features](#requesting-features)
 - [Submitting PR](#submitting-pr)
+- [Publishing new versions](#publishing-new-versions)
 
 <!-- /TOC -->
 
