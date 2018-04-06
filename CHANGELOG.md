@@ -1,3 +1,43 @@
+<a name="0.10.0"></a>
+# [0.10.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.9.1...0.10.0) (2018-04-05)
+
+> You need NativeScript 4.0 for using the new features from this version.
+
+### Bug Fixes
+
+* **hooks:** `after-watch` hook is not executed ([#483](https://github.com/NativeScript/nativescript-dev-webpack/issues/483)) ([a61cff4](https://github.com/NativeScript/nativescript-dev-webpack/commit/a61cff4))
+* allow snapshot only in release ([#448](https://github.com/NativeScript/nativescript-dev-webpack/issues/448)) ([2dd9adc](https://github.com/NativeScript/nativescript-dev-webpack/commit/2dd9adc))
+* clean snapshot artifacts on cleanApp hook ([#423](https://github.com/NativeScript/nativescript-dev-webpack/issues/423)) ([50c3ab9](https://github.com/NativeScript/nativescript-dev-webpack/commit/50c3ab9))
+* remove progress indication ([#468](https://github.com/NativeScript/nativescript-dev-webpack/issues/468)) ([8961a93](https://github.com/NativeScript/nativescript-dev-webpack/commit/8961a93)), closes [/github.com/webpack/webpack/blob/4428efe48e1c5ff4cadb79e13f0fa48c12bdac35/lib/ProgressPlugin.js#L50](https://github.com//github.com/webpack/webpack/blob/4428efe48e1c5ff4cadb79e13f0fa48c12bdac35/lib/ProgressPlugin.js/issues/L50)
+* remove unnecessary comma ([#472](https://github.com/NativeScript/nativescript-dev-webpack/issues/472)) ([ce60606](https://github.com/NativeScript/nativescript-dev-webpack/commit/ce60606))
+* send arguments in watchPatterns hook ([#449](https://github.com/NativeScript/nativescript-dev-webpack/issues/449)) ([aa255bb](https://github.com/NativeScript/nativescript-dev-webpack/commit/aa255bb))
+* Set INIT_CWD env in all before-* hooks ([#480](https://github.com/NativeScript/nativescript-dev-webpack/issues/480)) ([b7ef84f](https://github.com/NativeScript/nativescript-dev-webpack/commit/b7ef84f))
+* **hooks:** Hooks not executed correctly when CLI is used as a library ([#479](https://github.com/NativeScript/nativescript-dev-webpack/issues/479)) ([87dd53d](https://github.com/NativeScript/nativescript-dev-webpack/commit/87dd53d))
+* **prepare:** clean platforms/.../app/ when running webpack ([#465](https://github.com/NativeScript/nativescript-dev-webpack/issues/465)) ([cb2f51b](https://github.com/NativeScript/nativescript-dev-webpack/commit/cb2f51b))
+* **snapshot:** use request module for http requests ([#428](https://github.com/NativeScript/nativescript-dev-webpack/issues/428)) ([01933e0](https://github.com/NativeScript/nativescript-dev-webpack/commit/01933e0)), closes [#389](https://github.com/NativeScript/nativescript-dev-webpack/issues/389)
+* **uglify:** prevent SideDrawer transition class names from being renamed ([#426](https://github.com/NativeScript/nativescript-dev-webpack/issues/426)) ([0120329](https://github.com/NativeScript/nativescript-dev-webpack/commit/0120329)), closes [/github.com/telerik/nativescript-ui-feedback/issues/477#issuecomment-360772046](https://github.com//github.com/telerik/nativescript-ui-feedback/issues/477/issues/issuecomment-360772046) [#258](https://github.com/NativeScript/nativescript-dev-webpack/issues/258)
+
+
+### Features
+
+* **livesync:** enable webpack with watch ([#433](https://github.com/NativeScript/nativescript-dev-webpack/issues/433)) ([847a56f](https://github.com/NativeScript/nativescript-dev-webpack/commit/847a56f))
+* consume shouldprepare hook ([#447](https://github.com/NativeScript/nativescript-dev-webpack/issues/447)) ([adb896c](https://github.com/NativeScript/nativescript-dev-webpack/commit/adb896c))
+
+
+### BREAKING CHANGES
+
+* The snapshot plugin is applied only when building for release.
+
+Before:
+```
+tns run android --bundle --env.snapshot
+```
+
+After:
+```
+tns run android --bundle --env.snapshot --release --keyStorePath ~/path/to/keystore/my.keystore --keyStorePassword password --keyStoreAlias alias --keyStoreAliasPassword aliasPassword
+```
+
 <a name="0.9.2"></a>
 ## [0.9.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.9.1...0.9.2) (2018-02-15)
 
@@ -333,6 +373,5 @@ the project: `webpack.common.js`, `webpack.android.js`,
 * add plugin to support android/ios styleUrls ([#47](https://github.com/NativeScript/nativescript-dev-webpack/issues/47)) ([be12c23](https://github.com/NativeScript/nativescript-dev-webpack/commit/be12c23)), closes [#36](https://github.com/NativeScript/nativescript-dev-webpack/issues/36)
 * support @ngtools/webpack-1.2.1 ([71d7823](https://github.com/NativeScript/nativescript-dev-webpack/commit/71d7823))
 * use the nativescript fork of css-loader ([3b6a1c8](https://github.com/NativeScript/nativescript-dev-webpack/commit/3b6a1c8))
-
 
 
