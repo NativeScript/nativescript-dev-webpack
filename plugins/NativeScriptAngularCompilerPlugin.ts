@@ -23,7 +23,7 @@ export interface CompiledFile {
 
 export class NativeScriptAngularCompilerPlugin extends AngularCompilerPlugin {
     readonly options: NativeScriptAngularCompilerPluginOptions;
-    readonly platform: string;
+    readonly targetPlatforms: string[];
 
     get __compilerHost() {
         // Accessing private API of the AngularCompilerPlugin
@@ -35,55 +35,62 @@ export class NativeScriptAngularCompilerPlugin extends AngularCompilerPlugin {
     constructor(options: NativeScriptAngularCompilerPluginOptions) {
         super(options);
 
-        this.platform = (this.options.platformOptions && this.options.platformOptions.platform) || undefined;
-        const platform = this.platform;
+        this.targetPlatforms = (this.options.platformOptions && this.options.platformOptions.targetPlatforms) || undefined;
 
-        if (platform) {
-            // https://github.com/angular/angular/blob/7bfeac746e717d02e062fe4a65c008060b8b662c/packages/compiler-cli/src/transformers/api.ts
-            const resourceNameToFileName = this.__compilerHost.resourceNameToFileName || function(file, relativeTo) {
-                const resolved = path.resolve(path.dirname(relativeTo), file);
-                if (this.fileExists(resolved)) {
-                    return resolved;
-                } else {
-                    return null;
-                }
-            };
-            this.__compilerHost.resourceNameToFileName = function(file, relativeTo) {
-                const parsed = path.parse(file);
+        // https://githubcom/angular/angular/blob/7bfeac746e717d02e062fe4a65c008060b8b662c/packages/compiler-cli/src/transformers/api.ts
+        const resourceNameToFileName = this.__compilerHost.resourceNameToFileName || function(file, relativeTo) {
+            const resolved = path.resolve(path.dirname(relativeTo), file);
+            if (this.fileExists(resolved)) {
+                return resolved;
+            } else {
+                return null;
+            }
+        };
+        this.__compilerHost.resourceNameToFileName = function(file, relativeTo) {
+            const parsed = path.parse(file);
+            let resolved;
+            for (const platform of this.targetPlatforms) {
                 const platformFile = parsed.name + "." + platform + parsed.ext;
-                let resolved;
                 try {
                     resolved = resourceNameToFileName.call(this, platformFile, relativeTo);
                 } catch(e) {
                 }
-                resolved = resolved || resourceNameToFileName.call(this, file, relativeTo);
-                resolved = resolved && resolved.replace(/\\/g, "/");
-                return resolved;
-            };
-        }
+            }
+
+            resolved = resolved || resourceNameToFileName.call(this, file, relativeTo);
+            resolved = resolved && resolved.replace(/\\/g, "/");
+
+            return resolved;
+        };
     }
 
     getCompiledFile(this: NativeScriptAngularCompilerPlugin, file: string): CompiledFile {
-        try {
-            if (this.platform) {
+        for (const platform of this.targetPlatforms) {
+            try {
                 const parsed = path.parse(file);
-                const platformFile = parsed.dir + path.sep + parsed.name + "." + this.platform + parsed.ext;
+                const platformFile = parsed.dir + path.sep + parsed.name + "." + platform + parsed.ext;
                 const result = super.getCompiledFile(platformFile);
                 return result;
+            } catch (e) {
             }
-        } catch(e) {
         }
+
         return super.getCompiledFile(file);
     }
 
     apply(compiler) {
         super.apply(compiler);
-        if (this.options.platformOptions && this.options.platformOptions.platform && this.options.platformOptions.platforms) {
+        if (
+            this.options.platformOptions &&
+            this.options.platformOptions.targetPlatforms &&
+            this.options.platformOptions.targetPlatforms.length &&
+            this.options.platformOptions.platforms
+        ) {
             compiler.plugin('environment', () => {
                 compiler.inputFileSystem = mapFileSystem({
                     fs: compiler.inputFileSystem,
                     context: compiler.context,
-                    platform: this.options.platformOptions.platform,
+                    targetPlatforms: this.options.platformOptions.targetPlatforms,
                     platforms: this.options.platformOptions.platforms,
                     ignore: this.options.platformOptions.ignore
                 });
@@ -91,7 +98,7 @@ export class NativeScriptAngularCompilerPlugin extends AngularCompilerPlugin {
                 compiler.watchFileSystem = mapFileSystem({
                     fs: compiler.watchFileSystem,
                     context: compiler.context,
-                    platform: this.options.platformOptions.platform,
+                    targetPlatforms: this.options.platformOptions.targetPlatforms,
                     platforms: this.options.platformOptions.platforms,
                     ignore: this.options.platformOptions.ignore
                 });
