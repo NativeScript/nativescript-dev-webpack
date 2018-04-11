@@ -1,3 +1,11 @@
+<a name="0.10.1"></a>
+## [0.10.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.10.0...0.10.1) (2018-04-11)
+
+
+### Bug Fixes
+
+* **configs/angular:** use path relative to the appDir for the root ([8e7aa0c](https://github.com/NativeScript/nativescript-dev-webpack/commit/8e7aa0c))
+
 <a name="0.10.0"></a>
 # [0.10.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.9.1...0.10.0) (2018-04-05)
 
