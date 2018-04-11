@@ -157,7 +157,7 @@ module.exports = env => {
                     entryModule: resolve(appPath, "app.module#AppModule"),
                     skipCodeGeneration: !aot,
                     platformOptions: {
-                        platform,
+                        targetPlatforms: [platform, "tns"],
                         platforms,
                         // ignore: ["App_Resources"]
                     },
