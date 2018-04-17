@@ -63,7 +63,7 @@ module.exports = env => {
             vendor: vendorPath,
         },
         output: {
-            pathinfo: true,
+            pathinfo: false,
             path: dist,
             libraryTarget: "commonjs2",
             filename: "[name].js",
