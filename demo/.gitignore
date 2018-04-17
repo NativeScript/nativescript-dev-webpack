@@ -1,5 +1,8 @@
 node_modules
 platforms
+testapp
+*-report.*
+
 hooks
 report
 

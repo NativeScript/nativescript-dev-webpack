@@ -10,6 +10,7 @@
 - [Reporting Bugs](#reporting-bugs)
 - [Requesting Features](#requesting-features)
 - [Submitting PR](#submitting-pr)
+- [Publishing new versions](#publishing-new-versions)
 
 <!-- /TOC -->
 
@@ -144,3 +145,42 @@ NOTE: There are three test apps in the repository, located in the `/demo` direct
         ```
 
 Thank you for your contribution!
+
+## Publishing new versions
+
+1. Run `npm install` to install the dependencies and prepare the package for publishing.
+```bash
+npm install
+```
+
+2. Remove the `package-lock.json` file if it was generated.
+```bash
+rm package-lock.json
+```
+
+3. Add the following to your `.npmrc`.
+```
+tag-version-prefix=""
+message="release: cut the %s release"
+```
+
+4. Create new branch for the release:
+```
+git checkout -b username/release-version
+```
+
+5. Run `npm version` to bump the version in the `package.json`, tag the release and update the CHANGELOG.md:
+```
+npm version [patch|minor|major]
+```
+
+6. Push all changes to your branch and create a PR.
+```bash
+git push --set-upstream origin username/release-version --tags
+```
+
+7. Publish the package to npm after the PR is merged.
+```bash
+npm publish
+```
+
