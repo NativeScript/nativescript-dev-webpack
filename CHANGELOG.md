@@ -1,3 +1,12 @@
+<a name="0.10.2"></a>
+## [0.10.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.10.1...0.10.2) (2018-04-18)
+
+
+### Bug Fixes
+
+* **hooks:** do not set INIT_CWD on any hook ([#494](https://github.com/NativeScript/nativescript-dev-webpack/issues/494)) ([afe6208](https://github.com/NativeScript/nativescript-dev-webpack/commit/afe6208))
+
+
 <a name="0.10.1"></a>
 ## [0.10.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.10.0...0.10.1) (2018-04-11)
 
