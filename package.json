@@ -68,7 +68,7 @@
   "dependencies": {
     "global-modules-path": "2.0.0",
     "minimatch": "3.0.4",
-    "nativescript-hook": "0.2.3",
+    "nativescript-hook": "0.2.4",
     "proxy-lib": "0.4.0",
     "request": "2.83.0",
     "schema-utils": "0.4.3",
