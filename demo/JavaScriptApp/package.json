@@ -9,7 +9,7 @@
       "version": "next"
     },
     "tns-android": {
-      "version": "4.0.0-2018.3.22.2"
+      "version": "4.1.0-2018.4.17.6-onlyX86"
     }
   },
   "dependencies": {
@@ -17,6 +17,9 @@
     "tns-core-modules": "next"
   },
   "devDependencies": {
+    "@types/chai": "^4.0.2",
+    "@types/mocha": "^2.2.41",
+    "@types/node": "^7.0.5",
     "babel-traverse": "6.26.0",
     "babel-types": "6.26.0",
     "babylon": "6.18.0",
@@ -37,13 +40,10 @@
     "resolve-url-loader": "~2.3.0",
     "sass-loader": "~6.0.6",
     "uglifyjs-webpack-plugin": "~1.2.4",
-    "webpack": "~4.3.0",
+    "webpack": "~4.5.0",
     "webpack-bundle-analyzer": "^2.9.1",
-    "webpack-cli": "~2.0.12",
-    "webpack-sources": "~1.1.0",
-    "@types/chai": "^4.0.2",
-    "@types/mocha": "^2.2.41",
-    "@types/node": "^7.0.5"
+    "webpack-cli": "~2.0.14",
+    "webpack-sources": "~1.1.0"
   },
   "scripts": {
     "ns-bundle": "ns-bundle",
