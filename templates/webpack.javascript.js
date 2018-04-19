@@ -135,7 +135,7 @@ module.exports = env => {
             // Support for web workers since v3.2
             new NativeScriptWorkerPlugin(),
             new nsWebpack.PlatformFSPlugin({
-                platform,
+                targetPlatforms: [platform, "tns"],
                 platforms,
             }),
             // Does IPC communication with the {N} CLI to notify events when running in watch mode.

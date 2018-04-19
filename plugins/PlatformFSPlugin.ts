@@ -3,9 +3,9 @@ import * as minimatch from "minimatch";
 
 export interface PlatformFSPluginOptions {
     /**
-     * The target platform.
+     * The target platforms.
      */
-    platform?: string;
+    targetPlatforms?: string[];
 
     /**
      * A list of all platforms. By default it is `["ios", "android"]`.
@@ -19,13 +19,13 @@ export interface PlatformFSPluginOptions {
 }
 
 export class PlatformFSPlugin {
-    protected readonly platform: string;
+    protected readonly targetPlatforms: ReadonlyArray<string>;
     protected readonly platforms: ReadonlyArray<string>;
     protected readonly ignore: ReadonlyArray<string>;
     protected context: string;
 
-    constructor({ platform, platforms, ignore }: PlatformFSPluginOptions) {
-        this.platform = platform || "";
+    constructor({ targetPlatforms, platforms, ignore }: PlatformFSPluginOptions) {
+        this.targetPlatforms = targetPlatforms || [];
         this.platforms = platforms || ["ios", "android"];
         this.ignore = ignore || [];
     }
@@ -34,7 +34,7 @@ export class PlatformFSPlugin {
         this.context = compiler.context;
         compiler.inputFileSystem = mapFileSystem({
             fs: compiler.inputFileSystem,
-            platform: this.platform,
+            targetPlatforms: this.targetPlatforms,
             platforms: this.platforms,
             ignore: this.ignore,
             context: this.context
@@ -48,13 +48,13 @@ export interface MapFileSystemArgs {
      */
     readonly fs: any;
     readonly context: string;
-    readonly platform: string;
+    readonly targetPlatforms: ReadonlyArray<string>;
     readonly platforms: ReadonlyArray<string>;
     readonly ignore: ReadonlyArray<string>;
 }
 
 export function mapFileSystem(args: MapFileSystemArgs): any {
-    let { fs, platform, platforms, ignore, context } = args;
+    let { fs, targetPlatforms, platforms, ignore, context } = args;
     ignore = args.ignore || [];
 
     const minimatchFileFilters = ignore.map(pattern => {
@@ -64,20 +64,24 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
 
     const isIgnored = file => minimatchFileFilters.some(filter => filter(file));
 
-    const alienPlatforms = platforms.filter(p => p !== platform);
+    const alienPlatforms = platforms
+        .filter(p => targetPlatforms.every(tp => tp !== p));
+
     const alienPlatformFilters = alienPlatforms
         .map(platform => `.${platform}.`)
         .map(contains => baseFileName => baseFileName.indexOf(contains) !== -1);
 
     const isNotAlienPlatformFile = file => !alienPlatformFilters.some(filter => filter(basename(file)));
 
-    const currentPlatformExt = `.${platform}`;
-
+    const targetPlatformExt = targetPlatforms.map(platform => `.${platform}`);
     const trimPlatformSuffix = file => {
-        const {dir, name, ext} = parseFile(file);
-        if (name.endsWith(currentPlatformExt)) {
-            return join(dir, name.substr(0, name.length - currentPlatformExt.length) + ext);
+        const { dir, name, ext } = parseFile(file);
+        for (const platformExt of targetPlatformExt) {
+            if (name.endsWith(platformExt)) {
+                return join(dir, name.substr(0, name.length - platformExt.length) + ext);
+            }
         }
+
         return file;
     }
 
@@ -92,17 +96,16 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
     ["readFile", "provide", "stat", "readJson", "readlink"].forEach(mapPath);
     ["readdir"].forEach(filterResultingFiles);
 
-    function platformSpecificFile(file: string): string {
-        const {dir, name, ext} = parseFile(file);
-        const platformFilePath = join(dir, `${name}.${platform}${ext}`);
-        return platformFilePath;
+    function platformSpecificFiles(file: string): string[] {
+        const { dir, name, ext } = parseFile(file);
+        return targetPlatforms.map(platform => join(dir, `${name}.${platform}${ext}`));
     }
 
     function listWithPlatformSpecificFiles(files: string[]): string[] {
         const mappedFiles = [];
         files.forEach(file => {
             mappedFiles.push(file);
-            mappedFiles.push(platformSpecificFile(file));
+            mappedFiles.push(...platformSpecificFiles(file));
         });
         return mappedFiles;
     }
@@ -121,7 +124,7 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
         return uniqueMappedFiles;
     }
 
-    const platformSuffix = "." + platform + ".";
+    const targetPlatformsSuffixes = targetPlatforms.map(platform => `.${platform}.`);
     mappedFS.watch = function(
         files,
         dirs,
@@ -150,17 +153,20 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
             const mappedFilesModified = filterIgnoredFilesAlienFilesAndMap(filesModified);
 
             const mappedTimestamps = {};
-            for(const file in fileTimestamps) {
+            fileTimestamps.forEach(file => {
                 const timestamp = fileTimestamps[file];
                 mappedTimestamps[file] = timestamp;
-                const platformSuffixIndex = file.lastIndexOf(platformSuffix);
-                if (platformSuffixIndex != -1) {
-                    const mappedFile = file.substr(0, platformSuffixIndex) + file.substr(platformSuffixIndex + platformSuffix.length - 1);
-                    if (!(mappedFile in fileTimestamps)) {
-                        mappedTimestamps[mappedFile] = timestamp;
+
+                targetPlatformsSuffixes.forEach(platformSuffix => {
+                    const platformSuffixIndex = file.lastIndexOf(platformSuffix);
+                    if (platformSuffixIndex !== -1) {
+                        const mappedFile = file.substr(0, platformSuffixIndex) + file.substr(platformSuffixIndex + platformSuffix.length - 1);
+                        if (!(mappedFile in fileTimestamps)) {
+                            mappedTimestamps[mappedFile] = timestamp;
+                        }
                     }
-                }
-            }
+                });
+            });
 
             callback.call(this, err, mappedFilesModified, contextModified, missingModified, mappedTimestamps, contextTimestamps);
         }
@@ -184,13 +190,19 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
                 callback(new Error("File " + originalFilePath + " is ignored!"));
                 return;
             }
-            const platformFilePath = platformSpecificFile(originalFilePath);
-            fs.stat(platformFilePath, (err, stat) => {
-                if (!err && stat && stat.isFile()) {
-                    args[0] = platformFilePath;
+            const platformFilePaths = platformSpecificFiles(originalFilePath);
+            for (const path of platformFilePaths) {
+                try {
+                    const stat = fs.statSync(path);
+                    if (stat && stat.isFile) {
+                        args[0] = path;
+                    }
+                } catch(_e) {
+                    //
                 }
-                base.apply(fs, args);
-            });
+            }
+
+            base.apply(fs, args);
         };
     }
 
