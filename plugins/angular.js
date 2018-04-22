@@ -1,3 +1,3 @@
-module.exports = Object.assign({},
-    require("./NativeScriptAngularCompilerPlugin")
+module.exports = (projectDir) => Object.assign({},
+	require("./NativeScriptAngularCompilerPlugin")(projectDir)
 );

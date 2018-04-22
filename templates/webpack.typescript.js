@@ -17,6 +17,8 @@ module.exports = env => {
 
     const platforms = ["ios", "android"];
     const projectRoot = __dirname;
+    nsWebpack.loadAdditionalPlugins({ projectDir: projectRoot });
+
     // Default destination inside platforms/<platform>/...
     const dist = resolve(projectRoot, nsWebpack.getAppPath(platform));
     const appResourcesPlatformDir = platform === "android" ? "Android" : "iOS";
