@@ -1,4 +1,4 @@
-const { relative, resolve, join  } = require("path");
+const { join, relative, resolve, sep } = require("path");
 
 const webpack = require("webpack");
 const nsWebpack = require("nativescript-dev-webpack");
@@ -42,8 +42,8 @@ module.exports = env => {
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
 
     const entryModule = nsWebpack.getEntryModule(appFullPath);
-    const entryPath = `./${entryModule}.js`;
-    const vendorPath = `./vendor.js`;
+    const entryPath = `.${sep}${entryModule}.js`;
+    const vendorPath = `.${sep}vendor.js`;
 
     const config = {
         mode: "development",

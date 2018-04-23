@@ -1,4 +1,4 @@
-const { relative, resolve, join  } = require("path");
+const { join, relative, resolve, sep } = require("path");
 
 const webpack = require("webpack");
 const nsWebpack = require("nativescript-dev-webpack");
@@ -46,8 +46,8 @@ module.exports = env => {
     const entryModule = aot ?
         nsWebpack.getAotEntryModule(appFullPath) : 
         `${nsWebpack.getEntryModule(appFullPath)}.ts`;
-    const entryPath = `./${entryModule}`;
-    const vendorPath = `./vendor.ts`;
+    const entryPath = `.${sep}${entryModule}`;
+    const vendorPath = `.${sep}vendor.ts`;
 
     const config = {
         mode: "development",
