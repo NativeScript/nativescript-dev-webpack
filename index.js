@@ -2,9 +2,7 @@ const path = require("path");
 const { existsSync } = require("fs");
 
 const {
-    APP_DIR,
     getPackageJson,
-    getProjectDir,
     isAngular,
     isAndroid,
     isIos,
@@ -19,7 +17,9 @@ exports.loadAdditionalPlugins = function (projectSettings) {
     }
 }
 
-exports.getAotEntryModule = function (appDirectory = APP_PATH) {
+exports.getAotEntryModule = function (appDirectory) {
+	verifyEntryModuleDirectory(appDirectory);
+    
     const entry = getPackageJsonEntry(appDirectory);
     const aotEntry = `${entry}.aot.ts`;
 
@@ -36,13 +36,7 @@ exports.getAotEntryModule = function (appDirectory = APP_PATH) {
 exports.uglifyMangleExcludes = require("./mangle-excludes");
 
 exports.getEntryModule = function (appDirectory) {
-	if (!appDirectory) {
-		throw new Error("Path to app directory is not specified. Unable to find entry module.");
-	}
-
-	if (!existsSync(appDirectory)) {
-		throw new Error(`The specified path to app directory ${appDirectory} does not exist. Unable to find entry module.`);
-	}
+	verifyEntryModuleDirectory(appDirectory);
 
     const entry = getPackageJsonEntry(appDirectory);
 
@@ -83,4 +77,14 @@ function getPackageJsonEntry(appDirectory) {
     }
 
     return entry.replace(/\.js$/i, "");
+}
+
+function verifyEntryModuleDirectory(appDirectory) {
+    if (!appDirectory) {
+		throw new Error("Path to app directory is not specified. Unable to find entry module.");
+	}
+
+	if (!existsSync(appDirectory)) {
+		throw new Error(`The specified path to app directory ${appDirectory} does not exist. Unable to find entry module.`);
+	}
 }
