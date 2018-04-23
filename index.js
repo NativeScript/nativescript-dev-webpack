@@ -2,25 +2,24 @@ const path = require("path");
 const { existsSync } = require("fs");
 
 const {
-    APP_DIR,
     getPackageJson,
-    getProjectDir,
     isAngular,
     isAndroid,
     isIos,
     resolveAndroidAppPath,
 } = require("./projectHelpers");
 
-const PROJECT_DIR = getProjectDir();
-const APP_PATH = path.join(PROJECT_DIR, APP_DIR);
-
 Object.assign(exports, require('./plugins'));
 
-if (isAngular({ projectDir: PROJECT_DIR })) {
-    Object.assign(exports, require('./plugins/angular'));
+exports.loadAdditionalPlugins = function (projectSettings) {
+    if (isAngular(projectSettings)) {
+        Object.assign(exports, require('./plugins/angular')(projectSettings.projectDir));
+    }
 }
 
-exports.getAotEntryModule = function (appDirectory = APP_PATH) {
+exports.getAotEntryModule = function (appDirectory) {
+	verifyEntryModuleDirectory(appDirectory);
+    
     const entry = getPackageJsonEntry(appDirectory);
     const aotEntry = `${entry}.aot.ts`;
 
@@ -36,7 +35,9 @@ exports.getAotEntryModule = function (appDirectory = APP_PATH) {
 // Exported for backwards compatibility with {N} 3
 exports.uglifyMangleExcludes = require("./mangle-excludes");
 
-exports.getEntryModule = function (appDirectory = APP_PATH) {
+exports.getEntryModule = function (appDirectory) {
+	verifyEntryModuleDirectory(appDirectory);
+
     const entry = getPackageJsonEntry(appDirectory);
 
     const tsEntryPath = path.resolve(appDirectory, `${entry}.ts`);
@@ -49,14 +50,14 @@ exports.getEntryModule = function (appDirectory = APP_PATH) {
     return entry;
 };
 
-exports.getAppPath = platform => {
+exports.getAppPath = (platform, projectDir) => {
     if (isIos(platform)) {
-        const appName = path.basename(PROJECT_DIR);
+        const appName = path.basename(projectDir);
         const sanitizedName = sanitize(appName);
 
         return `platforms/ios/${sanitizedName}/app`;
     } else if (isAndroid(platform)) {
-        return resolveAndroidAppPath(PROJECT_DIR);
+        return resolveAndroidAppPath(projectDir);
     } else {
         throw new Error(`Invalid platform: ${platform}`);
     }
@@ -76,4 +77,14 @@ function getPackageJsonEntry(appDirectory) {
     }
 
     return entry.replace(/\.js$/i, "");
+}
+
+function verifyEntryModuleDirectory(appDirectory) {
+    if (!appDirectory) {
+		throw new Error("Path to app directory is not specified. Unable to find entry module.");
+	}
+
+	if (!existsSync(appDirectory)) {
+		throw new Error(`The specified path to app directory ${appDirectory} does not exist. Unable to find entry module.`);
+	}
 }
