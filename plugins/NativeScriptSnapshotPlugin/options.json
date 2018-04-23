@@ -25,6 +25,9 @@
     },
     "useLibs": {
       "type": "boolean"
+    },
+    "v8Version": {
+        "type": "string"
     }
   },
   "additionalProperties": false
