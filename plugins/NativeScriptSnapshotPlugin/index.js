@@ -54,6 +54,7 @@ exports.NativeScriptSnapshotPlugin = (function() {
             targetArchs: options.targetArchs,
             useLibs: options.useLibs,
             androidNdkPath: options.androidNdkPath,
+            v8Version: options.v8Version,
         }).then(() => {
             // Make the original files empty
             inputFiles.forEach(inputFile =>
