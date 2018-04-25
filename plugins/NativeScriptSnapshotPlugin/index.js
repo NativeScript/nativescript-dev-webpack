@@ -64,6 +64,7 @@ exports.NativeScriptSnapshotPlugin = (function() {
             targetArchs: options.targetArchs,
             useLibs: options.useLibs,
             androidNdkPath: options.androidNdkPath,
+            v8Version: options.v8Version,
             tnsJavaClassesPath: join(preparedAppRootPath, "tns-java-classes.js")
         }).then(() => {
             // Make the original file empty
