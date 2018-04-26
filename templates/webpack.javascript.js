@@ -10,6 +10,12 @@ const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeS
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 module.exports = env => {
+    // Add your custom Activities, Services and other android app components here.
+    const appComponents = [
+        "tns-core-modules/ui/frame",
+        "tns-core-modules/ui/frame/activity",
+    ];
+
     const platform = env && (env.android && "android" || env.ios && "ios");
     if (!platform) {
         throw new Error("You need to provide a target platform!");
@@ -100,7 +106,12 @@ module.exports = env => {
                     common: {
                         name: "common",
                         chunks: "all",
-                        test: /vendor/,
+                        test: (module, chunks) => {
+                            const moduleName = module.nameForCondition ? module.nameForCondition() : '';
+                            return /[\\/]node_modules[\\/]/.test(moduleName) ||
+                                    appComponents.some(comp => comp === moduleName);
+
+                        },
                         enforce: true,
                     },
                 }
@@ -173,12 +184,6 @@ module.exports = env => {
     };
 
     if (platform === "android") {
-        // Add your custom Activities, Services and other android app components here.
-        const appComponents = [
-            "tns-core-modules/ui/frame",
-            "tns-core-modules/ui/frame/activity",
-        ];
-
         // Require all Android app components
         // in the entry module (bundle.js) and the vendor module (vendor.js).
         config.module.rules.unshift({
