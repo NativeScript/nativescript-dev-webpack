@@ -36,13 +36,12 @@ module.exports = env => {
         appPath = "app",
         appResourcesPath = "app/App_Resources",
 
-        // Aot, snapshot, uglify and report can be enabled by providing
-        // the `--env.snapshot`, `--env.uglify` or `--env.report` flags
-        // when running 'tns run android|ios'
-        aot,
-        snapshot,
-        uglify,
-        report,
+        // You can provide the following flags when running 'tns run android|ios'
+        production, // --env.production
+        aot, // --env.aot
+        snapshot, // --env.snapshot
+        uglify, // --env.uglify
+        report, // --env.report
     } = env;
     const ngToolsWebpackOptions = { tsConfigPath: join(__dirname, "tsconfig.json") };
 
@@ -56,7 +55,7 @@ module.exports = env => {
     const vendorPath = `.${sep}vendor.ts`;
 
     const config = {
-        mode: "development",
+        mode: production ? "production" : "development",
         context: appFullPath,
         watchOptions: {
             ignored: [
