@@ -168,7 +168,7 @@ ProjectSnapshotGenerator.prototype.getV8Version = function (generationOptions) {
         }
 
         // try to get the V8 Version from the settings.json file in android runtime folder
-        const runtimeV8Version = getAndroidV8Version(this.options.projectPath);
+        const runtimeV8Version = getAndroidV8Version(this.options.projectRoot);
         if(runtimeV8Version) {
             return resolve(runtimeV8Version);
         }
