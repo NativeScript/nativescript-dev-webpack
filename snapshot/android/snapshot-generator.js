@@ -158,7 +158,7 @@ SnapshotGenerator.prototype.generate = function(options) {
     if (!options.snapshotToolsPath) { throw new Error("snapshotToolsPath option is not specified."); }
     const preprocessedInputFile = options.preprocessedInputFile ||  join(this.buildPath, "inputFile.preprocessed");
 
-    console.log("(***** Starting snapshot generation using V8 version: ", options.v8Version);
+    console.log("***** Starting snapshot generation using V8 version: ", options.v8Version);
 
     this.preprocessInputFile(options.inputFile, preprocessedInputFile);
 
