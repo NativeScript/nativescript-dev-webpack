@@ -11,6 +11,7 @@ const {
 } = require("./nsCliHelpers");
 
 const APP_DIR = "app";
+const ANDROID_PROJECT_PATH = "platforms/android";
 
 const isTypeScript = ({ projectDir, packageJson } = {}) => {
     packageJson = packageJson || getPackageJson(projectDir);
@@ -54,6 +55,19 @@ const getAndroidRuntimeVersion = (projectDir) => {
     }
 }
 
+const getAndroidV8Version = (projectDir) => {
+    try {
+        const androidSettingsJSON = getAndroidSettingsJson(projectDir);
+        if(androidSettingsJSON != null) {
+            return androidSettingsJSON.v8Version;
+        } else {
+            return null;
+        }
+    } catch (e) {
+        return null;
+    }
+}
+
 const getWebpackConfig = (projectDir, env, configPath = "webpack.config.js") => {
     const configAbsolutePath = path.resolve(projectDir, configPath);
     let config;
@@ -82,6 +96,15 @@ const getPackageJson = projectDir => {
     return JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
 };
 
+const getAndroidSettingsJson = projectDir => {
+    const androidSettingsJsonPath = path.resolve(projectDir, ANDROID_PROJECT_PATH, "settings.json");
+    if (fs.existsSync(androidSettingsJsonPath)) {
+        return JSON.parse(fs.readFileSync(androidSettingsJsonPath, "utf8"));
+    } else {
+        return null;
+    }
+};
+
 const writePackageJson = (content, projectDir) => {
     const packageJsonPath = getPackageJsonPath(projectDir);
     fs.writeFileSync(packageJsonPath, JSON.stringify(content, null, 2))
@@ -92,14 +115,13 @@ const toReleaseVersion = version =>
     version.replace(/-.*/, "");
 
 const getAndroidProjectPath = ({androidPackageVersion, projectRoot}) => {
-    const ANDROID_PROJECT_PATH = "platforms/android";
     if (projectRoot) {
         androidPackageVersion = getAndroidRuntimeVersion(projectRoot);
     }
 
     return semver.lt(androidPackageVersion, "3.4.0") ?
         ANDROID_PROJECT_PATH :
-        path.join(ANDROID_PROJECT_PATH, "app");
+        path.join(ANDROID_PROJECT_PATH, APP_DIR);
 };
 
 
@@ -153,6 +175,7 @@ module.exports = {
     getAppResourcesPathFromProjectData,
     getAndroidProjectPath,
     getAndroidRuntimeVersion,
+    getAndroidV8Version,
     getPackageJson,
     getProjectDir,
     getWebpackConfig,

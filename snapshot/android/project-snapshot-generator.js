@@ -15,6 +15,7 @@ const {
     getPackageJson,
     getAndroidRuntimeVersion,
     getAndroidProjectPath,
+    getAndroidV8Version,
     resolveAndroidAppPath,
     resolveAndroidConfigurationsPath,
 } = require("../../projectHelpers");
@@ -164,6 +165,12 @@ ProjectSnapshotGenerator.prototype.getV8Version = function (generationOptions) {
         const maybeV8Version = generationOptions.v8Version;
         if (maybeV8Version) {
             return resolve(maybeV8Version);
+        }
+
+        // try to get the V8 Version from the settings.json file in android runtime folder
+        const runtimeV8Version = getAndroidV8Version(this.options.projectPath);
+        if(runtimeV8Version) {
+            return resolve(runtimeV8Version);
         }
 
         const runtimeVersion = getAndroidRuntimeVersion(this.options.projectRoot);
