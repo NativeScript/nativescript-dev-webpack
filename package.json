@@ -55,7 +55,7 @@
   "scripts": {
     "postinstall": "node postinstall.js",
     "prepare": "tsc",
-    "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md"
+    "version": "rm package-lock.json && conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md"
   },
   "bin": {
     "install-ns-webpack": "./bin/install-ns-webpack",
@@ -79,6 +79,7 @@
   "devDependencies": {
     "@ngtools/webpack": "~6.0.0-rc.3",
     "@types/node": "^8.0.0",
+    "conventional-changelog-cli": "^1.3.22",
     "source-map-support": "^0.5.0",
     "typescript": "~2.7.2"
   }
