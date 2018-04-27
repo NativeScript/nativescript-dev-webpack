@@ -1,3 +1,29 @@
+<a name="0.11.1"></a>
+## [0.11.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.10.2...0.11.1) (2018-04-27)
+
+
+### Bug Fixes
+
+* allow using the plugin via symlink ([#501](https://github.com/NativeScript/nativescript-dev-webpack/issues/501)) ([a7acb4d](https://github.com/NativeScript/nativescript-dev-webpack/commit/a7acb4d))
+* bundling of Angular apps using linked TS plugins ([#505](https://github.com/NativeScript/nativescript-dev-webpack/issues/505)) ([41779ad](https://github.com/NativeScript/nativescript-dev-webpack/commit/41779ad))
+
+
+### Features
+
+* add webpack4 support ([#495](https://github.com/NativeScript/nativescript-dev-webpack/issues/495)) ([eefce39](https://github.com/NativeScript/nativescript-dev-webpack/commit/eefce39))
+* configure v8Version for snapshot tools ([#503](https://github.com/NativeScript/nativescript-dev-webpack/issues/503)) ([cf0d76b](https://github.com/NativeScript/nativescript-dev-webpack/commit/cf0d76b))
+
+
+### BREAKING CHANGES
+
+* The current code changes the way NativeScriptAngularCompilerPlugin is loaded. This means that all projects that already have webpack.config.js and just upgrade the version of nativescript-dev-webpack, will not be able to use the plugin (NativeScriptAngularCompilerPlugin). They will have to modify their webpack.config.js files.
+
+* fix: webpack getAppPath with projectRoot
+
+* refactor: verify entry module directory
+
+
+
 <a name="0.11.0"></a>
 # [0.11.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.10.2...0.11.0) (2018-04-25)
 
