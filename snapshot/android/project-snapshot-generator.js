@@ -5,7 +5,6 @@ const shelljs = require("shelljs");
 const semver = require("semver");
 
 const SnapshotGenerator = require("./snapshot-generator");
-const TnsJavaClassesGenerator = require("./tns-java-classes-generator");
 const {
     CONSTANTS,
     createDirectory,
@@ -88,11 +87,6 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function (projectRoot) {
     // Copy include.gradle to the specified destination in the platforms folder
     shelljs.mkdir("-p", configDestinationPath);
     shelljs.cp(join(buildPath, "include.gradle"), join(configDestinationPath, "include.gradle"));
-
-    // Copy tns-java-classes.js
-    if (shelljs.test("-e", join(buildPath, "tns-java-classes.js"))) {
-        shelljs.cp(join(buildPath, "tns-java-classes.js"), join(appPath, "tns-java-classes.js"));
-    }
 
     if (shelljs.test("-e", join(buildPath, "ndk-build/libs"))) {
         // useLibs = true
@@ -200,15 +194,6 @@ ProjectSnapshotGenerator.prototype.validateAndroidRuntimeVersion = function () {
     }
 }
 
-ProjectSnapshotGenerator.prototype.generateTnsJavaClassesFile = function (generationOptions) {
-    const tnsJavaClassesGenerator = new TnsJavaClassesGenerator();
-    return tnsJavaClassesGenerator.generate({
-        projectRoot: this.options.projectRoot,
-        output: generationOptions.output,
-        options: generationOptions.options
-    });
-}
-
 ProjectSnapshotGenerator.prototype.generate = function (generationOptions) {
     generationOptions = generationOptions || {};
 
@@ -218,17 +203,6 @@ ProjectSnapshotGenerator.prototype.generate = function (generationOptions) {
     // Clean build folder
     shelljs.rm("-rf", this.getBuildPath());
     shelljs.mkdir("-p", this.getBuildPath());
-
-    // Generate tns-java-classes.js if needed
-    const tnsJavaClassesDestination = join(this.getBuildPath(), "tns-java-classes.js");
-    if (generationOptions.tnsJavaClassesPath) {
-        if (generationOptions.tnsJavaClassesPath != tnsJavaClassesDestination) {
-            shelljs.cp(generationOptions.tnsJavaClassesPath, tnsJavaClassesDestination);
-        }
-    }
-    else {
-        this.generateTnsJavaClassesFile({ output: tnsJavaClassesDestination, options: generationOptions.tnsJavaClassesOptions });
-    }
 
     const snapshotToolsPath = resolveRelativePath(generationOptions.snapshotToolsPath) || CONSTANTS.SNAPSHOT_TMP_DIR;
     const androidNdkPath = generationOptions.androidNdkPath || process.env.ANDROID_NDK_HOME;
@@ -246,15 +220,17 @@ ProjectSnapshotGenerator.prototype.generate = function (generationOptions) {
             throw new Error(noV8VersionFoundMessage);
         }
 
-        return generator.generate({
+        const options = {
             snapshotToolsPath,
-            inputFile: generationOptions.inputFile || join(this.options.projectRoot, "__snapshot.js"),
             targetArchs: generationOptions.targetArchs || ["arm", "arm64", "ia32"],
             v8Version: generationOptions.v8Version || v8Version,
             preprocessedInputFile: generationOptions.preprocessedInputFile,
             useLibs: generationOptions.useLibs || false,
-            androidNdkPath
-        }).then(() => {
+            inputFiles: generationOptions.inputFiles || [join(this.options.projectRoot, "__snapshot.js")],
+            androidNdkPath,
+        };
+
+        return generator.generate(options).then(() => {
             console.log("Snapshots build finished succesfully!");
 
             if (generationOptions.install) {
