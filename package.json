@@ -55,7 +55,7 @@
   "scripts": {
     "postinstall": "node postinstall.js",
     "prepare": "tsc",
-    "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md"
+    "version": "rm package-lock.json && conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md"
   },
   "bin": {
     "install-ns-webpack": "./bin/install-ns-webpack",
