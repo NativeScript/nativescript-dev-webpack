@@ -9,27 +9,23 @@ const schema = require("./options.json");
 exports.NativeScriptSnapshotPlugin = (function() {
     function NativeScriptSnapshotPlugin(options) {
         NativeScriptSnapshotPlugin.validateSchema(options);
+        if (options.chunk) {
+            options.chunks = options.chunks || [];
+            options.chunks.push(options.chunk);
+        }
 
-        ProjectSnapshotGenerator.call(this, options); // Call the parent constructor
+        ProjectSnapshotGenerator.call(this, options);
 
         if (this.options.webpackConfig) {
             if (this.options.webpackConfig.output && this.options.webpackConfig.output.libraryTarget) {
                 this.options.webpackConfig.output.libraryTarget = undefined;
             }
-
-            if (this.options.webpackConfig.entry) {
-                if (typeof this.options.webpackConfig.entry === "string" ||
-                    this.options.webpackConfig.entry instanceof Array)
-                    this.options.webpackConfig.entry = { bundle: this.options.webpackConfig.entry };
-            }
-
-            this.options.webpackConfig.entry["tns-java-classes"] = this.getTnsJavaClassesBuildPath();
         }
     }
 
     NativeScriptSnapshotPlugin.validateSchema = function(options) {
-        if (!options.chunk) {
-            const error = NativeScriptSnapshotPlugin.extendError({ message: `No chunk specified!` });
+        if (!options.chunk && !options.chunks) {
+            const error = NativeScriptSnapshotPlugin.extendError({ message: `No chunks specified!` });
             throw error;
         }
 
@@ -44,56 +40,45 @@ exports.NativeScriptSnapshotPlugin = (function() {
     NativeScriptSnapshotPlugin.prototype = Object.create(ProjectSnapshotGenerator.prototype);
     NativeScriptSnapshotPlugin.prototype.constructor = NativeScriptSnapshotPlugin;
 
-    NativeScriptSnapshotPlugin.prototype.getTnsJavaClassesBuildPath = function () {
-        return resolve(this.getBuildPath(), "../tns-java-classes.js");
-    }
-
-    NativeScriptSnapshotPlugin.prototype.generate = function (webpackChunk) {
+    NativeScriptSnapshotPlugin.prototype.generate = function (webpackChunks) {
         const options = this.options;
-
-        const inputFile = join(options.webpackConfig.output.path, webpackChunk.files[0]);
-
-        console.log(`\n Snapshotting bundle at ${inputFile}`);
+        const inputFiles = webpackChunks.map(chunk => join(options.webpackConfig.output.path, chunk.files[0]));
+        console.log(`\n Snapshotting bundle from ${inputFiles}`);
 
         const preparedAppRootPath = resolveAndroidAppPath(this.options.projectRoot);
         const preprocessedInputFile = join(preparedAppRootPath, "_embedded_script_.js");
 
         return ProjectSnapshotGenerator.prototype.generate.call(this, {
-            inputFile,
+            inputFiles,
             preprocessedInputFile,
             targetArchs: options.targetArchs,
             useLibs: options.useLibs,
             androidNdkPath: options.androidNdkPath,
-            tnsJavaClassesPath: join(preparedAppRootPath, "tns-java-classes.js")
+            v8Version: options.v8Version,
         }).then(() => {
-            // Make the original file empty
-            if (inputFile !== preprocessedInputFile) {
-                closeSync(openSync(inputFile, "w")); // truncates the input file content
-            }
+            // Make the original files empty
+            inputFiles.forEach(inputFile =>
+                closeSync(openSync(inputFile, "w")) // truncates the input file content
+            );
         });
     }
 
     NativeScriptSnapshotPlugin.prototype.apply = function (compiler) {
         const options = this.options;
 
-        // Generate tns-java-classes.js file
-        debugger;
-        ProjectSnapshotGenerator.prototype.generateTnsJavaClassesFile.call(this, {
-            output: this.getTnsJavaClassesBuildPath(),
-            options: options.tnsJavaClassesOptions
-        });
-
-        // Generate snapshots
         compiler.plugin("after-emit", function (compilation, callback) {
-            debugger;
-            const chunkToSnapshot = compilation.chunks.find(chunk => chunk.name == options.chunk);
-            if (!chunkToSnapshot) {
-                const error = NativeScriptSnapshotPlugin.extendError({ message: `No chunk named '${options.chunk}' found.` });
+            const chunksToSnapshot = options.chunks
+                .map(name => ({ name, chunk: compilation.chunks.find(chunk => chunk.name === name) }));
+            const unexistingChunks = chunksToSnapshot.filter(pair => !pair.chunk);
+
+            if (unexistingChunks.length) {
+                const message = `The following chunks does not exist: ` + unexistingChunks.map(pair => pair.name).join(", ");
+                const error = NativeScriptSnapshotPlugin.extendError({ message });
                 compilation.errors.push(error);
                 return callback();
             }
 
-            this.generate(chunkToSnapshot)
+            this.generate(chunksToSnapshot.map(pair => pair.chunk))
                 .then(() => {
                     console.log("Successfully generated snapshots!");
                     return callback();

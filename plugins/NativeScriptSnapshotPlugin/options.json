@@ -4,6 +4,12 @@
     "chunk": {
       "type": "string"
     },
+    "chunks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "projectRoot": {
       "type": "string"
     },
@@ -11,20 +17,11 @@
     "targetArchs": {
       "type": "array"
     },
-    "tnsJavaClassesOptions": {
-      "additionalProperties": false,
-      "type": "object",
-      "properties": {
-        "modules": {
-          "type": "array"
-        },
-        "packages": {
-          "type": "array"
-        }
-      }
-    },
     "useLibs": {
       "type": "boolean"
+    },
+    "v8Version": {
+        "type": "string"
     }
   },
   "additionalProperties": false

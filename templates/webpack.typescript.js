@@ -1,4 +1,4 @@
-const { relative, resolve, join  } = require("path");
+const { join, relative, resolve, sep } = require("path");
 
 const webpack = require("webpack");
 const nsWebpack = require("nativescript-dev-webpack");
@@ -41,7 +41,12 @@ module.exports = env => {
     const appFullPath = resolve(projectRoot, appPath);
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
 
+    const entryModule = nsWebpack.getEntryModule(appFullPath);
+    const entryPath = `.${sep}${entryModule}.ts`;
+    const vendorPath = `.${sep}vendor.ts`;
+
     const config = {
+        mode: "development",
         context: appFullPath,
         watchOptions: {
             ignored: [
@@ -52,14 +57,15 @@ module.exports = env => {
         },
         target: nativescriptTarget,
         entry: {
-            bundle: `./${nsWebpack.getEntryModule(appFullPath)}`,
-            vendor: "./vendor"
+            bundle: entryPath,
+            vendor: vendorPath,
         },
         output: {
-            pathinfo: true,
+            pathinfo: false,
             path: dist,
             libraryTarget: "commonjs2",
             filename: "[name].js",
+            globalObject: "global",
         },
         resolve: {
             extensions: [".ts", ".js", ".scss", ".css"],
@@ -69,7 +75,7 @@ module.exports = env => {
                 "node_modules",
             ],
             alias: {
-                '~': resolve("./app")
+                '~': appFullPath
             },
             // don't resolve symlinks to symlinked modules
             symlinks: false
@@ -84,6 +90,30 @@ module.exports = env => {
             "timers": false,
             "setImmediate": false,
             "fs": "empty",
+            "__dirname": false,
+        },
+        devtool: "none",
+        optimization:  {
+            runtimeChunk: { name: "vendor" },
+            splitChunks: {
+                cacheGroups: {
+                    common: {
+                        name: "common",
+                        chunks: "all",
+                        test: /vendor/,
+                        enforce: true,
+                    },
+                }
+            },
+            minimize: !!uglify,
+            minimizer: [
+                // Override default minimizer to work around an Android issue by setting compress = false
+                new UglifyJsPlugin({
+                    uglifyOptions: {
+                        compress: platform !== "android"
+                    }
+                })
+            ],
         },
         module: {
             rules: [
@@ -106,10 +136,6 @@ module.exports = env => {
             ]
         },
         plugins: [
-            // Vendor libs go to the vendor.js chunk
-            new webpack.optimize.CommonsChunkPlugin({
-                name: ["vendor"],
-            }),
             // Define useful constants like TNS_WEBPACK
             new webpack.DefinePlugin({
                 "global.TNS_WEBPACK": "true",
@@ -133,8 +159,9 @@ module.exports = env => {
             ], { ignore: [`${relative(appPath, appResourcesFullPath)}/**`] }),
             // Generate a bundle starter script and activate it in package.json
             new nsWebpack.GenerateBundleStarterPlugin([
-                "./vendor",
-                "./bundle",
+                "./vendor", // install webpackJsonpCallback
+                "./common", // require app/vendor.js
+                "./bundle", // require the entry module (app/app.js)
             ]),
             // Support for web workers since v3.2
             new NativeScriptWorkerPlugin(),
@@ -146,6 +173,25 @@ module.exports = env => {
             new nsWebpack.WatchStateLoggerPlugin(),
         ],
     };
+
+    if (platform === "android") {
+        // Add your custom Activities, Services and other android app components here.
+        const appComponents = [
+            "tns-core-modules/ui/frame",
+            "tns-core-modules/ui/frame/activity",
+        ];
+
+        // Require all Android app components
+        // in the entry module (bundle.ts) and the vendor module (vendor.ts).
+        config.module.rules.unshift({
+            test: new RegExp(`${entryPath}|${vendorPath}`),
+            use: {
+                loader: "nativescript-dev-webpack/android-app-components-loader",
+                options: { modules: appComponents }
+            }
+        });
+    }
+
     if (report) {
         // Generate report files for bundles content
         config.plugins.push(new BundleAnalyzerPlugin({
@@ -156,27 +202,19 @@ module.exports = env => {
             statsFilename: resolve(projectRoot, "report", `stats.json`),
         }));
     }
+
     if (snapshot) {
         config.plugins.push(new nsWebpack.NativeScriptSnapshotPlugin({
-            chunk: "vendor",
+            chunks: [
+                "common",
+                "vendor",
+            ],
             projectRoot,
             webpackConfig: config,
             targetArchs: ["arm", "arm64", "ia32"],
-            tnsJavaClassesOptions: { packages: ["tns-core-modules" ] },
             useLibs: false
         }));
     }
-    if (uglify) {
-        config.plugins.push(new webpack.LoaderOptionsPlugin({ minimize: true }));
 
-        // Work around an Android issue by setting compress = false
-        const compress = platform !== "android";
-        config.plugins.push(new UglifyJsPlugin({
-            uglifyOptions: {
-                mangle: { reserved: nsWebpack.uglifyMangleExcludes }, // Deprecated. Remove if using {N} 4+.
-                compress,
-            }
-        }));
-    }
     return config;
 };
