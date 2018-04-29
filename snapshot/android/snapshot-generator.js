@@ -94,7 +94,7 @@ SnapshotGenerator.prototype.runMksnapshotTool = function(snapshotToolsPath, inpu
 
             const androidArch = this.convertToAndroidArchName(arch);
             console.log("***** Generating snapshot for " + androidArch + " *****");
-            
+
             // Generate .blob file
             const currentArchBlobOutputPath = join(this.buildPath, "snapshots/blobs", androidArch);
             shelljs.mkdir("-p", currentArchBlobOutputPath);
@@ -157,14 +157,16 @@ SnapshotGenerator.prototype.generate = function(options) {
     if (!options.snapshotToolsPath) { throw new Error("snapshotToolsPath option is not specified."); }
     const preprocessedInputFile = options.preprocessedInputFile ||  join(this.buildPath, "inputFile.preprocessed");
 
+    console.log("***** Starting snapshot generation using V8 version: ", options.v8Version);
+
     this.preprocessInputFiles(options.inputFiles, preprocessedInputFile);
 
     // generates the actual .blob and .c files
     return this.runMksnapshotTool(
-        options.snapshotToolsPath, 
-        preprocessedInputFile, 
-        options.v8Version, 
-        options.targetArchs, 
+        options.snapshotToolsPath,
+        preprocessedInputFile,
+        options.v8Version,
+        options.targetArchs,
         options.useLibs
     ).then(() => {
         this.buildIncludeGradle();
