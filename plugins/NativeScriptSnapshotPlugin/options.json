@@ -42,6 +42,10 @@
     "requireModules": {
       "type": "array",
       "default": []
+    },
+    "includeApplicationCss": {
+      "type": "boolean",
+      "default": true
     }
   },
   "required": [

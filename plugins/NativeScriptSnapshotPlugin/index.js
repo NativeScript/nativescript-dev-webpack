@@ -34,11 +34,17 @@ exports.NativeScriptSnapshotPlugin = (function() {
     }
 
     NativeScriptSnapshotPlugin.ensureSnapshotModuleEntry = function(options) {
-        const { webpackConfig, requireModules, chunks, projectRoot } = options;
+        const { webpackConfig, requireModules, chunks, projectRoot, includeApplicationCss } = options;
 
         const androidProjectPath = getAndroidProjectPath({ projectRoot: projectRoot });
         const snapshotEntryPath = join(androidProjectPath, SNAPSHOT_ENTRY_MODULE);
-        const snapshotEntryContent = requireModules.map(mod => `require('${mod}')`).join(";");
+
+        let snapshotEntryContent = "";
+        if (includeApplicationCss) {
+            snapshotEntryContent += `require("nativescript-dev-webpack/load-application-css");`;
+        }
+        snapshotEntryContent += requireModules.map(mod => `require('${mod}')`).join(";");
+
         writeFileSync(snapshotEntryPath, snapshotEntryContent, { encoding: "utf8" });
 
         // add the module to the entry points to make sure it's content is evaluated
