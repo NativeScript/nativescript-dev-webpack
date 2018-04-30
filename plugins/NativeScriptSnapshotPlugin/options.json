@@ -13,16 +13,40 @@
     "projectRoot": {
       "type": "string"
     },
-    "webpackConfig": {},
+    "webpackConfig": {
+      "type": "object"
+    },
     "targetArchs": {
-      "type": "array"
+      "type": "array",
+      "default": [
+        "arm",
+        "arm64",
+        "ia32"
+      ],
+      "items": {
+        "type": "string",
+        "enum": [
+          "arm",
+          "arm64",
+          "ia32"
+        ]
+      }
     },
     "useLibs": {
-      "type": "boolean"
+      "type": "boolean",
+      "default": false
     },
     "v8Version": {
-        "type": "string"
+      "type": "string"
+    },
+    "requireModules": {
+      "type": "array",
+      "default": []
     }
   },
+  "required": [
+    "projectRoot",
+    "webpackConfig"
+  ],
   "additionalProperties": false
 }

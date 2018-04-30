@@ -48,7 +48,6 @@ module.exports = env => {
 
     const entryModule = nsWebpack.getEntryModule(appFullPath);
     const entryPath = `.${sep}${entryModule}.js`;
-    const vendorPath = `.${sep}vendor.js`;
 
     const config = {
         mode: production ? "production" : "development",
@@ -63,7 +62,6 @@ module.exports = env => {
         target: nativescriptTarget,
         entry: {
             bundle: entryPath,
-            vendor: vendorPath,
         },
         output: {
             pathinfo: false,
@@ -99,7 +97,6 @@ module.exports = env => {
         },
         devtool: "none",
         optimization:  {
-            runtimeChunk: { name: "vendor" },
             splitChunks: {
                 cacheGroups: {
                     common: {
@@ -167,9 +164,8 @@ module.exports = env => {
             ], { ignore: [`${relative(appPath, appResourcesFullPath)}/**`] }),
             // Generate a bundle starter script and activate it in package.json
             new nsWebpack.GenerateBundleStarterPlugin([
-                "./vendor", // install webpackJsonpCallback
-                "./common", // require app/vendor.js
-                "./bundle", // require the entry module (app/app.js)
+                "./common",
+                "./bundle",
             ]),
             // Support for web workers since v3.2
             new NativeScriptWorkerPlugin(),
@@ -184,9 +180,9 @@ module.exports = env => {
 
     if (platform === "android") {
         // Require all Android app components
-        // in the entry module (bundle.js) and the vendor module (vendor.js).
+        // in the entry module (bundle.js).
         config.module.rules.unshift({
-            test: new RegExp(`${entryPath}|${vendorPath}`),
+            test: new RegExp(`${entryPath}`),
             use: {
                 loader: "nativescript-dev-webpack/android-app-components-loader",
                 options: { modules: appComponents }
@@ -207,9 +203,9 @@ module.exports = env => {
 
     if (snapshot) {
         config.plugins.push(new nsWebpack.NativeScriptSnapshotPlugin({
-            chunks: [
-                "common",
-                "vendor",
+            chunk: "common",
+            requireModules: [
+                "tns-core-modules/bundle-entry-points",
             ],
             projectRoot,
             webpackConfig: config,

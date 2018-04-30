@@ -52,7 +52,6 @@ module.exports = env => {
         nsWebpack.getAotEntryModule(appFullPath) : 
         `${nsWebpack.getEntryModule(appFullPath)}.ts`;
     const entryPath = `.${sep}${entryModule}`;
-    const vendorPath = `.${sep}vendor.ts`;
 
     const config = {
         mode: production ? "production" : "development",
@@ -67,7 +66,6 @@ module.exports = env => {
         target: nativescriptTarget,
         entry: {
             bundle: entryPath,
-            vendor: vendorPath,
         },
         output: {
             pathinfo: false,
@@ -103,7 +101,6 @@ module.exports = env => {
         },
         devtool: "none",
         optimization: {
-            runtimeChunk: { name: "vendor" },
             splitChunks: {
                 cacheGroups: {
                     common: {
@@ -113,7 +110,6 @@ module.exports = env => {
                             const moduleName = module.nameForCondition ? module.nameForCondition() : '';
                             return /[\\/]node_modules[\\/]/.test(moduleName) ||
                                     appComponents.some(comp => comp === moduleName);
-
                         },
                         enforce: true,
                     },
@@ -186,7 +182,6 @@ module.exports = env => {
             ], { ignore: [`${relative(appPath, appResourcesFullPath)}/**`] }),
             // Generate a bundle starter script and activate it in package.json
             new nsWebpack.GenerateBundleStarterPlugin([
-                "./vendor",
                 "./common",
                 "./bundle",
             ]),
@@ -210,9 +205,9 @@ module.exports = env => {
 
     if (platform === "android") {
         // Require all Android app components
-        // in the entry module (bundle.ts) and the vendor module (vendor.ts).
+        // in the entry module (bundle.ts)
         config.module.rules.unshift({
-            test: new RegExp(`${entryPath}|${vendorPath}`),
+            test: new RegExp(`${entryPath}`),
             use: {
                 loader: "nativescript-dev-webpack/android-app-components-loader",
                 options: { modules: appComponents }
@@ -233,7 +228,16 @@ module.exports = env => {
 
     if (snapshot) {
         config.plugins.push(new nsWebpack.NativeScriptSnapshotPlugin({
-            chunks: [ "vendor", "common" ],
+            chunk: "common",
+            requireModules: [
+                "reflect-metadata",
+                "@angular/platform-browser",
+                "@angular/core",
+                "@angular/common",
+                "@angular/router",
+                "nativescript-angular/platform-static",
+                "nativescript-angular/router",
+            ],
             projectRoot,
             webpackConfig: config,
             targetArchs: ["arm", "arm64", "ia32"],
