@@ -205,9 +205,9 @@ module.exports = env => {
 
     if (platform === "android") {
         // Require all Android app components
-        // in the entry module (bundle.ts)
+        // in the entry module
         config.module.rules.unshift({
-            test: new RegExp(`${entryPath}`),
+            test: new RegExp(entryPath),
             use: {
                 loader: "nativescript-dev-webpack/android-app-components-loader",
                 options: { modules: appComponents }
