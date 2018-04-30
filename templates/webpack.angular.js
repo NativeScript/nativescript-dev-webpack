@@ -10,6 +10,12 @@ const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeS
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 module.exports = env => {
+    // Add your custom Activities, Services and other Android app components here.
+    const appComponents = [
+        "tns-core-modules/ui/frame",
+        "tns-core-modules/ui/frame/activity",
+    ];
+
     const platform = env && (env.android && "android" || env.ios && "ios");
     if (!platform) {
         throw new Error("You need to provide a target platform!");
@@ -30,13 +36,12 @@ module.exports = env => {
         appPath = "app",
         appResourcesPath = "app/App_Resources",
 
-        // Aot, snapshot, uglify and report can be enabled by providing
-        // the `--env.snapshot`, `--env.uglify` or `--env.report` flags
-        // when running 'tns run android|ios'
-        aot,
-        snapshot,
-        uglify,
-        report,
+        // You can provide the following flags when running 'tns run android|ios'
+        production, // --env.production
+        aot, // --env.aot
+        snapshot, // --env.snapshot
+        uglify, // --env.uglify
+        report, // --env.report
     } = env;
     const ngToolsWebpackOptions = { tsConfigPath: join(__dirname, "tsconfig.json") };
 
@@ -50,7 +55,7 @@ module.exports = env => {
     const vendorPath = `.${sep}vendor.ts`;
 
     const config = {
-        mode: "development",
+        mode: production ? "production" : "development",
         context: appFullPath,
         watchOptions: {
             ignored: [
@@ -104,7 +109,12 @@ module.exports = env => {
                     common: {
                         name: "common",
                         chunks: "all",
-                        test: /vendor/,
+                        test: (module, chunks) => {
+                            const moduleName = module.nameForCondition ? module.nameForCondition() : '';
+                            return /[\\/]node_modules[\\/]/.test(moduleName) ||
+                                    appComponents.some(comp => comp === moduleName);
+
+                        },
                         enforce: true,
                     },
                 }
@@ -199,12 +209,6 @@ module.exports = env => {
     };
 
     if (platform === "android") {
-        // Add your custom Activities, Services and other android app components here.
-        const appComponents = [
-            "tns-core-modules/ui/frame",
-            "tns-core-modules/ui/frame/activity",
-        ];
-
         // Require all Android app components
         // in the entry module (bundle.ts) and the vendor module (vendor.ts).
         config.module.rules.unshift({
