@@ -4,11 +4,10 @@ const semver = require("semver");
 const { EOL } = require("os");
 const hook = require("nativescript-hook")(__dirname);
 
-const {
-    PROJECT_DATA_GETTERS,
-    getProjectData,
-    safeGet,
-} = require("./nsCliHelpers");
+const PROJECT_DATA_GETTERS = {
+    appPath: "getAppDirectoryRelativePath",
+    appResourcesPath: "getAppResourcesRelativeDirectoryPath",
+};
 
 const APP_DIR = "app";
 const ANDROID_PROJECT_PATH = "platforms/android";
@@ -150,16 +149,6 @@ const getPackageJsonPath = projectDir => path.resolve(projectDir, "package.json"
 const isAndroid = platform => /android/i.test(platform);
 const isIos = platform => /ios/i.test(platform);
 
-function getAppPath() {
-    const projectDir = getProjectDir();
-    const projectData = getProjectData(projectDir);
-    const appDir = getAppPathFromProjectData(projectData) || APP_DIR;
-
-    const appPath = path.resolve(projectDir, appDir);
-
-    return appPath;
-}
-
 function getAppPathFromProjectData(data) {
     return safeGet(data, PROJECT_DATA_GETTERS.appPath);
 }
@@ -168,9 +157,23 @@ function getAppResourcesPathFromProjectData(data) {
     return safeGet(data, PROJECT_DATA_GETTERS.appResourcesPath);
 }
 
+function safeGet(object, property, ...args) {
+    if (!object) {
+        return;
+    }
+
+    const value = object[property];
+    if (!value) {
+        return;
+    }
+
+    return typeof value === "function" ?
+        value.bind(object)(...args) :
+        value;
+}
+
 module.exports = {
     APP_DIR,
-    getAppPath,
     getAppPathFromProjectData,
     getAppResourcesPathFromProjectData,
     getAndroidProjectPath,

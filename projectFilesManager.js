@@ -3,38 +3,26 @@ const fs = require("fs");
 
 const { isTypeScript, isAngular } = require("./projectHelpers");
 
-function addProjectFiles(projectDir, appDir) {
+function addProjectFiles(projectDir) {
     const projectTemplates = getProjectTemplates(projectDir);
     Object.keys(projectTemplates).forEach(function(templateName) {
         const templateDestination = projectTemplates[templateName];
         templateName = path.resolve(templateName);
         copyTemplate(templateName, templateDestination);
     });
-
-    const appTemplates = getAppTemplates(projectDir, appDir);
-    Object.keys(appTemplates).forEach(function(templateName) {
-        const templateDestination = appTemplates[templateName];
-        copyTemplate(templateName, templateDestination)
-    });
 }
 
-function removeProjectFiles(projectDir, appDir) {
+function removeProjectFiles(projectDir) {
     const projectTemplates = getProjectTemplates(projectDir);
     Object.keys(projectTemplates).forEach(function(templateName) {
         const templateDestination = projectTemplates[templateName];
         deleteFile(templateDestination);
     });
-
-    const appTemplates = getAppTemplates(projectDir, appDir);
-    Object.keys(appTemplates).forEach(function(templateName) {
-        const templateDestination = appTemplates[templateName];
-        deleteFile(templateDestination);
-    });
 }
 
-function forceUpdateProjectFiles(projectDir, appDir) {
-    removeProjectFiles(projectDir, appDir);
-    addProjectFiles(projectDir, appDir);
+function forceUpdateProjectFiles(projectDir) {
+    removeProjectFiles(projectDir);
+    addProjectFiles(projectDir);
 }
 
 function compareProjectFiles(projectDir) {
@@ -69,29 +57,18 @@ function copyTemplate(templateName, destinationPath) {
 }
 
 function getProjectTemplates(projectDir) {
-    let templates = {}
+    const templates = {}
+    const CONFIG_NAME = "webpack.config.js";
 
     if (isAngular({projectDir})) {
-        templates["webpack.angular.js"] = "webpack.config.js";
+        templates["webpack.angular.js"] = CONFIG_NAME;
     } else if (isTypeScript({projectDir})) {
-        templates["webpack.typescript.js"] = "webpack.config.js";
+        templates["webpack.typescript.js"] = CONFIG_NAME;
     } else {
-        templates["webpack.javascript.js"] = "webpack.config.js";
+        templates["webpack.javascript.js"] = CONFIG_NAME;
     }
 
     return getFullTemplatesPath(projectDir, templates);
-}
-
-function getAppTemplates(projectDir, appDir) {
-    const templates = {};
-
-    if (isAngular({projectDir})) {
-        templates["vendor.angular.ts"] = tsOrJs(projectDir, "vendor");
-    } else {
-        templates["vendor.nativescript.ts"] = tsOrJs(projectDir, "vendor");
-    }
-
-    return getFullTemplatesPath(appDir, templates);
 }
 
 function getFullTemplatesPath(projectDir, templates) {
@@ -111,15 +88,9 @@ function getFullPath(projectDir, filePath) {
     return path.resolve(projectDir, filePath);
 }
 
-function tsOrJs(projectDir, name) {
-    const extension = isTypeScript({projectDir}) ? "ts" : "js";
-    return `${name}.${extension}`;
-}
-
 module.exports = {
     addProjectFiles,
     removeProjectFiles,
     forceUpdateProjectFiles,
     compareProjectFiles,
 };
-
