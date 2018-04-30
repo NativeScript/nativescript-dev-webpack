@@ -124,6 +124,25 @@ module.exports = env => {
         },
         module: {
             rules: [
+                {
+                    test: new RegExp(entryPath),
+                    use: [
+                        // Require all Android app components
+                        platform === "android" && {
+                            loader: "nativescript-dev-webpack/android-app-components-loader",
+                            options: { modules: appComponents }
+                        },
+
+                        {
+                            loader: "nativescript-dev-webpack/bundle-config-loader",
+                            options: {
+                                registerPages: true, // applicable only for non-angular apps
+                                loadCss: !snapshot, // load the application css if in debug mode
+                            }
+                        },
+                    ].filter(loader => !!loader)
+                },
+
                 { test: /\.(html|xml)$/, use: "raw-loader" },
 
                 {
@@ -178,18 +197,6 @@ module.exports = env => {
         ],
     };
 
-    if (platform === "android") {
-        // Require all Android app components
-        // in the entry module
-        config.module.rules.unshift({
-            test: new RegExp(entryPath),
-            use: {
-                loader: "nativescript-dev-webpack/android-app-components-loader",
-                options: { modules: appComponents }
-            }
-        });
-    }
-
     if (report) {
         // Generate report files for bundles content
         config.plugins.push(new BundleAnalyzerPlugin({
@@ -209,8 +216,6 @@ module.exports = env => {
             ],
             projectRoot,
             webpackConfig: config,
-            targetArchs: ["arm", "arm64", "ia32"],
-            useLibs: false
         }));
     }
 
