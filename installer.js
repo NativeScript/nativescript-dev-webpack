@@ -4,10 +4,9 @@ const dependencyManager = require("./dependencyManager");
 
 function install() {
     const projectDir = helpers.getProjectDir();
-    const appPath = helpers.getAppPath();
     const packageJson = helpers.getPackageJson(projectDir);
 
-    projectFilesManager.addProjectFiles(projectDir, appPath);
+    projectFilesManager.addProjectFiles(projectDir);
 
     const postinstallOptions = dependencyManager.addProjectDeps(packageJson);
     packageJson.devDependencies = postinstallOptions.deps;
@@ -19,8 +18,7 @@ function install() {
 
 function uninstall() {
     const projectDir = helpers.getProjectDir();
-    const appPath = helpers.getAppPath();
-    projectFilesManager.removeProjectFiles(projectDir, appPath);
+    projectFilesManager.removeProjectFiles(projectDir);
 
     console.log("NativeScript Webpack removed!");
 }
