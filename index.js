@@ -32,9 +32,6 @@ exports.getAotEntryModule = function (appDirectory) {
     return aotEntry;
 }
 
-// Exported for backwards compatibility with {N} 3
-exports.uglifyMangleExcludes = require("./mangle-excludes");
-
 exports.getEntryModule = function (appDirectory) {
 	verifyEntryModuleDirectory(appDirectory);
 
