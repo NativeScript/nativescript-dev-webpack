@@ -1,26 +1,54 @@
-const { resolve, join } = require("path");
-const { closeSync, openSync } = require("fs");
+const { relative, resolve, join } = require("path");
+const { closeSync, openSync, writeFileSync } = require("fs");
 const validateOptions = require("schema-utils");
 
 const ProjectSnapshotGenerator = require("../../snapshot/android/project-snapshot-generator");
-const { resolveAndroidAppPath } = require("../../projectHelpers");
+const { resolveAndroidAppPath, getAndroidProjectPath } = require("../../projectHelpers");
 const schema = require("./options.json");
+
+const SNAPSHOT_ENTRY_NAME = "snapshot-entry";
+const SNAPSHOT_ENTRY_MODULE = `${SNAPSHOT_ENTRY_NAME}.js`;
 
 exports.NativeScriptSnapshotPlugin = (function() {
     function NativeScriptSnapshotPlugin(options) {
         NativeScriptSnapshotPlugin.validateSchema(options);
-        if (options.chunk) {
-            options.chunks = options.chunks || [];
-            options.chunks.push(options.chunk);
-        }
 
         ProjectSnapshotGenerator.call(this, options);
 
-        if (this.options.webpackConfig) {
-            if (this.options.webpackConfig.output && this.options.webpackConfig.output.libraryTarget) {
-                this.options.webpackConfig.output.libraryTarget = undefined;
-            }
+        const { webpackConfig } = this.options;
+        NativeScriptSnapshotPlugin.removeLibraryTarget(webpackConfig);
+
+        const { entry } = webpackConfig;
+        if (typeof entry === "string" || Array.isArray(entry)) {
+            webpackConfig.entry = { bundle: entry };
         }
+
+        NativeScriptSnapshotPlugin.ensureSnapshotModuleEntry(this.options);
+    }
+
+    NativeScriptSnapshotPlugin.removeLibraryTarget = function(webpackConfig) {
+        const { output } = webpackConfig;
+        if (output) {
+            output.libraryTarget = undefined;
+        }
+    }
+
+    NativeScriptSnapshotPlugin.ensureSnapshotModuleEntry = function(options) {
+        const { webpackConfig, requireModules, chunks, projectRoot } = options;
+
+        const androidProjectPath = getAndroidProjectPath({ projectRoot: projectRoot });
+        const snapshotEntryPath = join(androidProjectPath, SNAPSHOT_ENTRY_MODULE);
+        const snapshotEntryContent = requireModules.map(mod => `require('${mod}')`).join(";");
+        writeFileSync(snapshotEntryPath, snapshotEntryContent, { encoding: "utf8" });
+
+        // add the module to the entry points to make sure it's content is evaluated
+        webpackConfig.entry[SNAPSHOT_ENTRY_NAME] = relative(webpackConfig.context, snapshotEntryPath);
+
+        // prepend the module to the script that will be snapshotted
+        chunks.unshift(SNAPSHOT_ENTRY_NAME);
+
+        // ensure that the runtime is installed only in the snapshotted chunk
+        webpackConfig.optimization.runtimeChunk = { name: SNAPSHOT_ENTRY_NAME };
     }
 
     NativeScriptSnapshotPlugin.validateSchema = function(options) {
@@ -31,12 +59,16 @@ exports.NativeScriptSnapshotPlugin = (function() {
 
         try {
             validateOptions(schema, options, "NativeScriptSnapshotPlugin");
+
+            if (options.chunk) {
+                options.chunks = options.chunks || [];
+                options.chunks.push(options.chunk);
+            }
         } catch (error) {
            throw new Error(error.message);
         }
     }
 
-    // inherit ProjectSnapshotGenerator
     NativeScriptSnapshotPlugin.prototype = Object.create(ProjectSnapshotGenerator.prototype);
     NativeScriptSnapshotPlugin.prototype.constructor = NativeScriptSnapshotPlugin;
 
