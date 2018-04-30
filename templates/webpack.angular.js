@@ -103,8 +103,8 @@ module.exports = env => {
         optimization: {
             splitChunks: {
                 cacheGroups: {
-                    common: {
-                        name: "common",
+                    vendor: {
+                        name: "vendor",
                         chunks: "all",
                         test: (module, chunks) => {
                             const moduleName = module.nameForCondition ? module.nameForCondition() : '';
@@ -200,7 +200,6 @@ module.exports = env => {
             ], { ignore: [`${relative(appPath, appResourcesFullPath)}/**`] }),
             // Generate a bundle starter script and activate it in package.json
             new nsWebpack.GenerateBundleStarterPlugin([
-                "./common",
                 "./bundle",
             ]),
             // Support for web workers since v3.2
@@ -234,7 +233,7 @@ module.exports = env => {
 
     if (snapshot) {
         config.plugins.push(new nsWebpack.NativeScriptSnapshotPlugin({
-            chunk: "common",
+            chunk: "vendor",
             requireModules: [
                 "reflect-metadata",
                 "@angular/platform-browser",
