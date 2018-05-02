@@ -37,7 +37,6 @@ module.exports = env => {
         appResourcesPath = "app/App_Resources",
 
         // You can provide the following flags when running 'tns run android|ios'
-        production, // --env.production
         aot, // --env.aot
         snapshot, // --env.snapshot
         uglify, // --env.uglify
@@ -54,7 +53,7 @@ module.exports = env => {
     const entryPath = `.${sep}${entryModule}`;
 
     const config = {
-        mode: production ? "production" : "development",
+        mode: uglify ? "production" : "development",
         context: appFullPath,
         watchOptions: {
             ignored: [
