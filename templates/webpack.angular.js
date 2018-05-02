@@ -42,7 +42,7 @@ module.exports = env => {
         uglify, // --env.uglify
         report, // --env.report
     } = env;
-    const ngToolsWebpackOptions = { tsConfigPath: join(__dirname, "tsconfig.json") };
+    const ngToolsWebpackOptions = { tsConfigPath: join(__dirname, "tsconfig.esm.json") };
 
     const appFullPath = resolve(projectRoot, appPath);
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);

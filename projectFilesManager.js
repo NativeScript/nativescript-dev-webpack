@@ -58,14 +58,15 @@ function copyTemplate(templateName, destinationPath) {
 
 function getProjectTemplates(projectDir) {
     const templates = {}
-    const CONFIG_NAME = "webpack.config.js";
 
+    const WEBPACK_CONFIG_NAME = "webpack.config.js";
     if (isAngular({projectDir})) {
-        templates["webpack.angular.js"] = CONFIG_NAME;
+        templates["webpack.angular.js"] = WEBPACK_CONFIG_NAME;
+        templates["tsconfig.esm.json"] = "tsconfig.esm.json";
     } else if (isTypeScript({projectDir})) {
-        templates["webpack.typescript.js"] = CONFIG_NAME;
+        templates["webpack.typescript.js"] = WEBPACK_CONFIG_NAME;
     } else {
-        templates["webpack.javascript.js"] = CONFIG_NAME;
+        templates["webpack.javascript.js"] = WEBPACK_CONFIG_NAME;
     }
 
     return getFullTemplatesPath(projectDir, templates);
