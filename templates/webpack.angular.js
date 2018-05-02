@@ -117,10 +117,19 @@ module.exports = env => {
             },
             minimize: !!uglify,
             minimizer: [
-                // Override default minimizer to work around an Android issue by setting compress = false
                 new UglifyJsPlugin({
                     uglifyOptions: {
-                        compress: platform !== "android"
+                        parallel: true,
+                        cache: true,
+                        output: {
+                            comments: false,
+                        },
+                        compress: {
+                            // The Android SBG has problems parsing the output
+                            // when these options are enabled
+                            'collapse_vars': platform !== "android",
+                            sequences: platform !== "android",
+                        }
                     }
                 })
             ],
