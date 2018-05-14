@@ -1,12 +1,12 @@
 const path = require("path");
 const { existsSync } = require("fs");
 
+const { ANDROID_APP_PATH } = require("./androidProjectHelpers");
 const {
     getPackageJson,
     isAngular,
     isAndroid,
     isIos,
-    resolveAndroidAppPath,
 } = require("./projectHelpers");
 
 Object.assign(exports, require('./plugins'));
@@ -54,7 +54,7 @@ exports.getAppPath = (platform, projectDir) => {
 
         return `platforms/ios/${sanitizedName}/app`;
     } else if (isAndroid(platform)) {
-        return resolveAndroidAppPath(projectDir);
+        return ANDROID_APP_PATH;
     } else {
         throw new Error(`Invalid platform: ${platform}`);
     }
