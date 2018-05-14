@@ -13,7 +13,7 @@ export class WatchStateLoggerPlugin {
     isRunningWatching: boolean;
     apply(compiler) {
         const plugin = this;
-        compiler.plugin("watch-run", function (compiler, callback) {
+        compiler.hooks.watchRun.tapAsync("WatchStateLoggerPlugin", function (compiler, callback) {
             plugin.isRunningWatching = true;
             if (plugin.isRunningWatching) {
                 console.log(messages.changeDetected);
@@ -21,7 +21,7 @@ export class WatchStateLoggerPlugin {
             process.send && process.send(messages.changeDetected, error => null);
             callback();
         });
-        compiler.plugin("after-emit", function (compilation, callback) {
+        compiler.hooks.afterEmit.tapAsync("WatchStateLoggerPlugin", function (compilation, callback) {
             callback();
             if (plugin.isRunningWatching) {
                 console.log(messages.startWatching);
