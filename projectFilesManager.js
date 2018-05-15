@@ -57,19 +57,39 @@ function copyTemplate(templateName, destinationPath) {
 }
 
 function getProjectTemplates(projectDir) {
-    const templates = {}
-
     const WEBPACK_CONFIG_NAME = "webpack.config.js";
+    const TSCONFIG_ESM_NAME = "tsconfig.esm.json";
+
+    let templates;
     if (isAngular({projectDir})) {
-        templates["webpack.angular.js"] = WEBPACK_CONFIG_NAME;
-        templates["tsconfig.esm.json"] = "tsconfig.esm.json";
+        templates = getAngularTemplates(WEBPACK_CONFIG_NAME, TSCONFIG_ESM_NAME);
     } else if (isTypeScript({projectDir})) {
-        templates["webpack.typescript.js"] = WEBPACK_CONFIG_NAME;
+        templates = getTypeScriptTemplates(WEBPACK_CONFIG_NAME, TSCONFIG_ESM_NAME);
     } else {
-        templates["webpack.javascript.js"] = WEBPACK_CONFIG_NAME;
+        templates = getJavaScriptTemplates(WEBPACK_CONFIG_NAME);
     }
 
     return getFullTemplatesPath(projectDir, templates);
+}
+
+function getAngularTemplates(webpackConfigName, tsconfigName) {
+    return {
+        "webpack.angular.js": webpackConfigName,
+        [tsconfigName]: tsconfigName,
+    };
+}
+
+function getTypeScriptTemplates(webpackConfigName, tsconfigName) {
+    return {
+        "webpack.typescript.js": webpackConfigName,
+        [tsconfigName]: tsconfigName,
+    };
+}
+
+function getJavaScriptTemplates(webpackConfigName) {
+    return {
+        "webpack.javascript.js": webpackConfigName,
+    };
 }
 
 function getFullTemplatesPath(projectDir, templates) {
