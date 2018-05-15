@@ -5,19 +5,19 @@ const shelljs = require("shelljs");
 const semver = require("semver");
 
 const SnapshotGenerator = require("./snapshot-generator");
-const TnsJavaClassesGenerator = require("./tns-java-classes-generator");
 const {
     CONSTANTS,
     createDirectory,
     getJsonFile,
 } = require("./utils");
+const { getPackageJson } = require("../../projectHelpers");
 const {
-    getPackageJson,
+    ANDROID_PROJECT_DIR,
+    ANDROID_APP_PATH,
+    ANDROID_CONFIGURATIONS_PATH,
     getAndroidRuntimeVersion,
-    getAndroidProjectPath,
-    resolveAndroidAppPath,
-    resolveAndroidConfigurationsPath,
-} = require("../../projectHelpers");
+    getAndroidV8Version,
+} = require("../../androidProjectHelpers");
 
 const MIN_ANDROID_RUNTIME_VERSION = "3.0.0";
 const VALID_ANDROID_RUNTIME_TAGS = Object.freeze(["next", "rc"]);
@@ -55,8 +55,15 @@ ProjectSnapshotGenerator.prototype.getBuildPath = function () {
 }
 
 ProjectSnapshotGenerator.calculateProjectPath = function (projectRoot) {
-    const projectPath = getAndroidProjectPath({projectRoot});
-    return join(projectRoot, projectPath);
+    return join(projectRoot, ANDROID_PROJECT_DIR);
+}
+
+ProjectSnapshotGenerator.calculateConfigurationsPath = function (projectRoot) {
+    return join(projectRoot, ANDROID_CONFIGURATIONS_PATH);
+}
+
+ProjectSnapshotGenerator.calculateAppPath = function (projectRoot) {
+    return join(projectRoot, ANDROID_APP_PATH);
 }
 
 ProjectSnapshotGenerator.prototype.getProjectPath = function () {
@@ -70,7 +77,7 @@ ProjectSnapshotGenerator.cleanSnapshotArtefacts = function (projectRoot) {
     shelljs.rm("-rf", join(platformPath, "src/main/assets/snapshots"));
 
     // Remove prepared include.gradle configurations
-    const configurationsPath = resolveAndroidConfigurationsPath(projectRoot);
+    const configurationsPath = ProjectSnapshotGenerator.calculateConfigurationsPath(projectRoot);
     shelljs.rm("-rf", join(configurationsPath, SnapshotGenerator.SNAPSHOT_PACKAGE_NANE));
 }
 
@@ -78,8 +85,8 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function (projectRoot) {
     const buildPath = ProjectSnapshotGenerator.calculateBuildPath(projectRoot);
     const platformPath = ProjectSnapshotGenerator.calculateProjectPath(projectRoot);
 
-    const appPath = resolveAndroidAppPath(projectRoot);
-    const configurationsPath = resolveAndroidConfigurationsPath(projectRoot);
+    const appPath = ProjectSnapshotGenerator.calculateAppPath(projectRoot);
+    const configurationsPath = ProjectSnapshotGenerator.calculateConfigurationsPath(projectRoot);
     const configDestinationPath = join(configurationsPath, SnapshotGenerator.SNAPSHOT_PACKAGE_NANE);
 
     // Remove build folder to make sure that the apk will be fully rebuild
@@ -89,11 +96,6 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function (projectRoot) {
     shelljs.mkdir("-p", configDestinationPath);
     shelljs.cp(join(buildPath, "include.gradle"), join(configDestinationPath, "include.gradle"));
 
-    // Copy tns-java-classes.js
-    if (shelljs.test("-e", join(buildPath, "tns-java-classes.js"))) {
-        shelljs.cp(join(buildPath, "tns-java-classes.js"), join(appPath, "tns-java-classes.js"));
-    }
-
     if (shelljs.test("-e", join(buildPath, "ndk-build/libs"))) {
         // useLibs = true
         const libsDestinationPath = join(platformPath, "src", SnapshotGenerator.SNAPSHOT_PACKAGE_NANE, "jniLibs");
@@ -101,8 +103,7 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function (projectRoot) {
         // Copy the libs to the specified destination in the platforms folder
         shelljs.mkdir("-p", libsDestinationPath);
         shelljs.cp("-R", join(buildPath, "ndk-build/libs") + "/", libsDestinationPath);
-    }
-    else {
+    } else {
         // useLibs = false
         const blobsSrcPath = join(buildPath, "snapshots/blobs");
         const blobsDestinationPath = resolve(appPath, "../snapshots");
@@ -166,6 +167,12 @@ ProjectSnapshotGenerator.prototype.getV8Version = function (generationOptions) {
             return resolve(maybeV8Version);
         }
 
+        // try to get the V8 Version from the settings.json file in android runtime folder
+        const runtimeV8Version = getAndroidV8Version(this.options.projectRoot);
+        if(runtimeV8Version) {
+            return resolve(runtimeV8Version);
+        }
+
         const runtimeVersion = getAndroidRuntimeVersion(this.options.projectRoot);
         getV8VersionsMap(runtimeVersion)
             .then(({ versionsMap, latest }) => {
@@ -200,15 +207,6 @@ ProjectSnapshotGenerator.prototype.validateAndroidRuntimeVersion = function () {
     }
 }
 
-ProjectSnapshotGenerator.prototype.generateTnsJavaClassesFile = function (generationOptions) {
-    const tnsJavaClassesGenerator = new TnsJavaClassesGenerator();
-    return tnsJavaClassesGenerator.generate({
-        projectRoot: this.options.projectRoot,
-        output: generationOptions.output,
-        options: generationOptions.options
-    });
-}
-
 ProjectSnapshotGenerator.prototype.generate = function (generationOptions) {
     generationOptions = generationOptions || {};
 
@@ -218,17 +216,6 @@ ProjectSnapshotGenerator.prototype.generate = function (generationOptions) {
     // Clean build folder
     shelljs.rm("-rf", this.getBuildPath());
     shelljs.mkdir("-p", this.getBuildPath());
-
-    // Generate tns-java-classes.js if needed
-    const tnsJavaClassesDestination = join(this.getBuildPath(), "tns-java-classes.js");
-    if (generationOptions.tnsJavaClassesPath) {
-        if (generationOptions.tnsJavaClassesPath != tnsJavaClassesDestination) {
-            shelljs.cp(generationOptions.tnsJavaClassesPath, tnsJavaClassesDestination);
-        }
-    }
-    else {
-        this.generateTnsJavaClassesFile({ output: tnsJavaClassesDestination, options: generationOptions.tnsJavaClassesOptions });
-    }
 
     const snapshotToolsPath = resolveRelativePath(generationOptions.snapshotToolsPath) || CONSTANTS.SNAPSHOT_TMP_DIR;
     const androidNdkPath = generationOptions.androidNdkPath || process.env.ANDROID_NDK_HOME;
@@ -246,15 +233,17 @@ ProjectSnapshotGenerator.prototype.generate = function (generationOptions) {
             throw new Error(noV8VersionFoundMessage);
         }
 
-        return generator.generate({
+        const options = {
             snapshotToolsPath,
-            inputFile: generationOptions.inputFile || join(this.options.projectRoot, "__snapshot.js"),
             targetArchs: generationOptions.targetArchs || ["arm", "arm64", "ia32"],
             v8Version: generationOptions.v8Version || v8Version,
             preprocessedInputFile: generationOptions.preprocessedInputFile,
             useLibs: generationOptions.useLibs || false,
-            androidNdkPath
-        }).then(() => {
+            inputFiles: generationOptions.inputFiles || [join(this.options.projectRoot, "__snapshot.js")],
+            androidNdkPath,
+        };
+
+        return generator.generate(options).then(() => {
             console.log("Snapshots build finished succesfully!");
 
             if (generationOptions.install) {

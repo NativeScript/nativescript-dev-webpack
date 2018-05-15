@@ -1,3 +1,74 @@
+<a name="0.11.0"></a>
+# [0.11.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.10.2...0.11.0) (2018-04-25)
+
+
+### Bug Fixes
+
+* allow using the plugin via symlink ([#501](https://github.com/NativeScript/nativescript-dev-webpack/issues/501)) ([a7acb4d](https://github.com/NativeScript/nativescript-dev-webpack/commit/a7acb4d))
+* bundling of Angular apps using linked TS plugins ([#505](https://github.com/NativeScript/nativescript-dev-webpack/issues/505)) ([41779ad](https://github.com/NativeScript/nativescript-dev-webpack/commit/41779ad))
+
+
+### Features
+
+* configure v8Version for snapshot tools ([#503](https://github.com/NativeScript/nativescript-dev-webpack/issues/503)) ([cf0d76b](https://github.com/NativeScript/nativescript-dev-webpack/commit/cf0d76b))
+
+### BREAKING CHANGES
+
+> The command below will overwrite the existing project's webpack configuration files with the most recent ones, so you don't have to manually apply the required changes:
+> ```
+> ./node_modules/.bin/update-ns-webpack --configs
+> ```
+
+* The NativeScriptAngularCompilerPlugin is loaded in a different way now. The existing projects using the plugin should add the following line to their `webpack.config.js` file:
+``` js
+// webpack.config.js
+
+module.exports = env => {
+    const platform = env && (env.android && "android" || env.ios && "ios");
+    if (!platform) {
+        throw new Error("You need to provide a target platform!");
+    }
+
+    const platforms = ["ios", "android"];
+    const projectRoot = __dirname;
+    nsWebpack.loadAdditionalPlugins({ projectDir: projectRoot }); // <----- Add this line
+
+    // ...
+``` 
+
+* The `getAppPath` method expects two arguments now - `platform` and `projectRoot`. The usage inside the project's `webpack.config.js` should be changed in the following way:
+
+Before:
+``` js
+// webpack.config.js
+
+// Default destination inside platforms/<platform>/...
+const dist = resolve(projectRoot, nsWebpack.getAppPath(platform));
+
+// ...
+```
+
+After:
+``` js
+// webpack.config.js
+
+// Default destination inside platforms/<platform>/...
+const dist = resolve(projectRoot, nsWebpack.getAppPath(platform, projectRoot));
+
+// ...
+```
+
+
+
+<a name="0.10.2"></a>
+## [0.10.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.10.1...0.10.2) (2018-04-18)
+
+
+### Bug Fixes
+
+* **hooks:** do not set INIT_CWD on any hook ([#494](https://github.com/NativeScript/nativescript-dev-webpack/issues/494)) ([afe6208](https://github.com/NativeScript/nativescript-dev-webpack/commit/afe6208))
+
+
 <a name="0.10.1"></a>
 ## [0.10.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.10.0...0.10.1) (2018-04-11)
 

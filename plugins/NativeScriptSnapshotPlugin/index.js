@@ -1,99 +1,127 @@
-const { resolve, join } = require("path");
-const { closeSync, openSync } = require("fs");
+const { relative, resolve, join } = require("path");
+const { closeSync, openSync, writeFileSync } = require("fs");
 const validateOptions = require("schema-utils");
 
 const ProjectSnapshotGenerator = require("../../snapshot/android/project-snapshot-generator");
-const { resolveAndroidAppPath } = require("../../projectHelpers");
+const {
+    ANDROID_PROJECT_DIR,
+    ANDROID_APP_PATH,
+} = require("../../androidProjectHelpers");
 const schema = require("./options.json");
+
+const SNAPSHOT_ENTRY_NAME = "snapshot-entry";
+const SNAPSHOT_ENTRY_MODULE = `${SNAPSHOT_ENTRY_NAME}.js`;
 
 exports.NativeScriptSnapshotPlugin = (function() {
     function NativeScriptSnapshotPlugin(options) {
         NativeScriptSnapshotPlugin.validateSchema(options);
 
-        ProjectSnapshotGenerator.call(this, options); // Call the parent constructor
+        ProjectSnapshotGenerator.call(this, options);
 
-        if (this.options.webpackConfig) {
-            if (this.options.webpackConfig.output && this.options.webpackConfig.output.libraryTarget) {
-                this.options.webpackConfig.output.libraryTarget = undefined;
-            }
+        const { webpackConfig } = this.options;
+        NativeScriptSnapshotPlugin.removeLibraryTarget(webpackConfig);
 
-            if (this.options.webpackConfig.entry) {
-                if (typeof this.options.webpackConfig.entry === "string" ||
-                    this.options.webpackConfig.entry instanceof Array)
-                    this.options.webpackConfig.entry = { bundle: this.options.webpackConfig.entry };
-            }
+        const { entry } = webpackConfig;
+        if (typeof entry === "string" || Array.isArray(entry)) {
+            webpackConfig.entry = { bundle: entry };
+        }
 
-            this.options.webpackConfig.entry["tns-java-classes"] = this.getTnsJavaClassesBuildPath();
+        NativeScriptSnapshotPlugin.ensureSnapshotModuleEntry(this.options);
+    }
+
+    NativeScriptSnapshotPlugin.removeLibraryTarget = function(webpackConfig) {
+        const { output } = webpackConfig;
+        if (output) {
+            output.libraryTarget = undefined;
         }
     }
 
+    NativeScriptSnapshotPlugin.ensureSnapshotModuleEntry = function(options) {
+        const { webpackConfig, requireModules, chunks, includeApplicationCss } = options;
+
+        const snapshotEntryPath = join(ANDROID_PROJECT_DIR, SNAPSHOT_ENTRY_MODULE);
+
+        let snapshotEntryContent = "";
+        if (includeApplicationCss) {
+            snapshotEntryContent += `require("nativescript-dev-webpack/load-application-css");`;
+        }
+        snapshotEntryContent += requireModules.map(mod => `require('${mod}')`).join(";");
+
+        writeFileSync(snapshotEntryPath, snapshotEntryContent, { encoding: "utf8" });
+
+        // add the module to the entry points to make sure it's content is evaluated
+        webpackConfig.entry[SNAPSHOT_ENTRY_NAME] = relative(webpackConfig.context, snapshotEntryPath);
+
+        // prepend the module to the script that will be snapshotted
+        chunks.unshift(SNAPSHOT_ENTRY_NAME);
+
+        // ensure that the runtime is installed only in the snapshotted chunk
+        webpackConfig.optimization.runtimeChunk = { name: SNAPSHOT_ENTRY_NAME };
+    }
+
     NativeScriptSnapshotPlugin.validateSchema = function(options) {
-        if (!options.chunk) {
-            const error = NativeScriptSnapshotPlugin.extendError({ message: `No chunk specified!` });
+        if (!options.chunk && !options.chunks) {
+            const error = NativeScriptSnapshotPlugin.extendError({ message: `No chunks specified!` });
             throw error;
         }
 
         try {
             validateOptions(schema, options, "NativeScriptSnapshotPlugin");
+
+            if (options.chunk) {
+                options.chunks = options.chunks || [];
+                options.chunks.push(options.chunk);
+            }
         } catch (error) {
            throw new Error(error.message);
         }
     }
 
-    // inherit ProjectSnapshotGenerator
     NativeScriptSnapshotPlugin.prototype = Object.create(ProjectSnapshotGenerator.prototype);
     NativeScriptSnapshotPlugin.prototype.constructor = NativeScriptSnapshotPlugin;
 
-    NativeScriptSnapshotPlugin.prototype.getTnsJavaClassesBuildPath = function () {
-        return resolve(this.getBuildPath(), "../tns-java-classes.js");
-    }
-
-    NativeScriptSnapshotPlugin.prototype.generate = function (webpackChunk) {
+    NativeScriptSnapshotPlugin.prototype.generate = function (webpackChunks) {
         const options = this.options;
+        const inputFiles = webpackChunks.map(chunk => join(options.webpackConfig.output.path, chunk.files[0]));
+        const preprocessedInputFile = join(
+            this.options.projectRoot,
+            ANDROID_APP_PATH,
+            "_embedded_script_.js"
+        );
 
-        const inputFile = join(options.webpackConfig.output.path, webpackChunk.files[0]);
-
-        console.log(`\n Snapshotting bundle at ${inputFile}`);
-
-        const preparedAppRootPath = resolveAndroidAppPath(this.options.projectRoot);
-        const preprocessedInputFile = join(preparedAppRootPath, "_embedded_script_.js");
+        console.log(`\n Snapshotting bundle from ${inputFiles}`);
 
         return ProjectSnapshotGenerator.prototype.generate.call(this, {
-            inputFile,
+            inputFiles,
             preprocessedInputFile,
             targetArchs: options.targetArchs,
             useLibs: options.useLibs,
             androidNdkPath: options.androidNdkPath,
-            tnsJavaClassesPath: join(preparedAppRootPath, "tns-java-classes.js")
+            v8Version: options.v8Version,
         }).then(() => {
-            // Make the original file empty
-            if (inputFile !== preprocessedInputFile) {
-                closeSync(openSync(inputFile, "w")); // truncates the input file content
-            }
+            // Make the original files empty
+            inputFiles.forEach(inputFile =>
+                closeSync(openSync(inputFile, "w")) // truncates the input file content
+            );
         });
     }
 
     NativeScriptSnapshotPlugin.prototype.apply = function (compiler) {
         const options = this.options;
 
-        // Generate tns-java-classes.js file
-        debugger;
-        ProjectSnapshotGenerator.prototype.generateTnsJavaClassesFile.call(this, {
-            output: this.getTnsJavaClassesBuildPath(),
-            options: options.tnsJavaClassesOptions
-        });
+        compiler.hooks.afterEmit.tapAsync("NativeScriptSnapshotPlugin", function (compilation, callback) {
+            const chunksToSnapshot = options.chunks
+                .map(name => ({ name, chunk: compilation.chunks.find(chunk => chunk.name === name) }));
+            const unexistingChunks = chunksToSnapshot.filter(pair => !pair.chunk);
 
-        // Generate snapshots
-        compiler.plugin("after-emit", function (compilation, callback) {
-            debugger;
-            const chunkToSnapshot = compilation.chunks.find(chunk => chunk.name == options.chunk);
-            if (!chunkToSnapshot) {
-                const error = NativeScriptSnapshotPlugin.extendError({ message: `No chunk named '${options.chunk}' found.` });
+            if (unexistingChunks.length) {
+                const message = `The following chunks does not exist: ` + unexistingChunks.map(pair => pair.name).join(", ");
+                const error = NativeScriptSnapshotPlugin.extendError({ message });
                 compilation.errors.push(error);
                 return callback();
             }
 
-            this.generate(chunkToSnapshot)
+            this.generate(chunksToSnapshot.map(pair => pair.chunk))
                 .then(() => {
                     console.log("Successfully generated snapshots!");
                     return callback();

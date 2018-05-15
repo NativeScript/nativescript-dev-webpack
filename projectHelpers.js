@@ -1,16 +1,13 @@
-const path = require("path");
-const fs = require("fs");
-const semver = require("semver");
+const { resolve } = require("path");
+const { readFileSync, writeFileSync } = require("fs");
 const { EOL } = require("os");
+
 const hook = require("nativescript-hook")(__dirname);
 
-const {
-    PROJECT_DATA_GETTERS,
-    getProjectData,
-    safeGet,
-} = require("./nsCliHelpers");
-
-const APP_DIR = "app";
+const PROJECT_DATA_GETTERS = {
+    appPath: "getAppDirectoryRelativePath",
+    appResourcesPath: "getAppResourcesRelativeDirectoryPath",
+};
 
 const isTypeScript = ({ projectDir, packageJson } = {}) => {
     packageJson = packageJson || getPackageJson(projectDir);
@@ -33,29 +30,19 @@ const isAngular = ({ projectDir, packageJson } = {}) => {
 
 const isSass = ({ projectDir, packageJson } = {}) => {
     packageJson = packageJson || getPackageJson(projectDir);
+    const SASS_PLUGIN_NAME = "nativescript-dev-sass";
 
     return (
         packageJson.dependencies &&
-        packageJson.dependencies.hasOwnProperty("nativescript-dev-sass")
+        packageJson.dependencies.hasOwnProperty(SASS_PLUGIN_NAME)
     ) || (
-            packageJson.devDependencies &&
-            packageJson.devDependencies.hasOwnProperty("nativescript-dev-sass")
-        );
+        packageJson.devDependencies &&
+        packageJson.devDependencies.hasOwnProperty(SASS_PLUGIN_NAME)
+    );
 };
 
-const getAndroidRuntimeVersion = (projectDir) => {
-    try {
-        const projectPackageJSON = getPackageJson(projectDir);
-
-        const version = projectPackageJSON["nativescript"]["tns-android"]["version"];
-        return version && toReleaseVersion(version);
-    } catch (e) {
-        return null;
-    }
-}
-
 const getWebpackConfig = (projectDir, env, configPath = "webpack.config.js") => {
-    const configAbsolutePath = path.resolve(projectDir, configPath);
+    const configAbsolutePath = resolve(projectDir, configPath);
     let config;
 
     try {
@@ -79,64 +66,19 @@ const getWebpackConfig = (projectDir, env, configPath = "webpack.config.js") => 
 
 const getPackageJson = projectDir => {
     const packageJsonPath = getPackageJsonPath(projectDir);
-    return JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+    return JSON.parse(readFileSync(packageJsonPath, "utf8"));
 };
 
 const writePackageJson = (content, projectDir) => {
     const packageJsonPath = getPackageJsonPath(projectDir);
-    fs.writeFileSync(packageJsonPath, JSON.stringify(content, null, 2))
+    writeFileSync(packageJsonPath, JSON.stringify(content, null, 2))
 }
 const getProjectDir = hook.findProjectDir;
 
-const toReleaseVersion = version =>
-    version.replace(/-.*/, "");
-
-const getAndroidProjectPath = ({androidPackageVersion, projectRoot}) => {
-    const ANDROID_PROJECT_PATH = "platforms/android";
-    if (projectRoot) {
-        androidPackageVersion = getAndroidRuntimeVersion(projectRoot);
-    }
-
-    return semver.lt(androidPackageVersion, "3.4.0") ?
-        ANDROID_PROJECT_PATH :
-        path.join(ANDROID_PROJECT_PATH, "app");
-};
-
-
-const resolveAndroidAppPath = projectDir => {
-    const RESOURCES_PATH = "src/main/assets/app";
-    const androidPackageVersion = getAndroidRuntimeVersion(projectDir);
-    const androidProjectPath = getAndroidProjectPath({androidPackageVersion});
-
-    return path.join(projectDir, androidProjectPath, RESOURCES_PATH);
-};
-
-const resolveAndroidConfigurationsPath = projectDir => {
-    const CONFIGURATIONS_DIR = "configurations";
-    const androidPackageVersion = getAndroidRuntimeVersion(projectDir);
-    const androidProjectPath = getAndroidProjectPath({androidPackageVersion});
-
-    const configurationsPath = semver.lt(androidPackageVersion, "3.3.0") ?
-        path.join(androidProjectPath, CONFIGURATIONS_DIR):
-        path.join(androidProjectPath, "build", CONFIGURATIONS_DIR);
-
-    return path.join(projectDir, configurationsPath);
-};
-
-const getPackageJsonPath = projectDir => path.resolve(projectDir, "package.json");
+const getPackageJsonPath = projectDir => resolve(projectDir, "package.json");
 
 const isAndroid = platform => /android/i.test(platform);
 const isIos = platform => /ios/i.test(platform);
-
-function getAppPath() {
-    const projectDir = getProjectDir();
-    const projectData = getProjectData(projectDir);
-    const appDir = getAppPathFromProjectData(projectData) || APP_DIR;
-
-    const appPath = path.resolve(projectDir, appDir);
-
-    return appPath;
-}
 
 function getAppPathFromProjectData(data) {
     return safeGet(data, PROJECT_DATA_GETTERS.appPath);
@@ -146,13 +88,24 @@ function getAppResourcesPathFromProjectData(data) {
     return safeGet(data, PROJECT_DATA_GETTERS.appResourcesPath);
 }
 
+function safeGet(object, property, ...args) {
+    if (!object) {
+        return;
+    }
+
+    const value = object[property];
+    if (!value) {
+        return;
+    }
+
+    return typeof value === "function" ?
+        value.bind(object)(...args) :
+        value;
+}
+
 module.exports = {
-    APP_DIR,
-    getAppPath,
     getAppPathFromProjectData,
     getAppResourcesPathFromProjectData,
-    getAndroidProjectPath,
-    getAndroidRuntimeVersion,
     getPackageJson,
     getProjectDir,
     getWebpackConfig,
@@ -161,7 +114,5 @@ module.exports = {
     isAngular,
     isSass,
     isTypeScript,
-    resolveAndroidAppPath,
-    resolveAndroidConfigurationsPath,
     writePackageJson,
 };

@@ -4,12 +4,6 @@ module.exports = function parseProjectSnapshotGeneratorArgs() {
     if (result.targetArchs) {
         result.targetArchs = parseStringArray(result.targetArchs);
     }
-    if (result.tnsJavaClassesOptions && result.tnsJavaClassesOptions.packages !== undefined) {
-        result.tnsJavaClassesOptions.packages = parseStringArray(result.tnsJavaClassesOptions.packages);
-    }
-    if (result.tnsJavaClassesOptions && result.tnsJavaClassesOptions.modules !== undefined) {
-        result.tnsJavaClassesOptions.modules = parseStringArray(result.tnsJavaClassesOptions.modules);
-    }
 
     if (result.useLibs !== undefined) {
         result.useLibs = parseBool(result.useLibs);

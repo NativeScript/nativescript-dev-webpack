@@ -153,33 +153,28 @@ Thank you for your contribution!
 npm install
 ```
 
-2. Remove the `package-lock.json` file if it was generated.
-```bash
-rm package-lock.json
-```
-
-3. Add the following to your `.npmrc`.
+2. Add the following to your `.npmrc`.
 ```
 tag-version-prefix=""
 message="release: cut the %s release"
 ```
 
-4. Create new branch for the release:
+3. Create new branch for the release:
 ```
 git checkout -b username/release-version
 ```
 
-5. Run `npm version` to bump the version in the `package.json`, tag the release and update the CHANGELOG.md:
+4. Run `npm version` to bump the version in the `package.json`, tag the release and update the CHANGELOG.md:
 ```
 npm version [patch|minor|major]
 ```
 
-6. Push all changes to your branch and create a PR.
+5. Push all changes to your branch and create a PR.
 ```bash
 git push --set-upstream origin username/release-version --tags
 ```
 
-7. Publish the package to npm after the PR is merged.
+6. Publish the package to npm after the PR is merged.
 ```bash
 npm publish
 ```
