@@ -9,10 +9,8 @@ module.exports = function nativescriptTarget(compiler) {
     const NodeSourcePlugin = require(webpackLib + "/node/NodeSourcePlugin");
     const LoaderTargetPlugin = require(webpackLib + "/LoaderTargetPlugin");
 
-    compiler.apply(
-        new NsJsonpTemplatePlugin(options.output),
-        new FunctionModulePlugin(options.output),
-        new NodeSourcePlugin(options.node),
-        new LoaderTargetPlugin("web")
-    );
+    new NsJsonpTemplatePlugin(options.output).apply(compiler);
+    new FunctionModulePlugin(options.output).apply(compiler);
+    new NodeSourcePlugin(options.node).apply(compiler);
+    new LoaderTargetPlugin("web").apply(compiler);
 }

@@ -66,7 +66,7 @@ module.exports = (projectDir) => {
         apply(compiler) {
             super.apply(compiler);
             if (this.options.platformOptions && this.options.platformOptions.platform && this.options.platformOptions.platforms) {
-                compiler.plugin('environment', () => {
+                compiler.hooks.environment.tap("NativeScriptAngularCompilerPlugin", () => {
                     compiler.inputFileSystem = mapFileSystem({
                         fs: compiler.inputFileSystem,
                         context: compiler.context,

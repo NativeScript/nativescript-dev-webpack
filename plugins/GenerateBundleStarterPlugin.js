@@ -10,7 +10,7 @@ exports.GenerateBundleStarterPlugin = (function() {
     GenerateBundleStarterPlugin.prototype.apply = function(compiler) {
         this.webpackContext = compiler.options.context;
 
-        compiler.plugin("emit", (compilation, cb) => {
+        compiler.hooks.emit.tapAsync("GenerateBundleStarterPlugin", (compilation, cb) => {
             this.addAsset(compilation, "package.json", this.generatePackageJson());
             this.addAsset(compilation, "starter.js", this.generateStarterModule());
             this.generateTnsJavaClasses(compilation);

@@ -104,7 +104,7 @@ exports.NativeScriptSnapshotPlugin = (function() {
     NativeScriptSnapshotPlugin.prototype.apply = function (compiler) {
         const options = this.options;
 
-        compiler.plugin("after-emit", function (compilation, callback) {
+        compiler.hooks.afterEmit.tapAsync("NativeScriptSnapshotPlugin", function (compilation, callback) {
             const chunksToSnapshot = options.chunks
                 .map(name => ({ name, chunk: compilation.chunks.find(chunk => chunk.name === name) }));
             const unexistingChunks = chunksToSnapshot.filter(pair => !pair.chunk);
