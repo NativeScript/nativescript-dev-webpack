@@ -166,7 +166,13 @@ module.exports = env => {
                     ]
                 },
 
-                { test: /\.ts$/, use: "awesome-typescript-loader" }
+                {
+                    test: /\.ts$/,
+                    use: {
+                        loader: "awesome-typescript-loader",
+                        options: { configFileName: "tsconfig.esm.json" },
+                    }
+                },
             ]
         },
         plugins: [
