@@ -3,7 +3,10 @@ const { closeSync, openSync, writeFileSync } = require("fs");
 const validateOptions = require("schema-utils");
 
 const ProjectSnapshotGenerator = require("../../snapshot/android/project-snapshot-generator");
-const { resolveAndroidAppPath, getAndroidProjectPath } = require("../../projectHelpers");
+const {
+    ANDROID_PROJECT_DIR,
+    ANDROID_APP_PATH,
+} = require("../../androidProjectHelpers");
 const schema = require("./options.json");
 
 const SNAPSHOT_ENTRY_NAME = "snapshot-entry";
@@ -34,10 +37,9 @@ exports.NativeScriptSnapshotPlugin = (function() {
     }
 
     NativeScriptSnapshotPlugin.ensureSnapshotModuleEntry = function(options) {
-        const { webpackConfig, requireModules, chunks, projectRoot, includeApplicationCss } = options;
+        const { webpackConfig, requireModules, chunks, includeApplicationCss } = options;
 
-        const androidProjectPath = getAndroidProjectPath({ projectRoot: projectRoot });
-        const snapshotEntryPath = join(androidProjectPath, SNAPSHOT_ENTRY_MODULE);
+        const snapshotEntryPath = join(ANDROID_PROJECT_DIR, SNAPSHOT_ENTRY_MODULE);
 
         let snapshotEntryContent = "";
         if (includeApplicationCss) {
@@ -81,10 +83,13 @@ exports.NativeScriptSnapshotPlugin = (function() {
     NativeScriptSnapshotPlugin.prototype.generate = function (webpackChunks) {
         const options = this.options;
         const inputFiles = webpackChunks.map(chunk => join(options.webpackConfig.output.path, chunk.files[0]));
-        console.log(`\n Snapshotting bundle from ${inputFiles}`);
+        const preprocessedInputFile = join(
+            this.options.projectRoot,
+            ANDROID_APP_PATH,
+            "_embedded_script_.js"
+        );
 
-        const preparedAppRootPath = resolveAndroidAppPath(this.options.projectRoot);
-        const preprocessedInputFile = join(preparedAppRootPath, "_embedded_script_.js");
+        console.log(`\n Snapshotting bundle from ${inputFiles}`);
 
         return ProjectSnapshotGenerator.prototype.generate.call(this, {
             inputFiles,

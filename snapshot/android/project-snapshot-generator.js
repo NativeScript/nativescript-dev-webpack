@@ -10,14 +10,14 @@ const {
     createDirectory,
     getJsonFile,
 } = require("./utils");
+const { getPackageJson } = require("../../projectHelpers");
 const {
-    getPackageJson,
+    ANDROID_PROJECT_DIR,
+    ANDROID_APP_PATH,
+    ANDROID_CONFIGURATIONS_PATH,
     getAndroidRuntimeVersion,
-    getAndroidProjectPath,
     getAndroidV8Version,
-    resolveAndroidAppPath,
-    resolveAndroidConfigurationsPath,
-} = require("../../projectHelpers");
+} = require("../../androidProjectHelpers");
 
 const MIN_ANDROID_RUNTIME_VERSION = "3.0.0";
 const VALID_ANDROID_RUNTIME_TAGS = Object.freeze(["next", "rc"]);
@@ -55,8 +55,15 @@ ProjectSnapshotGenerator.prototype.getBuildPath = function () {
 }
 
 ProjectSnapshotGenerator.calculateProjectPath = function (projectRoot) {
-    const projectPath = getAndroidProjectPath({projectRoot});
-    return join(projectRoot, projectPath);
+    return join(projectRoot, ANDROID_PROJECT_DIR);
+}
+
+ProjectSnapshotGenerator.calculateConfigurationsPath = function (projectRoot) {
+    return join(projectRoot, ANDROID_CONFIGURATIONS_PATH);
+}
+
+ProjectSnapshotGenerator.calculateAppPath = function (projectRoot) {
+    return join(projectRoot, ANDROID_APP_PATH);
 }
 
 ProjectSnapshotGenerator.prototype.getProjectPath = function () {
@@ -70,7 +77,7 @@ ProjectSnapshotGenerator.cleanSnapshotArtefacts = function (projectRoot) {
     shelljs.rm("-rf", join(platformPath, "src/main/assets/snapshots"));
 
     // Remove prepared include.gradle configurations
-    const configurationsPath = resolveAndroidConfigurationsPath(projectRoot);
+    const configurationsPath = ProjectSnapshotGenerator.calculateConfigurationsPath(projectRoot);
     shelljs.rm("-rf", join(configurationsPath, SnapshotGenerator.SNAPSHOT_PACKAGE_NANE));
 }
 
@@ -78,8 +85,8 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function (projectRoot) {
     const buildPath = ProjectSnapshotGenerator.calculateBuildPath(projectRoot);
     const platformPath = ProjectSnapshotGenerator.calculateProjectPath(projectRoot);
 
-    const appPath = resolveAndroidAppPath(projectRoot);
-    const configurationsPath = resolveAndroidConfigurationsPath(projectRoot);
+    const appPath = ProjectSnapshotGenerator.calculateAppPath(projectRoot);
+    const configurationsPath = ProjectSnapshotGenerator.calculateConfigurationsPath(projectRoot);
     const configDestinationPath = join(configurationsPath, SnapshotGenerator.SNAPSHOT_PACKAGE_NANE);
 
     // Remove build folder to make sure that the apk will be fully rebuild
@@ -96,8 +103,7 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function (projectRoot) {
         // Copy the libs to the specified destination in the platforms folder
         shelljs.mkdir("-p", libsDestinationPath);
         shelljs.cp("-R", join(buildPath, "ndk-build/libs") + "/", libsDestinationPath);
-    }
-    else {
+    } else {
         // useLibs = false
         const blobsSrcPath = join(buildPath, "snapshots/blobs");
         const blobsDestinationPath = resolve(appPath, "../snapshots");
