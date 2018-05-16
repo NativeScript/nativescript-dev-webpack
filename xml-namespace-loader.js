@@ -22,6 +22,8 @@ module.exports = function(source) {
         )
         .join(";");
 
+    // escape special whitespace characters
+    // see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#Issue_with_plain_JSON.stringify_for_use_as_JavaScript
     const json = JSON.stringify(source)
         .replace(/\u2028/g, '\\u2028')
         .replace(/\u2029/g, '\\u2029');
