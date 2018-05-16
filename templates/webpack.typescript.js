@@ -151,7 +151,7 @@ module.exports = env => {
                     ].filter(loader => !!loader)
                 },
 
-                { test: /\.(html|xml)$/, use: "raw-loader" },
+                { test: /\.(html|xml)$/, use: "nativescript-dev-webpack/xml-namespace-loader"},
 
                 {
                     test: /\.css$/,
