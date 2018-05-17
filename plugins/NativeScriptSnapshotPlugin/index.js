@@ -3,6 +3,7 @@ const { closeSync, openSync, writeFileSync } = require("fs");
 const validateOptions = require("schema-utils");
 
 const ProjectSnapshotGenerator = require("../../snapshot/android/project-snapshot-generator");
+const { getPackageJson } = require("../../projectHelpers");
 const {
     ANDROID_PROJECT_DIR,
     ANDROID_APP_PATH,
@@ -38,6 +39,7 @@ exports.NativeScriptSnapshotPlugin = (function() {
 
     NativeScriptSnapshotPlugin.ensureSnapshotModuleEntry = function(options) {
         const { webpackConfig, requireModules, chunks, includeApplicationCss } = options;
+        const internalRequireModules = this.getInternalRequireModules(webpackConfig.context);
 
         const snapshotEntryPath = join(ANDROID_PROJECT_DIR, SNAPSHOT_ENTRY_MODULE);
 
@@ -45,7 +47,8 @@ exports.NativeScriptSnapshotPlugin = (function() {
         if (includeApplicationCss) {
             snapshotEntryContent += `require("nativescript-dev-webpack/load-application-css");`;
         }
-        snapshotEntryContent += requireModules.map(mod => `require('${mod}')`).join(";");
+        snapshotEntryContent += [ ...requireModules, ...internalRequireModules]
+            .map(mod => `require('${mod}')`).join(";");
 
         writeFileSync(snapshotEntryPath, snapshotEntryContent, { encoding: "utf8" });
 
@@ -57,6 +60,11 @@ exports.NativeScriptSnapshotPlugin = (function() {
 
         // ensure that the runtime is installed only in the snapshotted chunk
         webpackConfig.optimization.runtimeChunk = { name: SNAPSHOT_ENTRY_NAME };
+    }
+
+    NativeScriptSnapshotPlugin.getInternalRequireModules = function(webpackContext) {
+        const packageJson = getPackageJson(webpackContext);
+        return (packageJson && packageJson["android"] && packageJson["android"]["requireModules"]) || [];
     }
 
     NativeScriptSnapshotPlugin.validateSchema = function(options) {
