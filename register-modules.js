@@ -1,4 +1,4 @@
 require("tns-core-modules/bundle-entry-points");
-const context = require.context("~/", true, /(root|page|fragment)\.(xml|css|js|ts|scss)$/);
+const context = require.context("~/", true, /(root|page)\.(xml|css|js|ts|scss)$/);
 global.registerWebpackModules(context);
 
