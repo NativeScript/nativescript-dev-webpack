@@ -6,7 +6,6 @@ const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
-const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 module.exports = env => {
@@ -42,7 +41,6 @@ module.exports = env => {
         uglify, // --env.uglify
         report, // --env.report
     } = env;
-    const ngToolsWebpackOptions = { tsConfigPath: join(__dirname, "tsconfig.esm.json") };
 
     const appFullPath = resolve(projectRoot, appPath);
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
@@ -179,7 +177,7 @@ module.exports = env => {
                 {
                     test: /.ts$/, use: [
                         "nativescript-dev-webpack/moduleid-compat-loader",
-                        { loader: "@ngtools/webpack", options: ngToolsWebpackOptions },
+                        "@ngtools/webpack",
                     ]
                 },
 
@@ -217,19 +215,16 @@ module.exports = env => {
                 "./vendor",
                 "./bundle",
             ]),
-            // Support for web workers since v3.2
-            new NativeScriptWorkerPlugin(),
             // AngularCompilerPlugin with augmented NativeScript filesystem to handle platform specific resource resolution.
-            new nsWebpack.NativeScriptAngularCompilerPlugin(
-                Object.assign({
+            new nsWebpack.NativeScriptAngularCompilerPlugin({
                     entryModule: resolve(appPath, "app.module#AppModule"),
                     skipCodeGeneration: !aot,
+                    tsConfigPath: join(__dirname, "tsconfig.esm.json"),
                     platformOptions: {
                         platform,
                         platforms,
                     },
-                }, ngToolsWebpackOptions)
-            ),
+            }),
             // Does IPC communication with the {N} CLI to notify events when running in watch mode.
             new nsWebpack.WatchStateLoggerPlugin(),
         ],
