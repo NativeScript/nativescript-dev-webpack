@@ -6,7 +6,6 @@ const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
-const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 module.exports = env => {
@@ -193,8 +192,6 @@ module.exports = env => {
                 "./vendor",
                 "./bundle",
             ]),
-            // Support for web workers since v3.2
-            new NativeScriptWorkerPlugin(),
             new nsWebpack.PlatformFSPlugin({
                 platform,
                 platforms,
