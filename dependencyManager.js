@@ -58,32 +58,32 @@ function addDependency(deps, name, version, force) {
 
 function getRequiredDeps(packageJson) {
     const deps = {
-        "webpack": "~4.5.0",
-        "webpack-cli": "~2.0.14",
-        "webpack-bundle-analyzer": "^2.9.1",
+        "webpack": "~4.8.3",
+        "webpack-cli": "~2.1.3",
+        "webpack-bundle-analyzer": "~2.13.0",
         "webpack-sources": "~1.1.0",
         "clean-webpack-plugin": "~0.1.19",
         "copy-webpack-plugin": "~4.5.1",
         "raw-loader": "~0.5.1",
-        "css-loader": "~0.28.7",
+        "css-loader": "~0.28.11",
         "nativescript-worker-loader": "~0.9.0",
-        "resolve-url-loader": "~2.3.0",
         "extract-text-webpack-plugin": "~3.0.2",
-        "uglifyjs-webpack-plugin": "~1.2.4",
+        "uglifyjs-webpack-plugin": "~1.2.5",
     };
 
     if (isAngular({packageJson})) {
         Object.assign(deps, {
             "@angular/compiler-cli": packageJson.dependencies["@angular/core"],
-            "@ngtools/webpack": "~6.0.0-rc.3",
-            "@angular-devkit/core": "~0.5.5",
+            "@ngtools/webpack": "~6.0.3",
+            "@angular-devkit/core": "~0.6.3",
+            "resolve-url-loader": "~2.3.0",
         });
     } else if (isTypeScript({packageJson})) {
         Object.assign(deps, { "awesome-typescript-loader": "~5.0.0" });
     }
 
     if (isSass({packageJson})) {
-        Object.assign(deps, { "sass-loader": "~6.0.6" });
+        Object.assign(deps, { "sass-loader": "~7.0.1" });
     }
 
     return deps;
