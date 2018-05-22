@@ -193,7 +193,8 @@ module.exports = env => {
                 "./vendor",
                 "./bundle",
             ]),
-            // Support for web workers since v3.2
+            // For instructions on how to set up workers with webpack
+            // check out https://github.com/nativescript/worker-loader
             new NativeScriptWorkerPlugin(),
             new nsWebpack.PlatformFSPlugin({
                 platform,
