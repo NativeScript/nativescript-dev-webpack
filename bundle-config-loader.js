@@ -1,6 +1,6 @@
 module.exports = function(source) {
     this.cacheable();
-    const { registerPages, loadCss } = this.query;
+    const { registerPages = true, loadCss = true } = this.query;
 
     if (registerPages) {
         source = `
