@@ -17,30 +17,49 @@ module.exports = function(source) {
             const localNamespacePath = join(this.rootContext, namespace);
             const localModulePath = join(localNamespacePath, elementName);
             const resolvedPath = tryResolve(localNamespacePath) ||
-                tryResolve(localModulePath) ||
-                namespace;
-
-            this.addDependency(resolvedPath);
-            namespaces.push({ name: namespace, path: resolvedPath });
+                tryResolve(localModulePath);
 
             const moduleName = `${namespace}/${elementName}`;
+
+            if (!resolvedPath) {
+                const xml = tryResolve(`${localModulePath}.xml`);
+                if (!xml) {
+                    namespaces.push({ name: namespace, path: namespace });
+                    namespaces.push({ name: moduleName, path: namespace });
+
+                    return;
+                } else {
+                    namespaces.push({ name: `${moduleName}.xml`, path: xml });
+                    this.addDependency(xml);
+                }
+
+                const css = tryResolve(`${localModulePath}.css`);
+                if (css) {
+                    namespaces.push({ name: `${moduleName}.css`, path: css });
+                    this.addDependency(css);
+                }
+
+                return;
+            }
+
+            this.addDependency(resolvedPath);
+
+            namespaces.push({ name: namespace, path: resolvedPath });
             namespaces.push({ name: moduleName, path: resolvedPath });
 
             const { dir, name } =  parse(resolvedPath);
             const noExtFilename = join(dir, name);
 
-            const xmlFile = `${noExtFilename}.xml`;
-            const xmlFileResolved = tryResolve(xmlFile);
-            if (xmlFileResolved) {
-                this.addDependency(xmlFileResolved);
-                namespaces.push({ name: `${moduleName}.xml`, path: xmlFileResolved });
+            const xml = tryResolve(`${noExtFilename}.xml`);
+            if (xml) {
+                this.addDependency(xml);
+                namespaces.push({ name: `${moduleName}.xml`, path: xml });
             }
 
-            const cssFile = `${noExtFilename}.css`;
-            const cssFileResolved = tryResolve(cssFile);
-            if (cssFileResolved) {
-                this.addDependency(cssFileResolved);
-                namespaces.push({ name: `${moduleName}.css`, path: cssFileResolved });
+            const css = tryResolve(`${noExtFilename}.css`);
+            if (css) {
+                this.addDependency(css);
+                namespaces.push({ name: `${moduleName}.css`, path: css });
             }
         }
     }, undefined, true);
@@ -72,3 +91,4 @@ function tryResolve(path) {
         return;
     }
 }
+
