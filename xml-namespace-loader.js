@@ -8,18 +8,17 @@ module.exports = function(source) {
     let namespaces = [];
     const parser = new XmlParser((event) => {
         const { namespace, elementName } = event;
+        const moduleName = `${namespace}/${elementName}`;
 
         if (
             namespace &&
             !namespace.startsWith("http") &&
-            !namespaces.some(n => n.name === namespace)
+            !namespaces.some(n => n.name === moduleName)
         ) {
             const localNamespacePath = join(this.rootContext, namespace);
             const localModulePath = join(localNamespacePath, elementName);
             const resolvedPath = tryResolve(localNamespacePath) ||
                 tryResolve(localModulePath);
-
-            const moduleName = `${namespace}/${elementName}`;
 
             if (!resolvedPath) {
                 const xml = tryResolve(`${localModulePath}.xml`);
@@ -30,6 +29,7 @@ module.exports = function(source) {
                     return;
                 } else {
                     namespaces.push({ name: `${moduleName}.xml`, path: xml });
+                    namespaces.push({ name: moduleName, path: xml });
                     this.addDependency(xml);
                 }
 
