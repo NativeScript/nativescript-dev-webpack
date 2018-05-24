@@ -8,6 +8,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const { AngularCompilerPlugin } = require("@ngtools/webpack");
 
 module.exports = env => {
     // Add your custom Activities, Services and other Android app components here.
@@ -21,9 +22,7 @@ module.exports = env => {
         throw new Error("You need to provide a target platform!");
     }
 
-    const platforms = ["ios", "android"];
     const projectRoot = __dirname;
-    nsWebpack.loadAdditionalPlugins({ projectDir: projectRoot });
 
     // Default destination inside platforms/<platform>/...
     const dist = resolve(projectRoot, nsWebpack.getAppPath(platform, projectRoot));
@@ -220,15 +219,11 @@ module.exports = env => {
             // For instructions on how to set up workers with webpack
             // check out https://github.com/nativescript/worker-loader
             new NativeScriptWorkerPlugin(),
-            // AngularCompilerPlugin with augmented NativeScript filesystem to handle platform specific resource resolution.
-            new nsWebpack.NativeScriptAngularCompilerPlugin({
+
+            new AngularCompilerPlugin({
                 entryModule: resolve(appPath, "app.module#AppModule"),
                 tsConfigPath: join(__dirname, "tsconfig.esm.json"),
                 skipCodeGeneration: !aot,
-                platformOptions: {
-                    platform,
-                    platforms,
-                },
             }),
             // Does IPC communication with the {N} CLI to notify events when running in watch mode.
             new nsWebpack.WatchStateLoggerPlugin(),

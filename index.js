@@ -4,18 +4,11 @@ const { existsSync } = require("fs");
 const { ANDROID_APP_PATH } = require("./androidProjectHelpers");
 const {
     getPackageJson,
-    isAngular,
     isAndroid,
     isIos,
 } = require("./projectHelpers");
 
 Object.assign(exports, require('./plugins'));
-
-exports.loadAdditionalPlugins = function (projectSettings) {
-    if (isAngular(projectSettings)) {
-        Object.assign(exports, require('./plugins/angular')(projectSettings.projectDir));
-    }
-}
 
 exports.getAotEntryModule = function (appDirectory) {
 	verifyEntryModuleDirectory(appDirectory);
