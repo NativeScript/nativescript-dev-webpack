@@ -146,6 +146,7 @@ module.exports = env => {
                         {
                             loader: "nativescript-dev-webpack/bundle-config-loader",
                             options: {
+                                registerPages: false,
                                 loadCss: !snapshot, // load the application css if in debug mode
                             }
                         },
