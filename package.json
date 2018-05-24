@@ -77,8 +77,10 @@
     "tapable": "1.0.0"
   },
   "devDependencies": {
+    "@angular-devkit/core": "^0.6.3",
     "@types/node": "^8.0.0",
     "conventional-changelog-cli": "^1.3.22",
+    "rxjs": "^6.2.0",
     "source-map-support": "^0.5.0",
     "typescript": "~2.7.2"
   }

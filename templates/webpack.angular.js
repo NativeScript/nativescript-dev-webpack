@@ -3,6 +3,7 @@ const { join, relative, resolve, sep } = require("path");
 const webpack = require("webpack");
 const nsWebpack = require("nativescript-dev-webpack");
 const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target");
+const { PlatformReplacementHost } = require("nativescript-dev-webpack/host/platform");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
@@ -21,6 +22,9 @@ module.exports = env => {
     if (!platform) {
         throw new Error("You need to provide a target platform!");
     }
+
+    const extensions = ["tns", platform];
+    const platformHost = new PlatformReplacementHost(extensions);
 
     const projectRoot = __dirname;
 
@@ -221,6 +225,7 @@ module.exports = env => {
             new NativeScriptWorkerPlugin(),
 
             new AngularCompilerPlugin({
+                host: platformHost,
                 entryModule: resolve(appPath, "app.module#AppModule"),
                 tsConfigPath: join(__dirname, "tsconfig.esm.json"),
                 skipCodeGeneration: !aot,
