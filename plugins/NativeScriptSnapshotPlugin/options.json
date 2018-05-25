@@ -1,6 +1,9 @@
 {
   "type": "object",
   "properties": {
+    "androidNdkPath": {
+      "type": "string"
+    },
     "chunk": {
       "type": "string"
     },
