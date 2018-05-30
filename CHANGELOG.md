@@ -1,5 +1,5 @@
 <a name="0.12.0"></a>
-# [0.12.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.10.2...0.12.0) (2018-05-30)
+# [0.12.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.11.0...0.12.0) (2018-05-30)
 
 
 ### Bug Fixes
@@ -12,23 +12,14 @@
 
 ### Features
 
-* add webpack4 support ([#495](https://github.com/NativeScript/nativescript-dev-webpack/issues/495)) ([eefce39](https://github.com/NativeScript/nativescript-dev-webpack/commit/eefce39))
+* add webpack 4 and Angular 6 support ([#495](https://github.com/NativeScript/nativescript-dev-webpack/issues/495)) ([eefce39](https://github.com/NativeScript/nativescript-dev-webpack/commit/eefce39))
 * add xml loader for elements from external namespaces ([#525](https://github.com/NativeScript/nativescript-dev-webpack/issues/525)) ([19bbc7e](https://github.com/NativeScript/nativescript-dev-webpack/commit/19bbc7e))
 * configure v8Version for snapshot tools ([#503](https://github.com/NativeScript/nativescript-dev-webpack/issues/503)) ([cf0d76b](https://github.com/NativeScript/nativescript-dev-webpack/commit/cf0d76b))
 * generate the snapshot entry module at build time ([2ec8083](https://github.com/NativeScript/nativescript-dev-webpack/commit/2ec8083)), closes [#511](https://github.com/NativeScript/nativescript-dev-webpack/issues/511)
 * load bundle config and app css at build time ([f9bbea9](https://github.com/NativeScript/nativescript-dev-webpack/commit/f9bbea9))
 * move all node modules to the common chunk ([#507](https://github.com/NativeScript/nativescript-dev-webpack/issues/507)) ([2ff43bf](https://github.com/NativeScript/nativescript-dev-webpack/commit/2ff43bf))
 * tweak the uglify configuration to enable compression for android ([7a125ee](https://github.com/NativeScript/nativescript-dev-webpack/commit/7a125ee))
-
-
-### BREAKING CHANGES
-
-* The current code changes the way NativeScriptAngularCompilerPlugin is loaded. This means that all projects that already have webpack.config.js and just upgrade the version of nativescript-dev-webpack, will not be able to use the plugin (NativeScriptAngularCompilerPlugin). They will have to modify their webpack.config.js files.
-
-* fix: webpack getAppPath with projectRoot
-
-* refactor: verify entry module directory
-
+* target es2015 modules when bundling using tsconfig.esm.json file. ([8922c96])(https://github.com/NativeScript/nativescript-dev-webpack/commit/8922c9611e756d165ec6ca454c237b6bcb56b8ef)
 
 
 <a name="0.11.0"></a>
