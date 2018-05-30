@@ -1,3 +1,36 @@
+<a name="0.12.0"></a>
+# [0.12.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.10.2...0.12.0) (2018-05-30)
+
+
+### Bug Fixes
+
+* allow using the plugin via symlink ([#501](https://github.com/NativeScript/nativescript-dev-webpack/issues/501)) ([a7acb4d](https://github.com/NativeScript/nativescript-dev-webpack/commit/a7acb4d))
+* bundling of Angular apps using linked TS plugins ([#505](https://github.com/NativeScript/nativescript-dev-webpack/issues/505)) ([41779ad](https://github.com/NativeScript/nativescript-dev-webpack/commit/41779ad))
+* bundling of ts apps using linked plugins ([#530](https://github.com/NativeScript/nativescript-dev-webpack/issues/530)) ([c7117d7](https://github.com/NativeScript/nativescript-dev-webpack/commit/c7117d7))
+* register XML-only custom components ([#537](https://github.com/NativeScript/nativescript-dev-webpack/issues/537)) ([aaf4e88](https://github.com/NativeScript/nativescript-dev-webpack/commit/aaf4e88))
+
+
+### Features
+
+* add webpack4 support ([#495](https://github.com/NativeScript/nativescript-dev-webpack/issues/495)) ([eefce39](https://github.com/NativeScript/nativescript-dev-webpack/commit/eefce39))
+* add xml loader for elements from external namespaces ([#525](https://github.com/NativeScript/nativescript-dev-webpack/issues/525)) ([19bbc7e](https://github.com/NativeScript/nativescript-dev-webpack/commit/19bbc7e))
+* configure v8Version for snapshot tools ([#503](https://github.com/NativeScript/nativescript-dev-webpack/issues/503)) ([cf0d76b](https://github.com/NativeScript/nativescript-dev-webpack/commit/cf0d76b))
+* generate the snapshot entry module at build time ([2ec8083](https://github.com/NativeScript/nativescript-dev-webpack/commit/2ec8083)), closes [#511](https://github.com/NativeScript/nativescript-dev-webpack/issues/511)
+* load bundle config and app css at build time ([f9bbea9](https://github.com/NativeScript/nativescript-dev-webpack/commit/f9bbea9))
+* move all node modules to the common chunk ([#507](https://github.com/NativeScript/nativescript-dev-webpack/issues/507)) ([2ff43bf](https://github.com/NativeScript/nativescript-dev-webpack/commit/2ff43bf))
+* tweak the uglify configuration to enable compression for android ([7a125ee](https://github.com/NativeScript/nativescript-dev-webpack/commit/7a125ee))
+
+
+### BREAKING CHANGES
+
+* The current code changes the way NativeScriptAngularCompilerPlugin is loaded. This means that all projects that already have webpack.config.js and just upgrade the version of nativescript-dev-webpack, will not be able to use the plugin (NativeScriptAngularCompilerPlugin). They will have to modify their webpack.config.js files.
+
+* fix: webpack getAppPath with projectRoot
+
+* refactor: verify entry module directory
+
+
+
 <a name="0.11.0"></a>
 # [0.11.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.10.2...0.11.0) (2018-04-25)
 
