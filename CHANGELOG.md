@@ -1,6 +1,8 @@
 <a name="0.12.0"></a>
 # [0.12.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.11.0...0.12.0) (2018-05-30)
 
+> You can follow the [Migration guide](https://www.nativescript.org/blog/upgrading-to-nativescript-webpack-0.12.0) for upgrading to this version.
+
 
 ### Bug Fixes
 
