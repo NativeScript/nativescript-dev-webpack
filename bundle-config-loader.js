@@ -1,8 +1,8 @@
 module.exports = function(source) {
     this.cacheable();
-    const { registerPages = true, loadCss = true } = this.query;
+    const { angular = false, loadCss = true } = this.query;
 
-    if (registerPages) {
+    if (!angular) {
         source = `
             require("nativescript-dev-webpack/register-modules");
             ${source}
@@ -11,7 +11,7 @@ module.exports = function(source) {
 
     if (loadCss) {
         source = `
-            require("nativescript-dev-webpack/load-application-css");
+            require("nativescript-dev-webpack/load-application-css")(${angular});
             ${source}
         `;
     }

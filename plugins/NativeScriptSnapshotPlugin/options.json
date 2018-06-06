@@ -4,6 +4,10 @@
     "androidNdkPath": {
       "type": "string"
     },
+    "angular": {
+        "type": "boolean",
+        "default": false
+    },
     "chunk": {
       "type": "string"
     },
