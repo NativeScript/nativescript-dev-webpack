@@ -149,7 +149,7 @@ module.exports = env => {
                         {
                             loader: "nativescript-dev-webpack/bundle-config-loader",
                             options: {
-                                registerPages: false,
+                                angular: true,
                                 loadCss: !snapshot, // load the application css if in debug mode
                             }
                         },
@@ -249,6 +249,7 @@ module.exports = env => {
     if (snapshot) {
         config.plugins.push(new nsWebpack.NativeScriptSnapshotPlugin({
             chunk: "vendor",
+            angular: true,
             requireModules: [
                 "reflect-metadata",
                 "@angular/platform-browser",
