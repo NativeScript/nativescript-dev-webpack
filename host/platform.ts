@@ -28,19 +28,32 @@ export class PlatformReplacementHost<StatsT extends object = {}> implements Host
         const { dir, name, ext } = parse(path);
 
         for (const platform of this._platforms) {
-            const newPath = join(dir, `${name}.${platform}${ext}`);
+            const platformFileName = `${name}.${platform}${ext}`;
+            const platformPath = this.toSystemPath(join(dir, platformFileName));
 
             try {
-                const stat = statSync(newPath);
-                return stat && stat.isFile() ?
-                    newPath :
-                    path;
+                const stat = statSync(platformPath);
+                if (stat && stat.isFile()) {
+                    return platformPath;
+                }
             } catch(_e) {
                 // continue checking the other platforms
             }
         }
 
         return path;
+    }
+
+    // Convert paths from \c\some\path to c:\some\path
+    private toSystemPath(path: string) {
+        if (!process.platform.startsWith("win32")) {
+            return path;
+        }
+
+        const drive = path.match(/^\\(\w)\\(.*)$/);
+        return drive ?
+            `${drive[1]}:\\${drive[2]}`:
+            path;
     }
 
     get capabilities(): HostCapabilities {
