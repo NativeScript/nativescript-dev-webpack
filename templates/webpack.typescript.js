@@ -23,7 +23,6 @@ module.exports = env => {
 
     const platforms = ["ios", "android"];
     const projectRoot = __dirname;
-    nsWebpack.loadAdditionalPlugins({ projectDir: projectRoot });
 
     // Default destination inside platforms/<platform>/...
     const dist = resolve(projectRoot, nsWebpack.getAppPath(platform, projectRoot));
@@ -146,7 +145,6 @@ module.exports = env => {
                         {
                             loader: "nativescript-dev-webpack/bundle-config-loader",
                             options: {
-                                registerPages: true, // applicable only for non-angular apps
                                 loadCss: !snapshot, // load the application css if in debug mode
                             }
                         },

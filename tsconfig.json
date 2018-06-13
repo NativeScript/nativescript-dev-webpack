@@ -8,8 +8,8 @@
         "skipLibCheck": true
     },
     "files": [
-        "plugins/NativeScriptAngularCompilerPlugin.ts",
         "plugins/PlatformFSPlugin.ts",
-        "plugins/WatchStateLoggerPlugin.ts"
+        "plugins/WatchStateLoggerPlugin.ts",
+        "host/platform.ts"
     ]
 }

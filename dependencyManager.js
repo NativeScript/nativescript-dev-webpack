@@ -74,8 +74,8 @@ function getRequiredDeps(packageJson) {
     if (isAngular({packageJson})) {
         Object.assign(deps, {
             "@angular/compiler-cli": packageJson.dependencies["@angular/core"],
-            "@ngtools/webpack": "~6.0.3",
-            "@angular-devkit/core": "~0.6.3",
+            "@ngtools/webpack": "~6.1.0-beta.1",
+            "@angular-devkit/core": "~0.7.0-beta.1",
             "resolve-url-loader": "~2.3.0",
         });
     } else if (isTypeScript({packageJson})) {
