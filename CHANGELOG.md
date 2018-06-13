@@ -1,3 +1,18 @@
+<a name="0.13.0"></a>
+# [0.13.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.12.0...0.13.0) (2018-06-13)
+
+
+### Features
+
+* add platform matching host for AngularCompilerPlugin ([#539](https://github.com/NativeScript/nativescript-dev-webpack/issues/539)) ([979f732](https://github.com/NativeScript/nativescript-dev-webpack/commit/979f732)), closes [#547](https://github.com/NativeScript/nativescript-dev-webpack/issues/547)
+
+
+### Bug Fixes
+
+* Webpack recompile fails when using AoT with watch mode ([#547](https://github.com/NativeScript/nativescript-dev-webpack/issues/547)) ([979f732](https://github.com/NativeScript/nativescript-dev-webpack/commit/979f732)), closes [#547](https://github.com/NativeScript/nativescript-dev-webpack/issues/547)
+
+
+
 <a name="0.12.0"></a>
 # [0.12.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.11.0...0.12.0) (2018-05-30)
 
