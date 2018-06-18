@@ -98,9 +98,5 @@
     "rxjs": "^6.2.0",
     "source-map-support": "^0.5.0",
     "typescript": "~2.7.2"
-  },
-  "peerDependencies": {
-    "@ngtools/webpack": "^6.1.0-rc.0",
-    "@angular/compiler-cli": "^6.0.0"
   }
 }
