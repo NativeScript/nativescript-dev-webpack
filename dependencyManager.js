@@ -1,4 +1,4 @@
-const { isAngular, isTypeScript, isSass } = require("./projectHelpers");
+const { isAngular } = require("./projectHelpers");
 
 const NEW_DEPS_MESSAGE = `\
 A few new dependencies were added. \
@@ -21,10 +21,6 @@ You can also pass the "--env.uglify" flag to use UglifyJS for minification.
 For more information check out https://docs.nativescript.org/tooling/bundling-with-webpack#bundling.
 `;
 
-function forceUpdateProjectDeps(packageJson) {
-    return addProjectDeps(packageJson, true);
-}
-
 function addProjectDeps(packageJson, force = false) {
     packageJson.devDependencies = packageJson.devDependencies || {};
     const postinstallOptions = {
@@ -39,6 +35,35 @@ function addProjectDeps(packageJson, force = false) {
     });
 
     return postinstallOptions;
+}
+
+function forceUpdateProjectDeps(packageJson) {
+    removeObsoleteDeps(packageJson);
+
+    return addProjectDeps(packageJson, true);
+}
+
+function removeObsoleteDeps(packageJson) {
+    const depsToRemove = [
+        "webpack",
+        "webpack-cli",
+        "webpack-bundle-analyzer",
+        "webpack-sources",
+        "clean-webpack-plugin",
+        "copy-webpack-plugin",
+        "raw-loader",
+        "css-loader",
+        "nativescript-worker-loader",
+        "extract-text-webpack-plugin",
+        "uglifyjs-webpack-plugin",
+        "@ngtools/webpack",
+        "@angular-devkit/core",
+        "resolve-url-loader",
+        "awesome-typescript-loader",
+        "sass-loader",
+    ];
+
+    depsToRemove.forEach(dep => delete packageJson.devDependencies[dep]);
 }
 
 function addDependency(deps, name, version, force) {
@@ -57,36 +82,12 @@ function addDependency(deps, name, version, force) {
 }
 
 function getRequiredDeps(packageJson) {
-    const deps = {
-        "webpack": "~4.6.0",
-        "webpack-cli": "~2.1.3",
-        "webpack-bundle-analyzer": "~2.13.0",
-        "webpack-sources": "~1.1.0",
-        "clean-webpack-plugin": "~0.1.19",
-        "copy-webpack-plugin": "~4.5.1",
-        "raw-loader": "~0.5.1",
-        "css-loader": "~0.28.11",
-        "nativescript-worker-loader": "~0.9.0",
-        "extract-text-webpack-plugin": "~3.0.2",
-        "uglifyjs-webpack-plugin": "~1.2.5",
-    };
-
-    if (isAngular({packageJson})) {
-        Object.assign(deps, {
-            "@angular/compiler-cli": packageJson.dependencies["@angular/core"],
-            "@ngtools/webpack": "~6.1.0-beta.1",
-            "@angular-devkit/core": "~0.7.0-beta.1",
-            "resolve-url-loader": "~2.3.0",
-        });
-    } else if (isTypeScript({packageJson})) {
-        Object.assign(deps, { "awesome-typescript-loader": "~5.0.0" });
-    }
-
-    if (isSass({packageJson})) {
-        Object.assign(deps, { "sass-loader": "~7.0.1" });
-    }
-
-    return deps;
+    return isAngular({packageJson}) ?
+        {
+            "@angular-devkit/build-angular": "~0.7.0-rc.0",
+            "@angular/compiler-cli": "~6.1.0-beta.1",
+        } :
+        { };
 }
 
 function showHelperMessages({ newDepsAdded, hasOldDeps }) {
