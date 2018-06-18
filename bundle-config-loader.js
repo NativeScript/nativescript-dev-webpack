@@ -2,6 +2,11 @@ module.exports = function(source) {
     this.cacheable();
     const { angular = false, loadCss = true } = this.query;
 
+    source = `
+        require("tns-core-modules/bundle-entry-points");
+        ${source}
+    `;
+
     if (!angular) {
         source = `
             require("nativescript-dev-webpack/register-modules");
