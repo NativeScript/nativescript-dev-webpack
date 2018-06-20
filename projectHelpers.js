@@ -28,19 +28,6 @@ const isAngular = ({ projectDir, packageJson } = {}) => {
         .some(dependency => /^@angular\b/.test(dependency));
 };
 
-const isSass = ({ projectDir, packageJson } = {}) => {
-    packageJson = packageJson || getPackageJson(projectDir);
-    const SASS_PLUGIN_NAME = "nativescript-dev-sass";
-
-    return (
-        packageJson.dependencies &&
-        packageJson.dependencies.hasOwnProperty(SASS_PLUGIN_NAME)
-    ) || (
-        packageJson.devDependencies &&
-        packageJson.devDependencies.hasOwnProperty(SASS_PLUGIN_NAME)
-    );
-};
-
 const getWebpackConfig = (projectDir, env, configPath = "webpack.config.js") => {
     const configAbsolutePath = resolve(projectDir, configPath);
     let config;
@@ -112,7 +99,6 @@ module.exports = {
     isAndroid,
     isIos,
     isAngular,
-    isSass,
     isTypeScript,
     writePackageJson,
 };
