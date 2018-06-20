@@ -66,6 +66,16 @@ function safeGet(object, property, ...args) {
         value;
 }
 
+// Convert paths from C:\some\path to C:/some/path in order to be required
+function convertSlashesInPath(modulePath) {
+    if (isWindows) {
+        modulePath = modulePath.replace(/\\/g, "/");
+    }
+    return modulePath;
+}
+
+const isWindows = process.platform.startsWith("win32");
+
 module.exports = {
     getAppPathFromProjectData,
     getAppResourcesPathFromProjectData,
@@ -76,4 +86,5 @@ module.exports = {
     isAngular,
     isTypeScript,
     writePackageJson,
+    convertSlashesInPath
 };
