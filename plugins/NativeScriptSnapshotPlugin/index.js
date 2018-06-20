@@ -45,7 +45,13 @@ exports.NativeScriptSnapshotPlugin = (function() {
 
         let snapshotEntryContent = "";
         if (includeApplicationCss) {
-            snapshotEntryContent += `require("nativescript-dev-webpack/load-application-css")(${options.angular});`;
+            snapshotEntryContent += `
+            require("${
+                options.angular ?
+                    'nativescript-dev-webpack/load-application-css-angular' :
+                    'nativescript-dev-webpack/load-application-css-regular'
+            }")();
+            `;
         }
         snapshotEntryContent += [ ...requireModules, ...internalRequireModules]
             .map(mod => `require('${mod}')`).join(";");
