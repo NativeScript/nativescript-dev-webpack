@@ -1,6 +1,7 @@
 const { parse, relative, join, basename, extname } = require("path");
+const { convertSlashesInPath } = require("./projectHelpers");
 
-module.exports = function(source) {
+module.exports = function (source) {
     this.value = source;
 
     const { XmlParser } = require("tns-core-modules/xml");
@@ -47,7 +48,7 @@ module.exports = function(source) {
             namespaces.push({ name: namespace, path: resolvedPath });
             namespaces.push({ name: moduleName, path: resolvedPath });
 
-            const { dir, name } =  parse(resolvedPath);
+            const { dir, name } = parse(resolvedPath);
             const noExtFilename = join(dir, name);
 
             const xml = tryResolve(`${noExtFilename}.xml`);
@@ -67,6 +68,11 @@ module.exports = function(source) {
     parser.parse(source);
 
     const moduleRegisters = namespaces
+        .map(function (n) {
+            let obj = n;
+            obj.path = convertSlashesInPath(n.path);
+            return obj;
+        })
         .map(n =>
             `global.registerModule("${n.name}", function() { return require("${n.path}"); });`
         )
@@ -86,9 +92,8 @@ module.exports = function(source) {
 function tryResolve(path) {
     try {
         return require.resolve(path);
-    } catch(e) {
+    } catch (e) {
         // The path couldn't be resolved
         return;
     }
 }
-
