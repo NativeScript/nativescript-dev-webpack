@@ -1,7 +1,7 @@
 const frame = require("ui/frame");
 
 const superProto = android.app.Activity.prototype;
-const Activity = android.app.Activity.extend("org.myApp.MainActivity", {
+android.app.Activity.extend("org.myApp.MainActivity", {
     onCreate: function(savedInstanceState) {
         if(!this._callbacks) {
             frame.setActivityCallbacks(this);
