@@ -15,3 +15,5 @@ tsconfig.aot.json
 
 vendor.js
 vendor.ts
+
+tsconfig.esm.json
