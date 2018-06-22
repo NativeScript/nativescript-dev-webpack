@@ -1,3 +1,52 @@
+<a name="0.14.0"></a>
+# [0.14.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.12.0...0.14.0) (2018-06-22)
+
+
+### Bug Fixes
+
+* register UI modules in NG apps ([#570](https://github.com/NativeScript/nativescript-dev-webpack/issues/570)) ([c27e0db](https://github.com/NativeScript/nativescript-dev-webpack/commit/c27e0db))
+
+
+### Features
+
+* make webpack deps production deps of the plugin ([#571](https://github.com/NativeScript/nativescript-dev-webpack/issues/571)) ([ba68a1b](https://github.com/NativeScript/nativescript-dev-webpack/commit/ba68a1b)), closes [#569](https://github.com/NativeScript/nativescript-dev-webpack/issues/569)
+
+
+### BREAKING CHANGES
+
+* The dependencies that were previously added by the nativescript-dev-webpack plugin to the project's package.json are now dependencies of the plugin itself.
+
+MIGRATION:
+1. Remove all obsolete dependencies from your project. You can do that by invoking the script:
+```
+./node_modules/.bin/update-ns-webpack --deps
+```
+2. [Angular] Add the following packages as devDependencies:
+```
+//package.json
+
+"devDependencies": {
+    "@angular-devkit/build-angular": "~0.7.0-rc.0",
+    "@angular/compiler-cli": "~6.1.0-beta.1",
+    //...
+}
+```
+
+If you see one of the following errors:
+```
+Error: Cannot find module '@ngtools/webpack'
+Error: No module factory available for dependency type: ContextElementDependency
+Error: Cannot find module '/Users/nsbuilduser/workspace/master-nativescript-sdk-examples-js-android/nativescript-sdk-examples-js/node_modules/webpack/bin/webpack.js
+```
+
+try running a clean npm install:
+```
+rm -rf node_modules package-lock.json
+npm i
+```
+
+
+
 <a name="0.13.0"></a>
 # [0.13.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.12.0...0.13.0) (2018-06-13)
 
