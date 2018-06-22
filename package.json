@@ -71,7 +71,7 @@
     "nativescript-hook": "0.2.4",
     "proxy-lib": "0.4.0",
     "request": "2.83.0",
-    "schema-utils": "0.4.3",
+    "schema-utils": "0.4.5",
     "semver": "5.4.1",
     "shelljs": "0.6.0",
     "tapable": "1.0.0",
