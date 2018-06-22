@@ -16,7 +16,11 @@ module.exports = function(source) {
 
     if (loadCss) {
         source = `
-            require("nativescript-dev-webpack/load-application-css")(${angular});
+            require("${
+                angular ?
+                    'nativescript-dev-webpack/load-application-css-angular' :
+                    'nativescript-dev-webpack/load-application-css-regular'
+            }")();
             ${source}
         `;
     }
