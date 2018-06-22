@@ -1,3 +1,40 @@
+<a name="0.14.0"></a>
+# [0.14.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.12.0...0.14.0) (2018-06-22)
+
+
+### Bug Fixes
+
+* register UI modules in NG apps ([#570](https://github.com/NativeScript/nativescript-dev-webpack/issues/570)) ([c27e0db](https://github.com/NativeScript/nativescript-dev-webpack/commit/c27e0db))
+
+
+### Features
+
+* add platform matching host for AngularCompilerPlugin ([#539](https://github.com/NativeScript/nativescript-dev-webpack/issues/539)) ([979f732](https://github.com/NativeScript/nativescript-dev-webpack/commit/979f732)), closes [#547](https://github.com/NativeScript/nativescript-dev-webpack/issues/547)
+* make webpack deps production deps of the plugin ([#571](https://github.com/NativeScript/nativescript-dev-webpack/issues/571)) ([ba68a1b](https://github.com/NativeScript/nativescript-dev-webpack/commit/ba68a1b)), closes [#569](https://github.com/NativeScript/nativescript-dev-webpack/issues/569)
+
+
+### BREAKING CHANGES
+
+* The dependencies that were previously added by the nativescript-dev-webpack plugin to the project's package.json are now dependencies of the plugin itself.
+
+MIGRATION:
+1. Remove all obsolete dependencies from your project. You can do that by invoking the script:
+```
+./node_modules/.bin/update-ns-webpack --deps
+```
+2. [Angular] Add the following packages as devDependencies:
+```
+//package.json
+
+"devDependencies": {
+    "@angular-devkit/build-angular": "~0.7.0-rc.0",
+    "@angular/compiler-cli": "~6.1.0-beta.1",
+    //...
+}
+```
+
+
+
 <a name="0.13.0"></a>
 # [0.13.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.12.0...0.13.0) (2018-06-13)
 
