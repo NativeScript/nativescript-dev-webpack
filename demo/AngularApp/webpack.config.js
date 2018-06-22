@@ -67,6 +67,7 @@ module.exports = env => {
         target: nativescriptTarget,
         entry: {
             bundle: entryPath,
+            application: "./application.android",
         },
         output: {
             pathinfo: false,
