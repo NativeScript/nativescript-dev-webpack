@@ -68,11 +68,7 @@ module.exports = function (source) {
     parser.parse(source);
 
     const moduleRegisters = namespaces
-        .map(function (n) {
-            let obj = n;
-            obj.path = convertSlashesInPath(n.path);
-            return obj;
-        })
+        .map(convertPath)
         .map(n =>
             `global.registerModule("${n.name}", function() { return require("${n.path}"); });`
         )
@@ -87,6 +83,11 @@ module.exports = function (source) {
     const wrapped = `${moduleRegisters}\nmodule.exports = ${json}`;
 
     this.callback(null, wrapped);
+}
+
+function convertPath(obj) {
+    obj.path = convertSlashesInPath(obj.path);
+    return obj;
 }
 
 function tryResolve(path) {
