@@ -1,15 +1,16 @@
-module.exports = function(source) {
+module.exports = function (source) {
     this.cacheable();
-    const { angular = false, loadCss = true } = this.query;
+    const { angular = false, loadCss = true, registerModules = /(root|page)\.(xml|css|js|ts|scss)$/ } = this.query;
 
     source = `
         require("tns-core-modules/bundle-entry-points");
         ${source}
     `;
 
-    if (!angular) {
+    if (!angular && registerModules) {
         source = `
-            require("nativescript-dev-webpack/register-modules");
+            const context = require.context("~/", true, ${registerModules});
+            global.registerWebpackModules(context);
             ${source}
         `;
     }
