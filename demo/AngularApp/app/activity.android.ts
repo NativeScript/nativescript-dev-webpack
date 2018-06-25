@@ -4,7 +4,7 @@ import {setActivityCallbacks, AndroidActivityCallbacks} from "ui/frame";
 class Activity extends android.app.Activity {
     private _callbacks: AndroidActivityCallbacks;
 
-    protected onCreate(savedInstanceState: android.os.Bundle): void {
+    protected onCreate(savedInstanceState: any): void { // android.os.Bundle
         if (!this._callbacks) {
             setActivityCallbacks(this);
         }
@@ -12,7 +12,7 @@ class Activity extends android.app.Activity {
         this._callbacks.onCreate(this, savedInstanceState, super.onCreate);
     }
 
-    protected onSaveInstanceState(outState: android.os.Bundle): void {
+    protected onSaveInstanceState(outState: any): void { // android.os.Bundle
         this._callbacks.onSaveInstanceState(this, outState, super.onSaveInstanceState);
     }
 
@@ -36,7 +36,7 @@ class Activity extends android.app.Activity {
         this._callbacks.onRequestPermissionsResult(this, requestCode, permissions, grantResults, undefined /*TODO: Enable if needed*/);
     }
 
-    protected onActivityResult(requestCode: number, resultCode: number, data: android.content.Intent): void {
+    protected onActivityResult(requestCode: number, resultCode: number, data: any): void { // android.content.Intent
         this._callbacks.onActivityResult(this, requestCode, resultCode, data, super.onActivityResult);
     }
 }

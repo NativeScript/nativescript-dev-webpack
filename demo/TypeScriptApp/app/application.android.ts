@@ -4,7 +4,7 @@ class Application extends android.app.Application {
         super.onCreate();
     }
 
-    protected attachBaseContext(baseContext: android.content.Context) {
+    protected attachBaseContext(baseContext: any) { // android.content.Context
         super.attachBaseContext(baseContext);
     }
 }
