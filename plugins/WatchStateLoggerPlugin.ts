@@ -1,3 +1,4 @@
+import { join } from "path";
 
 export enum messages {
     compilationComplete = "Webpack compilation complete.",
@@ -31,7 +32,8 @@ export class WatchStateLoggerPlugin {
 
             const emittedFiles = Object
                 .keys(compilation.assets)
-                .filter(assetKey => compilation.assets[assetKey].emitted);
+                .filter(assetKey => compilation.assets[assetKey].emitted)
+                .map(file => join(compiler.context, file));
 
             process.send && process.send(messages.compilationComplete, error => null);
             // Send emitted files so they can be LiveSynced if need be

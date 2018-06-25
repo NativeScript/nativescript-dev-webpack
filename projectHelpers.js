@@ -1,6 +1,5 @@
 const { resolve } = require("path");
 const { readFileSync, writeFileSync } = require("fs");
-const { EOL } = require("os");
 
 const hook = require("nativescript-hook")(__dirname);
 
@@ -26,29 +25,6 @@ const isAngular = ({ projectDir, packageJson } = {}) => {
 
     return packageJson.dependencies && Object.keys(packageJson.dependencies)
         .some(dependency => /^@angular\b/.test(dependency));
-};
-
-const getWebpackConfig = (projectDir, env, configPath = "webpack.config.js") => {
-    const configAbsolutePath = resolve(projectDir, configPath);
-    let config;
-
-    try {
-        config = require(configAbsolutePath);
-    } catch (e) {
-        throw new Error(
-            `Couldn't load webpack config from ${configAbsolutePath}. ` +
-            `Original error:${EOL}${e}`
-        );
-    }
-    if (typeof config === "function") {
-        config = config(env);
-    }
-
-    if (!config) {
-        throw new Error(`Webpack config from ${configAbsolutePath} is empty!`);
-    }
-
-    return config;
 };
 
 const getPackageJson = projectDir => {
@@ -95,7 +71,6 @@ module.exports = {
     getAppResourcesPathFromProjectData,
     getPackageJson,
     getProjectDir,
-    getWebpackConfig,
     isAndroid,
     isIos,
     isAngular,
