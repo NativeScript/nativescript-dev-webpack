@@ -16,4 +16,4 @@ tsconfig.aot.json
 vendor.js
 vendor.ts
 
-webpack.config.js
+tsconfig.esm.json
