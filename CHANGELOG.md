@@ -1,3 +1,19 @@
+<a name="0.14.2"></a>
+## [0.14.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.14.1...0.14.2) (2018-06-27)
+
+
+### Bug Fixes
+
+* resolve appComponents and xml namespaces absolute paths on Windows ([#578](https://github.com/NativeScript/nativescript-dev-webpack/issues/578)) ([14de7e1](https://github.com/NativeScript/nativescript-dev-webpack/commit/14de7e1))
+* tell the {N} CLI to ignore the source dir when watching for changes ([#586](https://github.com/NativeScript/nativescript-dev-webpack/issues/586)) ([6b0f56b](https://github.com/NativeScript/nativescript-dev-webpack/commit/6b0f56b)), closes [#584](https://github.com/NativeScript/nativescript-dev-webpack/issues/584)
+
+
+### Features
+
+* add setting for plain modules regex ([#582](https://github.com/NativeScript/nativescript-dev-webpack/issues/582)) ([404abbb](https://github.com/NativeScript/nativescript-dev-webpack/commit/404abbb)), closes [#556](https://github.com/NativeScript/nativescript-dev-webpack/issues/556)
+
+
+
 <a name="0.14.1"></a>
 ## [0.14.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.14.0...0.14.1) (2018-06-22)
 
