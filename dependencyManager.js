@@ -56,7 +56,6 @@ function removeObsoleteDeps(packageJson) {
         "nativescript-worker-loader",
         "extract-text-webpack-plugin",
         "uglifyjs-webpack-plugin",
-        "@ngtools/webpack",
         "@angular-devkit/core",
         "resolve-url-loader",
         "awesome-typescript-loader",
@@ -82,12 +81,29 @@ function addDependency(deps, name, version, force) {
 }
 
 function getRequiredDeps(packageJson) {
-    return isAngular({packageJson}) ?
-        {
-            "@angular-devkit/build-angular": "~0.7.0-rc.0",
-            "@angular/compiler-cli": "~6.1.0-beta.1",
-        } :
-        { };
+    if (!isAngular({packageJson})) {
+        return false;
+    }
+
+    const deps = {
+       "@angular/compiler-cli": "~6.1.0-beta.3",
+    };
+
+    if (!dependsOn(packageJson, "@angular-devkit/build-angular")) {
+        deps["@ngtools/webpack"] = "~6.1.0-rc.0";
+    }
+
+    return deps;
+}
+
+
+function dependsOn(packageJson, package) {
+    if (!packageJson) {
+        return false;
+    }
+
+    return packageJson.dependencies.hasOwnProperty(package) ||
+        packageJson.devDependencies.hasOwnProperty(package);
 }
 
 function showHelperMessages({ newDepsAdded, hasOldDeps }) {
