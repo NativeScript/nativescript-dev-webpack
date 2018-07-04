@@ -28,7 +28,7 @@
     "mocha-junit-reporter": "^1.13.0",
     "mocha-multi": "^0.11.0",
     "nativescript-dev-appium": "next",
-    "nativescript-dev-sass": "^1.3.5",
+    "nativescript-dev-sass": "next",
     "nativescript-dev-typescript": "next",
     "nativescript-dev-webpack": "file:../..",
     "typescript": "~2.7.2"
