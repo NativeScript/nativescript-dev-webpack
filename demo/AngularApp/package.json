@@ -13,20 +13,20 @@
     }
   },
   "dependencies": {
-    "@angular/common": "~6.0.0",
-    "@angular/compiler": "~6.0.0",
-    "@angular/core": "~6.0.0",
-    "@angular/forms": "~6.0.0",
-    "@angular/http": "~6.0.0",
-    "@angular/platform-browser": "~6.0.0",
-    "@angular/platform-browser-dynamic": "~6.0.0",
-    "@angular/router": "~6.0.0",
-    "nativescript-angular": "~6.0.0",
+    "@angular/common": "~6.1.0-beta.3",
+    "@angular/compiler": "~6.1.0-beta.3",
+    "@angular/core": "~6.1.0-beta.3",
+    "@angular/forms": "~6.1.0-beta.3",
+    "@angular/http": "~6.1.0-beta.3",
+    "@angular/platform-browser": "~6.1.0-beta.3",
+    "@angular/platform-browser-dynamic": "~6.1.0-beta.3",
+    "@angular/router": "~6.1.0-beta.3",
+    "nativescript-angular": "next",
     "nativescript-theme-core": "~1.0.2",
     "reflect-metadata": "~0.1.8",
-    "rxjs": "~6.0.0-beta.1",
+    "rxjs": "~6.0.0 || >=6.1.0",
     "tns-core-modules": "next",
-    "zone.js": "^0.8.4"
+    "zone.js": "^0.8.26"
   },
   "devDependencies": {
     "@ngtools/webpack": "6.1.0-rc.0",
