@@ -29,10 +29,11 @@
     "mocha-multi": "^0.11.0",
     "nativescript-dev-appium": "next",
     "nativescript-dev-sass": "next",
-    "nativescript-dev-webpack": "file:../..",
+    "nativescript-dev-webpack": "file:../../nativescript-dev-webpack.tgz",
     "node-sass": "^4.7.1"
   },
   "scripts": {
+    "preinstall": "cd ../../ && npm install && npm pack && cp nativescript-dev-webpack*.tgz nativescript-dev-webpack.tgz",
     "e2e": "mocha --opts ../config/mocha.opts --recursive e2e --appiumCapsLocation ../config/appium.capabilities.json"
   }
 }
