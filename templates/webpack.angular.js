@@ -100,7 +100,7 @@ module.exports = env => {
             "fs": "empty",
             "__dirname": false,
         },
-        devtool: "none",
+        devtool: env.sourceMap ? "inline-source-map" : "none",
         optimization: {
             splitChunks: {
                 cacheGroups: {
@@ -229,6 +229,7 @@ module.exports = env => {
                 entryModule: resolve(appPath, "app.module#AppModule"),
                 tsConfigPath: join(__dirname, "tsconfig.esm.json"),
                 skipCodeGeneration: !aot,
+                sourceMap: !!env.sourceMap,
             }),
             // Does IPC communication with the {N} CLI to notify events when running in watch mode.
             new nsWebpack.WatchStateLoggerPlugin(),
