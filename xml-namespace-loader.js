@@ -3,6 +3,7 @@ const { convertSlashesInPath } = require("./projectHelpers");
 
 module.exports = function (source) {
     this.value = source;
+    const { ignore } = this.query;
 
     const { XmlParser } = require("tns-core-modules/xml");
 
@@ -14,7 +15,8 @@ module.exports = function (source) {
         if (
             namespace &&
             !namespace.startsWith("http") &&
-            !namespaces.some(n => n.name === moduleName)
+            !namespaces.some(n => n.name === moduleName) &&
+            (!ignore || !moduleName.match(ignore))
         ) {
             const localNamespacePath = join(this.rootContext, namespace);
             const localModulePath = join(localNamespacePath, elementName);
