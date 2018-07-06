@@ -1,3 +1,19 @@
+<a name="0.14.3"></a>
+## [0.14.3](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.14.2...0.14.3) (2018-07-05)
+
+
+### Bug Fixes
+
+* Angular projects: the plugin will add `@ngtools/webpack` to the project deps only if `@angular-devkit/build-angular` is not a dependency. ([#594](https://github.com/NativeScript/nativescript-dev-webpack/issues/594)) ([7b15418](https://github.com/NativeScript/nativescript-dev-webpack/commit/7b15418)), closes [#595](https://github.com/NativeScript/nativescript-dev-webpack/issues/595)
+
+
+### Migration
+
+It's a good idea to remove `@angular-devkit/build-angular` from the
+package.json and add `@ngtools/webpack` instead. This will speed up
+the build.
+
+
 <a name="0.14.2"></a>
 ## [0.14.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.14.1...0.14.2) (2018-06-27)
 
