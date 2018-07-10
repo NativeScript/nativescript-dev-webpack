@@ -90,7 +90,7 @@ function getRequiredDeps(packageJson) {
     };
 
     if (!dependsOn(packageJson, "@angular-devkit/build-angular")) {
-        deps["@ngtools/webpack"] = "~6.1.0-rc.0";
+        deps["@ngtools/webpack"] = "6.1.0-rc.0";
     }
 
     return deps;
