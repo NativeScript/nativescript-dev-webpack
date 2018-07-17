@@ -39,6 +39,7 @@ module.exports = env => {
         snapshot, // --env.snapshot
         uglify, // --env.uglify
         report, // --env.report
+        sourceMap, // --env.sourceMap
     } = env;
 
     const appFullPath = resolve(projectRoot, appPath);
@@ -93,7 +94,7 @@ module.exports = env => {
             "fs": "empty",
             "__dirname": false,
         },
-        devtool: "none",
+        devtool: sourceMap ? "inline-source-map" : "none",
         optimization:  {
             splitChunks: {
                 cacheGroups: {
