@@ -62,20 +62,21 @@ You are good to go! You're strongly encouraged to follow the official NativeScri
 
 NOTE: There are three test apps in the repository, located in the `/demo` directory. The steps below describe how to run the tests for the `AngularApp`, but the same approach can be used to run any other `e2e` tests.
 
-1. Navigate to `demo/AngularApp`
+1. Navigate to `demo/AngularApp`.
     ``` bash
     cd demo/AngularApp
     ```
 
-2. Install dependencies. This also installs your local copy of the nativescript-angular plugin.
-    ``` bash
-    npm install
+2. Install your local copy of the `nativescript-dev-webpack` plugin.
+    ```bash
+    npm run setup
     ```
+
 3. Make sure to have an emulator set up or connect a physical Android/iOS device.
 
-4. Build the app for Android or iOS
+4. Build the app for Android or iOS.
     ``` bash
-    tns run android/ios
+    tns run android/ios --bundle
     ```
 
 5. Install [appium](http://appium.io/) globally.

@@ -13,24 +13,24 @@
     }
   },
   "dependencies": {
-    "@angular/common": "~6.0.0",
-    "@angular/compiler": "~6.0.0",
-    "@angular/core": "~6.0.0",
-    "@angular/forms": "~6.0.0",
-    "@angular/http": "~6.0.0",
-    "@angular/platform-browser": "~6.0.0",
-    "@angular/platform-browser-dynamic": "~6.0.0",
-    "@angular/router": "~6.0.0",
-    "nativescript-angular": "~6.0.0",
+    "@angular/common": "~6.1.0-beta.3",
+    "@angular/compiler": "~6.1.0-beta.3",
+    "@angular/core": "~6.1.0-beta.3",
+    "@angular/forms": "~6.1.0-beta.3",
+    "@angular/http": "~6.1.0-beta.3",
+    "@angular/platform-browser": "~6.1.0-beta.3",
+    "@angular/platform-browser-dynamic": "~6.1.0-beta.3",
+    "@angular/router": "~6.1.0-beta.3",
+    "nativescript-angular": "next",
     "nativescript-theme-core": "~1.0.2",
     "reflect-metadata": "~0.1.8",
-    "rxjs": "~6.0.0-beta.1",
+    "rxjs": "~6.0.0 || >=6.1.0",
     "tns-core-modules": "next",
-    "zone.js": "^0.8.4"
+    "zone.js": "^0.8.26"
   },
   "devDependencies": {
+    "@angular/compiler-cli": "~6.1.0-beta.3",
     "@ngtools/webpack": "6.1.0-rc.0",
-    "@angular/compiler-cli": "~6.1.0-beta.1",
     "@types/chai": "^4.0.2",
     "@types/mocha": "^2.2.41",
     "@types/node": "^7.0.5",
@@ -44,12 +44,13 @@
     "mocha-junit-reporter": "^1.13.0",
     "mocha-multi": "^0.11.0",
     "nativescript-dev-appium": "next",
-    "nativescript-dev-sass": "^1.3.5",
+    "nativescript-dev-sass": "next",
     "nativescript-dev-typescript": "next",
-    "nativescript-dev-webpack": "file:../..",
+    "nativescript-dev-webpack": "next",
     "typescript": "~2.7.2"
   },
   "scripts": {
+    "setup": "npm pack ../../ && npm i -D nativescript-dev-webpack*.tgz",
     "e2e": "tsc -p e2e && mocha --opts ../config/mocha.opts --recursive e2e --appiumCapsLocation ../config/appium.capabilities.json",
     "compile-tests": "tsc -p e2e --watch"
   }
