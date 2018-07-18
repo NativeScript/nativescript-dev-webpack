@@ -23,9 +23,6 @@ module.exports = env => {
         throw new Error("You need to provide a target platform!");
     }
 
-    const extensions = ["tns", platform];
-    const platformHost = new PlatformReplacementHost(extensions);
-
     const projectRoot = __dirname;
 
     // Default destination inside platforms/<platform>/...
