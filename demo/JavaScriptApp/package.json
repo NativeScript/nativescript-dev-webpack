@@ -28,11 +28,12 @@
     "mocha-junit-reporter": "^1.13.0",
     "mocha-multi": "^0.11.0",
     "nativescript-dev-appium": "next",
-    "nativescript-dev-sass": "^1.3.5",
-    "nativescript-dev-webpack": "file:../..",
+    "nativescript-dev-sass": "next",
+    "nativescript-dev-webpack": "next",
     "node-sass": "^4.7.1"
   },
   "scripts": {
+    "setup": "npm pack ../../ && npm i -D nativescript-dev-webpack*.tgz",
     "e2e": "mocha --opts ../config/mocha.opts --recursive e2e --appiumCapsLocation ../config/appium.capabilities.json"
   }
 }
