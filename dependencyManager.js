@@ -86,11 +86,11 @@ function getRequiredDeps(packageJson) {
     }
 
     const deps = {
-       "@angular/compiler-cli": "~6.1.0-beta.3",
+       "@angular/compiler-cli": "~6.1.0-rc.0",
     };
 
     if (!dependsOn(packageJson, "@angular-devkit/build-angular")) {
-        deps["@ngtools/webpack"] = "6.1.0-rc.0";
+        deps["@ngtools/webpack"] = "~6.1.0-rc.2";
     }
 
     return deps;
