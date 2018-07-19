@@ -15,9 +15,9 @@ plugins/WatchStateLoggerPlugin.d.ts
 plugins/WatchStateLoggerPlugin.js
 plugins/WatchStateLoggerPlugin.js.map
 
-host/platform.d.ts
-host/platform.js
-host/platform.js.map
+host/resolver.d.ts
+host/resolver.js
+host/resolver.js.map
 
 hooks
 .DS_Store

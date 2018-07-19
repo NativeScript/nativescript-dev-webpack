@@ -1,2 +1,6 @@
-prepublish
+build
 demo
+
+*.ts
+!*.d.ts
+
