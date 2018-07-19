@@ -9,6 +9,7 @@ const {
 } = require("./projectHelpers");
 
 Object.assign(exports, require('./plugins'));
+Object.assign(exports, require('./host/resolver'));
 
 exports.getAotEntryModule = function (appDirectory) {
 	verifyEntryModuleDirectory(appDirectory);
