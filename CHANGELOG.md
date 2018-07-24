@@ -1,3 +1,19 @@
+<a name="0.15.0"></a>
+# [0.15.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.14.4...0.15.0) (2018-07-24)
+
+
+### Bug Fixes
+
+* **angular:** use hostReplacementPaths function instead of host ([#615](https://github.com/NativeScript/nativescript-dev-webpack/issues/615)) ([93c5f77](https://github.com/NativeScript/nativescript-dev-webpack/commit/93c5f77)), closes [#611](https://github.com/NativeScript/nativescript-dev-webpack/issues/611) [#601](https://github.com/NativeScript/nativescript-dev-webpack/issues/601)
+* array env args are serialized when sent to webpack ([#614](https://github.com/NativeScript/nativescript-dev-webpack/issues/614)) ([bfecb8c](https://github.com/NativeScript/nativescript-dev-webpack/commit/bfecb8c))
+
+
+### Features
+
+* **xml-namespace-loader:** add ignore option ([#605](https://github.com/NativeScript/nativescript-dev-webpack/issues/605)) ([b509bb3](https://github.com/NativeScript/nativescript-dev-webpack/commit/b509bb3)), closes [#558](https://github.com/NativeScript/nativescript-dev-webpack/issues/558)
+
+
+
 <a name="0.14.3"></a>
 ## [0.14.3](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.14.2...0.14.3) (2018-07-05)
 
