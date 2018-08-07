@@ -1,3 +1,12 @@
+<a name="0.15.1"></a>
+# [0.15.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.15.0...0.15.1) (2018-08-07)
+
+
+### Bug Fixes
+
+* define process as undefined ([#619](https://github.com/NativeScript/nativescript-dev-webpack/issues/619)) ([845f426](https://github.com/NativeScript/nativescript-dev-webpack/commit/845f426))
+
+
 <a name="0.15.0"></a>
 # [0.15.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.14.4...0.15.0) (2018-07-24)
 
