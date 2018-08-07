@@ -1,7 +1,7 @@
 import {setActivityCallbacks, AndroidActivityCallbacks} from "ui/frame";
 
 @JavaProxy("org.myApp.MainActivity")
-class Activity extends android.app.Activity {
+class Activity extends android.support.v7.app.AppCompatActivity {
     private _callbacks: AndroidActivityCallbacks;
 
     protected onCreate(savedInstanceState: any): void { // android.os.Bundle
