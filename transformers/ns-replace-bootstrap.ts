@@ -7,7 +7,7 @@ import {
     insertStarImport,
     ReplaceNodeOperation,
     makeTransform
-} from "@ngtools/webpack/src/transformers"
+} from "@ngtools/webpack/src/transformers";
 import { workaroundResolve } from '@ngtools/webpack/src/compiler_host';
 import { AngularCompilerPlugin } from '@ngtools/webpack';
 

@@ -10,7 +10,6 @@ const {
 
 Object.assign(exports, require("./plugins"));
 Object.assign(exports, require("./host/resolver"));
-Object.assign(exports, require("./transformers/ns-replace-bootstrap"));
 
 exports.getAotEntryModule = function (appDirectory) {
 	verifyEntryModuleDirectory(appDirectory);
