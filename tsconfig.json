@@ -10,6 +10,7 @@
     "files": [
         "plugins/PlatformFSPlugin.ts",
         "plugins/WatchStateLoggerPlugin.ts",
+        "transformers/ns-replace-bootstrap.ts",
         "host/resolver.ts"
     ]
 }

@@ -8,8 +8,8 @@ const {
     isIos,
 } = require("./projectHelpers");
 
-Object.assign(exports, require('./plugins'));
-Object.assign(exports, require('./host/resolver'));
+Object.assign(exports, require("./plugins"));
+Object.assign(exports, require("./host/resolver"));
 
 exports.getAotEntryModule = function (appDirectory) {
 	verifyEntryModuleDirectory(appDirectory);
