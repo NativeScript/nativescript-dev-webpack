@@ -7,9 +7,9 @@ plugins/NativeScriptAngularCompilerPlugin.d.ts
 plugins/NativeScriptAngularCompilerPlugin.js
 plugins/NativeScriptAngularCompilerPlugin.js.map
 
-plugins/ns-replace-bootstrap.d.ts
-plugins/ns-replace-bootstrap.js
-plugins/ns-replace-bootstrap.js.map
+transformers/ns-replace-bootstrap.d.ts
+transformers/ns-replace-bootstrap.js
+transformers/ns-replace-bootstrap.js.map
 
 plugins/PlatformFSPlugin.d.ts
 plugins/PlatformFSPlugin.js
