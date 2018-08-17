@@ -95,6 +95,6 @@
     "@types/node": "^8.0.0",
     "conventional-changelog-cli": "^1.3.22",
     "typescript": "~2.9.1",
-    "@ngtools/webpack": "git+https://github.com/angular/ngtools-webpack-builds.git"
+    "@ngtools/webpack": "~6.2.0-beta.3"
   }
 }
