@@ -54,7 +54,7 @@ module.exports = env => {
         hostReplacementPaths: nsWebpack.getResolver([platform, "tns"]),
         platformTransformers: aot ? [nsReplaceBootstrap(() => ngCompilerPlugin)] : null,
         mainPath: resolve(appPath, entryModule),
-        tsConfigPath: join(__dirname, "tsconfig.esm.json"),
+        tsConfigPath: join(__dirname, "tsconfig.tns.json"),
         skipCodeGeneration: !aot,
         sourceMap: !!sourceMap,
     });
