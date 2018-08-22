@@ -73,9 +73,9 @@ export function nsReplaceBootstrap(getNgCompiler: () => AngularCompilerPlugin): 
                 return;
             }
 
-            const platformBrowserDynamicIdentifier = innerCallExpr.expression as ts.Identifier;
+            const platformNativeScriptDynamicIdentifier = innerCallExpr.expression as ts.Identifier;
 
-            const idPlatformBrowser = ts.createUniqueName('__NgCli_bootstrap_');
+            const idPlatformNativeScript = ts.createUniqueName('__NgCli_bootstrap_');
             const idNgFactory = ts.createUniqueName('__NgCli_bootstrap_');
 
             const firstNode = getFirstNode(sourceFile);
@@ -88,7 +88,7 @@ export function nsReplaceBootstrap(getNgCompiler: () => AngularCompilerPlugin): 
                 // import * as __NgCli_bootstrap_2 from "nativescript-angular/platform-static";
                 ...insertStarImport(
                     sourceFile,
-                    idPlatformBrowser,
+                    idPlatformNativeScript,
                     'nativescript-angular/platform-static',
                     firstNode,
                     true,
@@ -111,8 +111,8 @@ export function nsReplaceBootstrap(getNgCompiler: () => AngularCompilerPlugin): 
 
                 // Replace 'platformNativeScriptDynamic' with 'platformNativeScript'
                 // and elide all imports of 'platformNativeScriptDynamic'
-                new ReplaceNodeOperation(sourceFile, platformBrowserDynamicIdentifier,
-                    ts.createPropertyAccess(idPlatformBrowser, 'platformNativeScript')),
+                new ReplaceNodeOperation(sourceFile, platformNativeScriptDynamicIdentifier,
+                    ts.createPropertyAccess(idPlatformNativeScript, 'platformNativeScript')),
 
                 // Replace the invocation of 'boostrapModule' with 'bootsrapModuleFactory'
                 new ReplaceNodeOperation(sourceFile, bootstrapModuleIdentifier,
