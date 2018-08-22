@@ -81,16 +81,25 @@ export function nsReplaceBootstrap(getNgCompiler: () => AngularCompilerPlugin): 
             const factoryClassName = entryModule.className + 'NgFactory';
             const factoryModulePath = normalizedEntryModulePath + '.ngfactory';
             ops.push(
-                // Replace the entry module import.
+                // Insert an import of the module factory:
+                // import * as __NgCli_bootstrap_1 from "./app.module.ngfactory";
                 ...insertStarImport(sourceFile, idNgFactory, factoryModulePath),
+
+                // Replace the NgModule nodes with NgModuleFactory nodes
+                // from 'AppModule' to 'AppModuleNgFactory'
                 new ReplaceNodeOperation(sourceFile, entryModuleIdentifier,
                     ts.createPropertyAccess(idNgFactory, ts.createIdentifier(factoryClassName))),
 
-                // Replace the platformBrowserDynamic import.
+                // Insert an import of the {N} Angular static bootstrap module:
+                // import * as __NgCli_bootstrap_2 from "nativescript-angular/platform-static";
                 ...insertStarImport(sourceFile, idPlatformBrowser, 'nativescript-angular/platform-static'),
+
+                // Replace 'platformNativeScriptDynamic' with 'platformNativeScript'
+                // and elide all imports of 'platformNativeScriptDynamic'
                 new ReplaceNodeOperation(sourceFile, platformBrowserDynamicIdentifier,
                     ts.createPropertyAccess(idPlatformBrowser, 'platformNativeScript')),
 
+                // Replace the invocation of 'boostrapModule' with 'bootsrapModuleFactory'
                 new ReplaceNodeOperation(sourceFile, bootstrapModuleIdentifier,
                     ts.createIdentifier('bootstrapModuleFactory')),
             );
