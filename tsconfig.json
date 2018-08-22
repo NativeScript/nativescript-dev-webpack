@@ -11,6 +11,7 @@
         "plugins/PlatformFSPlugin.ts",
         "plugins/WatchStateLoggerPlugin.ts",
         "transformers/ns-replace-bootstrap.ts",
+        "transformers/ast-utils.ts",
         "host/resolver.ts"
     ]
 }

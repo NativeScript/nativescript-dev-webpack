@@ -11,6 +11,8 @@ import {
 import { workaroundResolve } from '@ngtools/webpack/src/compiler_host';
 import { AngularCompilerPlugin } from '@ngtools/webpack';
 
+import { getFirstNode } from './ast-utils';
+
 export function nsReplaceBootstrap(getNgCompiler: () => AngularCompilerPlugin): ts.TransformerFactory<ts.SourceFile> {
     const shouldTransform = (fileName) => !fileName.endsWith('.ngfactory.ts') && !fileName.endsWith('.ngstyle.ts');
     const getTypeChecker = () => getNgCompiler().typeChecker;
@@ -77,22 +79,36 @@ export function nsReplaceBootstrap(getNgCompiler: () => AngularCompilerPlugin): 
             const idPlatformBrowser = ts.createUniqueName('__NgCli_bootstrap_');
             const idNgFactory = ts.createUniqueName('__NgCli_bootstrap_');
 
+            const firstNode = getFirstNode(sourceFile);
+
             // Add the transform operations.
             const factoryClassName = entryModule.className + 'NgFactory';
             const factoryModulePath = normalizedEntryModulePath + '.ngfactory';
             ops.push(
-                // Insert an import of the module factory:
+                // Insert an import of the {N} Angular static bootstrap module in the beginning of the file:
+                // import * as __NgCli_bootstrap_2 from "nativescript-angular/platform-static";
+                ...insertStarImport(
+                    sourceFile,
+                    idPlatformBrowser,
+                    'nativescript-angular/platform-static',
+                    firstNode,
+                    true,
+                ),
+
+                // Insert an import of the module factory in the beginning of the file:
                 // import * as __NgCli_bootstrap_1 from "./app.module.ngfactory";
-                ...insertStarImport(sourceFile, idNgFactory, factoryModulePath),
+                ...insertStarImport(
+                    sourceFile,
+                    idNgFactory,
+                    factoryModulePath,
+                    firstNode,
+                    true,
+                ),
 
                 // Replace the NgModule nodes with NgModuleFactory nodes
                 // from 'AppModule' to 'AppModuleNgFactory'
                 new ReplaceNodeOperation(sourceFile, entryModuleIdentifier,
                     ts.createPropertyAccess(idNgFactory, ts.createIdentifier(factoryClassName))),
-
-                // Insert an import of the {N} Angular static bootstrap module:
-                // import * as __NgCli_bootstrap_2 from "nativescript-angular/platform-static";
-                ...insertStarImport(sourceFile, idPlatformBrowser, 'nativescript-angular/platform-static'),
 
                 // Replace 'platformNativeScriptDynamic' with 'platformNativeScript'
                 // and elide all imports of 'platformNativeScriptDynamic'
