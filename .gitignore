@@ -11,10 +11,6 @@ transformers/ns-replace-bootstrap.d.ts
 transformers/ns-replace-bootstrap.js
 transformers/ns-replace-bootstrap.js.map
 
-transformers/ast-utils.d.ts
-transformers/ast-utils.js
-transformers/ast-utils.js.map
-
 plugins/PlatformFSPlugin.d.ts
 plugins/PlatformFSPlugin.js
 plugins/PlatformFSPlugin.js.map
@@ -26,6 +22,13 @@ plugins/WatchStateLoggerPlugin.js.map
 host/resolver.d.ts
 host/resolver.js
 host/resolver.js.map
+
+jasmine-config/reporter.d.ts
+jasmine-config/reporter.js
+jasmine-config/reporter.js.map
+
+**/*.spec.js*
+**/*.spec.d.ts*
 
 hooks
 .DS_Store
