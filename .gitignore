@@ -11,6 +11,10 @@ transformers/ns-replace-bootstrap.d.ts
 transformers/ns-replace-bootstrap.js
 transformers/ns-replace-bootstrap.js.map
 
+transformers/ast-utils.d.ts
+transformers/ast-utils.js
+transformers/ast-utils.js.map
+
 plugins/PlatformFSPlugin.d.ts
 plugins/PlatformFSPlugin.js
 plugins/PlatformFSPlugin.js.map
