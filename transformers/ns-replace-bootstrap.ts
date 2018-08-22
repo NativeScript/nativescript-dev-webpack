@@ -6,12 +6,11 @@ import {
     collectDeepNodes,
     insertStarImport,
     ReplaceNodeOperation,
-    makeTransform
+    makeTransform,
+    getFirstNode
 } from "@ngtools/webpack/src/transformers";
 import { workaroundResolve } from '@ngtools/webpack/src/compiler_host';
 import { AngularCompilerPlugin } from '@ngtools/webpack';
-
-import { getFirstNode } from './ast-utils';
 
 export function nsReplaceBootstrap(getNgCompiler: () => AngularCompilerPlugin): ts.TransformerFactory<ts.SourceFile> {
     const shouldTransform = (fileName) => !fileName.endsWith('.ngfactory.ts') && !fileName.endsWith('.ngstyle.ts');
