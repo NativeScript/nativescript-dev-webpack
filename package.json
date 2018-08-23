@@ -54,6 +54,7 @@
   },
   "scripts": {
     "postinstall": "node postinstall.js",
+    "postpack": "rm -rf node_modules",
     "prepare": "tsc",
     "test": "npm run prepare && npm run jasmine",
     "jasmine": "jasmine --config=jasmine-config/jasmine.json",
