@@ -287,7 +287,7 @@ class NsJsonpMainTemplatePlugin {
                     }
                 );
                 const runtimeSource = Template.getFunctionContent(
-                    require("./JsonpMainTemplate.runtime.js")
+                    require("./NsJsonpMainTemplate.runtime.js")
                 )
                     .replace(/\/\/\$semicolon/g, ";")
                     .replace(/\$require\$/g, mainTemplate.requireFn)
