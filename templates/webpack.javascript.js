@@ -40,6 +40,7 @@ module.exports = env => {
         uglify, // --env.uglify
         report, // --env.report
         sourceMap, // --env.sourceMap
+        hmr, // --env.hmr
     } = env;
 
     const appFullPath = resolve(projectRoot, appPath);
@@ -226,6 +227,11 @@ module.exports = env => {
             webpackConfig: config,
         }));
     }
+
+    if (hmr) {
+        config.plugins.push(new HotModuleReplacementPlugin());
+    }
+
 
     return config;
 };
