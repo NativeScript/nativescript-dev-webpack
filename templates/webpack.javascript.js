@@ -151,6 +151,21 @@ module.exports = env => {
                     ].filter(loader => !!loader)
                 },
 
+                {
+                    test: /-page\.js$/,
+                    use: "nativescript-dev-webpack/page-hot-loader"
+                },
+
+                {
+                    test: /\.(css|scss)$/,
+                    use: "nativescript-dev-webpack/style-hot-loader"
+                },
+
+                {
+                    test: /\.(html|xml)$/,
+                    use: "nativescript-dev-webpack/markup-hot-loader"
+                },
+
                 { test: /\.(html|xml)$/, use: "nativescript-dev-webpack/xml-namespace-loader"},
 
                 {
@@ -164,11 +179,6 @@ module.exports = env => {
                         { loader: "css-loader", options: { minimize: false, url: false } },
                         "sass-loader"
                     ]
-                },
-
-                {
-                    test: /-page\.js$/,
-                    use: "nativescript-dev-webpack/page-hot-loader"
                 },
             ]
         },
