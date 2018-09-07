@@ -175,6 +175,11 @@ module.exports = env => {
                         options: { configFileName: "tsconfig.tns.json" },
                     }
                 },
+
+                {
+                    test: /-page\.ts$/,
+                    use: "nativescript-dev-webpack/page-hot-loader"
+                },
             ]
         },
         plugins: [

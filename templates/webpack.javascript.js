@@ -164,7 +164,12 @@ module.exports = env => {
                         { loader: "css-loader", options: { minimize: false, url: false } },
                         "sass-loader"
                     ]
-                }
+                },
+
+                {
+                    test: /-page\.js$/,
+                    use: "nativescript-dev-webpack/page-hot-loader"
+                },
             ]
         },
         plugins: [
