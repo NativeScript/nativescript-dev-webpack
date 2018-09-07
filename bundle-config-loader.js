@@ -8,7 +8,18 @@ module.exports = function (source) {
     `;
 
     if (!angular && registerModules) {
+        const hmr = `
+            if (module.hot) {
+                global.__hmrLivesyncBackup = global.__onLiveSync;
+                global.__onLiveSync = function () {
+                    console.log("LiveSyncing...");
+                    require("nativescript-dev-webpack/hot")("", {});
+                };
+            }
+        `;
+
         source = `
+            ${hmr}
             const context = require.context("~/", true, ${registerModules});
             global.registerWebpackModules(context);
             ${source}
