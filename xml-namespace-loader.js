@@ -82,7 +82,8 @@ module.exports = function (source) {
         .replace(/\u2028/g, '\\u2028')
         .replace(/\u2029/g, '\\u2029');
 
-    const wrapped = `${moduleRegisters}\nmodule.exports = ${json}`;
+    const hmr = `module.hot && module.hot.accept();`;
+    const wrapped = `${moduleRegisters}\nmodule.exports = ${json};${hmr}`;
 
     this.callback(null, wrapped);
 }
