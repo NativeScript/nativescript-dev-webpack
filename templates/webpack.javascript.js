@@ -229,7 +229,7 @@ module.exports = env => {
     }
 
     if (hmr) {
-        config.plugins.push(new HotModuleReplacementPlugin());
+        config.plugins.push(new webpack.HotModuleReplacementPlugin());
     }
 
 
