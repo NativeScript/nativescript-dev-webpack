@@ -1,14 +1,5 @@
-module.exports = function (source) {
-    const hmr = `
-        if (module.hot) {
-            module.hot.accept();
-            module.hot.dispose(() => {
-                setTimeout(() => {
-                    global.__hmrLivesyncBackup();
-                });
-            })
-        }
-    `;
+const { reload } = require("./hot-loader-helper");
 
-    return `${source};${hmr}`
+module.exports = function (source) {
+    return `${source};${reload}`;
 };

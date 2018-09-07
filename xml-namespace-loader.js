@@ -1,5 +1,6 @@
 const { parse, relative, join, basename, extname } = require("path");
 const { convertSlashesInPath } = require("./projectHelpers");
+const { reload } = require("./hot-loader-helper");
 
 module.exports = function (source) {
     this.value = source;
@@ -82,8 +83,7 @@ module.exports = function (source) {
         .replace(/\u2028/g, '\\u2028')
         .replace(/\u2029/g, '\\u2029');
 
-    const hmr = `module.hot && module.hot.accept();`;
-    const wrapped = `${moduleRegisters}\nmodule.exports = ${json};${hmr}`;
+    const wrapped = `${moduleRegisters}\nmodule.exports = ${json};${reload}`;
 
     this.callback(null, wrapped);
 }
