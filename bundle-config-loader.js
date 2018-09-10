@@ -10,11 +10,16 @@ module.exports = function (source) {
     if (!angular && registerModules) {
         const hmr = `
             if (module.hot) {
+                const fileSystemModule = require("tns-core-modules/file-system");
+                const applicationFiles = fileSystemModule.knownFolders.currentApp();
+
                 global.__hmrLivesyncBackup = global.__onLiveSync;
                 global.__onLiveSync = function () {
                     console.log("LiveSyncing...");
-                    require("nativescript-dev-webpack/hot")("", {});
+                    require("nativescript-dev-webpack/hot")(__webpack_require__.h(), (fileName) => applicationFiles.getFile(fileName));
                 };
+                global.__hmrInitialSync = true; // needed to determine if we are performing initial sync
+                global.__onLiveSync();
             }
         `;
 
