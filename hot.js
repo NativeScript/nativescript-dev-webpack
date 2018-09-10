@@ -1,5 +1,5 @@
 const log = console;
-const refresh = 'Please refresh the page.';
+const refresh = 'Please restart the application.';
 const hotOptions = {
     ignoreUnaccepted: true,
     ignoreDeclined: true,
@@ -73,7 +73,7 @@ function check(options) {
         .then((modules) => {
             if (!modules) {
                 log.warn(
-                    `Cannot find update. The server may have been restarted. ${refresh}`
+                    `Cannot find update. ${refresh}`
                 );
                 return null;
             }
@@ -82,7 +82,6 @@ function check(options) {
                 .apply(hotOptions)
                 .then((appliedModules) => {
                     if (!upToDate()) {
-                        log.warn("Hashes don't match. Ignoring second update...");
                         check(options);
                     }
 

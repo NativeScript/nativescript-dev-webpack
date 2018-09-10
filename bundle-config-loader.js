@@ -15,7 +15,7 @@ module.exports = function (source) {
 
                 global.__hmrLivesyncBackup = global.__onLiveSync;
                 global.__onLiveSync = function () {
-                    console.log("LiveSyncing...");
+                    console.log("HMR Sync...");
                     require("nativescript-dev-webpack/hot")(__webpack_require__.h(), (fileName) => applicationFiles.getFile(fileName));
                 };
                 global.__hmrInitialSync = true; // needed to determine if we are performing initial sync
