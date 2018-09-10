@@ -1,3 +1,13 @@
+<a name="0.16.0"></a>
+# [0.16.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.15.1...0.16.0) (2018-09-10)
+
+
+### Features
+
+* NativeScript bootstrap transformer ([#634](https://github.com/NativeScript/nativescript-dev-webpack/issues/634)) ([c016418](https://github.com/NativeScript/nativescript-dev-webpack/commit/c016418))
+
+
+
 <a name="0.15.1"></a>
 # [0.15.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.15.0...0.15.1) (2018-08-07)
 
