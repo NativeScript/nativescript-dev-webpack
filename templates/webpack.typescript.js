@@ -40,6 +40,7 @@ module.exports = env => {
         uglify, // --env.uglify
         report, // --env.report
         sourceMap, // --env.sourceMap
+        hmr, // --env.hmr
     } = env;
 
     const appFullPath = resolve(projectRoot, appPath);
@@ -152,6 +153,21 @@ module.exports = env => {
                     ].filter(loader => !!loader)
                 },
 
+                {
+                    test: /-page\.ts$/,
+                    use: "nativescript-dev-webpack/page-hot-loader"
+                },
+
+                {
+                    test: /\.(css|scss)$/,
+                    use: "nativescript-dev-webpack/style-hot-loader"
+                },
+
+                {
+                    test: /\.(html|xml)$/,
+                    use: "nativescript-dev-webpack/markup-hot-loader"
+                },
+
                 { test: /\.(html|xml)$/, use: "nativescript-dev-webpack/xml-namespace-loader"},
 
                 {
@@ -236,6 +252,11 @@ module.exports = env => {
             webpackConfig: config,
         }));
     }
+
+    if (hmr) {
+        config.plugins.push(new webpack.HotModuleReplacementPlugin());
+    }
+
 
     return config;
 };
