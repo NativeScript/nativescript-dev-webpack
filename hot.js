@@ -1,5 +1,5 @@
 const log = console;
-const refresh = 'Please refresh the page.';
+const refresh = 'Please restart the application.';
 const hotOptions = {
     ignoreUnaccepted: true,
     ignoreDeclined: true,
@@ -73,7 +73,7 @@ function check(options) {
         .then((modules) => {
             if (!modules) {
                 log.warn(
-                    `Cannot find update. The server may have been restarted. ${refresh}`
+                    `Cannot find update. ${refresh}`
                 );
                 return null;
             }
@@ -82,8 +82,7 @@ function check(options) {
                 .apply(hotOptions)
                 .then((appliedModules) => {
                     if (!upToDate()) {
-                        log.warn("Hashes don't match. Ignoring second update...");
-                        // check(options);
+                        check(options);
                     }
 
                     result(modules, appliedModules);
@@ -122,7 +121,7 @@ if (module.hot) {
     console.error('Hot Module Replacement is disabled.');
 }
 
-module.exports = function update(currentHash, options) {
+function update(currentHash, options) {
     lastHash = currentHash;
     if (!upToDate()) {
         const status = module.hot.status();
@@ -137,4 +136,25 @@ module.exports = function update(currentHash, options) {
         }
     }
 };
+
+function getCurrentHash(currentHash, getFileContent) {
+    const file = getFileContent(`${currentHash}.hot-update.json`);
+    return file.readText().then(hotUpdateContent => {
+        if(hotUpdateContent) {
+            const manifest = JSON.parse(hotUpdateContent);
+            const newHash = manifest.h;
+            return getCurrentHash(newHash, getFileContent);
+        } else {
+            return Promise.resolve(currentHash);
+        }
+    }).catch(error => Promise.reject(error));
+}
+
+module.exports = function checkState(initialHash, getFileContent) {
+    getCurrentHash(initialHash, getFileContent).then(currentHash => {
+        if(currentHash != initialHash) {
+            update(currentHash, {});
+        }
+    })
+}
 
