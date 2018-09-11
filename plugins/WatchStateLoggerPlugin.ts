@@ -32,13 +32,15 @@ export class WatchStateLoggerPlugin {
                 console.log(messages.compilationComplete);
             }
 
-            const emittedFiles = Object
+            let emittedFiles = Object
                 .keys(compilation.assets)
                 .filter(assetKey => compilation.assets[assetKey].emitted);
 
             if (compilation.errors.length > 0) {
                 WatchStateLoggerPlugin.rewriteHotUpdateChunk(compiler, compilation, emittedFiles);
             }
+
+            emittedFiles = WatchStateLoggerPlugin.getUpdatedEmittedFiles(emittedFiles);
 
             // provide fake paths to the {N} CLI - relative to the 'app' folder
             // in order to trigger the livesync process
@@ -88,6 +90,19 @@ export class WatchStateLoggerPlugin {
             endIndex--;
         }
         return content.substring(startIndex, endIndex);
+    }
+
+    /**
+     * Checks if there's a file in the following pattern 5e0326f3bb50f9f26cf0.hot-update.json
+     * if yes this is a HMR update and remove all bundle files as we don't need them to be synced,
+     * but only the update chunks
+     */
+    static getUpdatedEmittedFiles(emittedFiles) {
+        if(emittedFiles.some(x => x.endsWith('.hot-update.json'))) {
+            return emittedFiles.filter(x => x.indexOf('.hot-update.') > 0);
+        } else {
+            return emittedFiles;
+        }
     }
 
     /**
