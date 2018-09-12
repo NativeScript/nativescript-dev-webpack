@@ -41,6 +41,7 @@ module.exports = env => {
         report, // --env.report
         sourceMap, // --env.sourceMap
         hmr, // --env.hmr
+        externals
     } = env;
 
     const appFullPath = resolve(projectRoot, appPath);
@@ -52,6 +53,7 @@ module.exports = env => {
     const config = {
         mode: uglify ? "production" : "development",
         context: appFullPath,
+        externals,
         watchOptions: {
             ignored: [
                 appResourcesFullPath,
