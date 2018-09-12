@@ -1,5 +1,5 @@
 const log = console;
-const refresh = 'Please restart the application.';
+const refresh = 'Application needs to be restarted in order to apply the changes.';
 const hotOptions = {
     ignoreUnaccepted: true,
     ignoreDeclined: true,
