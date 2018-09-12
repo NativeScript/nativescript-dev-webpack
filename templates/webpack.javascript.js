@@ -153,7 +153,7 @@ module.exports = env => {
 
                 {
                     test: /-page\.js$/,
-                    use: "nativescript-dev-webpack/page-hot-loader"
+                    use: "nativescript-dev-webpack/script-hot-loader"
                 },
 
                 {
