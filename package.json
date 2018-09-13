@@ -44,6 +44,11 @@
         "type": "after-prepare",
         "script": "lib/after-prepare.js",
         "inject": true
+      },
+      {
+        "type": "before-preview-sync",
+        "script": "lib/before-preview-sync",
+        "inject": true
       }
     ]
   },
