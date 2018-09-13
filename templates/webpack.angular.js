@@ -42,8 +42,11 @@ module.exports = env => {
         uglify, // --env.uglify
         report, // --env.report
         sourceMap, // --env.sourceMap
-        hmr, // --env.hmr
+        hmr, // --env.hmr,
     } = env;
+    const externals = (env.externals || []).map((e) => { // --env.externals
+        return new RegExp(e + ".*");
+    });
 
     const appFullPath = resolve(projectRoot, appPath);
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
@@ -63,6 +66,7 @@ module.exports = env => {
     const config = {
         mode: uglify ? "production" : "development",
         context: appFullPath,
+        externals,
         watchOptions: {
             ignored: [
                 appResourcesFullPath,
