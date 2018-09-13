@@ -43,8 +43,10 @@ module.exports = env => {
         report, // --env.report
         sourceMap, // --env.sourceMap
         hmr, // --env.hmr,
-        externals
     } = env;
+    const externals = env.externals.map((e) => { // --env.externals
+        return new RegExp(e + ".*");
+    });
 
     const appFullPath = resolve(projectRoot, appPath);
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
