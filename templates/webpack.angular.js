@@ -44,7 +44,7 @@ module.exports = env => {
         sourceMap, // --env.sourceMap
         hmr, // --env.hmr,
     } = env;
-    const externals = env.externals.map((e) => { // --env.externals
+    const externals = (env.externals || []).map((e) => { // --env.externals
         return new RegExp(e + ".*");
     });
 
