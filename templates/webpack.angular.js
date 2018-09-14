@@ -183,7 +183,6 @@ module.exports = env => {
                 { test: /\.css$/, exclude: /[\/|\\]app\.css$/, use: "raw-loader" },
                 { test: /\.scss$/, exclude: /[\/|\\]app\.scss$/, use: ["raw-loader", "resolve-url-loader", "sass-loader"] },
 
-                // Compile TypeScript files with ahead-of-time compiler.
                 {
                     test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/,
                     use: [
