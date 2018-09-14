@@ -185,7 +185,8 @@ module.exports = env => {
 
                 // Compile TypeScript files with ahead-of-time compiler.
                 {
-                    test: /.ts$/, use: [
+                    test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/,
+                    use: [
                         "nativescript-dev-webpack/moduleid-compat-loader",
                         "@ngtools/webpack",
                     ]
