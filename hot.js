@@ -37,24 +37,21 @@ function result(modules, appliedModules) {
     );
 
     if (unaccepted.length > 0) {
-        let message = 'The following modules could not be updated:';
+        log.warn('The following modules could not be updated:');
 
         for (const moduleId of unaccepted) {
-            message += `\n          ⦻ ${moduleId}`;
+            log.warn(`          ⦻ ${moduleId}`);
         }
-        log.warn(message);
     }
 
     if (!(appliedModules || []).length) {
         console.info('No Modules Updated.');
     } else {
-        const message = ['The following modules were updated:'];
+        console.info('The following modules were updated:');
 
         for (const moduleId of appliedModules) {
-            message.push(`         ↻ ${moduleId}`);
+            console.info(`         ↻ ${moduleId}`);
         }
-
-        console.info(message.join('\n'));
 
         const numberIds = appliedModules.every(
             (moduleId) => typeof moduleId === 'number'
