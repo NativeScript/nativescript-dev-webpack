@@ -2,8 +2,12 @@ module.exports.reload = function(type) { return `
     if (module.hot) {
         module.hot.accept();
         module.hot.dispose(() => {
+            global.__hmrNeedReload = true;
             setTimeout(() => {
-                global.__hmrLivesyncBackup();
+                if(global.__hmrNeedReload) {
+                    global.__hmrNeedReload = false;
+                    global.__hmrLivesyncBackup();
+                }
             }, ${type === 'style' ? "global.__hmrInitialSync ? 1000 : 0" : 0});
         })
     }
