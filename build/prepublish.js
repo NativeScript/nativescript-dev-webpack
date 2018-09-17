@@ -3,10 +3,18 @@
 const { dirname: pathDirname } = require("path");
 const { getPackageJson, writePackageJson } = require("../projectHelpers");
 
-const tag = "next";
+let processArgs = process.argv;
+const distTag = processArgs.includes("--distTag") ? processArgs[processArgs.indexOf("--distTag") + 1] : undefined;
+
+const tag = distTag || process.env["distTag"] || "next";
+
 const projectDir = pathDirname(__dirname);
 const packageJson = getPackageJson(projectDir);
-const [, , packageVersion = new Date() ] = process.argv;
+
+if (distTag) {
+    processArgs = processArgs.splice(processArgs.indexOf("--distTag"), 2);
+}
+const [, , packageVersion = new Date()] = processArgs;
 
 packageJson.publishConfig = Object.assign(
     packageJson.publishConfig || {},
