@@ -1,3 +1,13 @@
+<a name="0.16.1"></a>
+## [0.16.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.16.0...0.16.1) (2018-09-17)
+
+
+### Bug Fixes
+
+* **angular:** AoT rebuild on template and style changes ([#659](https://github.com/NativeScript/nativescript-dev-webpack/issues/659)) ([d812d5d](https://github.com/NativeScript/nativescript-dev-webpack/commit/d812d5d)), closes [#641](https://github.com/NativeScript/nativescript-dev-webpack/issues/641)
+
+
+
 <a name="0.16.0"></a>
 # [0.16.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.15.1...0.16.0) (2018-09-10)
 
