@@ -15,9 +15,21 @@ module.exports = function (source) {
 
                 global.__hmrLivesyncBackup = global.__onLiveSync;
                 global.__onLiveSync = function () {
-                    console.log("HMR Sync...");
+                    console.log("HMR: Sync...");
                     require("nativescript-dev-webpack/hot")(__webpack_require__.h(), (fileName) => applicationFiles.getFile(fileName));
                 };
+
+                global.__hmrRefresh = function(type) {
+                    global.__hmrNeedReload = true;
+                    setTimeout(() => {
+                        if(global.__hmrNeedReload) {
+                            global.__hmrNeedReload = false;
+                            global.__hmrLivesyncBackup();
+                        }
+                    }, type === 'style' ? (global.__hmrInitialSync ? 3000 : 0) : 0);
+                    // we need to add a timeout of 3000 if we have a css change, otherwise the app crashes on initial hmr sync
+                }
+
                 global.__hmrInitialSync = true; // needed to determine if we are performing initial sync
                 global.__onLiveSync();
             }
