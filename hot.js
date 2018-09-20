@@ -1,4 +1,9 @@
-const log = console;
+const hmrPrefix = 'HMR:';
+const log = {
+    info: (message) => console.info(`${hmrPrefix} ${message}`),
+    warn: (message) => console.warn(`${hmrPrefix} ${message}`),
+    error: (message) => console.error(`${hmrPrefix} ${message}`),
+};
 const refresh = 'Application needs to be restarted in order to apply the changes.';
 const hotOptions = {
     ignoreUnaccepted: true,
@@ -45,19 +50,19 @@ function result(modules, appliedModules) {
     }
 
     if (!(appliedModules || []).length) {
-        console.info('No Modules Updated.');
+        log.info('No Modules Updated.');
     } else {
-        console.info('The following modules were updated:');
+        log.info('The following modules were updated:');
 
         for (const moduleId of appliedModules) {
-            console.info(`         ↻ ${moduleId}`);
+            log.info(`         ↻ ${moduleId}`);
         }
 
         const numberIds = appliedModules.every(
             (moduleId) => typeof moduleId === 'number'
         );
         if (numberIds) {
-            console.info(
+            log.info(
                 'Please consider using the NamedModulesPlugin for module names.'
             );
         }
@@ -85,7 +90,7 @@ function check(options) {
                     result(modules, appliedModules);
 
                     if (upToDate()) {
-                        console.info('App is up to date.');
+                        log.info('App is up to date.');
                     }
                 })
                 .catch((err) => {
@@ -97,7 +102,7 @@ function check(options) {
                             window.location.reload();
                         }
                     } else {
-                        log.warn(`Update failed: ${err.stack}` || err.message);
+                        log.warn(`Update failed: ${err.stack || err.message}`);
                     }
                 });
         })
@@ -107,15 +112,15 @@ function check(options) {
                 log.warn(`Cannot check for update. ${refresh}`);
                 log.warn(err.stack || err.message);
             } else {
-                log.warn(`Update check failed: ${err.stack}` || err.message);
+                log.warn(`Update check failed: ${err.stack|| err.message}`);
             }
         });
 }
 
 if (module.hot) {
-    console.info('Hot Module Replacement Enabled. Waiting for signal.');
+    log.info('Hot Module Replacement Enabled. Waiting for signal.');
 } else {
-    console.error('Hot Module Replacement is disabled.');
+    log.error('Hot Module Replacement is disabled.');
 }
 
 function update(currentHash, options) {
@@ -124,7 +129,7 @@ function update(currentHash, options) {
         const status = module.hot.status();
 
         if (status === 'idle') {
-            console.info('Checking for updates to the bundle.');
+            log.info('Checking for updates to the bundle.');
             check(options);
         } else if (['abort', 'fail'].indexOf(status) >= 0) {
             log.warn(
