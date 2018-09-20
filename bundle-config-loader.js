@@ -26,8 +26,7 @@ module.exports = function (source) {
                             global.__hmrNeedReload = false;
                             global.__hmrLivesyncBackup();
                         }
-                    }, type === 'style' ? (global.__hmrInitialSync ? 3000 : 0) : 0);
-                    // we need to add a timeout of 3000 if we have a css change, otherwise the app crashes on initial hmr sync
+                    });
                 }
 
                 global.__hmrInitialSync = true; // needed to determine if we are performing initial sync
