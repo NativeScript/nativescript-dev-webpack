@@ -98,9 +98,15 @@ export class WatchStateLoggerPlugin {
      * but only the update chunks
      */
     static getUpdatedEmittedFiles(emittedFiles) {
-        // TODO: Once we are able to determine whether this is a vue project do not always include .css and .scss files, but only for vue projects
         if(emittedFiles.some(x => x.endsWith('.hot-update.json'))) {
-            return emittedFiles.filter(x => x.indexOf('.hot-update.') > 0 || x.endsWith('css'));
+            let result = emittedFiles.slice();
+            const hotUpdateScripts = emittedFiles.filter(x => x.endsWith('.hot-update.js'));
+            hotUpdateScripts.forEach(hotUpdateScript => {
+                const { name } = this.parseHotUpdateChunkName(hotUpdateScript);
+                // remove bundle/vendor.js files if there's a bundle.XXX.hot-update.js or vendor.XXX.hot-update.js
+                result = result.filter(file => file !== `${name}.js`);
+            });
+            return result;
         } else {
             return emittedFiles;
         }
