@@ -6,7 +6,8 @@ module.exports = function (source) {
     const imports = modules.map(convertSlashesInPath)
         .map(m => `require("${m}");`).join("\n");
     const augmentedSource = `
-        if (!global["__snapshot"]) {
+        var application = __webpack_require__("tns-core-modules/application");
+        if (application.android && !global["__snapshot"]) {
             ${imports}
         }
 
