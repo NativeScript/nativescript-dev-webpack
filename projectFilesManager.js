@@ -1,7 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 
-const { isTypeScript, isAngular } = require("./projectHelpers");
+const { isTypeScript, isAngular, isVue } = require("./projectHelpers");
 
 function addProjectFiles(projectDir) {
     const projectTemplates = getProjectTemplates(projectDir);
@@ -34,7 +34,7 @@ function compareProjectFiles(projectDir) {
             const newTemplate = fs.readFileSync(newTemplatePath).toString();
             if (newTemplate !== currentTemplate) {
                 const message = `The current project contains a ${path.basename(currentTemplatePath)} file located at ${currentTemplatePath} that differs from the one in the new version of the nativescript-dev-webpack plugin located at ${newTemplatePath}. Some of the plugin features may not work as expected until you manually update the ${path.basename(currentTemplatePath)} file or automatically update it using "./node_modules/.bin/update-ns-webpack --configs" command.`;
-                console.info(`\x1B[33;1m${message}\x1B[0m` );
+                console.info(`\x1B[33;1m${message}\x1B[0m`);
             }
         }
     });
@@ -61,9 +61,11 @@ function getProjectTemplates(projectDir) {
     const TSCONFIG_TNS_NAME = "tsconfig.tns.json";
 
     let templates;
-    if (isAngular({projectDir})) {
+    if (isAngular({ projectDir })) {
         templates = getAngularTemplates(WEBPACK_CONFIG_NAME, TSCONFIG_TNS_NAME);
-    } else if (isTypeScript({projectDir})) {
+    } else if (isVue({ projectDir })) {
+        templates = getVueTemplates(WEBPACK_CONFIG_NAME);
+    } else if (isTypeScript({ projectDir })) {
         templates = getTypeScriptTemplates(WEBPACK_CONFIG_NAME, TSCONFIG_TNS_NAME);
     } else {
         templates = getJavaScriptTemplates(WEBPACK_CONFIG_NAME);
@@ -83,6 +85,12 @@ function getTypeScriptTemplates(webpackConfigName, tsconfigName) {
     return {
         "webpack.typescript.js": webpackConfigName,
         [tsconfigName]: tsconfigName,
+    };
+}
+
+function getVueTemplates(webpackConfigName) {
+    return {
+        "webpack.vue.js": webpackConfigName
     };
 }
 
