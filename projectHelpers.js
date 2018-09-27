@@ -15,9 +15,9 @@ const isTypeScript = ({ projectDir, packageJson } = {}) => {
         packageJson.dependencies &&
         packageJson.dependencies.hasOwnProperty("typescript")
     ) || (
-            packageJson.devDependencies &&
-            packageJson.devDependencies.hasOwnProperty("typescript")
-        ) || isAngular({ packageJson });
+        packageJson.devDependencies &&
+        packageJson.devDependencies.hasOwnProperty("typescript")
+    ) || isAngular({ packageJson });
 };
 
 const isAngular = ({ projectDir, packageJson } = {}) => {
@@ -25,6 +25,13 @@ const isAngular = ({ projectDir, packageJson } = {}) => {
 
     return packageJson.dependencies && Object.keys(packageJson.dependencies)
         .some(dependency => /^@angular\b/.test(dependency));
+};
+
+const isVue = ({ projectDir, packageJson } = {}) => {
+    packageJson = packageJson || getPackageJson(projectDir);
+
+    return packageJson.dependencies && Object.keys(packageJson.dependencies)
+        .some(dependency => dependency === "nativescript-vue");
 };
 
 const getPackageJson = projectDir => {
@@ -84,6 +91,7 @@ module.exports = {
     isAndroid,
     isIos,
     isAngular,
+    isVue,
     isTypeScript,
     writePackageJson,
     convertSlashesInPath
