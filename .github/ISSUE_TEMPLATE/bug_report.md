@@ -27,7 +27,7 @@ Provide version numbers for the following components (information can be retriev
 **Expected behavior**
 
 **Sample project**
-<!-- If possible, provide a link from the [Playground](https://play.nativescript.org) with reproduction of the problem. If not, consider attaching a sample project or link to a repository with such project. -->
+<!-- If possible, consider attaching a sample project or link to a repository with such project. -->
 
 **Additional context**
 <!-- Add any other context about the problem here. -->
