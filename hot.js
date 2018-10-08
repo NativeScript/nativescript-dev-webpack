@@ -91,17 +91,16 @@ function check(options) {
                     result(modules, appliedModules);
 
                     if (upToDate()) {
+                        //Do not modify message - CLI depends on this exact content to determine hmr operation status.
                         log.info(`Successfully applied update with hmr hash ${currentHash}. App is up to date.`);
                     }
                 })
                 .catch((err) => {
                     const status = module.hot.status();
                     if (['abort', 'fail'].indexOf(status) >= 0) {
+                        //Do not modify message - CLI depends on this exact content to determine hmr operation status.
                         log.warn(`Cannot apply update with hmr hash ${currentHash}.`);
                         log.warn(err.stack || err.message);
-                        if (options.reload) {
-                            window.location.reload();
-                        }
                     } else {
                         log.warn(`Update failed: ${err.stack || err.message}`);
                     }
@@ -130,6 +129,7 @@ function update(latestHash, options) {
         const status = module.hot.status();
 
         if (status === 'idle') {
+            //Do not modify message - CLI depends on this exact content to determine hmr operation status.
             log.info(`Checking for updates to the bundle with hmr hash ${currentHash}.`);
             check(options);
         } else if (['abort', 'fail'].indexOf(status) >= 0) {
