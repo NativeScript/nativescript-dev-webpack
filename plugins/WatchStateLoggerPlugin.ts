@@ -1,5 +1,6 @@
 import { join } from "path";
 import { writeFileSync, readFileSync } from "fs";
+const utils = require("../lib/utils");
 
 export enum messages {
     compilationComplete = "Webpack compilation complete.",
@@ -40,8 +41,6 @@ export class WatchStateLoggerPlugin {
                 WatchStateLoggerPlugin.rewriteHotUpdateChunk(compiler, compilation, emittedFiles);
             }
 
-            emittedFiles = WatchStateLoggerPlugin.getUpdatedEmittedFiles(emittedFiles);
-
             // provide fake paths to the {N} CLI - relative to the 'app' folder
             // in order to trigger the livesync process
             const emittedFilesFakePaths = emittedFiles
@@ -64,7 +63,7 @@ export class WatchStateLoggerPlugin {
             return;
         }
 
-        const { name } = this.parseHotUpdateChunkName(chunk);
+        const { name } = utils.parseHotUpdateChunkName(chunk);
         if (!name) {
             return;
         }
@@ -93,26 +92,6 @@ export class WatchStateLoggerPlugin {
     }
 
     /**
-     * Checks if there's a file in the following pattern 5e0326f3bb50f9f26cf0.hot-update.json
-     * if yes this is a HMR update and remove all bundle files as we don't need them to be synced,
-     * but only the update chunks
-     */
-    static getUpdatedEmittedFiles(emittedFiles) {
-        if(emittedFiles.some(x => x.endsWith('.hot-update.json'))) {
-            let result = emittedFiles.slice();
-            const hotUpdateScripts = emittedFiles.filter(x => x.endsWith('.hot-update.js'));
-            hotUpdateScripts.forEach(hotUpdateScript => {
-                const { name } = this.parseHotUpdateChunkName(hotUpdateScript);
-                // remove bundle/vendor.js files if there's a bundle.XXX.hot-update.js or vendor.XXX.hot-update.js
-                result = result.filter(file => file !== `${name}.js`);
-            });
-            return result;
-        } else {
-            return emittedFiles;
-        }
-    }
-
-    /**
      * Gets the webpackHotUpdate call with updated modules not to include the ones with errors
      */
     private static getWebpackHotUpdateReplacementContent(compilationErrors, filePath, moduleName) {
@@ -129,20 +108,5 @@ export class WatchStateLoggerPlugin {
             return updatedModules;
         }
         webpackHotUpdate('${moduleName}', filter(${updatedModules}, ${JSON.stringify(errorModuleIds)}));`;
-    }
-
-    /**
-     * Parse the filename of the hot update chunk.
-     * @param name bundle.deccb264c01d6d42416c.hot-update.js
-     * @returns { name: string, hash: string } { name: 'bundle', hash: 'deccb264c01d6d42416c' }
-     */
-    private static parseHotUpdateChunkName(name) {
-        const matcher = /^(.+)\.(.+)\.hot-update/gm;
-        const matches = matcher.exec(name);
-
-        return {
-            name: matches[1] || "",
-            hash: matches[2] || "",
-        };
     }
 }

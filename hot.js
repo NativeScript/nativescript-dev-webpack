@@ -6,9 +6,9 @@ const log = {
 };
 const refresh = 'Application needs to be restarted in order to apply the changes.';
 const hotOptions = {
-    ignoreUnaccepted: true,
-    ignoreDeclined: true,
-    ignoreErrored: true,
+    ignoreUnaccepted: false,
+    ignoreDeclined: false,
+    ignoreErrored: false,
     onUnaccepted(data) {
         const chain = [].concat(data.chain);
         const last = chain[chain.length - 1];
@@ -30,10 +30,11 @@ const hotOptions = {
     },
 };
 
-let lastHash;
+let nextHash;
+let currentHash;
 
 function upToDate() {
-    return lastHash.indexOf(__webpack_hash__) >= 0;
+    return nextHash.indexOf(__webpack_hash__) >= 0;
 }
 
 function result(modules, appliedModules) {
@@ -90,17 +91,16 @@ function check(options) {
                     result(modules, appliedModules);
 
                     if (upToDate()) {
-                        log.info('App is up to date.');
+                        //Do not modify message - CLI depends on this exact content to determine hmr operation status.
+                        log.info(`Successfully applied update with hmr hash ${currentHash}. App is up to date.`);
                     }
                 })
                 .catch((err) => {
                     const status = module.hot.status();
                     if (['abort', 'fail'].indexOf(status) >= 0) {
-                        log.warn(`Cannot apply update. ${refresh}`);
+                        //Do not modify message - CLI depends on this exact content to determine hmr operation status.
+                        log.warn(`Cannot apply update with hmr hash ${currentHash}.`);
                         log.warn(err.stack || err.message);
-                        if (options.reload) {
-                            window.location.reload();
-                        }
                     } else {
                         log.warn(`Update failed: ${err.stack || err.message}`);
                     }
@@ -123,13 +123,14 @@ if (module.hot) {
     log.error('Hot Module Replacement is disabled.');
 }
 
-function update(currentHash, options) {
-    lastHash = currentHash;
+function update(latestHash, options) {
+    nextHash = latestHash;
     if (!upToDate()) {
         const status = module.hot.status();
 
         if (status === 'idle') {
-            log.info('Checking for updates to the bundle.');
+            //Do not modify message - CLI depends on this exact content to determine hmr operation status.
+            log.info(`Checking for updates to the bundle with hmr hash ${currentHash}.`);
             check(options);
         } else if (['abort', 'fail'].indexOf(status) >= 0) {
             log.warn(
@@ -139,24 +140,24 @@ function update(currentHash, options) {
     }
 };
 
-function getCurrentHash(currentHash, getFileContent) {
-    const file = getFileContent(`${currentHash}.hot-update.json`);
+function getNextHash(hash, getFileContent) {
+    const file = getFileContent(`${hash}.hot-update.json`);
     return file.readText().then(hotUpdateContent => {
         if(hotUpdateContent) {
             const manifest = JSON.parse(hotUpdateContent);
             const newHash = manifest.h;
-            return getCurrentHash(newHash, getFileContent);
+            return getNextHash(newHash, getFileContent);
         } else {
-            return Promise.resolve(currentHash);
+            return Promise.resolve(hash);
         }
     }).catch(error => Promise.reject(error));
 }
 
 module.exports = function checkState(initialHash, getFileContent) {
-    getCurrentHash(initialHash, getFileContent).then(currentHash => {
-        if(currentHash != initialHash) {
-            update(currentHash, {});
+    currentHash = initialHash;
+    getNextHash(initialHash, getFileContent).then(nextHash => {
+        if(nextHash != initialHash) {
+            update(nextHash, {});
         }
     })
 }
-
