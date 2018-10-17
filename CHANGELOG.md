@@ -1,3 +1,21 @@
+<a name="0.17.0-rc.0"></a>
+# [0.17.0-rc.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.16.2...0.17.0-rc.0) (2018-10-17)
+
+
+### Bug Fixes
+
+* add a check for undefined environment values ([#673](https://github.com/NativeScript/nativescript-dev-webpack/issues/673)) ([c81484f](https://github.com/NativeScript/nativescript-dev-webpack/commit/c81484f))
+* **uglify:** cache/parallel should be outside uglifyOptions ([#670](https://github.com/NativeScript/nativescript-dev-webpack/issues/670)) ([e15fec7](https://github.com/NativeScript/nativescript-dev-webpack/commit/e15fec7))
+* attach to process's exit event on correct place ([#671](https://github.com/NativeScript/nativescript-dev-webpack/issues/671)) ([f4b40bf](https://github.com/NativeScript/nativescript-dev-webpack/commit/f4b40bf))
+
+
+### Features
+
+* add initial HMR support for plain JS/TS apps ([#645](https://github.com/NativeScript/nativescript-dev-webpack/issues/645)) ([a4ac32b](https://github.com/NativeScript/nativescript-dev-webpack/commit/a4ac32b))
+* add hook for the preview command ([#649](https://github.com/NativeScript/nativescript-dev-webpack/issues/649)) ([b47da3c](https://github.com/NativeScript/nativescript-dev-webpack/commit/b47da3c))
+* add Vue bundling support ([#676](https://github.com/NativeScript/nativescript-dev-webpack/issues/676)) ([8da8ccf](https://github.com/NativeScript/nativescript-dev-webpack/commit/8da8ccf))
+
+
 <a name="0.16.2"></a>
 ## [0.16.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.16.0...0.16.2) (2018-09-28)
 
