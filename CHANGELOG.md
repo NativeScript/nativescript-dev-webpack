@@ -1,5 +1,5 @@
 <a name="0.16.3"></a>
-## [0.16.3](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.16.0...0.16.3) (2018-10-22)
+## [0.16.3](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.16.0...0.16.3) (2018-10-22) 
 
 
 ### Bug Fixes
