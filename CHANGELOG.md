@@ -1,3 +1,19 @@
+<a name="0.17.0-rc.1"></a>
+# [0.17.0-rc.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.17.0-rc.0...0.17.0-rc.1) (2018-10-25)
+
+
+### Bug Fixes
+
+* update the version of `request` ([#694](https://github.com/NativeScript/nativescript-dev-webpack/issues/694)) ([39b858b](https://github.com/NativeScript/nativescript-dev-webpack/commit/39b858b))
+
+<a name="0.16.3"></a>
+# [0.16.3](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.16.2...0.16.3) (2018-10-25)
+
+
+### Bug Fixes
+
+* update the version of `request` ([#694](https://github.com/NativeScript/nativescript-dev-webpack/issues/694)) ([39b858b](https://github.com/NativeScript/nativescript-dev-webpack/commit/39b858b))
+
 <a name="0.17.0-rc.0"></a>
 # [0.17.0-rc.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.16.2...0.17.0-rc.0) (2018-10-17)
 
