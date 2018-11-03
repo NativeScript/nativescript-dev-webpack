@@ -1,3 +1,28 @@
+<a name="0.17.0"></a>
+# [0.17.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.17.0-rc.1...0.17.0) (2018-10-31)
+
+Version 0.17.0 introduces initial **Hot Module Replacement** support for plain JavaScript, TypeScript and Vue applications.
+
+> Note: find out [here](https://github.com/NativeScript/nativescript-angular/wiki/HMR) how to enable HMR for Angular projects.
+
+For more details, refer to [0.17.0-rc.1](https://github.com/NativeScript/nativescript-dev-webpack/blob/master/CHANGELOG.md#0170-rc1-2018-10-25) and [0.17.0-rc.0](https://github.com/NativeScript/nativescript-dev-webpack/blob/master/CHANGELOG.md#0170-rc0-2018-10-17) changelogs below.
+
+<a name="0.17.0-rc.1"></a>
+# [0.17.0-rc.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.17.0-rc.0...0.17.0-rc.1) (2018-10-25)
+
+
+### Bug Fixes
+
+* update the version of `request` ([#694](https://github.com/NativeScript/nativescript-dev-webpack/issues/694)) ([39b858b](https://github.com/NativeScript/nativescript-dev-webpack/commit/39b858b))
+
+<a name="0.16.3"></a>
+# [0.16.3](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.16.2...0.16.3) (2018-10-25)
+
+
+### Bug Fixes
+
+* update the version of `request` ([#694](https://github.com/NativeScript/nativescript-dev-webpack/issues/694)) ([39b858b](https://github.com/NativeScript/nativescript-dev-webpack/commit/39b858b))
+
 <a name="0.17.0-rc.0"></a>
 # [0.17.0-rc.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.16.2...0.17.0-rc.0) (2018-10-17)
 
