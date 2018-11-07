@@ -1,3 +1,11 @@
+<a name="0.18.0-rc.0"></a>
+# [0.18.0-rc.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.17.0...0.18.0-rc.0) (2018-11-05)
+
+
+### Features
+* Angular 7 support
+
+
 <a name="0.17.0"></a>
 # [0.17.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.17.0-rc.1...0.17.0) (2018-10-31)
 
