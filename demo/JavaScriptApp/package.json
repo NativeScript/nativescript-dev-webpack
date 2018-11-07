@@ -9,7 +9,7 @@
       "version": "next"
     },
     "tns-android": {
-      "version": "next"
+      "version": "5.0.0-2018-11-05-171453-02"
     }
   },
   "dependencies": {
@@ -29,7 +29,7 @@
     "mocha-multi": "^0.11.0",
     "nativescript-dev-appium": "next",
     "nativescript-dev-sass": "next",
-    "nativescript-dev-webpack": "next",
+    "nativescript-dev-webpack": "^0.18.0-2018-11-05-214332-01",
     "node-sass": "^4.7.1"
   },
   "scripts": {
