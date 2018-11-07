@@ -4,7 +4,6 @@ import {setActivityCallbacks, AndroidActivityCallbacks} from "ui/frame";
 class Activity extends android.support.v7.app.AppCompatActivity {
     public isNativeScriptActivity: boolean;
     private _callbacks: AndroidActivityCallbacks;
-    
     protected onCreate(savedInstanceState: any): void { // android.os.Bundle
         // Set isNativeScriptActivity in onCreate (as done in the original NativeScript activity code).
         // The JS constructor might not be called because the activity is created from Android.
