@@ -36,14 +36,14 @@ module.exports = env => {
         // The 'appPath' and 'appResourcesPath' values are fetched from
         // the nsconfig.json configuration file
         // when bundling with `tns run android|ios --bundle`.
-        appPath = "app",
-            appResourcesPath = "app/App_Resources",
+        appPath = "src",
+        appResourcesPath = "App_Resources",
 
-            // You can provide the following flags when running 'tns run android|ios'
-            snapshot, // --env.snapshot
-            production, // --env.production
-            report, // --env.report
-            hmr, // --env.hmr
+        // You can provide the following flags when running 'tns run android|ios'
+        snapshot, // --env.snapshot
+        production, // --env.production
+        report, // --env.report
+        hmr, // --env.hmr
     } = env;
 
     const externals = (env.externals || []).map((e) => { // --env.externals
