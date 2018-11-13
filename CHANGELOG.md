@@ -1,5 +1,10 @@
-<a name="0.18.0-rc.0"></a>
-# [0.18.0-rc.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.17.0...0.18.0-rc.0) (2018-11-05)
+<a name="0.18.0"></a>
+# [0.18.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.17.0...0.18.0) (2018-11-13)
+
+
+### Bug Fixes
+
+* globs usage in CopyWebpackPlugin ([#700](https://github.com/NativeScript/nativescript-dev-webpack/issues/700)) ([4782bf6](https://github.com/NativeScript/nativescript-dev-webpack/commit/4782bf6))
 
 
 ### Features
