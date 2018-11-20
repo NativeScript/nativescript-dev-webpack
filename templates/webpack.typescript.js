@@ -50,7 +50,7 @@ module.exports = env => {
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
 
     const entryModule = nsWebpack.getEntryModule(appFullPath);
-    const entryPath = `.${sep}${entryModule}.ts`;
+    const entryPath = `.${sep}${entryModule}`;
 
     const config = {
         mode: uglify ? "production" : "development",
@@ -140,7 +140,7 @@ module.exports = env => {
         module: {
             rules: [
                 {
-                    test: new RegExp(entryPath),
+                    test: new RegExp(entryPath + "\.[jt]s"),
                     use: [
                         // Require all Android app components
                         platform === "android" && {
@@ -158,7 +158,7 @@ module.exports = env => {
                 },
 
                 {
-                    test: /-page\.ts$/,
+                    test: /-page\.[jt]s$/,
                     use: "nativescript-dev-webpack/script-hot-loader"
                 },
 
