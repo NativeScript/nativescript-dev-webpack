@@ -10,7 +10,7 @@ const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeS
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 module.exports = env => {
-    // Add your custom Activities, Services and other Android app components here.
+    // Add your custom Activities, Services and other android app components here.
     const appComponents = [
         "tns-core-modules/ui/frame",
         "tns-core-modules/ui/frame/activity",
@@ -50,7 +50,7 @@ module.exports = env => {
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
 
     const entryModule = nsWebpack.getEntryModule(appFullPath);
-    const entryPath = `.${sep}${entryModule}.ts`;
+    const entryPath = `.${sep}${entryModule}.js`;
 
     const config = {
         mode: uglify ? "production" : "development",
@@ -75,11 +75,9 @@ module.exports = env => {
             globalObject: "global",
         },
         resolve: {
-            extensions: [".ts", ".js", ".scss", ".css"],
+            extensions: [".js", ".scss", ".css"],
             // Resolve {N} system modules from tns-core-modules
             modules: [
-                resolve(__dirname, "node_modules/tns-core-modules"),
-                resolve(__dirname, "node_modules"),
                 "node_modules/tns-core-modules",
                 "node_modules",
             ],
@@ -158,7 +156,7 @@ module.exports = env => {
                 },
 
                 {
-                    test: /-page\.ts$/,
+                    test: /-page\.js$/,
                     use: "nativescript-dev-webpack/script-hot-loader"
                 },
 
@@ -186,14 +184,6 @@ module.exports = env => {
                         "sass-loader"
                     ]
                 },
-
-                {
-                    test: /\.ts$/,
-                    use: {
-                        loader: "awesome-typescript-loader",
-                        options: { configFileName: "tsconfig.tns.json" },
-                    }
-                },
             ]
         },
         plugins: [
@@ -204,7 +194,7 @@ module.exports = env => {
             }),
             // Remove all files from the out dir.
             new CleanWebpackPlugin([ `${dist}/**/*` ]),
-            // Copy native app resources to out dir.
+           // Copy native app resources to out dir.
             new CopyWebpackPlugin([
               {
                 from: `${appResourcesFullPath}/${appResourcesPlatformDir}`,

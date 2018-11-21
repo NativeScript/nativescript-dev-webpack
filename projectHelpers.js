@@ -8,6 +8,20 @@ const PROJECT_DATA_GETTERS = {
     appResourcesPath: "getAppResourcesRelativeDirectoryPath",
 };
 
+const isTypeScript = ({ projectDir, packageJson } = {}) => {
+    packageJson = packageJson || getPackageJson(projectDir);
+
+    return (
+        packageJson.dependencies &&
+        (packageJson.dependencies.hasOwnProperty("nativescript-dev-typescript") ||
+            packageJson.dependencies.hasOwnProperty("typescript"))
+    ) || (
+            packageJson.devDependencies &&
+            (packageJson.devDependencies.hasOwnProperty("nativescript-dev-typescript") ||
+                packageJson.devDependencies.hasOwnProperty("typescript"))
+        ) || isAngular({ packageJson });
+};
+
 const isAngular = ({ projectDir, packageJson } = {}) => {
     packageJson = packageJson || getPackageJson(projectDir);
 
@@ -80,6 +94,7 @@ module.exports = {
     isIos,
     isAngular,
     isVue,
+    isTypeScript,
     writePackageJson,
     convertSlashesInPath
 };
