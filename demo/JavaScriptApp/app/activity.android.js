@@ -3,6 +3,10 @@ const frame = require("ui/frame");
 const superProto = android.support.v7.app.AppCompatActivity.prototype;
 android.support.v7.app.AppCompatActivity.extend("org.myApp.MainActivity", {
     onCreate: function(savedInstanceState) {
+        // Set isNativeScriptActivity in onCreate.
+        // The JS constructor might not be called because the activity is created from Android.
+        this.isNativeScriptActivity = true;
+        
         if(!this._callbacks) {
             frame.setActivityCallbacks(this);
         }

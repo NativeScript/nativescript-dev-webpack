@@ -14,7 +14,7 @@ module.exports = env => {
     const appComponents = [
         "tns-core-modules/ui/frame",
         "tns-core-modules/ui/frame/activity",
-        resolve(__dirname, "app/activity.android.ts"),
+        resolve(__dirname, "app/activity.android.ts")
     ];
 
     const platform = env && (env.android && "android" || env.ios && "ios");
@@ -41,7 +41,11 @@ module.exports = env => {
         uglify, // --env.uglify
         report, // --env.report
         sourceMap, // --env.sourceMap
+        hmr, // --env.hmr,
     } = env;
+    const externals = (env.externals || []).map((e) => { // --env.externals
+        return new RegExp(e + ".*");
+    });
 
     const appFullPath = resolve(projectRoot, appPath);
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
@@ -52,6 +56,7 @@ module.exports = env => {
     const config = {
         mode: uglify ? "production" : "development",
         context: appFullPath,
+        externals,
         watchOptions: {
             ignored: [
                 appResourcesFullPath,
@@ -62,7 +67,7 @@ module.exports = env => {
         target: nativescriptTarget,
         entry: {
             bundle: entryPath,
-            application: "./application.android",
+            application: "./application.android"
         },
         output: {
             pathinfo: false,
@@ -118,9 +123,9 @@ module.exports = env => {
             minimize: !!uglify,
             minimizer: [
                 new UglifyJsPlugin({
+                    parallel: true,
+                    cache: true,
                     uglifyOptions: {
-                        parallel: true,
-                        cache: true,
                         output: {
                             comments: false,
                         },
@@ -152,6 +157,21 @@ module.exports = env => {
                             }
                         },
                     ].filter(loader => !!loader)
+                },
+
+                {
+                    test: /-page\.ts$/,
+                    use: "nativescript-dev-webpack/script-hot-loader"
+                },
+
+                {
+                    test: /\.(css|scss)$/,
+                    use: "nativescript-dev-webpack/style-hot-loader"
+                },
+
+                {
+                    test: /\.(html|xml)$/,
+                    use: "nativescript-dev-webpack/markup-hot-loader"
                 },
 
                 { test: /\.(html|xml)$/, use: "nativescript-dev-webpack/xml-namespace-loader"},
@@ -238,6 +258,11 @@ module.exports = env => {
             webpackConfig: config,
         }));
     }
+
+    if (hmr) {
+        config.plugins.push(new webpack.HotModuleReplacementPlugin());
+    }
+
 
     return config;
 };
