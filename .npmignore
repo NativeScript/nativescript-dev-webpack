@@ -4,3 +4,12 @@ demo
 *.ts
 !*.d.ts
 
+*.spec.*
+.vscode/
+.github/
+jasmine-config/
+CONTRIBUTING.md
+CODE_OF_CONDUCT.md
+PULL_REQUEST_TESTS.md
+
+*.tgz
