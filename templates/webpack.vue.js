@@ -56,7 +56,7 @@ module.exports = env => {
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
 
     const entryModule = nsWebpack.getEntryModule(appFullPath);
-    const entryPath = `.${sep}${entryModule}.ts`;
+    const entryPath = `.${sep}${entryModule}`;
     console.log(`Bundling application for entryPath ${entryPath}...`);
 
     const config = {
@@ -96,8 +96,8 @@ module.exports = env => {
                 '@': appFullPath,
                 'vue': 'nativescript-vue'
             },
-            // don't resolve symlinks to symlinked modules
-            symlinks: false,
+            // resolve symlinks to symlinked modules
+            symlinks: true,
         },
         resolveLoader: {
             // don't resolve symlinks to symlinked loaders
@@ -189,7 +189,11 @@ module.exports = env => {
                 },
                 {
                     test: /\.ts$/,
-                    loader: 'awesome-typescript-loader',
+                    loader: 'ts-loader',
+                    options: {
+                        appendTsSuffixTo: [/\.vue$/],
+                        allowTsInNodeModules: true,
+                    },
                 },
                 {
                     test: /\.vue$/,
