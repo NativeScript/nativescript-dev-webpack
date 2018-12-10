@@ -32,3 +32,5 @@ jasmine-config/reporter.js.map
 
 hooks
 .DS_Store
+
+!projectHelpers.spec.js

@@ -1,5 +1,5 @@
 const { resolve } = require("path");
-const { readFileSync, writeFileSync } = require("fs");
+const fs = require("fs");
 
 const hook = require("nativescript-hook")(__dirname);
 
@@ -13,11 +13,13 @@ const isTypeScript = ({ projectDir, packageJson } = {}) => {
 
     return (
         packageJson.dependencies &&
-        packageJson.dependencies.hasOwnProperty("typescript")
+        (packageJson.dependencies.hasOwnProperty("nativescript-dev-typescript") ||
+            packageJson.dependencies.hasOwnProperty("typescript"))
     ) || (
-        packageJson.devDependencies &&
-        packageJson.devDependencies.hasOwnProperty("typescript")
-    ) || isAngular({ packageJson });
+            packageJson.devDependencies &&
+            (packageJson.devDependencies.hasOwnProperty("nativescript-dev-typescript") ||
+                packageJson.devDependencies.hasOwnProperty("typescript"))
+        ) || isAngular({ packageJson });
 };
 
 const isAngular = ({ projectDir, packageJson } = {}) => {
@@ -36,13 +38,26 @@ const isVue = ({ projectDir, packageJson } = {}) => {
 
 const getPackageJson = projectDir => {
     const packageJsonPath = getPackageJsonPath(projectDir);
-    return JSON.parse(readFileSync(packageJsonPath, "utf8"));
+    return JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
 };
 
 const writePackageJson = (content, projectDir) => {
     const packageJsonPath = getPackageJsonPath(projectDir);
-    writeFileSync(packageJsonPath, JSON.stringify(content, null, 2))
+    const currentJsonContent = fs.readFileSync(packageJsonPath);
+    const indentation = getIndentationCharacter(currentJsonContent);
+    const stringifiedContent = JSON.stringify(content, null, indentation);
+    const currentPackageJsonContent = JSON.parse(currentJsonContent);
+
+    if (JSON.stringify(currentPackageJsonContent, null, indentation) !== stringifiedContent) {
+        fs.writeFileSync(packageJsonPath, stringifiedContent)
+    }
 }
+
+const getIndentationCharacter = (jsonContent) => {
+    const matches = jsonContent && jsonContent.toString().match(/{\r*\n*(\W*)"/m);
+    return matches && matches[1];
+}
+
 const getProjectDir = hook.findProjectDir;
 
 const getPackageJsonPath = projectDir => resolve(projectDir, "package.json");
@@ -94,5 +109,6 @@ module.exports = {
     isVue,
     isTypeScript,
     writePackageJson,
-    convertSlashesInPath
+    convertSlashesInPath,
+    getIndentationCharacter
 };
