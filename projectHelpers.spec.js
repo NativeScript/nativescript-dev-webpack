@@ -19,6 +19,11 @@ describe('projectHelpers', () => {
                 testName: 'returns two spaces when file starts with two spaces',
                 input: `{${twoSpaces}"abc": "1"${twoSpaces}}`,
                 expectedResult: twoSpaces
+			},
+			{
+                testName: 'returns two spaces when file starts with two spaces and binary content is passed',
+                input: Buffer.from(`{${twoSpaces}"abc": "1"${twoSpaces}}`),
+                expectedResult: twoSpaces
             },
             {
                 testName: 'returns empty string when file starts without any indentation',

@@ -54,7 +54,7 @@ const writePackageJson = (content, projectDir) => {
 }
 
 const getIndentationCharacter = (jsonContent) => {
-    const matches = jsonContent.match(/{\r*\n*(\W*)"/m);
+    const matches = jsonContent && jsonContent.toString().match(/{\r*\n*(\W*)"/m);
     return matches && matches[1];
 }
 
