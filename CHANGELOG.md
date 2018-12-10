@@ -1,3 +1,19 @@
+<a name="0.18.3"></a>
+## [0.18.3](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.18.0...0.18.3) (2018-12-10)
+
+
+### Bug Fixes
+
+* avoid getting `js` template in a `ts` project ([#717](https://github.com/NativeScript/nativescript-dev-webpack/issues/717)) ([c121c24](https://github.com/NativeScript/nativescript-dev-webpack/commit/c121c24))
+* project's package.json indentation is not persisted ([#727](https://github.com/NativeScript/nativescript-dev-webpack/issues/727)) ([a45a45c](https://github.com/NativeScript/nativescript-dev-webpack/commit/a45a45c))
+
+
+### Features
+
+* **HMR:** expose context ([#724](https://github.com/NativeScript/nativescript-dev-webpack/issues/724)) ([c14110c](https://github.com/NativeScript/nativescript-dev-webpack/commit/c14110c))
+
+
+
 <a name="0.18.2"></a>
 ## [0.18.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.18.1...0.18.2) (2018-12-06)
 
