@@ -19,12 +19,12 @@ module.exports = function (source) {
                     require("nativescript-dev-webpack/hot")(__webpack_require__.h(), (fileName) => applicationFiles.getFile(fileName));
                 };
 
-                global.__hmrRefresh = function(type) {
+                global.__hmrRefresh = function({ type, module }) {
                     global.__hmrNeedReload = true;
                     setTimeout(() => {
                         if(global.__hmrNeedReload) {
                             global.__hmrNeedReload = false;
-                            global.__hmrLivesyncBackup();
+                            global.__hmrLivesyncBackup({ type, module });
                         }
                     });
                 }
@@ -45,9 +45,9 @@ module.exports = function (source) {
     if (loadCss) {
         source = `
             require("${
-                angular ?
-                    'nativescript-dev-webpack/load-application-css-angular' :
-                    'nativescript-dev-webpack/load-application-css-regular'
+            angular ?
+                'nativescript-dev-webpack/load-application-css-angular' :
+                'nativescript-dev-webpack/load-application-css-regular'
             }")();
             ${source}
         `;

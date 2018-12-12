@@ -1,5 +1,7 @@
 const { reload } = require("./hot-loader-helper");
 
 module.exports = function (source) {
-    return `${source};${reload('style')}`;
+    const typeStyle = "style";
+    const modulePath = this.resourcePath.replace(this.context, ".");
+    return `${source};${reload({ type: typeStyle, module: modulePath })}`;
 };
