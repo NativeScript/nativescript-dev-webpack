@@ -74,6 +74,11 @@
     "generate-android-snapshot": "./bin/generate-android-snapshot"
   },
   "dependencies": {
+    "@angular-devkit/core": "~7.1.0",
+    "awesome-typescript-loader": "~5.2.1",
+    "clean-webpack-plugin": "~1.0.0",
+    "copy-webpack-plugin": "~4.6.0",
+    "css-loader": "~1.0.0",
     "global-modules-path": "2.0.0",
     "minimatch": "3.0.4",
     "nativescript-hook": "0.2.4",
