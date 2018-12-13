@@ -1,13 +1,18 @@
 const { parse, relative, join, basename, extname } = require("path");
+const { promisify } = require('util');
 const { convertSlashesInPath } = require("./projectHelpers");
 
 module.exports = function (source) {
     this.value = source;
     const { ignore } = this.query;
+    const callback = this.async();
 
     const { XmlParser } = require("tns-core-modules/xml");
 
-    let namespaces = [];
+    const resolvePromise = promisify(this.resolve);
+    const promises = [];
+
+    const namespaces = [];
     const parser = new XmlParser((event) => {
         const { namespace, elementName } = event;
         const moduleName = `${namespace}/${elementName}`;
@@ -20,83 +25,91 @@ module.exports = function (source) {
         ) {
             const localNamespacePath = join(this.rootContext, namespace);
             const localModulePath = join(localNamespacePath, elementName);
-            const resolvedPath = tryResolve(localNamespacePath) ||
-                tryResolve(localModulePath);
 
-            if (!resolvedPath) {
-                const xml = tryResolve(`${localModulePath}.xml`);
-                if (!xml) {
-                    namespaces.push({ name: namespace, path: namespace });
-                    namespaces.push({ name: moduleName, path: namespace });
+            const pathResolved = (resolvedPath) => {
+                this.addDependency(resolvedPath);
 
-                    return;
-                } else {
-                    namespaces.push({ name: `${moduleName}.xml`, path: xml });
-                    namespaces.push({ name: moduleName, path: xml });
-                    this.addDependency(xml);
-                }
+                namespaces.push({ name: namespace, path: resolvedPath });
+                namespaces.push({ name: moduleName, path: resolvedPath });
 
-                const css = tryResolve(`${localModulePath}.css`);
-                if (css) {
-                    namespaces.push({ name: `${moduleName}.css`, path: css });
-                    this.addDependency(css);
-                }
+                const { dir, name } = parse(resolvedPath);
+                const noExtFilename = join(dir, name);
 
-                return;
-            }
+                return Promise.all([
+                    resolvePromise(this.context, `${noExtFilename}.xml`)
+                        .then((xml) => {
+                            this.addDependency(xml);
+                            namespaces.push({ name: `${moduleName}.xml`, path: xml });
+                        })
+                        .catch((err) => {}),
 
-            this.addDependency(resolvedPath);
+                    resolvePromise(this.context, `${noExtFilename}.css`)
+                        .then((xml) => {
+                            this.addDependency(xml);
+                            namespaces.push({ name: `${moduleName}.css`, path: css });
+                        })
+                        .catch((err) => {})
+                ]);
+            };
 
-            namespaces.push({ name: namespace, path: resolvedPath });
-            namespaces.push({ name: moduleName, path: resolvedPath });
+            promises.push(resolvePromise(this.context, localNamespacePath)
+                .then(path => pathResolved(path))
+                .catch(() => {
+                    return promise = resolvePromise(this.context, localModulePath)
+                        .then(path => pathResolved(path))
+                        .catch(() => {
+                            return Promise.all([
+                                resolvePromise(this.context, `${localModulePath}.xml`)
+                                    .then((xml) => {
+                                        namespaces.push({ name: `${moduleName}.xml`, path: xml });
+                                        namespaces.push({ name: moduleName, path: xml });
+                                        this.addDependency(xml);
+                                    })
+                                    .catch(() => {
+                                        namespaces.push({ name: namespace, path: namespace });
+                                        namespaces.push({ name: moduleName, path: namespace });
+                                    }),
 
-            const { dir, name } = parse(resolvedPath);
-            const noExtFilename = join(dir, name);
+                                resolvePromise(this.context, `${localModulePath}.css`)
+                                    .then((css) => {
+                                        namespaces.push({ name: `${moduleName}.css`, path: css });
+                                        this.addDependency(css);
+                                    })
+                                    .catch(() => {})
+                            ]);
 
-            const xml = tryResolve(`${noExtFilename}.xml`);
-            if (xml) {
-                this.addDependency(xml);
-                namespaces.push({ name: `${moduleName}.xml`, path: xml });
-            }
-
-            const css = tryResolve(`${noExtFilename}.css`);
-            if (css) {
-                this.addDependency(css);
-                namespaces.push({ name: `${moduleName}.css`, path: css });
-            }
+                        });
+                })
+            );
         }
     }, undefined, true);
 
     parser.parse(source);
 
-    const moduleRegisters = namespaces
-        .map(convertPath)
-        .map(n =>
-            `global.registerModule("${n.name}", function() { return require("${n.path}"); });`
-        )
-        .join("");
+    Promise.all(promises).then(() => {
+        const moduleRegisters = namespaces
+            .map(convertPath)
+            .map(n =>
+                `global.registerModule("${n.name}", function() { return require("${n.path}"); });`
+            )
+            .join("");
 
-    // escape special whitespace characters
-    // see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#Issue_with_plain_JSON.stringify_for_use_as_JavaScript
-    const json = JSON.stringify(source)
-        .replace(/\u2028/g, '\\u2028')
-        .replace(/\u2029/g, '\\u2029');
+        // escape special whitespace characters
+        // see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#Issue_with_plain_JSON.stringify_for_use_as_JavaScript
+        const json = JSON.stringify(source)
+            .replace(/\u2028/g, '\\u2028')
+            .replace(/\u2029/g, '\\u2029');
 
-    const wrapped = `${moduleRegisters}\nmodule.exports = ${json};`;
+        const wrapped = `${moduleRegisters}\nmodule.exports = ${json}`;
 
-    this.callback(null, wrapped);
+        callback(null, wrapped);
+    }).catch((err) => {
+        callback(err);
+    })
+
 }
 
 function convertPath(obj) {
     obj.path = convertSlashesInPath(obj.path);
     return obj;
-}
-
-function tryResolve(path) {
-    try {
-        return require.resolve(path);
-    } catch (e) {
-        // The path couldn't be resolved
-        return;
-    }
 }
