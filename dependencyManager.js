@@ -54,7 +54,6 @@ function removeObsoleteDeps(packageJson) {
         "raw-loader",
         "css-loader",
         "nativescript-worker-loader",
-        "extract-text-webpack-plugin",
         "uglifyjs-webpack-plugin",
         "@angular-devkit/core",
         "resolve-url-loader",
