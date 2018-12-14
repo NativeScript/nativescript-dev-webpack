@@ -17,10 +17,12 @@ const hotOptions = {
             chain.pop();
         }
 
-        log.warn(`Ignored an update to unaccepted module ${chain.join(' ➭ ')}`);
+        log.warn(`Ignored an update to unaccepted module: `);
+        chain.forEach(mod => log.warn(`         ➭ ${mod}`));
     },
     onDeclined(data) {
-        log.warn(`Ignored an update to declined module ${data.chain.join(' ➭ ')}`);
+        log.warn(`Ignored an update to declined module:`);
+        data.chain.forEach(mod => log.warn(`         ➭ ${mod}`));
     },
     onErrored(data) {
         log.warn(
