@@ -57,7 +57,6 @@ function removeObsoleteDeps(packageJson) {
         "uglifyjs-webpack-plugin",
         "@angular-devkit/core",
         "resolve-url-loader",
-        "awesome-typescript-loader",
         "sass-loader",
     ];
 
