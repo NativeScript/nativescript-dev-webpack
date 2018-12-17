@@ -88,8 +88,8 @@ module.exports = env => {
             alias: {
                 '~': appFullPath
             },
-            // resolve symlinks to symlinked modules
-            symlinks: true
+            // don't resolve symlinks to symlinked modules
+            symlinks: false
         },
         resolveLoader: {
             // don't resolve symlinks to symlinked loaders
@@ -192,14 +192,10 @@ module.exports = env => {
                 {
                     test: /\.ts$/,
                     use: {
-                        loader: "ts-loader",
-                        options: {
-                            configFile: "tsconfig.tns.json",
-                            allowTsInNodeModules: true,
-                        },
+                        loader: "awesome-typescript-loader",
+                        options: { configFileName: "tsconfig.tns.json" },
                     }
                 },
-
             ]
         },
         plugins: [
