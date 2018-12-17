@@ -143,6 +143,7 @@ module.exports = env => {
                             'collapse_vars': platform !== "android",
                             sequences: platform !== "android",
                         },
+                        keep_fnames: true,
                     },
                 }),
             ],
