@@ -1,4 +1,4 @@
-const { relative, resolve, sep } = require("path");
+const { relative, resolve } = require("path");
 
 const webpack = require("webpack");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
@@ -56,7 +56,7 @@ module.exports = env => {
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
 
     const entryModule = nsWebpack.getEntryModule(appFullPath);
-    const entryPath = `.${sep}${entryModule}`;
+    const entryPath = resolve(appFullPath, entryModule);
     console.log(`Bundling application for entryPath ${entryPath}...`);
 
     const config = {
@@ -149,7 +149,7 @@ module.exports = env => {
         },
         module: {
             rules: [{
-                    test: new RegExp(entryPath),
+                    test: entryPath,
                     use: [
                         // Require all Android app components
                         platform === "android" && {
