@@ -1,6 +1,6 @@
 {
   "name": "nativescript-dev-webpack",
-  "version": "0.18.4",
+  "version": "0.18.5",
   "main": "index",
   "description": "",
   "homepage": "http://www.telerik.com",
@@ -75,7 +75,6 @@
   },
   "dependencies": {
     "@angular-devkit/core": "~7.1.0",
-    "awesome-typescript-loader": "~5.2.1",
     "clean-webpack-plugin": "~1.0.0",
     "copy-webpack-plugin": "~4.6.0",
     "css-loader": "~1.0.0",
