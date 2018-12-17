@@ -1,4 +1,4 @@
-const { getIndentationCharacter, writePackageJson } = require("./projectHelpers");
+const { getIndentationCharacter, writePackageJson, safeGet } = require("./projectHelpers");
 const fs = require("fs");
 
 describe('projectHelpers', () => {
@@ -54,6 +54,28 @@ describe('projectHelpers', () => {
             it(testName, () => {
                 expect(getIndentationCharacter(input)).toEqual(expectedResult);
             });
+        });
+    });
+
+    describe('safeGet', () => {
+        it('should return the correct value of existing properties', () => {
+            const obj = { a: 15 };
+            expect(safeGet(obj, 'a')).toBe(15);
+        });
+
+        it('should return undefined for unexisting properties', () => {
+            const obj = { a: 15 };
+            expect(safeGet(obj, 'random')).toBeUndefined();
+        });
+
+        it('should return undefined when the first argument is undefined', () => {
+            let obj;
+            expect(safeGet(obj, 'random')).toBeUndefined();
+        });
+
+        it('should return undefined when the first argument is not an object and does not have inherited property with the queried name', () => {
+            const num = 15;
+            expect(safeGet(num, 'random')).toBeUndefined();
         });
     });
 
