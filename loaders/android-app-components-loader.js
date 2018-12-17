@@ -1,4 +1,4 @@
-const { convertSlashesInPath } = require("./projectHelpers");
+const { convertSlashesInPath } = require("../projectHelpers");
 
 module.exports = function (source) {
     this.cacheable();

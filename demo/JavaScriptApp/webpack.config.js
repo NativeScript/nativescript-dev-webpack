@@ -144,12 +144,12 @@ module.exports = env => {
                     use: [
                         // Require all Android app components
                         platform === "android" && {
-                            loader: "nativescript-dev-webpack/android-app-components-loader",
+                            loader: "nativescript-dev-webpack/loaders/android-app-components-loader",
                             options: { modules: appComponents }
                         },
 
                         {
-                            loader: "nativescript-dev-webpack/bundle-config-loader",
+                            loader: "nativescript-dev-webpack/loaders/bundle-config-loader",
                             options: {
                                 loadCss: !snapshot, // load the application css if in debug mode
                             }
@@ -159,20 +159,20 @@ module.exports = env => {
 
                 {
                     test: /-page\.js$/,
-                    use: "nativescript-dev-webpack/script-hot-loader"
+                    use: "nativescript-dev-webpack/loaders/script-hot-loader"
                 },
 
                 {
                     test: /\.(css|scss)$/,
-                    use: "nativescript-dev-webpack/style-hot-loader"
+                    use: "nativescript-dev-webpack/loaders/style-hot-loader"
                 },
 
                 {
                     test: /\.(html|xml)$/,
-                    use: "nativescript-dev-webpack/markup-hot-loader"
+                    use: "nativescript-dev-webpack/loaders/markup-hot-loader"
                 },
 
-                { test: /\.(html|xml)$/, use: "nativescript-dev-webpack/xml-namespace-loader"},
+                { test: /\.(html|xml)$/, use: "nativescript-dev-webpack/loaders/xml-namespace-loader"},
 
                 {
                     test: /\.css$/,

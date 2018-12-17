@@ -1,6 +1,6 @@
 const { parse, relative, join, basename, extname } = require("path");
 const { promisify } = require('util');
-const { convertSlashesInPath } = require("./projectHelpers");
+const { convertSlashesInPath } = require("../projectHelpers");
 
 module.exports = function (source) {
     this.value = source;

@@ -46,8 +46,8 @@ module.exports = function (source) {
         source = `
             require("${
             angular ?
-                'nativescript-dev-webpack/load-application-css-angular' :
-                'nativescript-dev-webpack/load-application-css-regular'
+                'nativescript-dev-webpack/loaders/load-application-css-angular' :
+                'nativescript-dev-webpack/loaders/load-application-css-regular'
             }")();
             ${source}
         `;

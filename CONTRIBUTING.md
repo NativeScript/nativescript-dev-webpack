@@ -25,6 +25,7 @@ Before starting, make yourself familiar with the `nativescript-dev-webpack`'s [d
 The repository contains several ingredients:
 *   `installer.js` - combination of postinstall scripts for adding or removing webpack configurations and necessary dependecies when installing the plugin.
 *   `templates/` - webpack config templates for different types of projects - NativeScript with JavaScript, NativeScript with TypeScript and NativeScript Angular projects.
+*   `loaders/` - several custom [loaders](https://webpack.js.org/concepts/loaders/) necessary for preprocessing files.
 *   `plugins/` - several [Webpack plugins](https://webpack.js.org/concepts/plugins/) necessary for bundling NativeScript applications.
 *   `snapshot/android/` - tools used with the `NativeScriptSnapshot` plugin for generating V8 Heap Snapshots.
 *   `nativescript-target/` - configuration of a [Webpack deployment target](https://webpack.js.org/concepts/targets/) for building NativeScript applications.
