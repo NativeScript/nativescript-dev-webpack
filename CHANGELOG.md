@@ -1,5 +1,5 @@
 <a name="0.18.5"></a>
-## [0.18.5](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.18.4...0.18.5) (2018-12-17)
+## [0.18.5](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.18.3...0.18.5) (2018-12-17)
 
 
 ### Bug Fixes
@@ -11,16 +11,6 @@
 ### Features
 
 * **Vue:** add support for TypeScript ([#734](https://github.com/NativeScript/nativescript-dev-webpack/issues/734)) ([d290515](https://github.com/NativeScript/nativescript-dev-webpack/commit/d290515))
-
-
-
-<a name="0.18.4"></a>
-## [0.18.4](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.18.3...0.18.4) (2018-12-14)
-
-
-### Bug Fixes
-
-* **JS/TS:** use webpack resolver instead of Node.js resolver ([#681](https://github.com/NativeScript/nativescript-dev-webpack/issues/681)) ([9f1efff](https://github.com/NativeScript/nativescript-dev-webpack/commit/9f1efff))
 
 
 
