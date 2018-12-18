@@ -192,6 +192,7 @@ module.exports = env => {
                     test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/,
                     use: [
                         "nativescript-dev-webpack/moduleid-compat-loader",
+                        "nativescript-dev-webpack/lazy-ngmodule-hot-loader",
                         "@ngtools/webpack",
                     ]
                 },
