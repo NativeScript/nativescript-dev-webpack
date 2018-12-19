@@ -110,5 +110,6 @@ module.exports = {
     isTypeScript,
     writePackageJson,
     convertSlashesInPath,
-    getIndentationCharacter
+    getIndentationCharacter,
+    safeGet,
 };
