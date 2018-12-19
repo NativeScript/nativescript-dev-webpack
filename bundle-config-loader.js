@@ -4,47 +4,23 @@ module.exports = function (source) {
 
     const hmr = `
         if (module.hot) {
-            const fileSystemModule = require("tns-core-modules/file-system");
-            const applicationFiles = fileSystemModule.knownFolders.currentApp();
-
-            global.__hmrLivesyncBackup = global.__onLiveSync;
-            global.__onLiveSync = function () {
-                console.log("HMR: Sync...");
-                require("nativescript-dev-webpack/hot")(__webpack_require__.h(), (fileName) => applicationFiles.getFile(fileName));
-            };
-
-            global.__hmrRefresh = function({ type, module }) {
-                global.__hmrNeedReload = true;
-                setTimeout(() => {
-                    if(global.__hmrNeedReload) {
-                        global.__hmrNeedReload = false;
-                        global.__hmrLivesyncBackup({ type, module });
-                    }
-                });
-            }
-
-            global.__hmrInitialSync = true; // needed to determine if we are performing initial sync
-            global.__onLiveSync();
-        }
-    `;
-
-    const angularHmr = `
-        if (module.hot) {
             const hmrUpdate = require("nativescript-dev-webpack/hmr").hmrUpdate;
 
-            global.__hmrLivesyncBackup = global.__onLiveSync;
+            global.__hmrLiveSync = global.__onLiveSync;
+
             global.__onLiveSync = function () {
                 console.log("HMR: Sync...");
                 hmrUpdate();
             };
 
+            // global.__hmrSync
             global.__hmrRefresh = function({ type, module }) {
                 setTimeout(() => {
-                    global.__hmrLivesyncBackup({ type, module });
+                    global.__hmrLiveSync({ type, module });
                 });
             };
         }
-    `;
+        `;
 
     source = `
         require("tns-core-modules/bundle-entry-points");
@@ -53,7 +29,7 @@ module.exports = function (source) {
 
     if (angular) {
         source = `
-            ${angularHmr}
+            ${hmr}
             ${source}
         `;
     } else if (registerModules) {
@@ -78,4 +54,3 @@ module.exports = function (source) {
 
     this.callback(null, source);
 };
-
