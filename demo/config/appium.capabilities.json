@@ -6,7 +6,7 @@
         "avd": "Emulator-Api19-Default",
         "lt": 60000,
         "newCommandTimeout": 720,
-        "noReset": true,
+        "noReset": false,
         "fullReset": false,
         "app": ""
     },
@@ -17,7 +17,7 @@
         "avd": "Emulator-Api21-Default",
         "lt": 60000,
         "newCommandTimeout": 720,
-        "noReset": true,
+        "noReset": false,
         "fullReset": false,
         "app": ""
     },
@@ -28,7 +28,7 @@
         "avd": "Emulator-Api23-Default",
         "lt": 60000,
         "newCommandTimeout": 720,
-        "noReset": true,
+        "noReset": false,
         "fullReset": false,
         "app": ""
     },
@@ -39,7 +39,7 @@
         "avd": "Emulator-Api24-Default",
         "lt": 60000,
         "newCommandTimeout": 720,
-        "noReset": true,
+        "noReset": false,
         "fullReset": false,
         "app": ""
     },
@@ -50,7 +50,7 @@
         "avd": "Emulator-Api25-Google",
         "lt": 60000,
         "newCommandTimeout": 720,
-        "noReset": true,
+        "noReset": false,
         "fullReset": false,
         "app": ""
     },
@@ -61,7 +61,7 @@
         "avd": "Emulator-Api26-Google",
         "lt": 60000,
         "newCommandTimeout": 720,
-        "noReset": true,
+        "noReset": false,
         "fullReset": false,
         "app": ""
     },
@@ -72,7 +72,7 @@
         "avd": "Emulator-Api27-Google",
         "lt": 60000,
         "newCommandTimeout": 720,
-        "noReset": true,
+        "noReset": false,
         "fullReset": false,
         "app": ""
     },
@@ -80,7 +80,7 @@
         "platformName": "iOS",
         "platformVersion": "10.0",
         "deviceName": "iPhone 7 100",
-        "noReset": true,
+        "noReset": false,
         "fullReset": false,
         "app": ""
     },
@@ -88,7 +88,7 @@
         "platformName": "iOS",
         "platformVersion": "11.2",
         "deviceName": "iPhone 7 110",
-        "noReset": true,
+        "noReset": false,
         "fullReset": false,
         "app": ""
     },
@@ -96,7 +96,7 @@
         "platformName": "iOS",
         "platformVersion": "11.2",
         "deviceName": "iPhone 8 110",
-        "noReset": true,
+        "noReset": false,
         "fullReset": false,
         "app": ""
     },
@@ -104,7 +104,7 @@
         "platformName": "iOS",
         "platformVersion": "11.2",
         "deviceName": "iPhone X 110",
-        "noReset": true,
+        "noReset": false,
         "fullReset": false,
         "app": ""
     },
@@ -112,7 +112,7 @@
         "platformName": "iOS",
         "platformVersion": "11.1",
         "deviceName": "iPhone X 111",
-        "noReset": true,
+        "noReset": false,
         "fullReset": false,
         "app": ""
     }
