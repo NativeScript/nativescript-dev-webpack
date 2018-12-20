@@ -1,6 +1,6 @@
 const path = require("path");
 const { existsSync } = require("fs");
-const { findBootstrapModulePath } = require("./utils/ast-utils")
+const { findBootstrapModulePath } = require("./utils/ast-utils");
 const { ANDROID_APP_PATH } = require("./androidProjectHelpers");
 const {
     getPackageJson,

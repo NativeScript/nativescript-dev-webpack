@@ -61,6 +61,9 @@ module.exports = env => {
         ngCompilerTransformers.push(nsReplaceBootstrap);
     }
 
+    // when "@angular/core" is external, it's not included in the bundles. In this way, it will be used
+    // directly from node_modules and the Angular modules loader won't be able to resolve the lazy routes
+    // fixes https://github.com/NativeScript/nativescript-cli/issues/4024
     if (env.externals.indexOf("@angular/core") > -1) {
         const appModuleRelativePath = nsWebpack.getMainModulePath(resolve(appFullPath, entryModule));
         if (appModuleRelativePath) {

@@ -1,10 +1,10 @@
-import { tags } from '@angular-devkit/core';
+import { tags } from "@angular-devkit/core";
 import { createTypescriptContext, transformTypescript } from "@ngtools/webpack/src/transformers";
-import { nsReplaceLazyLoader, NgLazyLoaderCode, getConfigObjectSetupCode } from './ns-replace-lazy-loader';
-import { AngularCompilerPlugin } from '@ngtools/webpack';
+import { nsReplaceLazyLoader, NgLazyLoaderCode, getConfigObjectSetupCode } from "./ns-replace-lazy-loader";
+import { AngularCompilerPlugin } from "@ngtools/webpack";
 
-describe('@ngtools/webpack transformers', () => {
-    describe('ns-replace-lazy-loader', () => {
+describe("@ngtools/webpack transformers", () => {
+    describe("ns-replace-lazy-loader", () => {
         const configObjectName = "testIdentifier";
         const configObjectSetupCode = getConfigObjectSetupCode(configObjectName, "providers", "NgModuleFactoryLoader", "{ provide: nsNgCoreImport_Generated.NgModuleFactoryLoader, useClass: NSLazyModulesLoader_Generated }");
         const testCases = [
@@ -115,7 +115,7 @@ describe('@ngtools/webpack transformers', () => {
                     export { AppModule };`
             },
             {
-                name: "should NOT add NgModuleFactoryLoader when its already defined",
+                name: "should NOT add NgModuleFactoryLoader when it's already defined",
                 rawAppModule: `
                     import { NgModule } from "@angular/core";
                     import { NativeScriptModule } from "nativescript-angular/nativescript.module";
@@ -214,8 +214,8 @@ describe('@ngtools/webpack transformers', () => {
                 const ngCompiler = <AngularCompilerPlugin>{
                     typeChecker: program.getTypeChecker(),
                     entryModule: {
-                        path: '/project/src/test-file',
-                        className: 'AppModule',
+                        path: "/project/src/test-file",
+                        className: "AppModule",
                     },
                 };
                 const transformer = nsReplaceLazyLoader(() => ngCompiler);

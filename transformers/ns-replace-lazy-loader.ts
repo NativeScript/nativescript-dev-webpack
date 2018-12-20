@@ -3,8 +3,8 @@
 // https://github.com/angular/angular-cli/blob/d202480a1707be6575b2c8cf0383cfe6db44413c/packages/schematics/angular/utility/ng-ast-utils.ts
 // https://github.com/NativeScript/nativescript-schematics/blob/438b9e3ef613389980bfa9d071e28ca1f32ab04f/src/ast-utils.ts
 
-import { dirname, basename, extname, join } from 'path';
-import * as ts from 'typescript';
+import { dirname, basename, extname, join } from "path";
+import * as ts from "typescript";
 import {
     StandardTransform,
     TransformOperation,
@@ -13,20 +13,16 @@ import {
     ReplaceNodeOperation,
     makeTransform
 } from "@ngtools/webpack/src/transformers";
-import { workaroundResolve } from '@ngtools/webpack/src/compiler_host';
-import { AngularCompilerPlugin } from '@ngtools/webpack';
-import { findNode, getSourceNodes, getObjectPropertyMatches } from "../utils/ast-utils";
+import { AngularCompilerPlugin } from "@ngtools/webpack";
+import { findNode, getObjectPropertyMatches, getDecoratorMetadata } from "../utils/ast-utils";
+import { getResolvedEntryModule } from "../utils/transformers-utils";
 
 export function nsReplaceLazyLoader(getNgCompiler: () => AngularCompilerPlugin): ts.TransformerFactory<ts.SourceFile> {
     const getTypeChecker = () => getNgCompiler().typeChecker;
 
     const standardTransform: StandardTransform = function (sourceFile: ts.SourceFile) {
         let ops: TransformOperation[] = [];
-        const ngCompiler = getNgCompiler();
-
-        const entryModule = ngCompiler.entryModule
-            ? { path: workaroundResolve(ngCompiler.entryModule.path), className: getNgCompiler().entryModule.className }
-            : ngCompiler.entryModule;
+        const entryModule = getResolvedEntryModule(getNgCompiler());
         const sourceFilePath = join(dirname(sourceFile.fileName), basename(sourceFile.fileName, extname(sourceFile.fileName)));
         if (!entryModule || sourceFilePath !== entryModule.path) {
             return ops;
@@ -50,7 +46,7 @@ export function addArrayPropertyValueToNgModule(
     newPropertyValueMatch: string,
     newPropertyValue: string
 ): TransformOperation[] {
-    const ngModuleConfigNodesInFile = getDecoratorMetadata(sourceFile, 'NgModule', '@angular/core');
+    const ngModuleConfigNodesInFile = getDecoratorMetadata(sourceFile, "NgModule", "@angular/core");
     let ngModuleConfigNode: any = ngModuleConfigNodesInFile && ngModuleConfigNodesInFile[0];
     if (!ngModuleConfigNode) {
         return null;
@@ -63,15 +59,16 @@ export function addArrayPropertyValueToNgModule(
     }
 
     const ngLazyLoaderNode = ts.createIdentifier(NgLazyLoaderCode);
-    if (ngModuleConfigNode.kind == ts.SyntaxKind.Identifier) {
+    if (ngModuleConfigNode.kind === ts.SyntaxKind.Identifier) {
+        const ngModuleConfigIndentifierNode = ngModuleConfigNode as ts.Identifier;
         // cases like @NgModule(myCoolConfig)
         const configObjectDeclarationNodes = collectDeepNodes<ts.Node>(sourceFile, ts.SyntaxKind.VariableStatement).filter(imp => {
-            return findNode(imp, ts.SyntaxKind.Identifier, ngModuleConfigNode.getText());
+            return findNode(imp, ts.SyntaxKind.Identifier, ngModuleConfigIndentifierNode.getText());
         });
         // will be undefined when the object is imported from another file
         const configObjectDeclaration = (configObjectDeclarationNodes && configObjectDeclarationNodes[0]);
 
-        const configObjectName = ngModuleConfigNode.escapedText.trim();
+        const configObjectName = (<string>ngModuleConfigIndentifierNode.escapedText).trim();
         const configObjectSetupCode = getConfigObjectSetupCode(configObjectName, targetPropertyName, newPropertyValueMatch, newPropertyValue);
         const configObjectSetupNode = ts.createIdentifier(configObjectSetupCode);
 
@@ -79,7 +76,7 @@ export function addArrayPropertyValueToNgModule(
             new AddNodeOperation(sourceFile, lastImport, undefined, ngLazyLoaderNode),
             new AddNodeOperation(sourceFile, configObjectDeclaration || lastImport, undefined, configObjectSetupNode)
         ];
-    } else if (ngModuleConfigNode.kind == ts.SyntaxKind.ObjectLiteralExpression) {
+    } else if (ngModuleConfigNode.kind === ts.SyntaxKind.ObjectLiteralExpression) {
         // cases like @NgModule({ bootstrap: ... })
         const ngModuleConfigObjectNode = ngModuleConfigNode as ts.ObjectLiteralExpression;
         const matchingProperties: ts.ObjectLiteralElement[] = getObjectPropertyMatches(ngModuleConfigObjectNode, sourceFile, targetPropertyName);
@@ -88,8 +85,8 @@ export function addArrayPropertyValueToNgModule(
             return null;
         }
 
-        if (matchingProperties.length == 0) {
-            if (ngModuleConfigObjectNode.properties.length == 0) {
+        if (matchingProperties.length === 0) {
+            if (ngModuleConfigObjectNode.properties.length === 0) {
                 // empty object @NgModule({ })
                 return null;
             }
@@ -100,7 +97,8 @@ export function addArrayPropertyValueToNgModule(
 
             return [
                 new AddNodeOperation(sourceFile, lastConfigObjPropertyNode, undefined, newTargetPropertyNode),
-                new AddNodeOperation(sourceFile, lastImport, undefined, ngLazyLoaderNode)];
+                new AddNodeOperation(sourceFile, lastImport, undefined, ngLazyLoaderNode)
+            ];
 
         }
 
@@ -125,113 +123,34 @@ export function addArrayPropertyValueToNgModule(
             const lastPropertyValueNode = targetPropertyValues[targetPropertyValues.length - 1];
             const newPropertyValueNode = ts.createIdentifier(`${newPropertyValue}`);
 
-            return [new AddNodeOperation(sourceFile, lastPropertyValueNode, undefined, newPropertyValueNode),
-            new AddNodeOperation(sourceFile, lastImport, undefined, ngLazyLoaderNode)];
+            return [
+                new AddNodeOperation(sourceFile, lastPropertyValueNode, undefined, newPropertyValueNode),
+                new AddNodeOperation(sourceFile, lastImport, undefined, ngLazyLoaderNode)
+            ];
         } else {
             // empty array @NgModule({ targetProperty: [ ] })
             const newTargetPropertyValuesNode = ts.createIdentifier(`[${newPropertyValue}]`);
 
-            return [new ReplaceNodeOperation(sourceFile, targetPropertyValuesNode, newTargetPropertyValuesNode),
-            new AddNodeOperation(sourceFile, lastImport, undefined, ngLazyLoaderNode)];
+            return [
+                new ReplaceNodeOperation(sourceFile, targetPropertyValuesNode, newTargetPropertyValuesNode),
+                new AddNodeOperation(sourceFile, lastImport, undefined, ngLazyLoaderNode)
+            ];
         }
     }
 }
 
-function getDecoratorMetadata(source: ts.SourceFile, identifier: string,
-    module: string): ts.Node[] {
-    const angularImports: { [name: string]: string }
-        = collectDeepNodes(source, ts.SyntaxKind.ImportDeclaration)
-            .map((node: ts.ImportDeclaration) => _angularImportsFromNode(node, source))
-            .reduce((acc: { [name: string]: string }, current: { [name: string]: string }) => {
-                for (const key of Object.keys(current)) {
-                    acc[key] = current[key];
-                }
-
-                return acc;
-            }, {});
-
-    return getSourceNodes(source)
-        .filter(node => {
-            return node.kind == ts.SyntaxKind.Decorator
-                && (node as ts.Decorator).expression.kind == ts.SyntaxKind.CallExpression;
-        })
-        .map(node => (node as ts.Decorator).expression as ts.CallExpression)
-        .filter(expr => {
-            if (expr.expression.kind == ts.SyntaxKind.Identifier) {
-                const id = expr.expression as ts.Identifier;
-
-                return id.getFullText(source) == identifier
-                    && angularImports[id.getFullText(source)] === module;
-            } else if (expr.expression.kind == ts.SyntaxKind.PropertyAccessExpression) {
-                // This covers foo.NgModule when importing * as foo.
-                const paExpr = expr.expression as ts.PropertyAccessExpression;
-                // If the left expression is not an identifier, just give up at that point.
-                if (paExpr.expression.kind !== ts.SyntaxKind.Identifier) {
-                    return false;
-                }
-
-                const id = paExpr.name.text;
-                const moduleId = (paExpr.expression as ts.Identifier).getText(source);
-
-                return id === identifier && (angularImports[moduleId + '.'] === module);
-            }
-
-            return false;
-        })
-        .filter(expr => expr.arguments[0]
-            && (expr.arguments[0].kind == ts.SyntaxKind.ObjectLiteralExpression ||
-                expr.arguments[0].kind == ts.SyntaxKind.Identifier))
-        .map(expr => expr.arguments[0] as ts.Node);
-}
-
-function _angularImportsFromNode(node: ts.ImportDeclaration,
-    _sourceFile: ts.SourceFile): { [name: string]: string } {
-    const ms = node.moduleSpecifier;
-    let modulePath: string;
-    switch (ms.kind) {
-        case ts.SyntaxKind.StringLiteral:
-            modulePath = (ms as ts.StringLiteral).text;
-            break;
-        default:
-            return {};
-    }
-
-    if (!modulePath.startsWith('@angular/')) {
-        return {};
-    }
-
-    if (node.importClause) {
-        if (node.importClause.name) {
-            // This is of the form `import Name from 'path'`. Ignore.
-            return {};
-        } else if (node.importClause.namedBindings) {
-            const nb = node.importClause.namedBindings;
-            if (nb.kind == ts.SyntaxKind.NamespaceImport) {
-                // This is of the form `import * as name from 'path'`. Return `name.`.
-                return {
-                    [(nb as ts.NamespaceImport).name.text + '.']: modulePath,
-                };
-            } else {
-                // This is of the form `import {a,b,c} from 'path'`
-                const namedImports = nb as ts.NamedImports;
-
-                return namedImports.elements
-                    .map((is: ts.ImportSpecifier) => is.propertyName ? is.propertyName.text : is.name.text)
-                    .reduce((acc: { [name: string]: string }, curr: string) => {
-                        acc[curr] = modulePath;
-
-                        return acc;
-                    }, {});
-            }
-        }
-
-        return {};
-    } else {
-        // This is of the form `import 'path';`. Nothing to do.
-        return {};
-    }
-}
-
+// handles cases like @NgModule(myCoolConfig) by returning a code snippet for processing
+// the config object and configuring its {{targetPropertyName}} based on the specified arguments
+// e.g.
+// if (!myCoolConfig.providers) {
+//     myCoolConfig.providers = [];
+// }
+// if (Array.isArray(myCoolConfig.providers)) {
+//     var wholeWordPropertyRegex = new RegExp("\bNgModuleFactoryLoader\b");
+//     if (!myCoolConfig.providers.some(function (property) { return wholeWordPropertyRegex.test(property); })) {
+//         myCoolConfig.providers.push({ provide: nsNgCoreImport_Generated.NgModuleFactoryLoader, useClass: NSLazyModulesLoader_Generated });
+//     }
+// }
 export function getConfigObjectSetupCode(configObjectName: string, targetPropertyName: string, newPropertyValueMatch: string, newPropertyValue: string) {
     return `
 if (!${configObjectName}.${targetPropertyName}) {
