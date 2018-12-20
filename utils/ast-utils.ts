@@ -126,8 +126,6 @@ export function getObjectPropertyMatches(objectNode: ts.ObjectLiteralExpression,
         });
 }
 
-
-
 export function getDecoratorMetadata(source: ts.SourceFile, identifier: string,
     module: string): ts.Node[] {
     const angularImports: { [name: string]: string }
