@@ -3,7 +3,7 @@
 // https://github.com/angular/angular-cli/blob/d202480a1707be6575b2c8cf0383cfe6db44413c/packages/schematics/angular/utility/ng-ast-utils.ts
 // https://github.com/NativeScript/nativescript-schematics/blob/438b9e3ef613389980bfa9d071e28ca1f32ab04f/src/ast-utils.ts
 
-import { dirname, basename, extname, join } from "path";
+import { dirname, basename, extname, join, normalize } from "path";
 import * as ts from "typescript";
 import {
     StandardTransform,
@@ -24,7 +24,7 @@ export function nsReplaceLazyLoader(getNgCompiler: () => AngularCompilerPlugin):
         let ops: TransformOperation[] = [];
         const entryModule = getResolvedEntryModule(getNgCompiler());
         const sourceFilePath = join(dirname(sourceFile.fileName), basename(sourceFile.fileName, extname(sourceFile.fileName)));
-        if (!entryModule || sourceFilePath !== entryModule.path) {
+        if (!entryModule || normalize(sourceFilePath) !== normalize(entryModule.path)) {
             return ops;
         }
 
