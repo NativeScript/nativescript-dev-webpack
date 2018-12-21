@@ -8,6 +8,14 @@ import * as ts from "typescript";
 import { readFileSync, existsSync } from "fs";
 import { collectDeepNodes } from "@ngtools/webpack/src/transformers";
 
+export function getMainModulePath(entryFilePath) {
+    try {
+        return findBootstrapModulePath(entryFilePath);
+    } catch (e) {
+        return null;
+    }
+}
+
 export function findBootstrapModuleCall(mainPath: string): ts.CallExpression | null {
     if (!existsSync(mainPath)) {
         throw new Error(`Main file (${mainPath}) not found`);

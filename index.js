@@ -1,6 +1,5 @@
 const path = require("path");
 const { existsSync } = require("fs");
-const { findBootstrapModulePath } = require("./utils/ast-utils");
 const { ANDROID_APP_PATH } = require("./androidProjectHelpers");
 const {
     getPackageJson,
@@ -40,14 +39,6 @@ exports.getEntryModule = function (appDirectory) {
 
     return entry;
 };
-
-exports.getMainModulePath = function (entryFilePath) {
-    try {
-        return findBootstrapModulePath(entryFilePath);
-    } catch (e) {
-        return null;
-    }
-}
 
 exports.getAppPath = (platform, projectDir) => {
     if (isIos(platform)) {
