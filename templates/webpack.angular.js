@@ -1,9 +1,11 @@
-const { join, relative, resolve, sep } = require("path");
+const { join, relative, resolve, sep, dirname } = require("path");
 
 const webpack = require("webpack");
 const nsWebpack = require("nativescript-dev-webpack");
 const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target");
 const { nsReplaceBootstrap } = require("nativescript-dev-webpack/transformers/ns-replace-bootstrap");
+const { nsReplaceLazyLoader } = require("nativescript-dev-webpack/transformers/ns-replace-lazy-loader");
+const { getMainModulePath } = require("nativescript-dev-webpack/utils/ast-utils");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
@@ -44,7 +46,8 @@ module.exports = env => {
         sourceMap, // --env.sourceMap
         hmr, // --env.hmr,
     } = env;
-    const externals = (env.externals || []).map((e) => { // --env.externals
+    env.externals = env.externals || [];
+    const externals = (env.externals).map((e) => { // --env.externals
         return new RegExp(e + ".*");
     });
 
@@ -53,14 +56,34 @@ module.exports = env => {
 
     const entryModule = `${nsWebpack.getEntryModule(appFullPath)}.ts`;
     const entryPath = `.${sep}${entryModule}`;
+    const ngCompilerTransformers = [];
+    const additionalLazyModuleResources = [];
+    if (aot) {
+        ngCompilerTransformers.push(nsReplaceBootstrap);
+    }
+
+    // when "@angular/core" is external, it's not included in the bundles. In this way, it will be used
+    // directly from node_modules and the Angular modules loader won't be able to resolve the lazy routes
+    // fixes https://github.com/NativeScript/nativescript-cli/issues/4024
+    if (env.externals.indexOf("@angular/core") > -1) {
+        const appModuleRelativePath = getMainModulePath(resolve(appFullPath, entryModule));
+        if (appModuleRelativePath) {
+            const appModuleFolderPath = dirname(resolve(appFullPath, appModuleRelativePath));
+            // include the lazy loader inside app module
+            ngCompilerTransformers.push(nsReplaceLazyLoader);
+            // include the new lazy loader path in the allowed ones
+            additionalLazyModuleResources.push(appModuleFolderPath);
+        }
+    }
 
     const ngCompilerPlugin = new AngularCompilerPlugin({
         hostReplacementPaths: nsWebpack.getResolver([platform, "tns"]),
-        platformTransformers: aot ? [nsReplaceBootstrap(() => ngCompilerPlugin)] : null,
+        platformTransformers: ngCompilerTransformers.map(t => t(() => ngCompilerPlugin)),
         mainPath: resolve(appPath, entryModule),
         tsConfigPath: join(__dirname, "tsconfig.tns.json"),
         skipCodeGeneration: !aot,
         sourceMap: !!sourceMap,
+        additionalLazyModuleResources: additionalLazyModuleResources
     });
 
     const config = {

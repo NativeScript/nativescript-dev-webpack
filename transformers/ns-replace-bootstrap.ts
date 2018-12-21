@@ -9,8 +9,9 @@ import {
     makeTransform,
     getFirstNode
 } from "@ngtools/webpack/src/transformers";
-import { workaroundResolve } from '@ngtools/webpack/src/compiler_host';
 import { AngularCompilerPlugin } from '@ngtools/webpack';
+import { getResolvedEntryModule } from "../utils/transformers-utils";
+
 
 export function nsReplaceBootstrap(getNgCompiler: () => AngularCompilerPlugin): ts.TransformerFactory<ts.SourceFile> {
     const shouldTransform = (fileName) => !fileName.endsWith('.ngfactory.ts') && !fileName.endsWith('.ngstyle.ts');
@@ -18,11 +19,7 @@ export function nsReplaceBootstrap(getNgCompiler: () => AngularCompilerPlugin): 
 
     const standardTransform: StandardTransform = function (sourceFile: ts.SourceFile) {
         const ops: TransformOperation[] = [];
-        const ngCompiler = getNgCompiler();
-
-        const entryModule = ngCompiler.entryModule
-            ? { path: workaroundResolve(ngCompiler.entryModule.path), className: getNgCompiler().entryModule.className }
-            : ngCompiler.entryModule;
+        const entryModule = getResolvedEntryModule(getNgCompiler());
 
         if (!shouldTransform(sourceFile.fileName) || !entryModule) {
             return ops;
