@@ -1,3 +1,52 @@
+<a name="0.19.0"></a>
+# [0.19.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.18.5...0.19.0) (2019-01-03)
+
+
+### Bug Fixes
+
+* **angular:** support angular lazy routes in preview ([#753](https://github.com/NativeScript/nativescript-dev-webpack/issues/753)) ([a6c23da](https://github.com/NativeScript/nativescript-dev-webpack/commit/a6c23da))
+* **Angular:** add hot loader for lazy loaded NgModules ([#747](https://github.com/NativeScript/nativescript-dev-webpack/issues/747)) ([6a9db32](https://github.com/NativeScript/nativescript-dev-webpack/commit/6a9db32))
+* **Vue:** disable mangling of function names when building in production mode ([#743](https://github.com/NativeScript/nativescript-dev-webpack/issues/743)) ([fffcf66](https://github.com/NativeScript/nativescript-dev-webpack/commit/fffcf66)), closes [/github.com/NativeScript/nativescript-dev-webpack/blob/master/CONTRIBUTING.md#testing-locally-by-running-e2](https://github.com//github.com/NativeScript/nativescript-dev-webpack/blob/master/CONTRIBUTING.md/issues/testing-locally-by-running-e2)
+
+
+### Features
+
+* **TypeScript:** use `ts-loader` instead of `awesome-typescript-loader` ([#738](https://github.com/NativeScript/nativescript-dev-webpack/issues/738)) ([7f67198](https://github.com/NativeScript/nativescript-dev-webpack/commit/7f67198))
+
+
+### BREAKING CHANGES
+
+* **Angular:** The `lazy-ngmodule-hot-loader` should be added to the webpack configuration.
+
+**BEFORE**
+``` js
+// webpack.config.js
+                {
+                    test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/,
+                    use: [
+                        "nativescript-dev-webpack/moduleid-compat-loader",
+                        "@ngtools/webpack",
+                    ]
+                },
+// ...
+```
+
+**AFTER**
+``` js
+// webpack.config.js
+                {
+                    test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/,
+                    use: [
+                        "nativescript-dev-webpack/moduleid-compat-loader",
+                        "nativescript-dev-webpack/lazy-ngmodule-hot-loader",
+                        "@ngtools/webpack",
+                    ]
+                },
+// ...
+```
+
+
+
 <a name="0.18.5"></a>
 ## [0.18.5](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.18.3...0.18.5) (2018-12-17)
 
