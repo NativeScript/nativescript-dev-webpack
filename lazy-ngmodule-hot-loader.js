@@ -1,12 +1,20 @@
 const { safeGet } = require("./projectHelpers");
 
 const LAZY_RESOURCE_CONTEXT = "$$_lazy_route_resource";
-const HOT_SELF_ACCEPT = `
+const HOT_SELF_ACCEPT = "module.hot.accept();";
+const HOT_DISPOSE = `
+module.hot.dispose(() => {
+    // Currently the context is needed only for application style modules.
+    const MODULE_CONTEXT = "{}";
+    global.__hmrRefresh(MODULE_CONTEXT);
+});
+`;
+const HMR_HANDLER = `
     if (module.hot) {
-        module.hot.accept();
-        module.hot.dispose(() => global.__hmrRefresh({}));
+        ${HOT_SELF_ACCEPT}
+        ${HOT_DISPOSE}
     }
-    `;
+`;
 
 const isLazyLoadedNgModule = resource => {
     const issuer = safeGet(resource, "issuer");
@@ -17,6 +25,6 @@ const isLazyLoadedNgModule = resource => {
 
 module.exports = function (source) {
     return isLazyLoadedNgModule(this._module) ?
-        `${source};${HOT_SELF_ACCEPT}` :
+        `${source};${HMR_HANDLER}` :
         source;
 };
