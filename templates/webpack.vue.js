@@ -150,7 +150,7 @@ module.exports = env => {
         },
         module: {
             rules: [{
-                    test: entryPath,
+                    test: new RegExp(entryPath + ".(js|ts)"),
                     use: [
                         // Require all Android app components
                         platform === "android" && {
