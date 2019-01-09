@@ -5,7 +5,7 @@ const HOT_SELF_ACCEPT = "module.hot.accept();";
 const HOT_DISPOSE = `
         module.hot.dispose(() => {
             // Currently the context is needed only for application style modules.
-            const moduleContext = "{}";
+            const moduleContext = {};
             global.__hmrRefresh(moduleContext);
         });`;
 const HMR_HANDLER = `
