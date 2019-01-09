@@ -94,7 +94,7 @@ function check(options) {
                     result(modules, appliedModules);
 
                     if (upToDate()) {
-                        //Do not modify message - CLI depends on this exact content to determine hmr operation status.
+                        // Do not modify message - CLI depends on this exact content to determine hmr operation status.
                         log.info(`Successfully applied update with hmr hash ${currentHash}. App is up to date.`);
                     }
 
@@ -103,21 +103,21 @@ function check(options) {
                 .catch((err) => {
                     const status = module.hot.status();
                     if (['abort', 'fail'].indexOf(status) >= 0) {
-                        //Do not modify message - CLI depends on this exact content to determine hmr operation status.
-                        log.warn(`Cannot apply update with hmr hash ${currentHash}.`);
-                        log.warn(err.stack || err.message);
+                        // Do not modify message - CLI depends on this exact content to determine hmr operation status.
+                        log.error(`Cannot apply update with hmr hash ${currentHash}.`);
+                        log.error(err.message || err.stack);
                     } else {
-                        log.warn(`Update failed: ${err.stack || err.message}`);
+                        log.error(`Update failed: ${err.message || err.stack}`);
                     }
                 });
         })
         .catch((err) => {
             const status = module.hot.status();
             if (['abort', 'fail'].indexOf(status) >= 0) {
-                log.warn(`Cannot check for update. ${refresh}`);
-                log.warn(err.stack || err.message);
+                log.error(`Cannot check for update. ${refresh}`);
+                log.error(err.message || err.stack);
             } else {
-                log.warn(`Update check failed: ${err.stack || err.message}`);
+                log.error(`Update check failed: ${err.message || err.stack}`);
             }
         });
 }

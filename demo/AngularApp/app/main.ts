@@ -14,13 +14,15 @@ if (module["hot"]) {
         },
     }
 
-    // Path to your app module.
-    // You might have to change it if your module is in a different place.
-    module["hot"].accept(["./app.module"], global["__hmrRefresh"]);
+    module["hot"].accept(["./app.module"], () => {
+        // Currently the context is needed only for application style modules.
+        const moduleContext = {};
+        global["__hmrRefresh"](moduleContext);
+    });
 }
 
-// A traditional NativeScript application starts by initializing global objects, setting up global CSS rules, creating, and navigating to the main page. 
-// Angular applications need to take care of their own initialization: modules, components, directives, routes, DI providers. 
-// A NativeScript Angular app needs to make both paradigms work together, so we provide a wrapper platform object, platformNativeScriptDynamic, 
+// A traditional NativeScript application starts by initializing global objects, setting up global CSS rules, creating, and navigating to the main page.
+// Angular applications need to take care of their own initialization: modules, components, directives, routes, DI providers.
+// A NativeScript Angular app needs to make both paradigms work together, so we provide a wrapper platform object, platformNativeScriptDynamic,
 // that sets up a NativeScript application and can bootstrap the Angular framework.
 platformNativeScriptDynamic(options).bootstrapModule(AppModule);
