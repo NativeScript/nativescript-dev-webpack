@@ -12,7 +12,7 @@ module.exports = function (source) {
                 hmrUpdate();
             };
 
-            global.__hmrRefresh = function({ type, module } = {}) {
+            global.hmrRefresh = function({ type, module } = {}) {
                 if (initialHmrUpdate) {
                     return;
                 }
@@ -22,7 +22,7 @@ module.exports = function (source) {
                 });
             };
 
-            hmrUpdate().then(() =>{
+            hmrUpdate().then(() => {
                 initialHmrUpdate = false;
             })
         }

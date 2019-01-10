@@ -17,7 +17,7 @@ if (module["hot"]) {
     module["hot"].accept(["./app.module"], () => {
         // Currently the context is needed only for application style modules.
         const moduleContext = {};
-        global["__hmrRefresh"](moduleContext);
+        global["hmrRefresh"](moduleContext);
     });
 }
 

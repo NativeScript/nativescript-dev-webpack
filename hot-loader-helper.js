@@ -3,7 +3,7 @@ module.exports.reload = function ({ type, module }) {
     if (module.hot) {
         module.hot.accept();
         module.hot.dispose(() => {
-            global.__hmrRefresh({ type: '${type}', module: '${module}' });
+            global.hmrRefresh({ type: '${type}', module: '${module}' });
         })
     }
 `};
