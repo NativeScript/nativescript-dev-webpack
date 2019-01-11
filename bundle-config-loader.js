@@ -5,15 +5,15 @@ module.exports = function (source) {
     const hmr = `
         if (module.hot) {
             const hmrUpdate = require("nativescript-dev-webpack/hmr").hmrUpdate;
-            let initialHmrUpdate = true;
+            global.__initialHmrUpdate = true;
             global.__hmrSyncBackup = global.__onLiveSync;
 
             global.__onLiveSync = function () {
                 hmrUpdate();
             };
 
-            global.__hmrRefresh = function({ type, module } = {}) {
-                if (initialHmrUpdate) {
+            global.hmrRefresh = function({ type, module } = {}) {
+                if (global.__initialHmrUpdate) {
                     return;
                 }
 
@@ -22,8 +22,8 @@ module.exports = function (source) {
                 });
             };
 
-            hmrUpdate().then(() =>{
-                initialHmrUpdate = false;
+            hmrUpdate().then(() => {
+                global.__initialHmrUpdate = false;
             })
         }
         `;
