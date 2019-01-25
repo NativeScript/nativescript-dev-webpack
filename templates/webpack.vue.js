@@ -47,7 +47,7 @@ module.exports = env => {
     } = env;
 
     const externals = (env.externals || []).map((e) => { // --env.externals
-        return new RegExp(e + ".*");
+        return new RegExp(`^${e}((/.*)|$)`);
     });
 
     const mode = production ? "production" : "development"

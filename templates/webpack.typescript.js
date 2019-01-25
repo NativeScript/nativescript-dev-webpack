@@ -43,7 +43,7 @@ module.exports = env => {
         hmr, // --env.hmr,
     } = env;
     const externals = (env.externals || []).map((e) => { // --env.externals
-        return new RegExp(e + ".*");
+        return new RegExp(`^${e}((/.*)|$)`);
     });
 
     const appFullPath = resolve(projectRoot, appPath);

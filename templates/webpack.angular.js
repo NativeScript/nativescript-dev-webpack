@@ -48,7 +48,7 @@ module.exports = env => {
     } = env;
     env.externals = env.externals || [];
     const externals = (env.externals).map((e) => { // --env.externals
-        return new RegExp(e + ".*");
+        return new RegExp(`^${e}((/.*)|$)`);
     });
 
     const appFullPath = resolve(projectRoot, appPath);
