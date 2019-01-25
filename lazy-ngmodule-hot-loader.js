@@ -21,8 +21,10 @@ const isLazyLoadedNgModule = resource => {
     return issuerContext && issuerContext.endsWith(LAZY_RESOURCE_CONTEXT);
 };
 
-module.exports = function (source) {
-    return isLazyLoadedNgModule(this._module) ?
-        `${source};${HMR_HANDLER}` :
+module.exports = function (source, map) {
+    const modifiedSource = isLazyLoadedNgModule(this._module) ?
+        `${source};${HMR_HANDLER}`:
         source;
+
+    this.callback(null, modifiedSource, map);
 };
