@@ -10,8 +10,10 @@ const isLazyLoadedNgModule = resource => {
     return issuerContext && issuerContext.endsWith(LAZY_RESOURCE_CONTEXT);
 };
 
-module.exports = function (source) {
-    return isLazyLoadedNgModule(this._module) ?
+module.exports = function (source, map) {
+    const modifiedSource = isLazyLoadedNgModule(this._module) ?
         `${source};${HOT_SELF_ACCEPT}`:
         source;
+
+    this.callback(null, modifiedSource, map);
 };
