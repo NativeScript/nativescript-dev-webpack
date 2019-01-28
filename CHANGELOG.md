@@ -1,3 +1,57 @@
+<a name="0.19.1"></a>
+## [0.19.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.18.3...0.19.1) (2019-01-28)
+
+
+### Bug Fixes
+
+* **angular:** support angular lazy routes in preview ([#753](https://github.com/NativeScript/nativescript-dev-webpack/issues/753)) ([a6c23da](https://github.com/NativeScript/nativescript-dev-webpack/commit/a6c23da))
+* **Angular:** add hot loader for lazy loaded NgModules ([#747](https://github.com/NativeScript/nativescript-dev-webpack/issues/747)) ([6a9db32](https://github.com/NativeScript/nativescript-dev-webpack/commit/6a9db32))
+* **JS/TS:** use webpack resolver instead of Node.js resolver ([#681](https://github.com/NativeScript/nativescript-dev-webpack/issues/681)) ([9adc7e7](https://github.com/NativeScript/nativescript-dev-webpack/commit/9adc7e7))
+* **Vue:** apply style changes with HMR ([#763](https://github.com/NativeScript/nativescript-dev-webpack/issues/763)) ([aca851c](https://github.com/NativeScript/nativescript-dev-webpack/commit/aca851c)), closes [#744](https://github.com/NativeScript/nativescript-dev-webpack/issues/744) [#742](https://github.com/NativeScript/nativescript-dev-webpack/issues/742) [#762](https://github.com/NativeScript/nativescript-dev-webpack/issues/762)
+* **Vue:** disable mangling of function names when building in production mode ([#743](https://github.com/NativeScript/nativescript-dev-webpack/issues/743)) ([fffcf66](https://github.com/NativeScript/nativescript-dev-webpack/commit/fffcf66)), closes [/github.com/NativeScript/nativescript-dev-webpack/blob/master/CONTRIBUTING.md#testing-locally-by-running-e2](https://github.com//github.com/NativeScript/nativescript-dev-webpack/blob/master/CONTRIBUTING.md/issues/testing-locally-by-running-e2)
+* lazy-ngmodule-hot-loader breaks the sourceMaps ([#770](https://github.com/NativeScript/nativescript-dev-webpack/issues/770)) ([3fccf86](https://github.com/NativeScript/nativescript-dev-webpack/commit/3fccf86))
+
+
+### Features
+
+* **Angular:** apply changes in application styles at runtime with HMR ([#748](https://github.com/NativeScript/nativescript-dev-webpack/issues/748)) ([fe4abfb](https://github.com/NativeScript/nativescript-dev-webpack/commit/fe4abfb))
+* **TypeScript:** use `ts-loader` instead of `awesome-typescript-loader` ([#738](https://github.com/NativeScript/nativescript-dev-webpack/issues/738)) ([7f67198](https://github.com/NativeScript/nativescript-dev-webpack/commit/7f67198))
+* **Vue:** add support for TypeScript ([#734](https://github.com/NativeScript/nativescript-dev-webpack/issues/734)) ([d290515](https://github.com/NativeScript/nativescript-dev-webpack/commit/d290515))
+
+
+### BREAKING CHANGES
+
+* **Angular:** The `lazy-ngmodule-hot-loader` should be added to the webpack configuration.
+
+**BEFORE**
+``` js
+// webpack.config.js
+                {
+                    test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/,
+                    use: [
+                        "nativescript-dev-webpack/moduleid-compat-loader",
+                        "@ngtools/webpack",
+                    ]
+                },
+// ...
+```
+
+**AFTER**
+``` js
+// webpack.config.js
+                {
+                    test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/,
+                    use: [
+                        "nativescript-dev-webpack/moduleid-compat-loader",
+                        "nativescript-dev-webpack/lazy-ngmodule-hot-loader",
+                        "@ngtools/webpack",
+                    ]
+                },
+// ...
+```
+
+
+
 <a name="0.19.0"></a>
 # [0.19.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.18.5...0.19.0) (2019-01-03)
 
