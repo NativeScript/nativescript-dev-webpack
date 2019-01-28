@@ -2,38 +2,43 @@ module.exports = function (source) {
     this.cacheable();
     const { angular = false, loadCss = true, registerModules = /(root|page)\.(xml|css|js|ts|scss)$/ } = this.query;
 
+    const hmr = `
+        if (module.hot) {
+            const hmrUpdate = require("nativescript-dev-webpack/hmr").hmrUpdate;
+            global.__initialHmrUpdate = true;
+            global.__hmrSyncBackup = global.__onLiveSync;
+
+            global.__onLiveSync = function () {
+                hmrUpdate();
+            };
+
+            global.hmrRefresh = function({ type, module } = {}) {
+                if (global.__initialHmrUpdate) {
+                    return;
+                }
+
+                setTimeout(() => {
+                    global.__hmrSyncBackup({ type, module });
+                });
+            };
+
+            hmrUpdate().then(() => {
+                global.__initialHmrUpdate = false;
+            })
+        }
+        `;
+
     source = `
         require("tns-core-modules/bundle-entry-points");
         ${source}
     `;
 
-    if (!angular && registerModules) {
-        const hmr = `
-            if (module.hot) {
-                const fileSystemModule = require("tns-core-modules/file-system");
-                const applicationFiles = fileSystemModule.knownFolders.currentApp();
-
-                global.__hmrLivesyncBackup = global.__onLiveSync;
-                global.__onLiveSync = function () {
-                    console.log("HMR: Sync...");
-                    require("nativescript-dev-webpack/hot")(__webpack_require__.h(), (fileName) => applicationFiles.getFile(fileName));
-                };
-
-                global.__hmrRefresh = function({ type, module }) {
-                    global.__hmrNeedReload = true;
-                    setTimeout(() => {
-                        if(global.__hmrNeedReload) {
-                            global.__hmrNeedReload = false;
-                            global.__hmrLivesyncBackup({ type, module });
-                        }
-                    });
-                }
-
-                global.__hmrInitialSync = true; // needed to determine if we are performing initial sync
-                global.__onLiveSync();
-            }
+    if (angular) {
+        source = `
+            ${hmr}
+            ${source}
         `;
-
+    } else if (registerModules) {
         source = `
             ${hmr}
             const context = require.context("~/", true, ${registerModules});
@@ -55,4 +60,3 @@ module.exports = function (source) {
 
     this.callback(null, source);
 };
-

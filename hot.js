@@ -73,7 +73,7 @@ function result(modules, appliedModules) {
 }
 
 function check(options) {
-    module.hot
+    return module.hot
         .check()
         .then((modules) => {
             if (!modules) {
@@ -86,35 +86,38 @@ function check(options) {
             return module.hot
                 .apply(hotOptions)
                 .then((appliedModules) => {
+                    let nextCheck;
                     if (!upToDate()) {
-                        check(options);
+                        nextCheck = check(options);
                     }
 
                     result(modules, appliedModules);
 
                     if (upToDate()) {
-                        //Do not modify message - CLI depends on this exact content to determine hmr operation status.
+                        // Do not modify message - CLI depends on this exact content to determine hmr operation status.
                         log.info(`Successfully applied update with hmr hash ${currentHash}. App is up to date.`);
                     }
+
+                    return nextCheck || null;
                 })
                 .catch((err) => {
                     const status = module.hot.status();
                     if (['abort', 'fail'].indexOf(status) >= 0) {
-                        //Do not modify message - CLI depends on this exact content to determine hmr operation status.
-                        log.warn(`Cannot apply update with hmr hash ${currentHash}.`);
-                        log.warn(err.stack || err.message);
+                        // Do not modify message - CLI depends on this exact content to determine hmr operation status.
+                        log.error(`Cannot apply update with hmr hash ${currentHash}.`);
+                        log.error(err.message || err.stack);
                     } else {
-                        log.warn(`Update failed: ${err.stack || err.message}`);
+                        log.error(`Update failed: ${err.message || err.stack}`);
                     }
                 });
         })
         .catch((err) => {
             const status = module.hot.status();
             if (['abort', 'fail'].indexOf(status) >= 0) {
-                log.warn(`Cannot check for update. ${refresh}`);
-                log.warn(err.stack || err.message);
+                log.error(`Cannot check for update. ${refresh}`);
+                log.error(err.message || err.stack);
             } else {
-                log.warn(`Update check failed: ${err.stack|| err.message}`);
+                log.error(`Update check failed: ${err.message || err.stack}`);
             }
         });
 }
@@ -133,7 +136,7 @@ function update(latestHash, options) {
         if (status === 'idle') {
             //Do not modify message - CLI depends on this exact content to determine hmr operation status.
             log.info(`Checking for updates to the bundle with hmr hash ${currentHash}.`);
-            check(options);
+            return check(options);
         } else if (['abort', 'fail'].indexOf(status) >= 0) {
             log.warn(
                 `Cannot apply update. A previous update ${status}ed. ${refresh}`
@@ -145,7 +148,7 @@ function update(latestHash, options) {
 function getNextHash(hash, getFileContent) {
     const file = getFileContent(`${hash}.hot-update.json`);
     return file.readText().then(hotUpdateContent => {
-        if(hotUpdateContent) {
+        if (hotUpdateContent) {
             const manifest = JSON.parse(hotUpdateContent);
             const newHash = manifest.h;
             return getNextHash(newHash, getFileContent);
@@ -157,9 +160,9 @@ function getNextHash(hash, getFileContent) {
 
 module.exports = function checkState(initialHash, getFileContent) {
     currentHash = initialHash;
-    getNextHash(initialHash, getFileContent).then(nextHash => {
-        if(nextHash != initialHash) {
-            update(nextHash, {});
+    return getNextHash(initialHash, getFileContent).then(nextHash => {
+        if (nextHash != initialHash) {
+            return update(nextHash, {});
         }
     })
 }
