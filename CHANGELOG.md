@@ -5,7 +5,7 @@
 ### Bug Fixes
 
 * **Vue:** apply style changes with HMR ([#763](https://github.com/NativeScript/nativescript-dev-webpack/issues/763)) ([#777](https://github.com/NativeScript/nativescript-dev-webpack/issues/777)) ([8ee1880](https://github.com/NativeScript/nativescript-dev-webpack/commit/8ee1880)), closes [#744](https://github.com/NativeScript/nativescript-dev-webpack/issues/744) [#742](https://github.com/NativeScript/nativescript-dev-webpack/issues/742) [#762](https://github.com/NativeScript/nativescript-dev-webpack/issues/762)
-* fix: lazy-ngmodule-hot-loader breaks the sourceMaps ([#770](https://github.com/NativeScript/nativescript-dev-webpack/issues/770)) ([aca851c](https://github.com/NativeScript/nativescript-dev-webpack/commit/aca851c))
+* **debugging:** lazy-ngmodule-hot-loader breaks the sourceMaps ([#770](https://github.com/NativeScript/nativescript-dev-webpack/issues/770)) ([aca851c](https://github.com/NativeScript/nativescript-dev-webpack/commit/aca851c))
 
 
 
