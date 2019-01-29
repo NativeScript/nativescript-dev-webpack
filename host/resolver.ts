@@ -5,7 +5,7 @@ import {
 import { statSync } from "fs";
 
 export function getResolver(platforms: string[]) {
-    const platformSpecificExt = [".ts", ".js", ".scss", ".less", ".css", ".html", ".xml"];
+    const platformSpecificExt = [".ts", ".js", ".scss", ".less", ".css", ".html", ".xml", ".vue", ".json"];
     const nsPackageFilters = [
         'nativescript-',
         'tns-'
