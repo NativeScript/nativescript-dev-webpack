@@ -5,19 +5,32 @@ import {
 import { statSync } from "fs";
 
 export function getResolver(platforms: string[]) {
-    return function(path: string) {
+    const platformSpecificExt = [".ts", ".js", ".scss", ".less", ".css", ".html", ".xml"];
+    const nsPackageFilters = [
+        'nativescript-',
+        'tns-'
+    ];
+
+    return function (path: string) {
+        if (path.indexOf('node_modules') !== -1 && nsPackageFilters.every(f => path.indexOf(f) === -1)) {
+            return path;
+        }
+
         const { dir, name, ext } = parse(path);
+
+        if (platformSpecificExt.indexOf(ext) === -1) {
+            return path;
+        }
 
         for (const platform of platforms) {
             const platformFileName = `${name}.${platform}${ext}`;
             const platformPath = toSystemPath(join(dir, platformFileName));
 
             try {
-                const stat = statSync(platformPath);
-                if (stat && stat.isFile()) {
+                if (statSync(platformPath)) {
                     return platformPath;
                 }
-            } catch(_e) {
+            } catch (_e) {
                 // continue checking the other platforms
             }
         }
@@ -34,6 +47,6 @@ function toSystemPath(path: string) {
 
     const drive = path.match(/^\\(\w)\\(.*)$/);
     return drive ?
-        `${drive[1]}:\\${drive[2]}`:
+        `${drive[1]}:\\${drive[2]}` :
         path;
 }
