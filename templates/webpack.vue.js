@@ -46,9 +46,7 @@ module.exports = env => {
         hmr, // --env.hmr
     } = env;
 
-    const externals = (env.externals || []).map((e) => { // --env.externals
-        return new RegExp(`^${e}((/.*)|$)`);
-    });
+    const externals = nsWebpack.getConvertedExternals(env.externals);
 
     const mode = production ? "production" : "development"
 
