@@ -1,19 +1,23 @@
-import {
-    parse,
-    join,
-} from "path";
+import { parse, join } from "path";
 import { statSync } from "fs";
 
 export function getResolver(platforms: string[]) {
     const platformSpecificExt = [".ts", ".js", ".scss", ".less", ".css", ".html", ".xml", ".vue", ".json"];
     const nsPackageFilters = [
-        'nativescript-',
-        'tns-'
+        'nativescript',
+        'tns',
+        'ns'
     ];
 
     return function (path: string) {
-        if (path.indexOf('node_modules') !== -1 && nsPackageFilters.every(f => path.indexOf(f) === -1)) {
-            return path;
+        const nmIndex = path.lastIndexOf('node_modules');
+
+        if (nmIndex !== -1) {
+            const pathParts = path.substr(nmIndex + 'node_modules'.length).split(/[/\\\-_]/);
+
+            if (pathParts.every(p => nsPackageFilters.every(f => f !== p))) {
+                return path;
+            }
         }
 
         const { dir, name, ext } = parse(path);
