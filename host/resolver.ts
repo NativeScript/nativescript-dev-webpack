@@ -1,7 +1,7 @@
 import { parse, join } from "path";
 import { statSync } from "fs";
 
-export function getResolver(platforms: string[]) {
+export function getResolver(platforms: string[], explicitResolve: string[] = []) {
     const platformSpecificExt = [".ts", ".js", ".scss", ".less", ".css", ".html", ".xml", ".vue", ".json"];
     const nsPackageFilters = [
         'nativescript',
@@ -13,9 +13,11 @@ export function getResolver(platforms: string[]) {
         const nmIndex = path.lastIndexOf('node_modules');
 
         if (nmIndex !== -1) {
-            const pathParts = path.substr(nmIndex + 'node_modules'.length).split(/[/\\\-_]/);
-
-            if (pathParts.every(p => nsPackageFilters.every(f => f !== p))) {
+            const subPath = path.substr(nmIndex + 'node_modules'.length).replace(/\\/g, '/');
+            const shouldResolve = explicitResolve.length && explicitResolve.some(packageName => subPath.indexOf(packageName) !== -1);
+            const pathParts = subPath.split(/[/\-_]/);
+    
+            if (!shouldResolve && pathParts.every(p => nsPackageFilters.every(f => f !== p))) {
                 return path;
             }
         }
