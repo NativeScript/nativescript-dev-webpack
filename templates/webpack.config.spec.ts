@@ -24,6 +24,7 @@ const webpackConfigAngular = proxyquire('./webpack.angular', {
     'nativescript-dev-webpack/nativescript-target': emptyObject,
     'nativescript-dev-webpack/transformers/ns-replace-bootstrap': emptyObject,
     'nativescript-dev-webpack/transformers/ns-replace-lazy-loader': emptyObject,
+    'nativescript-dev-webpack/transformers/ns-support-hmr-ng': emptyObject,
     'nativescript-dev-webpack/utils/ast-utils': emptyObject,
     '@ngtools/webpack': {
         AngularCompilerPlugin: EmptyClass
