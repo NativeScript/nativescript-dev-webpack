@@ -12,13 +12,13 @@ module.exports = function (source) {
                 hmrUpdate();
             };
 
-            global.hmrRefresh = function({ type, module } = {}) {
+            global.hmrRefresh = function({ type, path} = {}) {
                 if (global.__initialHmrUpdate) {
                     return;
                 }
 
                 setTimeout(() => {
-                    global.__hmrSyncBackup({ type, module });
+                    global.__hmrSyncBackup({ type, path });
                 });
             };
 
