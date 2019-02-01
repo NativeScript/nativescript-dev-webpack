@@ -53,6 +53,25 @@ exports.getAppPath = (platform, projectDir) => {
     }
 };
 
+/**
+ * Converts an array of strings externals to an array of regular expressions.
+ * Input is an array of string, which we need to convert to regular expressions, so all imports for this module will be treated as externals.
+
+ * For example, in case we want nativescript-vue to be external, we will pass `["nativescript-vue"]`.
+ * If we pass it to webpack in this way, it will treat all `require("nativescript-vue")` as externals.
+ * However, you may import some file/subdir of the module, for example `require("nativescript-vue/somedir/file1")`.
+ * To treat this as external, we convert the strings to regular expressions, which makes webpack exclude all imports of the module.
+ * @param {string[]} externals Array of strings.
+ * @returns {RegExp[]} Array of regular expressions constructed from the input strings. In case the input is nullable, an empty array is returned.
+ */
+exports.getConvertedExternals = (externals) => {
+    const modifiedExternals = (externals || []).map((e) => {
+        return new RegExp(`^${e}((/.*)|$)`);
+    });
+
+    return modifiedExternals;
+};
+
 const sanitize = name => name
     .split("")
     .filter(char => /[a-zA-Z0-9]/.test(char))
