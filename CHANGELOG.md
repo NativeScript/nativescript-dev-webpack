@@ -1,3 +1,14 @@
+<a name="0.19.2"></a>
+## [0.19.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.19.0...0.19.2) (2019-02-01)
+
+
+### Bug Fixes
+
+* **Vue:** apply style changes with HMR ([#763](https://github.com/NativeScript/nativescript-dev-webpack/issues/763)) ([#777](https://github.com/NativeScript/nativescript-dev-webpack/issues/777)) ([8ee1880](https://github.com/NativeScript/nativescript-dev-webpack/commit/8ee1880)), closes [#744](https://github.com/NativeScript/nativescript-dev-webpack/issues/744) [#742](https://github.com/NativeScript/nativescript-dev-webpack/issues/742) [#762](https://github.com/NativeScript/nativescript-dev-webpack/issues/762)
+* optimize platform specific files resolver ([#782](https://github.com/NativeScript/nativescript-dev-webpack/issues/782)) ([fb52c53](https://github.com/NativeScript/nativescript-dev-webpack/commit/fb52c53))
+
+
+
 <a name="0.19.1"></a>
 ## [0.19.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.19.0...0.19.1) (2019-01-28)
 
