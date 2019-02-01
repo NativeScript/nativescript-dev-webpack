@@ -1,3 +1,13 @@
+<a name="0.19.2"></a>
+## [0.19.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.19.1...0.19.2) (2019-02-01)
+
+
+### Bug Fixes
+
+* optimize platform specific files resolver ([#782](https://github.com/NativeScript/nativescript-dev-webpack/issues/782)) ([fb52c53](https://github.com/NativeScript/nativescript-dev-webpack/commit/fb52c53))
+
+
+
 <a name="0.19.1"></a>
 ## [0.19.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.19.0...0.19.1) (2019-01-28)
 
