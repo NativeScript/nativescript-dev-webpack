@@ -46,11 +46,8 @@ module.exports = env => {
         sourceMap, // --env.sourceMap
         hmr, // --env.hmr,
     } = env;
-    env.externals = env.externals || [];
-    const externals = (env.externals).map((e) => { // --env.externals
-        return new RegExp(e + ".*");
-    });
 
+    const externals = nsWebpack.getConvertedExternals(env.externals);
     const appFullPath = resolve(projectRoot, appPath);
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
 
@@ -65,7 +62,7 @@ module.exports = env => {
     // when "@angular/core" is external, it's not included in the bundles. In this way, it will be used
     // directly from node_modules and the Angular modules loader won't be able to resolve the lazy routes
     // fixes https://github.com/NativeScript/nativescript-cli/issues/4024
-    if (env.externals.indexOf("@angular/core") > -1) {
+    if (externals.indexOf("@angular/core") > -1) {
         const appModuleRelativePath = getMainModulePath(resolve(appFullPath, entryModule));
         if (appModuleRelativePath) {
             const appModuleFolderPath = dirname(resolve(appFullPath, appModuleRelativePath));
