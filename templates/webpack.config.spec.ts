@@ -1,6 +1,6 @@
 import * as proxyquire from 'proxyquire';
 import * as nsWebpackIndex from '../index';
-// With noCallThru enabled, `proxyquire` will not fallback to requiring real module to populate properties that are not mocked.
+// With noCallThru enabled, `proxyquire` will not fall back to requiring the real module to populate properties that are not mocked.
 // This allows us to mock packages that are not available in node_modules.
 // In case you want to enable fallback for a specific object, just add `'@noCallThru': false`.
 proxyquire.noCallThru();
