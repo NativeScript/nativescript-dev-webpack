@@ -12,7 +12,7 @@ module.exports = function (source) {
                 hmrUpdate();
             };
 
-            global.hmrRefresh = function({ type, path} = {}) {
+            global.hmrRefresh = function({ type, path } = {}) {
                 if (global.__initialHmrUpdate) {
                     return;
                 }
