@@ -60,10 +60,14 @@ module.exports = env => {
         ngCompilerTransformers.push(nsReplaceBootstrap);
     }
 
+    if (hmr) {
+        ngCompilerTransformers.push(nsSupportHmrNg);
+    }
+
     // when "@angular/core" is external, it's not included in the bundles. In this way, it will be used
     // directly from node_modules and the Angular modules loader won't be able to resolve the lazy routes
     // fixes https://github.com/NativeScript/nativescript-cli/issues/4024
-    if (externals.indexOf("@angular/core") > -1) {
+    if (env.externals && env.externals.indexOf("@angular/core") > -1) {
         const appModuleRelativePath = getMainModulePath(resolve(appFullPath, entryModule));
         if (appModuleRelativePath) {
             const appModuleFolderPath = dirname(resolve(appFullPath, appModuleRelativePath));
@@ -72,10 +76,6 @@ module.exports = env => {
             // include the new lazy loader path in the allowed ones
             additionalLazyModuleResources.push(appModuleFolderPath);
         }
-    }
-
-    if (hmr) {
-        ngCompilerTransformers.push(nsSupportHmrNg);
     }
 
     const ngCompilerPlugin = new AngularCompilerPlugin({
