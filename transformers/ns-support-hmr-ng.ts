@@ -64,6 +64,10 @@ function handleHmrSupportCore(mainFile: ts.SourceFile, importNodesInFile: ts.Nod
     const firstImportNode = importNodesInFile[0];
     const lastImportNode = importNodesInFile[importNodesInFile.length - 1];
     const appModulePath = findBootstrappedModulePathInSource(mainFile);
+    if (!appModuleName || !appModulePath) {
+        return [];
+    }
+
     let currentAppOptionsInitializationNode: ts.Expression = ts.createObjectLiteral();
     if (nativeScriptPlatformCallNode.arguments.length > 0) {
         currentAppOptionsInitializationNode = nativeScriptPlatformCallNode.arguments[0];

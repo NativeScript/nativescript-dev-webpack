@@ -21,224 +21,275 @@ describe("@ngtools/webpack transformers", () => {
         const testCases = [{
             name: "should handle HMR when platformNativeScriptDynamic is called without arguments",
             rawFile: `
-                import { platformNativeScriptDynamic } from "nativescript-angular/platform";
-                import { AppModule } from "./app/app.module";
-                platformNativeScriptDynamic().bootstrapModule(AppModule);
-            `,
+                    import { platformNativeScriptDynamic } from "nativescript-angular/platform";
+                    import { AppModule } from "./app/app.module";
+                    platformNativeScriptDynamic().bootstrapModule(AppModule);
+                `,
             transformedFile: `
-                ${handleHmrPlatformDynamicImport}
-                import { AppModule } from "./app/app.module";
+                    ${handleHmrPlatformDynamicImport}
+                    import { AppModule } from "./app/app.module";
 
-                ${handleHmrOptionsDeclaration}
-                ${handleHmrOptionsCode}
-                ${acceptMainModuleCode}
+                    ${handleHmrOptionsDeclaration}
+                    ${handleHmrOptionsCode}
+                    ${acceptMainModuleCode}
 
-                ${nsDynamicPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModule(AppModule);
-            `,
+                    ${nsDynamicPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModule(AppModule);
+                `,
             transformedFileWithAot: `
-                ${handleHmrPlatformStaticImport}
-                ${handleAotPlatformStaticImport}
-                ${handleAotNgFactoryImport}
+                    ${handleHmrPlatformStaticImport}
+                    ${handleAotPlatformStaticImport}
+                    ${handleAotNgFactoryImport}
 
-                ${handleHmrOptionsDeclaration}
-                ${handleHmrOptionsAotCode}
-                ${acceptMainModuleAotCode}
+                    ${handleHmrOptionsDeclaration}
+                    ${handleHmrOptionsAotCode}
+                    ${acceptMainModuleAotCode}
 
-                ${nsStaticPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModuleFactory(${nsFactoryImportName}.AppModuleNgFactory);
-            `
+                    ${nsStaticPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModuleFactory(${nsFactoryImportName}.AppModuleNgFactory);
+                `
+        },
+        {
+            name: "should not handle HMR when the AppModule import cannot be found",
+            rawFile: `
+                    import { platformNativeScriptDynamic } from "nativescript-angular/platform";
+                    platformNativeScriptDynamic().bootstrapModule(SyntaxErrorModule);
+                `,
+            transformedFile: `
+                    import { platformNativeScriptDynamic } from "nativescript-angular/platform";
+                    platformNativeScriptDynamic().bootstrapModule(SyntaxErrorModule);
+                `,
+            transformedFileWithAot: `
+                    import { platformNativeScriptDynamic } from "nativescript-angular/platform";
+                    platformNativeScriptDynamic().bootstrapModule(SyntaxErrorModule);
+                `
+        },
+        {
+            name: "(known limitation) should not handle HMR when the platformNativeScriptDynamic method is renamed",
+            rawFile: `
+                    import { platformNativeScriptDynamic as x } from "nativescript-angular/platform";
+                    x().bootstrapModule(SyntaxErrorModule);
+                `,
+            transformedFile: `
+                    import { platformNativeScriptDynamic as x } from "nativescript-angular/platform";
+                    x().bootstrapModule(SyntaxErrorModule);
+                `,
+            transformedFileWithAot: `
+                    import { platformNativeScriptDynamic as x } from "nativescript-angular/platform";
+                    x().bootstrapModule(SyntaxErrorModule);
+                `
+        },
+        {
+            name: "(known limitation) should not handle HMR when the bootstrapModule method is renamed",
+            rawFile: `
+                    import { platformNativeScriptDynamic } from "nativescript-angular/platform";
+
+                    const x = platformNativeScriptDynamic().bootstrapModule;
+                    x(SyntaxErrorModule);
+                `,
+            transformedFile: `
+                    import { platformNativeScriptDynamic } from "nativescript-angular/platform";
+
+                    const x = platformNativeScriptDynamic().bootstrapModule;
+                    x(SyntaxErrorModule);
+                `,
+            transformedFileWithAot: `
+                    import { platformNativeScriptDynamic } from "nativescript-angular/platform";
+
+                    const x = platformNativeScriptDynamic().bootstrapModule;
+                    x(SyntaxErrorModule);
+                `
         },
         {
             name: "should handle HMR when AOT is manually configured",
             rawFile: `
-                import { platformNativeScript } from "nativescript-angular/platform-static";
-                import { AppModuleNgFactory } from "./app/app.module.ngfactory";
-                platformNativeScript().bootstrapModuleFactory(AppModuleNgFactory);
-            `,
+                    import { platformNativeScript } from "nativescript-angular/platform-static";
+                    import { AppModuleNgFactory } from "./app/app.module.ngfactory";
+                    platformNativeScript().bootstrapModuleFactory(AppModuleNgFactory);
+                `,
             transformedFile: `
-                ${handleHmrPlatformStaticImport}
-                import { AppModuleNgFactory } from "./app/app.module.ngfactory";
+                    ${handleHmrPlatformStaticImport}
+                    import { AppModuleNgFactory } from "./app/app.module.ngfactory";
 
-                ${handleHmrOptionsDeclaration}
-                ${getHandleHmrOptionsCode("AppModuleNgFactory", "./app/app.module.ngfactory")}
-                ${getAcceptMainModuleCode("./app/app.module.ngfactory")}
+                    ${handleHmrOptionsDeclaration}
+                    ${getHandleHmrOptionsCode("AppModuleNgFactory", "./app/app.module.ngfactory")}
+                    ${getAcceptMainModuleCode("./app/app.module.ngfactory")}
 
-                ${nsStaticPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModuleFactory(AppModuleNgFactory);
-            `,
+                    ${nsStaticPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModuleFactory(AppModuleNgFactory);
+                `,
             transformedFileWithAot: `
-                ${handleHmrPlatformStaticImport}
-                import { AppModuleNgFactory } from "./app/app.module.ngfactory";
+                    ${handleHmrPlatformStaticImport}
+                    import { AppModuleNgFactory } from "./app/app.module.ngfactory";
 
-                ${handleHmrOptionsDeclaration}
-                ${getHandleHmrOptionsCode("AppModuleNgFactory", "./app/app.module.ngfactory")}
-                ${getAcceptMainModuleCode("./app/app.module.ngfactory")}
+                    ${handleHmrOptionsDeclaration}
+                    ${getHandleHmrOptionsCode("AppModuleNgFactory", "./app/app.module.ngfactory")}
+                    ${getAcceptMainModuleCode("./app/app.module.ngfactory")}
 
-                ${nsStaticPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModuleFactory(AppModuleNgFactory);
-            `
+                    ${nsStaticPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModuleFactory(AppModuleNgFactory);
+                `
         },
         {
             name: "should handle HMR when platformNativeScriptDynamic is called without arguments and non default app module",
             customAppModuleName: "CustomModule",
             rawFile: `
-                import { platformNativeScriptDynamic } from "nativescript-angular/platform";
-                import { CustomModule } from "./custom/custom.module";
-                platformNativeScriptDynamic().bootstrapModule(CustomModule);
-            `,
+                    import { platformNativeScriptDynamic } from "nativescript-angular/platform";
+                    import { CustomModule } from "./custom/custom.module";
+                    platformNativeScriptDynamic().bootstrapModule(CustomModule);
+                `,
             transformedFile: `
-                ${handleHmrPlatformDynamicImport}
-                import { CustomModule } from "./custom/custom.module";
+                    ${handleHmrPlatformDynamicImport}
+                    import { CustomModule } from "./custom/custom.module";
 
-                ${handleHmrOptionsDeclaration}
-                ${getHandleHmrOptionsCode("CustomModule", "./custom/custom.module")}
-                ${getAcceptMainModuleCode("./custom/custom.module")}
+                    ${handleHmrOptionsDeclaration}
+                    ${getHandleHmrOptionsCode("CustomModule", "./custom/custom.module")}
+                    ${getAcceptMainModuleCode("./custom/custom.module")}
 
-                ${nsDynamicPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModule(CustomModule);
-            `,
+                    ${nsDynamicPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModule(CustomModule);
+                `,
             transformedFileWithAot: `
-                ${handleHmrPlatformStaticImport}
-                ${handleAotPlatformStaticImport}
-                ${handleAotNgFactoryImport}
+                    ${handleHmrPlatformStaticImport}
+                    ${handleAotPlatformStaticImport}
+                    ${handleAotNgFactoryImport}
 
-                ${handleHmrOptionsDeclaration}
-                ${getHandleHmrOptionsCode("CustomModuleNgFactory", "./test-file.ts.ngfactory")}
-                ${getAcceptMainModuleCode("./test-file.ts.ngfactory")}
+                    ${handleHmrOptionsDeclaration}
+                    ${getHandleHmrOptionsCode("CustomModuleNgFactory", "./test-file.ts.ngfactory")}
+                    ${getAcceptMainModuleCode("./test-file.ts.ngfactory")}
 
-                ${nsStaticPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModuleFactory(${nsFactoryImportName}.CustomModuleNgFactory);
-            `
+                    ${nsStaticPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModuleFactory(${nsFactoryImportName}.CustomModuleNgFactory);
+                `
         },
         {
             name: "should handle HMR when platformNativeScriptDynamic is called from * import",
             rawFile: `
-                import * as nsNgPlatform from "nativescript-angular/platform";
-                import { AppModule } from "./app/app.module";
-                nsNgPlatform.platformNativeScriptDynamic().bootstrapModule(AppModule);
-            `,
+                    import * as nsNgPlatform from "nativescript-angular/platform";
+                    import { AppModule } from "./app/app.module";
+                    nsNgPlatform.platformNativeScriptDynamic().bootstrapModule(AppModule);
+                `,
             transformedFile: `
-                ${handleHmrPlatformDynamicImport}
-                import { AppModule } from "./app/app.module";
+                    ${handleHmrPlatformDynamicImport}
+                    import { AppModule } from "./app/app.module";
 
-                ${handleHmrOptionsDeclaration}
-                ${handleHmrOptionsCode}
-                ${acceptMainModuleCode}
+                    ${handleHmrOptionsDeclaration}
+                    ${handleHmrOptionsCode}
+                    ${acceptMainModuleCode}
 
-                ${nsDynamicPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModule(AppModule);
-            `,
+                    ${nsDynamicPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModule(AppModule);
+                `,
             transformedFileWithAot: `
-                ${handleHmrPlatformStaticImport}
-                ${handleAotPlatformStaticImport}
-                ${handleAotNgFactoryImport}
+                    ${handleHmrPlatformStaticImport}
+                    ${handleAotPlatformStaticImport}
+                    ${handleAotNgFactoryImport}
 
-                ${handleHmrOptionsDeclaration}
-                ${handleHmrOptionsAotCode}
-                ${acceptMainModuleAotCode}
+                    ${handleHmrOptionsDeclaration}
+                    ${handleHmrOptionsAotCode}
+                    ${acceptMainModuleAotCode}
 
-                ${nsStaticPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModuleFactory(${nsFactoryImportName}.AppModuleNgFactory);
-            `
+                    ${nsStaticPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModuleFactory(${nsFactoryImportName}.AppModuleNgFactory);
+                `
         },
         {
-            name: "should handle HMR when platformNativeScriptDynamic is called with appOptions",
+            name: "should handle HMR when platformNativeScriptDynamic is called with inline appOptions",
             rawFile: `
-                import { platformNativeScriptDynamic } from "nativescript-angular/platform";
-                import { AppModule } from "./app/app.module";
-                platformNativeScriptDynamic({ bootInExistingPage: true }).bootstrapModule(AppModule);
-            `,
+                    import { platformNativeScriptDynamic } from "nativescript-angular/platform";
+                    import { AppModule } from "./app/app.module";
+                    platformNativeScriptDynamic({ bootInExistingPage: true }).bootstrapModule(AppModule);
+                `,
             transformedFile: `
-                ${handleHmrPlatformDynamicImport}
-                import { AppModule } from "./app/app.module";
+                    ${handleHmrPlatformDynamicImport}
+                    import { AppModule } from "./app/app.module";
 
-                var ${GeneratedDynamicAppOptions} = { bootInExistingPage: true };
-                ${handleHmrOptionsCode}
-                ${acceptMainModuleCode}
+                    var ${GeneratedDynamicAppOptions} = { bootInExistingPage: true };
+                    ${handleHmrOptionsCode}
+                    ${acceptMainModuleCode}
 
-                ${nsDynamicPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModule(AppModule);
-            `,
+                    ${nsDynamicPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModule(AppModule);
+                `,
             transformedFileWithAot: `
-                ${handleHmrPlatformStaticImport}
-                ${handleAotPlatformStaticImport}
-                ${handleAotNgFactoryImport}
+                    ${handleHmrPlatformStaticImport}
+                    ${handleAotPlatformStaticImport}
+                    ${handleAotNgFactoryImport}
 
-                var ${GeneratedDynamicAppOptions} = { bootInExistingPage: true };
-                ${handleHmrOptionsAotCode}
-                ${acceptMainModuleAotCode}
+                    var ${GeneratedDynamicAppOptions} = { bootInExistingPage: true };
+                    ${handleHmrOptionsAotCode}
+                    ${acceptMainModuleAotCode}
 
-                ${nsStaticPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModuleFactory(${nsFactoryImportName}.AppModuleNgFactory);
-            `
+                    ${nsStaticPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModuleFactory(${nsFactoryImportName}.AppModuleNgFactory);
+                `
         },
         {
             name: "should handle HMR when platformNativeScriptDynamic is called with multiple arguments",
             rawFile: `
-                import { platformNativeScriptDynamic } from "nativescript-angular/platform";
-                import { AppModule } from "./app/app.module";
-                platformNativeScriptDynamic({ bootInExistingPage: true }, ["provider1", "provider2"]).bootstrapModule(AppModule);
-            `,
+                    import { platformNativeScriptDynamic } from "nativescript-angular/platform";
+                    import { AppModule } from "./app/app.module";
+                    platformNativeScriptDynamic({ bootInExistingPage: true }, ["provider1", "provider2"]).bootstrapModule(AppModule);
+                `,
             transformedFile: `
-                ${handleHmrPlatformDynamicImport}
-                import { AppModule } from "./app/app.module";
+                    ${handleHmrPlatformDynamicImport}
+                    import { AppModule } from "./app/app.module";
 
-                var ${GeneratedDynamicAppOptions} = { bootInExistingPage: true };
-                ${handleHmrOptionsCode}
-                ${acceptMainModuleCode}
+                    var ${GeneratedDynamicAppOptions} = { bootInExistingPage: true };
+                    ${handleHmrOptionsCode}
+                    ${acceptMainModuleCode}
 
-                ${nsDynamicPlatformCall}(${GeneratedDynamicAppOptions}, ["provider1", "provider2"]).bootstrapModule(AppModule);
-            `,
+                    ${nsDynamicPlatformCall}(${GeneratedDynamicAppOptions}, ["provider1", "provider2"]).bootstrapModule(AppModule);
+                `,
             transformedFileWithAot: `
-                ${handleHmrPlatformStaticImport}
-                ${handleAotPlatformStaticImport}
-                ${handleAotNgFactoryImport}
+                    ${handleHmrPlatformStaticImport}
+                    ${handleAotPlatformStaticImport}
+                    ${handleAotNgFactoryImport}
 
-                var ${GeneratedDynamicAppOptions} = { bootInExistingPage: true };
-                ${handleHmrOptionsAotCode}
-                ${acceptMainModuleAotCode}
+                    var ${GeneratedDynamicAppOptions} = { bootInExistingPage: true };
+                    ${handleHmrOptionsAotCode}
+                    ${acceptMainModuleAotCode}
 
-                ${nsStaticPlatformCall}(${GeneratedDynamicAppOptions}, ["provider1", "provider2"]).bootstrapModuleFactory(${nsFactoryImportName}.AppModuleNgFactory);
-            `
+                    ${nsStaticPlatformCall}(${GeneratedDynamicAppOptions}, ["provider1", "provider2"]).bootstrapModuleFactory(${nsFactoryImportName}.AppModuleNgFactory);
+                `
         },
         {
             name: "should accept HMR before the user when custom handling is in place",
             rawFile: `
-                import { platformNativeScriptDynamic } from "nativescript-angular/platform";
-                import { AppModule } from "./app/app.module";
+                    import { platformNativeScriptDynamic } from "nativescript-angular/platform";
+                    import { AppModule } from "./app/app.module";
 
-                if (module["hot"]) {
-                    module["hot"].accept(["./app/app.module"], function () {
-                        // customHandling
-                    });
-                }
+                    if (module["hot"]) {
+                        module["hot"].accept(["./app/app.module"], function () {
+                            // customHandling
+                        });
+                    }
 
-                platformNativeScriptDynamic().bootstrapModule(AppModule);
-            `,
+                    platformNativeScriptDynamic().bootstrapModule(AppModule);
+                `,
             transformedFile: `
-                ${handleHmrPlatformDynamicImport}
-                import { AppModule } from "./app/app.module";
-    
-                ${handleHmrOptionsDeclaration}
-                ${handleHmrOptionsCode}
-                ${acceptMainModuleCode}
+                    ${handleHmrPlatformDynamicImport}
+                    import { AppModule } from "./app/app.module";
 
-                if (module["hot"]) {
-                    module["hot"].accept(["./app/app.module"], function () {
-                        // customHandling
-                    });
-                }
+                    ${handleHmrOptionsDeclaration}
+                    ${handleHmrOptionsCode}
+                    ${acceptMainModuleCode}
 
-                ${nsDynamicPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModule(AppModule);
-            `,
+                    if (module["hot"]) {
+                        module["hot"].accept(["./app/app.module"], function () {
+                            // customHandling
+                        });
+                    }
+
+                    ${nsDynamicPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModule(AppModule);
+                `,
             transformedFileWithAot: `
-                ${handleHmrPlatformStaticImport}
-                ${handleAotPlatformStaticImport}
-                ${handleAotNgFactoryImport}
+                    ${handleHmrPlatformStaticImport}
+                    ${handleAotPlatformStaticImport}
+                    ${handleAotNgFactoryImport}
 
-                ${handleHmrOptionsDeclaration}
-                ${handleHmrOptionsAotCode}
-                ${acceptMainModuleAotCode}
+                    ${handleHmrOptionsDeclaration}
+                    ${handleHmrOptionsAotCode}
+                    ${acceptMainModuleAotCode}
 
-                if (module["hot"]) {
-                    module["hot"].accept(["./app/app.module"], function () {
-                        // customHandling
-                    });
-                }
+                    if (module["hot"]) {
+                        module["hot"].accept(["./app/app.module"], function () {
+                            // customHandling
+                        });
+                    }
 
-                ${nsStaticPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModuleFactory(${nsFactoryImportName}.AppModuleNgFactory);
-            `
+                    ${nsStaticPlatformCall}(${GeneratedDynamicAppOptions}).bootstrapModuleFactory(${nsFactoryImportName}.AppModuleNgFactory);
+                `
         }
         ];
         testCases.forEach((testCase: any) => {
