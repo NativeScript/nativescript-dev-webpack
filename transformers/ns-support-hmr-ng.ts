@@ -73,15 +73,18 @@ function handleHmrSupportCore(mainFile: ts.SourceFile, importNodesInFile: ts.Nod
         currentAppOptionsInitializationNode = nativeScriptPlatformCallNode.arguments[0];
     }
 
-    const optionsDeclaration = ts.createVariableDeclaration(GeneratedDynamicAppOptions, undefined, currentAppOptionsInitializationNode);
+    const optionsDeclaration = ts.createVariableDeclaration(GeneratedDynamicAppOptions, undefined, ts.createObjectLiteral());
     const optionsDeclarationList = ts.createVariableDeclarationList([optionsDeclaration]);
     const optionsStatement = ts.createVariableStatement(undefined, optionsDeclarationList);
 
-    const handleHmrOptionsNode = ts.createIdentifier(getHandleHmrOptionsCode(appModuleName, appModulePath));
+    const setHmrOptionsNode = ts.createIdentifier(getHmrOptionsCode(appModuleName, appModulePath));
 
     const acceptHmrNode = ts.createIdentifier(getAcceptMainModuleCode(appModulePath));
 
-    const newNsDynamicCallArgs = ts.createNodeArray([ts.createIdentifier(GeneratedDynamicAppOptions), ...nativeScriptPlatformCallNode.arguments.slice(1)]);
+    const objectAssignNode = ts.createPropertyAccess(ts.createIdentifier("Object"), ts.createIdentifier("assign"));
+    const extendAppOptionsNode = ts.createCall(objectAssignNode, undefined, [currentAppOptionsInitializationNode, ts.createIdentifier(GeneratedDynamicAppOptions)]);
+
+    const newNsDynamicCallArgs = ts.createNodeArray([extendAppOptionsNode, ...nativeScriptPlatformCallNode.arguments.slice(1)]);
     const nsPlatformPath = findNativeScriptPlatformPathInSource(mainFile);
     const nsPlatformText = getExpressionName(nativeScriptPlatformCallNode.expression);
     const newNsDynamicCallNode = ts.createCall(ts.createPropertyAccess(ts.createIdentifier(NsNgPlatformStarImport), ts.createIdentifier(nsPlatformText)), [], newNsDynamicCallArgs);
@@ -89,7 +92,7 @@ function handleHmrSupportCore(mainFile: ts.SourceFile, importNodesInFile: ts.Nod
     return [
         ...insertStarImport(mainFile, ts.createIdentifier(NsNgPlatformStarImport), nsPlatformPath, firstImportNode, true),
         new AddNodeOperation(mainFile, lastImportNode, undefined, optionsStatement),
-        new AddNodeOperation(mainFile, lastImportNode, undefined, handleHmrOptionsNode),
+        new AddNodeOperation(mainFile, lastImportNode, undefined, setHmrOptionsNode),
         new AddNodeOperation(mainFile, lastImportNode, undefined, acceptHmrNode),
         new ReplaceNodeOperation(mainFile, nativeScriptPlatformCallNode, newNsDynamicCallNode)
     ];
@@ -98,15 +101,15 @@ function handleHmrSupportCore(mainFile: ts.SourceFile, importNodesInFile: ts.Nod
 export const GeneratedDynamicAppOptions = "options_Generated";
 const NsNgPlatformStarImport = "nativescript_angular_platform_Generated";
 
-export function getHandleHmrOptionsCode(appModuleName: string, appModulePath: string) {
+export function getHmrOptionsCode(appModuleName: string, appModulePath: string) {
     return `
 if (module["hot"]) {
-    ${GeneratedDynamicAppOptions} = Object.assign(${GeneratedDynamicAppOptions}, {
+    ${GeneratedDynamicAppOptions} = {
         hmrOptions: {
             moduleTypeFactory: function () { return require("${appModulePath}").${appModuleName}; },
             livesyncCallback: function (platformReboot) { setTimeout(platformReboot, 0); }
         }
-    });
+    };
 }
 `
 }
