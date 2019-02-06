@@ -80,7 +80,7 @@ SnapshotGenerator.prototype.convertToAndroidArchName = function(archName) {
     }
 }
 
-SnapshotGenerator.prototype.runMksnapshotTool = function(snapshotToolsPath, inputFile, v8Version, targetArchs, buildCSource) {
+SnapshotGenerator.prototype.runMksnapshotTool = function(snapshotToolsPath, inputFile, v8Version, targetArchs, buildCSource, mksnapshotParams) {
     // Cleans the snapshot build folder
     shelljs.rm("-rf", join(this.buildPath, "snapshots"));
 
@@ -98,7 +98,12 @@ SnapshotGenerator.prototype.runMksnapshotTool = function(snapshotToolsPath, inpu
             // Generate .blob file
             const currentArchBlobOutputPath = join(this.buildPath, "snapshots/blobs", androidArch);
             shelljs.mkdir("-p", currentArchBlobOutputPath);
-            const command = `${currentArchMksnapshotToolPath} ${inputFile} --startup_blob ${join(currentArchBlobOutputPath, `${SNAPSHOT_BLOB_NAME}.blob`)} --profile_deserialization`;
+            var params = "--profile_deserialization";
+            if (mksnapshotParams) {
+                // Starting from android runtime 5.3.0, the parameters passed to mksnapshot are read from the settings.json file
+                params = mksnapshotParams;
+            }
+            const command = `${currentArchMksnapshotToolPath} ${inputFile} --startup_blob ${join(currentArchBlobOutputPath, `${SNAPSHOT_BLOB_NAME}.blob`)} ${params}`;
 
             return new Promise((resolve, reject) => {
                 const child = child_process.exec(command, {encoding: "utf8"}, (error, stdout, stderr) => {
@@ -167,7 +172,8 @@ SnapshotGenerator.prototype.generate = function(options) {
         preprocessedInputFile,
         options.v8Version,
         options.targetArchs,
-        options.useLibs
+        options.useLibs,
+        options.mksnapshotParams
     ).then(() => {
         this.buildIncludeGradle();
         if (options.useLibs) {
