@@ -34,6 +34,19 @@ const getAndroidV8Version = (projectDir) => {
     }
 }
 
+const getMksnapshotParams = (projectDir) => {
+    try {
+        const androidSettingsJSON = getAndroidSettingsJson(projectDir);
+        if (androidSettingsJSON !== null) {
+            return androidSettingsJSON.mksnapshotParams;
+        } else {
+            return null;
+        }
+    } catch (e) {
+        return null;
+    }
+};
+
 const getAndroidSettingsJson = projectDir => {
     const androidSettingsJsonPath = resolve(projectDir, PLATFORMS_ANDROID, "settings.json");
     if (existsSync(androidSettingsJsonPath)) {
@@ -49,4 +62,5 @@ module.exports = {
     ANDROID_CONFIGURATIONS_PATH,
     getAndroidRuntimeVersion,
     getAndroidV8Version,
+    getMksnapshotParams
 };
