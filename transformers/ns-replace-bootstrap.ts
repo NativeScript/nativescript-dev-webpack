@@ -9,6 +9,9 @@ import {
     makeTransform,
     getFirstNode
 } from "@ngtools/webpack/src/transformers";
+import {
+    getExpressionName
+} from "../utils/ast-utils";
 import { AngularCompilerPlugin } from '@ngtools/webpack';
 import { getResolvedEntryModule } from "../utils/transformers-utils";
 
@@ -47,39 +50,46 @@ export function nsReplaceBootstrap(getNgCompiler: () => AngularCompilerPlugin): 
                 return;
             }
 
-            const callExpr = entryModuleIdentifier.parent as ts.CallExpression;
+            const bootstrapCallExpr = entryModuleIdentifier.parent as ts.CallExpression;
 
-            if (callExpr.expression.kind !== ts.SyntaxKind.PropertyAccessExpression) {
+            if (bootstrapCallExpr.expression.kind !== ts.SyntaxKind.PropertyAccessExpression) {
                 return;
             }
 
-            const propAccessExpr = callExpr.expression as ts.PropertyAccessExpression;
+            const bootstrapPropAccessExpr = bootstrapCallExpr.expression as ts.PropertyAccessExpression;
 
-            if (propAccessExpr.name.text !== 'bootstrapModule'
-                || propAccessExpr.expression.kind !== ts.SyntaxKind.CallExpression) {
+            if (bootstrapPropAccessExpr.name.text !== 'bootstrapModule'
+                || bootstrapPropAccessExpr.expression.kind !== ts.SyntaxKind.CallExpression) {
                 return;
             }
 
-            const bootstrapModuleIdentifier = propAccessExpr.name;
-            const innerCallExpr = propAccessExpr.expression as ts.CallExpression;
-
-            if (!(
-                innerCallExpr.expression.kind === ts.SyntaxKind.Identifier
-                && (innerCallExpr.expression as ts.Identifier).text === 'platformNativeScriptDynamic'
-            )) {
+            const nsPlatformCallExpr = bootstrapPropAccessExpr.expression as ts.CallExpression;
+            if (!(getExpressionName(nsPlatformCallExpr.expression) === 'platformNativeScriptDynamic')) {
                 return;
             }
 
-            const platformNativeScriptDynamicIdentifier = innerCallExpr.expression as ts.Identifier;
-
-            const idPlatformNativeScript = ts.createUniqueName('__NgCli_bootstrap_');
-            const idNgFactory = ts.createUniqueName('__NgCli_bootstrap_');
+            const idPlatformNativeScript = ts.createUniqueName('__NgCli_bootstrap_1');
+            const idNgFactory = ts.createUniqueName('__NgCli_bootstrap_2');
 
             const firstNode = getFirstNode(sourceFile);
 
             // Add the transform operations.
             const factoryClassName = entryModule.className + 'NgFactory';
             const factoryModulePath = normalizedEntryModulePath + '.ngfactory';
+
+
+            const newBootstrapPropAccessExpr = ts.getMutableClone(bootstrapPropAccessExpr);
+            const newNsPlatformCallExpr = ts.getMutableClone(bootstrapPropAccessExpr.expression) as ts.CallExpression;
+            newNsPlatformCallExpr.expression = ts.createPropertyAccess(idPlatformNativeScript, 'platformNativeScript');
+            newBootstrapPropAccessExpr.expression = newNsPlatformCallExpr;
+            newBootstrapPropAccessExpr.name = ts.createIdentifier("bootstrapModuleFactory");
+
+            const newBootstrapCallExpr = ts.getMutableClone(bootstrapCallExpr);
+            newBootstrapCallExpr.expression = newBootstrapPropAccessExpr;
+            newBootstrapCallExpr.arguments = ts.createNodeArray([
+                ts.createPropertyAccess(idNgFactory, ts.createIdentifier(factoryClassName))
+            ]);
+
             ops.push(
                 // Insert an import of the {N} Angular static bootstrap module in the beginning of the file:
                 // import * as __NgCli_bootstrap_2 from "nativescript-angular/platform-static";
@@ -101,19 +111,10 @@ export function nsReplaceBootstrap(getNgCompiler: () => AngularCompilerPlugin): 
                     true,
                 ),
 
-                // Replace the NgModule nodes with NgModuleFactory nodes
-                // from 'AppModule' to 'AppModuleNgFactory'
-                new ReplaceNodeOperation(sourceFile, entryModuleIdentifier,
-                    ts.createPropertyAccess(idNgFactory, ts.createIdentifier(factoryClassName))),
-
-                // Replace 'platformNativeScriptDynamic' with 'platformNativeScript'
-                // and elide all imports of 'platformNativeScriptDynamic'
-                new ReplaceNodeOperation(sourceFile, platformNativeScriptDynamicIdentifier,
-                    ts.createPropertyAccess(idPlatformNativeScript, 'platformNativeScript')),
-
-                // Replace the invocation of 'boostrapModule' with 'bootsrapModuleFactory'
-                new ReplaceNodeOperation(sourceFile, bootstrapModuleIdentifier,
-                    ts.createIdentifier('bootstrapModuleFactory')),
+                // Replace the bootstrap call expression. For example:
+                // from: platformNativeScriptDynamic().bootstrapModule(AppModule);
+                // to:   platformNativeScript().bootstrapModuleFactory(__NgCli_bootstrap_2.AppModuleNgFactory);
+                new ReplaceNodeOperation(sourceFile, bootstrapCallExpr, newBootstrapCallExpr),
             );
         });
 

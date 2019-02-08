@@ -17,6 +17,7 @@ const {
     ANDROID_CONFIGURATIONS_PATH,
     getAndroidRuntimeVersion,
     getAndroidV8Version,
+    getMksnapshotParams
 } = require("../../androidProjectHelpers");
 
 const MIN_ANDROID_RUNTIME_VERSION = "3.0.0";
@@ -227,6 +228,9 @@ ProjectSnapshotGenerator.prototype.generate = function (generationOptions) {
 
     const noV8VersionFoundMessage = `Cannot find suitable v8 version!`;
     let shouldRethrow = false;
+
+    const mksnapshotParams = getMksnapshotParams(this.options.projectRoot);
+
     return this.getV8Version(generationOptions).then(v8Version => {
         shouldRethrow = true;
         if (!v8Version) {
@@ -241,6 +245,7 @@ ProjectSnapshotGenerator.prototype.generate = function (generationOptions) {
             useLibs: generationOptions.useLibs || false,
             inputFiles: generationOptions.inputFiles || [join(this.options.projectRoot, "__snapshot.js")],
             androidNdkPath,
+            mksnapshotParams: mksnapshotParams
         };
 
         return generator.generate(options).then(() => {

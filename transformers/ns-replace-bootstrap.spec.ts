@@ -14,17 +14,17 @@ describe('@ngtools/webpack transformers', () => {
       `;
 
       const output = tags.stripIndent`
-        import * as __NgCli_bootstrap_1 from "nativescript-angular/platform-static";
-        import * as __NgCli_bootstrap_2 from "./app/app.module.ngfactory";
+        import * as __NgCli_bootstrap_1_1 from "nativescript-angular/platform-static";
+        import * as __NgCli_bootstrap_2_1 from "./app/app.module.ngfactory";
 
-        __NgCli_bootstrap_1.platformNativeScript().bootstrapModuleFactory(__NgCli_bootstrap_2.AppModuleNgFactory);
+        __NgCli_bootstrap_1_1.platformNativeScript().bootstrapModuleFactory(__NgCli_bootstrap_2_1.AppModuleNgFactory);
       `;
 
       const { program, compilerHost } = createTypescriptContext(input);
       const ngCompiler = <AngularCompilerPlugin>{
         typeChecker: program.getTypeChecker(),
         entryModule: {
-          path: '/project/src/app/app.module', 
+          path: '/project/src/app/app.module',
           className: 'AppModule',
         },
       };
@@ -43,17 +43,17 @@ describe('@ngtools/webpack transformers', () => {
       `;
 
       const output = tags.stripIndent`
-        import * as __NgCli_bootstrap_1 from "nativescript-angular/platform-static";
-        import * as __NgCli_bootstrap_2 from "./app/app.module.ngfactory";
+        import * as __NgCli_bootstrap_1_1 from "nativescript-angular/platform-static";
+        import * as __NgCli_bootstrap_2_1 from "./app/app.module.ngfactory";
 
-        __NgCli_bootstrap_1.platformNativeScript().bootstrapModuleFactory(__NgCli_bootstrap_2.AppModuleNgFactory);
+        __NgCli_bootstrap_1_1.platformNativeScript().bootstrapModuleFactory(__NgCli_bootstrap_2_1.AppModuleNgFactory);
       `;
 
       const { program, compilerHost } = createTypescriptContext(input);
       const ngCompiler = <AngularCompilerPlugin>{
         typeChecker: program.getTypeChecker(),
         entryModule: {
-          path: '/project/src/app/app.module', 
+          path: '/project/src/app/app.module',
           className: 'AppModule',
         },
       };
@@ -73,18 +73,18 @@ describe('@ngtools/webpack transformers', () => {
       `;
 
       const output = tags.stripIndent`
-        import * as __NgCli_bootstrap_1 from "nativescript-angular/platform-static";
-        import * as __NgCli_bootstrap_2 from "./app/app.module.ngfactory";
+        import * as __NgCli_bootstrap_1_1 from "nativescript-angular/platform-static";
+        import * as __NgCli_bootstrap_2_1 from "./app/app.module.ngfactory";
         import "./shared/kinvey.common";
 
-        __NgCli_bootstrap_1.platformNativeScript().bootstrapModuleFactory(__NgCli_bootstrap_2.AppModuleNgFactory);
+        __NgCli_bootstrap_1_1.platformNativeScript().bootstrapModuleFactory(__NgCli_bootstrap_2_1.AppModuleNgFactory);
       `;
 
       const { program, compilerHost } = createTypescriptContext(input);
       const ngCompiler = <AngularCompilerPlugin>{
         typeChecker: program.getTypeChecker(),
         entryModule: {
-          path: '/project/src/app/app.module', 
+          path: '/project/src/app/app.module',
           className: 'AppModule',
         },
       };

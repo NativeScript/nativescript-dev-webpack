@@ -5,6 +5,7 @@ const nsWebpack = require("nativescript-dev-webpack");
 const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target");
 const { nsReplaceBootstrap } = require("nativescript-dev-webpack/transformers/ns-replace-bootstrap");
 const { nsReplaceLazyLoader } = require("nativescript-dev-webpack/transformers/ns-replace-lazy-loader");
+const { nsSupportHmrNg } = require("nativescript-dev-webpack/transformers/ns-support-hmr-ng");
 const { getMainModulePath } = require("nativescript-dev-webpack/utils/ast-utils");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
@@ -59,10 +60,14 @@ module.exports = env => {
         ngCompilerTransformers.push(nsReplaceBootstrap);
     }
 
+    if (hmr) {
+        ngCompilerTransformers.push(nsSupportHmrNg);
+    }
+
     // when "@angular/core" is external, it's not included in the bundles. In this way, it will be used
     // directly from node_modules and the Angular modules loader won't be able to resolve the lazy routes
     // fixes https://github.com/NativeScript/nativescript-cli/issues/4024
-    if (externals.indexOf("@angular/core") > -1) {
+    if (env.externals && env.externals.indexOf("@angular/core") > -1) {
         const appModuleRelativePath = getMainModulePath(resolve(appFullPath, entryModule));
         if (appModuleRelativePath) {
             const appModuleFolderPath = dirname(resolve(appFullPath, appModuleRelativePath));
@@ -75,7 +80,7 @@ module.exports = env => {
 
     const ngCompilerPlugin = new AngularCompilerPlugin({
         hostReplacementPaths: nsWebpack.getResolver([platform, "tns"]),
-        platformTransformers: ngCompilerTransformers.map(t => t(() => ngCompilerPlugin)),
+        platformTransformers: ngCompilerTransformers.map(t => t(() => ngCompilerPlugin, resolve(appFullPath, entryModule))),
         mainPath: resolve(appPath, entryModule),
         tsConfigPath: join(__dirname, "tsconfig.tns.json"),
         skipCodeGeneration: !aot,
