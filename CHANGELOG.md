@@ -15,15 +15,15 @@
 
 ### BREAKING CHANGES
 
-This version enables *Hot Module Replacement* feature in NativeScript Angular projects by default.
-There is no need to manually accept *hot* changes and you could safely remove the `module["hot"]` code inside your entry module.
+* Hot Module Replacement in NativeScript Angular Project
+
+This version enables the *Hot Module Replacement* feature in NativeScript Angular projects by default.
+
+So far it was required to add a snippet to enable HMR. With this release, you have to __remove__ any previous `module["hot"]` related code so HMR can work out of the box.
+
+However, if you want to continue handling *hot* changes manually, follow [these](https://github.com/NativeScript/nativescript-angular/wiki/NativeScript-5.2-HMR-with-Angular#how-to-manually-enable-hmr-in-nativescript-angular-projects-with-n-52) instructions.
 
 ### Migration
-
-Steps:
-- update the plugin by `npm i -D nativescript-dev-webpack@0.20.0`
-- update the `webpack.config.js` file by `./node_modules/.bin/update-ns-webpack --configs --deps`
-- remove any `module["hot"]` code inside your entry module.
 
 Please, refer to [this](https://github.com/NativeScript/nativescript-angular/wiki/NativeScript-5.2-HMR-with-Angular) wiki page for detailed information.
 
