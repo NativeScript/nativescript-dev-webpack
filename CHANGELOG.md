@@ -13,11 +13,17 @@
 * **Angular:** apply changes in application styles at runtime with HMR ([#748](https://github.com/NativeScript/nativescript-dev-webpack/issues/748)) ([fe4abfb](https://github.com/NativeScript/nativescript-dev-webpack/commit/fe4abfb))
 * **snapshot:** the parameters passed to mksnapshot are now retrieved… ([#789](https://github.com/NativeScript/nativescript-dev-webpack/issues/789)) ([cb68dac](https://github.com/NativeScript/nativescript-dev-webpack/commit/cb68dac))
 
-
-### Migration
+### BREAKING CHANGES
 
 This version enables *Hot Module Replacement* feature in NativeScript Angular projects by default.
 There is no need to manually accept *hot* changes and you could safely remove the `module["hot"]` code inside your entry module.
+
+### Migration
+
+Steps:
+- update the plugin by `npm i -D nativescript-dev-webpack@0.20.0`
+- update the `webpack.config.js` file by `./node_modules/.bin/update-ns-webpack --configs --deps`
+- remove any `module["hot"]` code inside your entry module.
 
 Please, refer to [this](https://github.com/NativeScript/nativescript-angular/wiki/NativeScript-5.2-HMR-with-Angular) wiki page for detailed information.
 
