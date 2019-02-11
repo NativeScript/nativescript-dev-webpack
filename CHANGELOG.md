@@ -1,3 +1,26 @@
+<a name="0.20.0"></a>
+# [0.20.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.18.3...0.20.0) (2019-02-08)
+
+
+### Bug Fixes
+
+* some packages are treated as externals when they shouldn't ([#771](https://github.com/NativeScript/nativescript-dev-webpack/issues/771)) ([3362cd6](https://github.com/NativeScript/nativescript-dev-webpack/commit/3362cd6))
+
+
+### Features
+
+* support HMR in Angular apps ([#788](https://github.com/NativeScript/nativescript-dev-webpack/issues/788)) ([6a9ce33](https://github.com/NativeScript/nativescript-dev-webpack/commit/6a9ce33))
+* **Angular:** apply changes in application styles at runtime with HMR ([#748](https://github.com/NativeScript/nativescript-dev-webpack/issues/748)) ([fe4abfb](https://github.com/NativeScript/nativescript-dev-webpack/commit/fe4abfb))
+* **snapshot:** the parameters passed to mksnapshot are now retrieved… ([#789](https://github.com/NativeScript/nativescript-dev-webpack/issues/789)) ([cb68dac](https://github.com/NativeScript/nativescript-dev-webpack/commit/cb68dac))
+
+
+### Migration
+
+This version enables *Hot Module Replacement* feature in NativeScript Angular projects by default.
+There is no need to manually accept *hot* changes and you could safely remove the `module["hot"]` code inside your entry module.
+
+Please, refer to [this](https://github.com/NativeScript/nativescript-angular/wiki/NativeScript-5.2-HMR-with-Angular) wiki page for detailed information.
+
 <a name="0.19.2"></a>
 ## [0.19.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.19.1...0.19.2) (2019-02-01)
 
