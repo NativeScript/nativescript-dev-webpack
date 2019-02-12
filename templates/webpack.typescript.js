@@ -49,6 +49,10 @@ module.exports = env => {
 
     const entryModule = nsWebpack.getEntryModule(appFullPath);
     const entryPath = `.${sep}${entryModule}.ts`;
+    const entries = { bundle: entryPath };
+    if (platform === "ios") {
+        entries["tns_modules/tns-core-modules/inspector_modules"] = "inspector_modules.js";
+    };
 
     const config = {
         mode: uglify ? "production" : "development",
@@ -62,9 +66,7 @@ module.exports = env => {
             ]
         },
         target: nativescriptTarget,
-        entry: {
-            bundle: entryPath,
-        },
+        entry: entries,
         output: {
             pathinfo: false,
             path: dist,

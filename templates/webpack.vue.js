@@ -55,6 +55,10 @@ module.exports = env => {
 
     const entryModule = nsWebpack.getEntryModule(appFullPath);
     const entryPath = `.${sep}${entryModule}`;
+    const entries = { bundle: entryPath };
+    if (platform === "ios") {
+        entries["tns_modules/tns-core-modules/inspector_modules"] = "inspector_modules.js";
+    };
     console.log(`Bundling application for entryPath ${entryPath}...`);
 
     const config = {
@@ -70,9 +74,7 @@ module.exports = env => {
         },
         target: nativescriptTarget,
         // target: nativeScriptVueTarget,
-        entry: {
-            bundle: entryPath,
-        },
+        entry: entries,
         output: {
             pathinfo: false,
             path: dist,
