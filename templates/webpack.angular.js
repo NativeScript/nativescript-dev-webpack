@@ -51,7 +51,7 @@ module.exports = env => {
     const externals = nsWebpack.getConvertedExternals(env.externals);
     const appFullPath = resolve(projectRoot, appPath);
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
-
+    const tsConfigName = "tsconfig.tns.json";
     const entryModule = `${nsWebpack.getEntryModule(appFullPath)}.ts`;
     const entryPath = `.${sep}${entryModule}`;
     const ngCompilerTransformers = [];
@@ -68,7 +68,7 @@ module.exports = env => {
     // directly from node_modules and the Angular modules loader won't be able to resolve the lazy routes
     // fixes https://github.com/NativeScript/nativescript-cli/issues/4024
     if (env.externals && env.externals.indexOf("@angular/core") > -1) {
-        const appModuleRelativePath = getMainModulePath(resolve(appFullPath, entryModule));
+        const appModuleRelativePath = getMainModulePath(resolve(appFullPath, entryModule), tsConfigName);
         if (appModuleRelativePath) {
             const appModuleFolderPath = dirname(resolve(appFullPath, appModuleRelativePath));
             // include the lazy loader inside app module
@@ -82,7 +82,7 @@ module.exports = env => {
         hostReplacementPaths: nsWebpack.getResolver([platform, "tns"]),
         platformTransformers: ngCompilerTransformers.map(t => t(() => ngCompilerPlugin, resolve(appFullPath, entryModule))),
         mainPath: resolve(appPath, entryModule),
-        tsConfigPath: join(__dirname, "tsconfig.tns.json"),
+        tsConfigPath: join(__dirname, tsConfigName),
         skipCodeGeneration: !aot,
         sourceMap: !!sourceMap,
         additionalLazyModuleResources: additionalLazyModuleResources
