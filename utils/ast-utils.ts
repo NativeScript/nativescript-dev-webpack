@@ -14,17 +14,60 @@
 // example of a working workaround by searching for content in each parent.
 // 4) Always test your transformer both single and in combinations with the other ones.
 
-import { dirname, join } from "path";
+import { dirname, join, relative } from "path";
 import * as ts from "typescript";
 import { readFileSync, existsSync } from "fs";
 import { collectDeepNodes } from "@ngtools/webpack/src/transformers";
 
-export function getMainModulePath(entryFilePath) {
+export function getMainModulePath(entryFilePath: string, tsConfigName: string) {
     try {
-        return findBootstrappedModulePath(entryFilePath);
+        // backwards compatibility
+        tsConfigName = tsConfigName || "tsconfig.tns.json";
+
+        const tsModuleName = findBootstrappedModulePath(entryFilePath);
+        const result = tsResolve(tsModuleName, entryFilePath, tsConfigName);
+
+        return result;
     } catch (e) {
         return null;
     }
+}
+
+/**
+ * Returns the real path to the ts/d.ts of the specified `moduleName` relative to the specified `containingFilePath`. (e.g. `~/app/file` -> `./app/file.ts`)
+ * @param moduleName The name of the module to be resolved (e.g. `~/config.js`, `lodash`, `./already-relative.js`, `@custom-path/file`).
+ * @param containingFilePath An absolute path to the file where the `moduleName` is imported. The relative result will be based on this file.
+ * @param tsConfigName The name of the tsconfig which will be used during the module resolution (e.g. `tsconfig.json`).
+ * We need this config in order to get its compiler options into account (e.g. resolve any custom `paths` like `~` or `@src`).
+ */
+function tsResolve(moduleName: string, containingFilePath: string, tsConfigName: string) {
+    let result = moduleName;
+    try {
+        const parseConfigFileHost: ts.ParseConfigFileHost = {
+            getCurrentDirectory: ts.sys.getCurrentDirectory,
+            useCaseSensitiveFileNames: false,
+            readDirectory: ts.sys.readDirectory,
+            fileExists: ts.sys.fileExists,
+            readFile: ts.sys.readFile,
+            onUnRecoverableConfigFileDiagnostic: undefined
+        };
+
+        const tsConfig = ts.getParsedCommandLineOfConfigFile(tsConfigName, ts.getDefaultCompilerOptions(), parseConfigFileHost);
+
+        const compilerOptions: ts.CompilerOptions = tsConfig.options || ts.getDefaultCompilerOptions();
+        const moduleResolutionHost: ts.ModuleResolutionHost = {
+            fileExists: ts.sys.fileExists,
+            readFile: ts.sys.readFile
+        };
+
+        const resolutionResult = ts.resolveModuleName(moduleName, containingFilePath, compilerOptions, moduleResolutionHost);
+
+        if (resolutionResult && resolutionResult.resolvedModule && resolutionResult.resolvedModule.resolvedFileName) {
+            result = relative(dirname(containingFilePath), resolutionResult.resolvedModule.resolvedFileName);
+        }
+    } catch (err) { }
+
+    return result;
 }
 
 export function findBootstrapModuleCall(mainPath: string): ts.CallExpression | null {
