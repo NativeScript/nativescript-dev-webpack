@@ -1,12 +1,10 @@
 import { parse, join } from "path";
 import { statSync } from "fs";
 
-export function getResolver(platforms: string[], options: { nsPackageFilters?: string[], explicitResolve?: string[], platformSpecificExt?: string[] } = {}) {
-    options.nsPackageFilters = options.nsPackageFilters || ['nativescript', 'tns', 'ns'];
-    options.explicitResolve = options.explicitResolve || [];
-    options.platformSpecificExt = options.platformSpecificExt || [".ts", ".js", ".scss", ".less", ".css", ".html", ".xml", ".vue", ".json"];
-
-    const { nsPackageFilters, explicitResolve, platformSpecificExt } = options;
+export function getResolver(platforms: string[], explicitResolve?: string[], nsPackageFilters?: string[], platformSpecificExt?: string[]) {
+    explicitResolve = explicitResolve || [];
+    nsPackageFilters = nsPackageFilters || ['nativescript', 'tns', 'ns'];
+    platformSpecificExt = platformSpecificExt || [".ts", ".js", ".scss", ".less", ".css", ".html", ".xml", ".vue", ".json"];
 
     return function (path: string) {
         const nmIndex = path.lastIndexOf('node_modules');
