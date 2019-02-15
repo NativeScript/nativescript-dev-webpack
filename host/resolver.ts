@@ -1,13 +1,12 @@
 import { parse, join } from "path";
 import { statSync } from "fs";
 
-export function getResolver(platforms: string[], explicitResolve: string[] = []) {
-    const platformSpecificExt = [".ts", ".js", ".scss", ".less", ".css", ".html", ".xml", ".vue", ".json"];
-    const nsPackageFilters = [
-        'nativescript',
-        'tns',
-        'ns'
-    ];
+export function getResolver(platforms: string[], options: { nsPackageFilters?: string[], explicitResolve?: string[], platformSpecificExt?: string[] } = {}) {
+    options.nsPackageFilters = options.nsPackageFilters || ['nativescript', 'tns', 'ns'];
+    options.explicitResolve = options.explicitResolve || [];
+    options.platformSpecificExt = options.platformSpecificExt || [".ts", ".js", ".scss", ".less", ".css", ".html", ".xml", ".vue", ".json"];
+
+    const { nsPackageFilters, explicitResolve, platformSpecificExt } = options;
 
     return function (path: string) {
         const nmIndex = path.lastIndexOf('node_modules');
@@ -16,7 +15,7 @@ export function getResolver(platforms: string[], explicitResolve: string[] = [])
             const subPath = path.substr(nmIndex + 'node_modules'.length).replace(/\\/g, '/');
             const shouldResolve = explicitResolve.length && explicitResolve.some(packageName => subPath.indexOf(packageName) !== -1);
             const pathParts = subPath.split(/[/\-_]/);
-    
+
             if (!shouldResolve && pathParts.every(p => nsPackageFilters.every(f => f !== p))) {
                 return path;
             }
