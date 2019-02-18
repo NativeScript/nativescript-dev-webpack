@@ -1,6 +1,6 @@
 {
   "name": "nativescript-dev-webpack",
-  "version": "0.20.1",
+  "version": "0.21.0",
   "main": "index",
   "description": "",
   "homepage": "http://www.telerik.com",
@@ -74,7 +74,7 @@
     "generate-android-snapshot": "./bin/generate-android-snapshot"
   },
   "dependencies": {
-    "@angular-devkit/core": "~7.2.0",
+    "@angular-devkit/core": "~7.1.0",
     "clean-webpack-plugin": "~1.0.0",
     "copy-webpack-plugin": "~4.6.0",
     "css-loader": "~1.0.0",
@@ -99,7 +99,7 @@
     "webpack-sources": "~1.3.0"
   },
   "devDependencies": {
-    "@ngtools/webpack": "~7.2.0",
+    "@ngtools/webpack": "~7.1.0",
     "@types/jasmine": "^3.3.7",
     "@types/node": "^10.12.12",
     "@types/proxyquire": "1.3.28",
