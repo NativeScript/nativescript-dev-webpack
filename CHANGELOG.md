@@ -1,5 +1,21 @@
+<a name="0.20.1"></a>
+## [0.20.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.20.0...0.20.1) (2019-02-18)
+
+
+### Bug Fixes
+
+* add a typescript module resolution when searching for the main Angular module location ([#800](https://github.com/NativeScript/nativescript-dev-webpack/issues/800)) ([e2714f2](https://github.com/NativeScript/nativescript-dev-webpack/commit/e2714f2))
+
+
+### Features
+
+* allow angular resolver configuration via webpack.config ([4f3e8a6](https://github.com/NativeScript/nativescript-dev-webpack/commit/4f3e8a6))
+* backwards compatible angular resolver options ([c9fc731](https://github.com/NativeScript/nativescript-dev-webpack/commit/c9fc731))
+
+
+
 <a name="0.20.0"></a>
-# [0.20.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.18.3...0.20.0) (2019-02-08)
+# [0.20.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.19.2...0.20.0) (2019-02-08)
 
 
 ### Bug Fixes
