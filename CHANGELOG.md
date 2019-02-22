@@ -1,3 +1,69 @@
+<a name="0.20.1"></a>
+## [0.20.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.20.0...0.20.1) (2019-02-18)
+
+
+### Bug Fixes
+
+* add a typescript module resolution when searching for the main Angular module location ([#800](https://github.com/NativeScript/nativescript-dev-webpack/issues/800)) ([e2714f2](https://github.com/NativeScript/nativescript-dev-webpack/commit/e2714f2))
+
+
+### Features
+
+* allow angular resolver configuration via webpack.config ([4f3e8a6](https://github.com/NativeScript/nativescript-dev-webpack/commit/4f3e8a6))
+* backwards compatible angular resolver options ([c9fc731](https://github.com/NativeScript/nativescript-dev-webpack/commit/c9fc731))
+
+
+
+<a name="0.20.0"></a>
+# [0.20.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.18.3...0.20.0) (2019-02-08)
+
+
+### Bug Fixes
+
+* some packages are treated as externals when they shouldn't ([#771](https://github.com/NativeScript/nativescript-dev-webpack/issues/771)) ([3362cd6](https://github.com/NativeScript/nativescript-dev-webpack/commit/3362cd6))
+
+
+### Features
+
+* support HMR in Angular apps ([#788](https://github.com/NativeScript/nativescript-dev-webpack/issues/788)) ([6a9ce33](https://github.com/NativeScript/nativescript-dev-webpack/commit/6a9ce33))
+* **Angular:** apply changes in application styles at runtime with HMR ([#748](https://github.com/NativeScript/nativescript-dev-webpack/issues/748)) ([fe4abfb](https://github.com/NativeScript/nativescript-dev-webpack/commit/fe4abfb))
+* **snapshot:** the parameters passed to mksnapshot are now retrieved… ([#789](https://github.com/NativeScript/nativescript-dev-webpack/issues/789)) ([cb68dac](https://github.com/NativeScript/nativescript-dev-webpack/commit/cb68dac))
+
+### BREAKING CHANGES
+
+* Hot Module Replacement in NativeScript Angular Project
+
+This version enables the *Hot Module Replacement* feature in NativeScript Angular projects by default.
+
+So far it was required to add a snippet to enable HMR. With this release, you have to __remove__ any previous `module["hot"]` related code so HMR can work out of the box.
+
+However, if you want to continue handling *hot* changes manually, follow [these](https://github.com/NativeScript/nativescript-angular/wiki/NativeScript-5.2-HMR-with-Angular#how-to-manually-enable-hmr-in-nativescript-angular-projects-with-n-52) instructions.
+
+### Migration
+
+Please, refer to [this](https://github.com/NativeScript/nativescript-angular/wiki/NativeScript-5.2-HMR-with-Angular) wiki page for detailed information.
+
+<a name="0.19.2"></a>
+## [0.19.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.19.1...0.19.2) (2019-02-01)
+
+
+### Bug Fixes
+
+* optimize platform specific files resolver ([#782](https://github.com/NativeScript/nativescript-dev-webpack/issues/782)) ([fb52c53](https://github.com/NativeScript/nativescript-dev-webpack/commit/fb52c53))
+
+
+
+<a name="0.19.1"></a>
+## [0.19.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.19.0...0.19.1) (2019-01-28)
+
+
+### Bug Fixes
+
+* **Vue:** apply style changes with HMR ([#763](https://github.com/NativeScript/nativescript-dev-webpack/issues/763)) ([#777](https://github.com/NativeScript/nativescript-dev-webpack/issues/777)) ([8ee1880](https://github.com/NativeScript/nativescript-dev-webpack/commit/8ee1880)), closes [#744](https://github.com/NativeScript/nativescript-dev-webpack/issues/744) [#742](https://github.com/NativeScript/nativescript-dev-webpack/issues/742) [#762](https://github.com/NativeScript/nativescript-dev-webpack/issues/762)
+* **debugging:** lazy-ngmodule-hot-loader breaks the sourceMaps ([#770](https://github.com/NativeScript/nativescript-dev-webpack/issues/770)) ([aca851c](https://github.com/NativeScript/nativescript-dev-webpack/commit/aca851c))
+
+
+
 <a name="0.19.0"></a>
 # [0.19.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.18.5...0.19.0) (2019-01-03)
 

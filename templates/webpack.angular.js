@@ -5,6 +5,7 @@ const nsWebpack = require("nativescript-dev-webpack");
 const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target");
 const { nsReplaceBootstrap } = require("nativescript-dev-webpack/transformers/ns-replace-bootstrap");
 const { nsReplaceLazyLoader } = require("nativescript-dev-webpack/transformers/ns-replace-lazy-loader");
+const { nsSupportHmrNg } = require("nativescript-dev-webpack/transformers/ns-support-hmr-ng");
 const { getMainModulePath } = require("nativescript-dev-webpack/utils/ast-utils");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
@@ -12,6 +13,7 @@ const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const { AngularCompilerPlugin } = require("@ngtools/webpack");
+const hashSalt =  Date.now().toString();
 
 module.exports = env => {
     // Add your custom Activities, Services and other Android app components here.
@@ -46,14 +48,11 @@ module.exports = env => {
         sourceMap, // --env.sourceMap
         hmr, // --env.hmr,
     } = env;
-    env.externals = env.externals || [];
-    const externals = (env.externals).map((e) => { // --env.externals
-        return new RegExp(e + ".*");
-    });
 
+    const externals = nsWebpack.getConvertedExternals(env.externals);
     const appFullPath = resolve(projectRoot, appPath);
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
-
+    const tsConfigName = "tsconfig.tns.json";
     const entryModule = `${nsWebpack.getEntryModule(appFullPath)}.ts`;
     const entryPath = `.${sep}${entryModule}`;
     const ngCompilerTransformers = [];
@@ -62,11 +61,15 @@ module.exports = env => {
         ngCompilerTransformers.push(nsReplaceBootstrap);
     }
 
+    if (hmr) {
+        ngCompilerTransformers.push(nsSupportHmrNg);
+    }
+
     // when "@angular/core" is external, it's not included in the bundles. In this way, it will be used
     // directly from node_modules and the Angular modules loader won't be able to resolve the lazy routes
     // fixes https://github.com/NativeScript/nativescript-cli/issues/4024
-    if (env.externals.indexOf("@angular/core") > -1) {
-        const appModuleRelativePath = getMainModulePath(resolve(appFullPath, entryModule));
+    if (env.externals && env.externals.indexOf("@angular/core") > -1) {
+        const appModuleRelativePath = getMainModulePath(resolve(appFullPath, entryModule), tsConfigName);
         if (appModuleRelativePath) {
             const appModuleFolderPath = dirname(resolve(appFullPath, appModuleRelativePath));
             // include the lazy loader inside app module
@@ -78,9 +81,9 @@ module.exports = env => {
 
     const ngCompilerPlugin = new AngularCompilerPlugin({
         hostReplacementPaths: nsWebpack.getResolver([platform, "tns"]),
-        platformTransformers: ngCompilerTransformers.map(t => t(() => ngCompilerPlugin)),
+        platformTransformers: ngCompilerTransformers.map(t => t(() => ngCompilerPlugin, resolve(appFullPath, entryModule))),
         mainPath: resolve(appPath, entryModule),
-        tsConfigPath: join(__dirname, "tsconfig.tns.json"),
+        tsConfigPath: join(__dirname, tsConfigName),
         skipCodeGeneration: !aot,
         sourceMap: !!sourceMap,
         additionalLazyModuleResources: additionalLazyModuleResources
@@ -107,6 +110,7 @@ module.exports = env => {
             libraryTarget: "commonjs2",
             filename: "[name].js",
             globalObject: "global",
+            hashSalt
         },
         resolve: {
             extensions: [".ts", ".js", ".scss", ".css"],

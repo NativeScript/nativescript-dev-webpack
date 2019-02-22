@@ -1,23 +1,39 @@
-import {
-    parse,
-    join,
-} from "path";
+import { parse, join } from "path";
 import { statSync } from "fs";
 
-export function getResolver(platforms: string[]) {
-    return function(path: string) {
+export function getResolver(platforms: string[], explicitResolve?: string[], nsPackageFilters?: string[], platformSpecificExt?: string[]) {
+    explicitResolve = explicitResolve || [];
+    nsPackageFilters = nsPackageFilters || ['nativescript', 'tns', 'ns'];
+    platformSpecificExt = platformSpecificExt || [".ts", ".js", ".scss", ".less", ".css", ".html", ".xml", ".vue", ".json"];
+
+    return function (path: string) {
+        const nmIndex = path.lastIndexOf('node_modules');
+
+        if (nmIndex !== -1) {
+            const subPath = path.substr(nmIndex + 'node_modules'.length).replace(/\\/g, '/');
+            const shouldResolve = explicitResolve.length && explicitResolve.some(packageName => subPath.indexOf(packageName) !== -1);
+            const pathParts = subPath.split(/[/\-_]/);
+
+            if (!shouldResolve && pathParts.every(p => nsPackageFilters.every(f => f !== p))) {
+                return path;
+            }
+        }
+
         const { dir, name, ext } = parse(path);
+
+        if (platformSpecificExt.indexOf(ext) === -1) {
+            return path;
+        }
 
         for (const platform of platforms) {
             const platformFileName = `${name}.${platform}${ext}`;
             const platformPath = toSystemPath(join(dir, platformFileName));
 
             try {
-                const stat = statSync(platformPath);
-                if (stat && stat.isFile()) {
+                if (statSync(platformPath)) {
                     return platformPath;
                 }
-            } catch(_e) {
+            } catch (_e) {
                 // continue checking the other platforms
             }
         }
@@ -34,6 +50,6 @@ function toSystemPath(path: string) {
 
     const drive = path.match(/^\\(\w)\\(.*)$/);
     return drive ?
-        `${drive[1]}:\\${drive[2]}`:
+        `${drive[1]}:\\${drive[2]}` :
         path;
 }

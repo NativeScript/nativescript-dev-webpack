@@ -14,13 +14,13 @@ import {
     makeTransform
 } from "@ngtools/webpack/src/transformers";
 import { AngularCompilerPlugin } from "@ngtools/webpack";
-import { findNode, getObjectPropertyMatches, getDecoratorMetadata } from "../utils/ast-utils";
+import { findIdentifierNode, getObjectPropertyMatches, getDecoratorMetadata } from "../utils/ast-utils";
 import { getResolvedEntryModule } from "../utils/transformers-utils";
 
 export function nsReplaceLazyLoader(getNgCompiler: () => AngularCompilerPlugin): ts.TransformerFactory<ts.SourceFile> {
     const getTypeChecker = () => getNgCompiler().typeChecker;
 
-    const standardTransform: StandardTransform = function (sourceFile: ts.SourceFile) {
+    const standardTransform: StandardTransform = function(sourceFile: ts.SourceFile) {
         let ops: TransformOperation[] = [];
         const entryModule = getResolvedEntryModule(getNgCompiler());
         const sourceFilePath = join(dirname(sourceFile.fileName), basename(sourceFile.fileName, extname(sourceFile.fileName)));
@@ -63,7 +63,7 @@ export function addArrayPropertyValueToNgModule(
         const ngModuleConfigIndentifierNode = ngModuleConfigNode as ts.Identifier;
         // cases like @NgModule(myCoolConfig)
         const configObjectDeclarationNodes = collectDeepNodes<ts.Node>(sourceFile, ts.SyntaxKind.VariableStatement).filter(imp => {
-            return findNode(imp, ts.SyntaxKind.Identifier, ngModuleConfigIndentifierNode.getText());
+            return findIdentifierNode(imp, ngModuleConfigIndentifierNode.getText());
         });
         // will be undefined when the object is imported from another file
         const configObjectDeclaration = (configObjectDeclarationNodes && configObjectDeclarationNodes[0]);
