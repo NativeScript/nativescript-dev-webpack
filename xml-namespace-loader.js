@@ -44,8 +44,8 @@ module.exports = function (source) {
                         .catch((err) => {}),
 
                     resolvePromise(this.context, `${noExtFilename}.css`)
-                        .then((xml) => {
-                            this.addDependency(xml);
+                        .then((css) => {
+                            this.addDependency(css);
                             namespaces.push({ name: `${moduleName}.css`, path: css });
                         })
                         .catch((err) => {})
