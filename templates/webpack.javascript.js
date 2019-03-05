@@ -226,7 +226,7 @@ module.exports = env => {
 
     // Copy the native app resources to the out dir
     // only if doing a full build (tns run/build) and not previewing (tns preview)
-    if (env.externals.length === 0) {
+    if (!externals || externals.length === 0) {
         config.plugins.push(new CopyWebpackPlugin([
             {
                 from: `${appResourcesFullPath}/${appResourcesPlatformDir}`,
