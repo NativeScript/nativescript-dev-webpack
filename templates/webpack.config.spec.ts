@@ -83,7 +83,8 @@ describe('webpack.config.js', () => {
                     });
 
                     it('returns empty array when externals are not passed', () => {
-                        const config = webpackConfig(getInput({ platform }));
+                        const input = getInput({ platform });
+                        const config = webpackConfig(input);
                         expect(config.externals).toEqual([]);
                     });
 

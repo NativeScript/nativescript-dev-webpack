@@ -217,12 +217,6 @@ module.exports = env => {
             }),
             // Remove all files from the out dir.
             new CleanWebpackPlugin([`${dist}/**/*`]),
-            // Copy native app resources to out dir.
-            new CopyWebpackPlugin([{
-                from: `${appResourcesFullPath}/${appResourcesPlatformDir}`,
-                to: `${dist}/App_Resources/${appResourcesPlatformDir}`,
-                context: projectRoot,
-            }]),
             // Copy assets to out dir. Add your own globs as needed.
             new CopyWebpackPlugin([
                 { from: { glob: "fonts/**" } },
@@ -251,6 +245,18 @@ module.exports = env => {
             new nsWebpack.WatchStateLoggerPlugin(),
         ],
     };
+
+    // Copy the native app resources to the out dir
+    // only if doing a full build (tns run/build) and not previewing (tns preview)
+    if (!externals || externals.length === 0) {
+        config.plugins.push(new CopyWebpackPlugin([
+            {
+                from: `${appResourcesFullPath}/${appResourcesPlatformDir}`,
+                to: `${dist}/App_Resources/${appResourcesPlatformDir}`,
+                context: projectRoot
+            },
+        ]));
+    }
 
     if (report) {
         // Generate report files for bundles content
