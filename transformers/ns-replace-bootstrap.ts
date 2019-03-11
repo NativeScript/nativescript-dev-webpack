@@ -15,7 +15,7 @@ import {
 import { AngularCompilerPlugin } from '@ngtools/webpack';
 import { getResolvedEntryModule } from "../utils/transformers-utils";
 
-
+// TODO: check https://github.com/angular/angular-cli/commit/7347d881925130ce325009588b20d5b39ac73258#diff-6b9947d457bac2310a5d25e102697423R85
 export function nsReplaceBootstrap(getNgCompiler: () => AngularCompilerPlugin): ts.TransformerFactory<ts.SourceFile> {
     const shouldTransform = (fileName) => !fileName.endsWith('.ngfactory.ts') && !fileName.endsWith('.ngstyle.ts');
     const getTypeChecker = () => getNgCompiler().typeChecker;
@@ -74,15 +74,18 @@ export function nsReplaceBootstrap(getNgCompiler: () => AngularCompilerPlugin): 
             const firstNode = getFirstNode(sourceFile);
 
             // Add the transform operations.
-            const factoryClassName = entryModule.className + 'NgFactory';
-            const factoryModulePath = normalizedEntryModulePath + '.ngfactory';
+            // TODO: if (ivy)
+            const factoryClassName = entryModule.className; // + 'NgFactory';
+            const factoryModulePath = normalizedEntryModulePath; // + '.ngfactory';
 
 
             const newBootstrapPropAccessExpr = ts.getMutableClone(bootstrapPropAccessExpr);
             const newNsPlatformCallExpr = ts.getMutableClone(bootstrapPropAccessExpr.expression) as ts.CallExpression;
             newNsPlatformCallExpr.expression = ts.createPropertyAccess(idPlatformNativeScript, 'platformNativeScript');
             newBootstrapPropAccessExpr.expression = newNsPlatformCallExpr;
-            newBootstrapPropAccessExpr.name = ts.createIdentifier("bootstrapModuleFactory");
+            // TODO: if (ivy)
+            // newBootstrapPropAccessExpr.name = ts.createIdentifier("bootstrapModuleFactory");
+            newBootstrapPropAccessExpr.name = ts.createIdentifier("bootstrapModule");
 
             const newBootstrapCallExpr = ts.getMutableClone(bootstrapCallExpr);
             newBootstrapCallExpr.expression = newBootstrapPropAccessExpr;
