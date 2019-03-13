@@ -34,6 +34,38 @@ describe('@ngtools/webpack transformers', () => {
       expect(tags.oneLine`${result}`).toEqual(tags.oneLine`${output}`);
     });
 
+    it('should replace bootstrap and don`t use factories when Ivy is enabled', () => {
+      const input = tags.stripIndent`
+        import { platformNativeScriptDynamic } from "nativescript-angular/platform";
+        import { AppModule } from "./app/app.module";
+
+        platformNativeScriptDynamic().bootstrapModule(AppModule);
+      `;
+
+      const output = tags.stripIndent`
+        import * as __NgCli_bootstrap_1_1 from "nativescript-angular/platform-static";
+        import * as __NgCli_bootstrap_2_1 from "./app/app.module";
+
+        __NgCli_bootstrap_1_1.platformNativeScript().bootstrapModule(__NgCli_bootstrap_2_1.AppModule);
+      `;
+
+      const { program, compilerHost } = createTypescriptContext(input);
+      const ngCompiler: any = {
+        _compilerOptions: {
+          enableIvy: true
+        },
+        typeChecker: program.getTypeChecker(),
+        entryModule: {
+          path: '/project/src/app/app.module',
+          className: 'AppModule',
+        },
+      };
+      const transformer = nsReplaceBootstrap(() => ngCompiler);
+      const result = transformTypescript(undefined, [transformer], program, compilerHost);
+
+      expect(tags.oneLine`${result}`).toEqual(tags.oneLine`${output}`);
+    });
+
     it('should replace bootstrap when barrel files are used', () => {
       const input = tags.stripIndent`
         import { platformNativeScriptDynamic } from "nativescript-angular/platform";
