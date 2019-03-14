@@ -32,7 +32,7 @@
 
 
 <a name="0.20.0"></a>
-# [0.20.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.18.3...0.20.0) (2019-02-08)
+# [0.20.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.19.2...0.20.0) (2019-02-08)
 
 
 ### Bug Fixes
