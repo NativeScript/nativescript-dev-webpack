@@ -12,6 +12,7 @@ const NsVueTemplateCompiler = require("nativescript-vue-template-compiler");
 const nsWebpack = require("nativescript-dev-webpack");
 const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target");
 const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
+const hashSalt =  Date.now().toString();
 
 module.exports = env => {
     // Add your custom Activities, Services and other android app components here.
@@ -44,6 +45,7 @@ module.exports = env => {
         production, // --env.production
         report, // --env.report
         hmr, // --env.hmr
+        sourceMap, // --env.sourceMap
     } = env;
 
     const externals = nsWebpack.getConvertedExternals(env.externals);
@@ -81,6 +83,7 @@ module.exports = env => {
             libraryTarget: "commonjs2",
             filename: "[name].js",
             globalObject: "global",
+            hashSalt
         },
         resolve: {
             extensions: [".vue", ".ts", ".js", ".scss", ".css"],
@@ -111,7 +114,7 @@ module.exports = env => {
             "fs": "empty",
             "__dirname": false,
         },
-        devtool: "none",
+        devtool: sourceMap ? "inline-source-map" : "none",
         optimization: {
             runtimeChunk: "single",
             splitChunks: {

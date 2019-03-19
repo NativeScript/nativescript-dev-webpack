@@ -1,3 +1,20 @@
+<a name="0.20.3"></a>
+## [0.20.3](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.20.2...0.20.3) (2019-03-14)
+
+
+### Bug Fixes
+
+* initial compilation always generates same compilation hash ([#815](https://github.com/NativeScript/nativescript-dev-webpack/issues/815)) ([ba6d896](https://github.com/NativeScript/nativescript-dev-webpack/commit/ba6d896))
+* show message for stopping webpack only when it has been started ([#821](https://github.com/NativeScript/nativescript-dev-webpack/issues/821)) ([1bd18e5](https://github.com/NativeScript/nativescript-dev-webpack/commit/1bd18e5))
+* **HMR:** modulePath on Windows to apply changes in app styles at runtime ([#807](https://github.com/NativeScript/nativescript-dev-webpack/issues/807)) ([cc55d4f](https://github.com/NativeScript/nativescript-dev-webpack/commit/cc55d4f))
+
+
+### Features
+
+* **Vue:** option to enable sourcemaps ([#774](https://github.com/NativeScript/nativescript-dev-webpack/issues/774)) ([70cd58a](https://github.com/NativeScript/nativescript-dev-webpack/commit/70cd58a))
+
+
+
 <a name="0.20.1"></a>
 ## [0.20.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.20.0...0.20.1) (2019-02-18)
 
