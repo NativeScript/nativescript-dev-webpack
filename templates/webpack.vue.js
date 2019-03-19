@@ -1,4 +1,4 @@
-const { relative, resolve, sep } = require("path");
+const { join, relative, resolve, sep } = require("path");
 
 const webpack = require("webpack");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
