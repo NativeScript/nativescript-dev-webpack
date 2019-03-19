@@ -5,7 +5,7 @@ module.exports = function (source) {
     const { angular = false, loadCss = true, unitTesting, projectRoot, appFullPath, registerModules = /(root|page)\.(xml|css|js|ts|scss)$/ } = this.query;
 
     if (unitTesting) {
-        source = unitTestingConfigLoader({ appFullPath, projectRoot, angular, registerModules });
+        source = unitTestingConfigLoader({ appFullPath, projectRoot, angular, rootPagesRegExp: registerModules });
         this.callback(null, source);
         return;
     }
