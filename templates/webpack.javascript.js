@@ -142,7 +142,7 @@ module.exports = env => {
         module: {
             rules: [
                 {
-                    test: new RegExp(entryPath),
+                    test: new RegExp(join(appFullPath, entryPath)),
                     use: [
                         // Require all Android app components
                         platform === "android" && {
