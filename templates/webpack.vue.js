@@ -46,6 +46,7 @@ module.exports = env => {
         report, // --env.report
         hmr, // --env.hmr
         sourceMap, // --env.sourceMap
+        unitTesting, // --env.unitTesting
     } = env;
 
     const externals = nsWebpack.getConvertedExternals(env.externals);
@@ -167,6 +168,9 @@ module.exports = env => {
                             options: {
                                 registerPages: true, // applicable only for non-angular apps
                                 loadCss: !snapshot, // load the application css if in debug mode
+                                unitTesting,
+                                appFullPath,
+                                projectRoot,
                             },
                         },
                     ].filter(loader => Boolean(loader)),
