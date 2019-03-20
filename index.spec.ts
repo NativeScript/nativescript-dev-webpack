@@ -1,4 +1,5 @@
-import { getConvertedExternals } from './index';
+import { getConvertedExternals, getEntryPathRegExp } from './index';
+const path = require("path");
 
 describe('index', () => {
     describe('getConvertedExternals', () => {
@@ -49,6 +50,29 @@ describe('index', () => {
                     expect(result).toBe(false, `String ${testString} matches some of the regular expressions: ${regExpsExternals.join(', ')}`);
                 });
             });
+        });
+    });
+
+    describe('getEntryPathRegExp', () => {
+        const originalPathJoin = path.join;
+        const entryModule = "index.js";
+
+        afterEach(() => {
+            path.join = originalPathJoin;
+        });
+
+        it('returns RegExp that matches Windows', () => {
+            const appPath = "D:\\Work\\app1\\app";
+            path.join = path.win32.join;
+            const regExp = getEntryPathRegExp(appPath, entryModule);
+            expect(!!regExp.exec(`${appPath}\\${entryModule}`)).toBe(true);
+        });
+
+        it('returns RegExp that works with POSIX paths', () => {
+            const appPath = "/usr/local/lib/app1/app";
+            path.join = path.posix.join;
+            const regExp = getEntryPathRegExp(appPath, entryModule);
+            expect(!!regExp.exec(`${appPath}/${entryModule}`)).toBe(true);
         });
     });
 });

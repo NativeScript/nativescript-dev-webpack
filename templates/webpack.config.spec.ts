@@ -21,6 +21,7 @@ const nativeScriptDevWebpack = {
     getAppPath: () => 'app',
     getEntryModule: () => 'EntryModule',
     getResolver: () => null,
+    getEntryPathRegExp: () => null,
     getConvertedExternals: nsWebpackIndex.getConvertedExternals
 };
 
