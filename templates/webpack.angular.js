@@ -47,6 +47,7 @@ module.exports = env => {
         report, // --env.report
         sourceMap, // --env.sourceMap
         hmr, // --env.hmr,
+        unitTesting, // --env.unitTesting
     } = env;
 
     const externals = nsWebpack.getConvertedExternals(env.externals);
@@ -179,7 +180,7 @@ module.exports = env => {
         module: {
             rules: [
                 {
-                    test: new RegExp(entryPath),
+                    test: new RegExp(join(appFullPath, entryPath)),
                     use: [
                         // Require all Android app components
                         platform === "android" && {
@@ -192,6 +193,9 @@ module.exports = env => {
                             options: {
                                 angular: true,
                                 loadCss: !snapshot, // load the application css if in debug mode
+                                unitTesting,
+                                appFullPath,
+                                projectRoot,
                             }
                         },
                     ].filter(loader => !!loader)

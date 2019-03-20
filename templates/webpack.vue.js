@@ -1,4 +1,4 @@
-const { relative, resolve, sep } = require("path");
+const { join, relative, resolve, sep } = require("path");
 
 const webpack = require("webpack");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
@@ -46,6 +46,7 @@ module.exports = env => {
         report, // --env.report
         hmr, // --env.hmr
         sourceMap, // --env.sourceMap
+        unitTesting, // --env.unitTesting
     } = env;
 
     const externals = nsWebpack.getConvertedExternals(env.externals);
@@ -154,7 +155,7 @@ module.exports = env => {
         },
         module: {
             rules: [{
-                    test: new RegExp(entryPath + ".(js|ts)"),
+                    test: new RegExp(join(appFullPath, entryPath + ".(js|ts)")),
                     use: [
                         // Require all Android app components
                         platform === "android" && {
@@ -167,6 +168,9 @@ module.exports = env => {
                             options: {
                                 registerPages: true, // applicable only for non-angular apps
                                 loadCss: !snapshot, // load the application css if in debug mode
+                                unitTesting,
+                                appFullPath,
+                                projectRoot,
                             },
                         },
                     ].filter(loader => Boolean(loader)),
