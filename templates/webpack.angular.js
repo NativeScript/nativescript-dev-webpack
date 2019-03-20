@@ -180,7 +180,7 @@ module.exports = env => {
         module: {
             rules: [
                 {
-                    test: new RegExp(join(appFullPath, entryPath)),
+                    test: nsWebpack.getEntryPathRegExp(appFullPath, entryPath),
                     use: [
                         // Require all Android app components
                         platform === "android" && {
