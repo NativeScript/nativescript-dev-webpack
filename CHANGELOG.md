@@ -1,3 +1,24 @@
+<a name="0.21.0"></a>
+# [0.21.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.20.3...0.21.0) (2019-03-21)
+
+
+### Bug Fixes
+
+* Emit inspector_modules.js as a separate entry point for iOS ([00ecaa0](https://github.com/NativeScript/nativescript-dev-webpack/commit/00ecaa0))
+* execute bundle-config-loader only for the entry point of the application ([#829](https://github.com/NativeScript/nativescript-dev-webpack/issues/829)) ([36824b1](https://github.com/NativeScript/nativescript-dev-webpack/commit/36824b1))
+* fix "Cannot read property 'kill' of undefined" error ([#822](https://github.com/NativeScript/nativescript-dev-webpack/issues/822)) ([8d18853](https://github.com/NativeScript/nativescript-dev-webpack/commit/8d18853))
+* stop deleting chunks with compilation errors in order to avoid outdated app state when deleting files or throwing errors ([#836](https://github.com/NativeScript/nativescript-dev-webpack/issues/836)) ([69cb061](https://github.com/NativeScript/nativescript-dev-webpack/commit/69cb061))
+* **HMR:** modulePath on Windows to apply changes in app styles at runtime ([#807](https://github.com/NativeScript/nativescript-dev-webpack/issues/807)) ([c4b4fee](https://github.com/NativeScript/nativescript-dev-webpack/commit/c4b4fee))
+* **inspector_modules:** Switch to `single` runtime chunk ([6e780af](https://github.com/NativeScript/nativescript-dev-webpack/commit/6e780af))
+
+
+### Features
+
+* Implement unit testing with bundle ([#835](https://github.com/NativeScript/nativescript-dev-webpack/issues/835)) ([7944611](https://github.com/NativeScript/nativescript-dev-webpack/commit/7944611))
+* Support Angular Ivy modules with AOT ([#828](https://github.com/NativeScript/nativescript-dev-webpack/issues/828)) ([f476c56](https://github.com/NativeScript/nativescript-dev-webpack/commit/f476c56))
+
+
+
 <a name="0.20.3"></a>
 ## [0.20.3](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.20.2...0.20.3) (2019-03-14)
 
