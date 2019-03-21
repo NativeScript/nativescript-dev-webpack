@@ -15,14 +15,16 @@ import {
 import { AngularCompilerPlugin } from '@ngtools/webpack';
 import { getResolvedEntryModule } from "../utils/transformers-utils";
 
-
 export function nsReplaceBootstrap(getNgCompiler: () => AngularCompilerPlugin): ts.TransformerFactory<ts.SourceFile> {
     const shouldTransform = (fileName) => !fileName.endsWith('.ngfactory.ts') && !fileName.endsWith('.ngstyle.ts');
     const getTypeChecker = () => getNgCompiler().typeChecker;
 
     const standardTransform: StandardTransform = function (sourceFile: ts.SourceFile) {
         const ops: TransformOperation[] = [];
-        const entryModule = getResolvedEntryModule(getNgCompiler());
+        const ngCompiler = getNgCompiler();
+        // TODO: use something public when available
+        const enableIvy = (<any>ngCompiler)._compilerOptions && (<any>ngCompiler)._compilerOptions.enableIvy;
+        const entryModule = getResolvedEntryModule(ngCompiler);
 
         if (!shouldTransform(sourceFile.fileName) || !entryModule) {
             return ops;
@@ -73,16 +75,15 @@ export function nsReplaceBootstrap(getNgCompiler: () => AngularCompilerPlugin): 
 
             const firstNode = getFirstNode(sourceFile);
 
-            // Add the transform operations.
-            const factoryClassName = entryModule.className + 'NgFactory';
-            const factoryModulePath = normalizedEntryModulePath + '.ngfactory';
-
+            const factoryClassName = enableIvy ? entryModule.className : entryModule.className + 'NgFactory';
+            const factoryModulePath = enableIvy ? normalizedEntryModulePath : normalizedEntryModulePath + '.ngfactory';
 
             const newBootstrapPropAccessExpr = ts.getMutableClone(bootstrapPropAccessExpr);
             const newNsPlatformCallExpr = ts.getMutableClone(bootstrapPropAccessExpr.expression) as ts.CallExpression;
             newNsPlatformCallExpr.expression = ts.createPropertyAccess(idPlatformNativeScript, 'platformNativeScript');
             newBootstrapPropAccessExpr.expression = newNsPlatformCallExpr;
-            newBootstrapPropAccessExpr.name = ts.createIdentifier("bootstrapModuleFactory");
+            newBootstrapPropAccessExpr.name =
+                enableIvy ? ts.createIdentifier("bootstrapModule") : ts.createIdentifier("bootstrapModuleFactory");
 
             const newBootstrapCallExpr = ts.getMutableClone(bootstrapCallExpr);
             newBootstrapCallExpr.expression = newBootstrapPropAccessExpr;
