@@ -253,6 +253,21 @@ module.exports = env => {
         ],
     };
 
+    if (unitTesting) {
+        config.module.rules.push(
+            {
+                test: /-page\.js$/,
+                use: "nativescript-dev-webpack/script-hot-loader"
+            },
+            {
+                test: /\.(html|xml)$/,
+                use: "nativescript-dev-webpack/markup-hot-loader"
+            },
+
+            { test: /\.(html|xml)$/, use: "nativescript-dev-webpack/xml-namespace-loader"}
+        );
+    }
+
     // Copy the native app resources to the out dir
     // only if doing a full build (tns run/build) and not previewing (tns preview)
     if (!externals || externals.length === 0) {
