@@ -1,6 +1,4 @@
 import { join } from "path";
-import { writeFileSync, readFileSync } from "fs";
-const utils = require("../lib/utils");
 
 export enum messages {
     compilationComplete = "Webpack compilation complete.",
@@ -37,10 +35,6 @@ export class WatchStateLoggerPlugin {
                 .keys(compilation.assets)
                 .filter(assetKey => compilation.assets[assetKey].emitted);
 
-            if (compilation.errors.length > 0) {
-                WatchStateLoggerPlugin.rewriteHotUpdateChunk(compiler, compilation, emittedFiles);
-            }
-
             // provide fake paths to the {N} CLI - relative to the 'app' folder
             // in order to trigger the livesync process
             const emittedFilesFakePaths = emittedFiles
@@ -50,63 +44,5 @@ export class WatchStateLoggerPlugin {
             // Send emitted files so they can be LiveSynced if need be
             process.send && process.send({ emittedFiles: emittedFilesFakePaths }, error => null);
         });
-    }
-
-    /**
-     * Rewrite an errored chunk to make the hot module replace successful.
-     * @param compiler the webpack compiler
-     * @param emittedFiles the emitted files from the current compilation
-     */
-    private static rewriteHotUpdateChunk(compiler, compilation, emittedFiles: string[]) {
-        const chunk = this.findHotUpdateChunk(emittedFiles);
-        if (!chunk) {
-            return;
-        }
-
-        const { name } = utils.parseHotUpdateChunkName(chunk);
-        if (!name) {
-            return;
-        }
-
-        const absolutePath = join(compiler.outputPath, chunk);
-
-        const newContent = this.getWebpackHotUpdateReplacementContent(compilation.errors, absolutePath, name);
-        writeFileSync(absolutePath, newContent);
-    }
-
-    private static findHotUpdateChunk(emittedFiles: string[]) {
-        return emittedFiles.find(file => file.endsWith("hot-update.js"));
-    }
-
-    /**
-     * Gets only the modules object after 'webpackHotUpdate("bundle",' in the chunk
-     */
-    private static getModulesObjectFromChunk(chunkPath) {
-        let content = readFileSync(chunkPath, "utf8")
-        const startIndex = content.indexOf(",") + 1;
-        let endIndex = content.length - 1;
-        if(content.endsWith(';')) {
-            endIndex--;
-        }
-        return content.substring(startIndex, endIndex);
-    }
-
-    /**
-     * Gets the webpackHotUpdate call with updated modules not to include the ones with errors
-     */
-    private static getWebpackHotUpdateReplacementContent(compilationErrors, filePath, moduleName) {
-        const errorModuleIds = compilationErrors.filter(x => x.module).map(x => x.module.id);
-        if (!errorModuleIds || errorModuleIds.length == 0) {
-            // could not determine error modiles so discard everything
-            return `webpackHotUpdate('${moduleName}', {});`;
-        }
-        const updatedModules = this.getModulesObjectFromChunk(filePath);
-
-        // we need to filter the modules with a function in the file as it is a relaxed JSON not valid to be parsed and manipulated
-        return `const filter = function(updatedModules, modules) {
-            modules.forEach(moduleId => delete updatedModules[moduleId]);
-            return updatedModules;
-        }
-        webpackHotUpdate('${moduleName}', filter(${updatedModules}, ${JSON.stringify(errorModuleIds)}));`;
     }
 }

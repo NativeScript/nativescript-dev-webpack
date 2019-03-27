@@ -1,4 +1,4 @@
-const { relative, resolve, sep } = require("path");
+const { join, relative, resolve, sep } = require("path");
 
 const webpack = require("webpack");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
@@ -12,6 +12,7 @@ const NsVueTemplateCompiler = require("nativescript-vue-template-compiler");
 const nsWebpack = require("nativescript-dev-webpack");
 const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target");
 const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
+const hashSalt =  Date.now().toString();
 
 module.exports = env => {
     // Add your custom Activities, Services and other android app components here.
@@ -44,6 +45,8 @@ module.exports = env => {
         production, // --env.production
         report, // --env.report
         hmr, // --env.hmr
+        sourceMap, // --env.sourceMap
+        unitTesting, // --env.unitTesting
     } = env;
 
     const externals = nsWebpack.getConvertedExternals(env.externals);
@@ -81,6 +84,7 @@ module.exports = env => {
             libraryTarget: "commonjs2",
             filename: "[name].js",
             globalObject: "global",
+            hashSalt
         },
         resolve: {
             extensions: [".vue", ".ts", ".js", ".scss", ".css"],
@@ -111,7 +115,7 @@ module.exports = env => {
             "fs": "empty",
             "__dirname": false,
         },
-        devtool: "none",
+        devtool: sourceMap ? "inline-source-map" : "none",
         optimization: {
             runtimeChunk: "single",
             splitChunks: {
@@ -151,7 +155,7 @@ module.exports = env => {
         },
         module: {
             rules: [{
-                    test: new RegExp(entryPath + ".(js|ts)"),
+                    test: nsWebpack.getEntryPathRegExp(appFullPath, entryPath + ".(js|ts)"),
                     use: [
                         // Require all Android app components
                         platform === "android" && {
@@ -164,6 +168,9 @@ module.exports = env => {
                             options: {
                                 registerPages: true, // applicable only for non-angular apps
                                 loadCss: !snapshot, // load the application css if in debug mode
+                                unitTesting,
+                                appFullPath,
+                                projectRoot,
                             },
                         },
                     ].filter(loader => Boolean(loader)),
@@ -217,12 +224,6 @@ module.exports = env => {
             }),
             // Remove all files from the out dir.
             new CleanWebpackPlugin([`${dist}/**/*`]),
-            // Copy native app resources to out dir.
-            new CopyWebpackPlugin([{
-                from: `${appResourcesFullPath}/${appResourcesPlatformDir}`,
-                to: `${dist}/App_Resources/${appResourcesPlatformDir}`,
-                context: projectRoot,
-            }]),
             // Copy assets to out dir. Add your own globs as needed.
             new CopyWebpackPlugin([
                 { from: { glob: "fonts/**" } },
@@ -251,6 +252,33 @@ module.exports = env => {
             new nsWebpack.WatchStateLoggerPlugin(),
         ],
     };
+
+    if (unitTesting) {
+        config.module.rules.push(
+            {
+                test: /-page\.js$/,
+                use: "nativescript-dev-webpack/script-hot-loader"
+            },
+            {
+                test: /\.(html|xml)$/,
+                use: "nativescript-dev-webpack/markup-hot-loader"
+            },
+
+            { test: /\.(html|xml)$/, use: "nativescript-dev-webpack/xml-namespace-loader"}
+        );
+    }
+
+    // Copy the native app resources to the out dir
+    // only if doing a full build (tns run/build) and not previewing (tns preview)
+    if (!externals || externals.length === 0) {
+        config.plugins.push(new CopyWebpackPlugin([
+            {
+                from: `${appResourcesFullPath}/${appResourcesPlatformDir}`,
+                to: `${dist}/App_Resources/${appResourcesPlatformDir}`,
+                context: projectRoot
+            },
+        ]));
+    }
 
     if (report) {
         // Generate report files for bundles content

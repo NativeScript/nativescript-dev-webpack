@@ -53,6 +53,12 @@ exports.getAppPath = (platform, projectDir) => {
     }
 };
 
+exports.getEntryPathRegExp = (appFullPath, entryModule) => {
+    const entryModuleFullPath = path.join(appFullPath, entryModule);
+    // Windows paths contain `\`, so we need to convert each of the `\` to `\\`, so it will be correct inside RegExp
+    const escapedPath = entryModuleFullPath.replace(/\\/g, "\\\\");
+    return new RegExp(escapedPath);
+}
 /**
  * Converts an array of strings externals to an array of regular expressions.
  * Input is an array of string, which we need to convert to regular expressions, so all imports for this module will be treated as externals.

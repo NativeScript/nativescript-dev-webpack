@@ -149,34 +149,99 @@ Thank you for your contribution!
 
 ## Publishing new versions
 
-1. Run `npm install` to install the dependencies and prepare the package for publishing.
-```bash
-npm install
+
+## <a name="release"></a> Releasing new versions
+Instructions how to release a new version for **NativeScript Core Team Members**.
+
+![](./release-contribution-guide-schema-webpack.png?raw=true)
+
+1. Checkout release branch
+```
+git checkout release && git pull
+```
+#### If we prepare major or minor release, merge master in release branch else **skip this step**.
+```
+git merge --ff-only origin/master
+```
+*** Note: If there are commits in release branch which are not merged in master branch '-ff-merge' command will fail. 
+In this case the commits should be merge firstly from release in master branch as explained in section 'Merge changes from release into master' and then repeat step 1.
+
+2. Execute `npm i` to install dependencies:
+```
+npm i
+```
+3. Execute [`npm version`](https://docs.npmjs.com/cli/version) to bump the version:
+```
+npm --no-git-tag-version version [patch|minor|major] -m "release: cut the %s release"
+```
+or
+```
+npm --no-git-tag-version version [version] --allow-same-version -m "release: cut the %s release"
+
+```
+7. Create release-branch with change log
+```
+git checkout -b release-[release-version]
 ```
 
-2. Add the following to your `.npmrc`.
+7. Add changes
 ```
-tag-version-prefix=""
-message="release: cut the %s release"
+git add changed-files
+git commit -m "release: cut the %s release"
+git push
+```
+8. Create git tag
+```
+git tag release-version
+git push --tags
+```
+9. Create a pull request from git in web or try to use script below. Be careful to base your branch on the correct "release" branch
+```
+curl -d '{"title": "release: cut the [release-version] release","body": "docs: update changelog","head": "${BRANCH}","base": "release"}' -X POST https://api.github.com/repos/NativeScript/nativescript-dev-webpack/pulls -H "Authorization: token ${GIT_TOKEN}"
+```
+10. Merge PR into release branch.
+
+11. If all checks has passed publish package. Usually the night builds will be triggered and the package will be ready to be released on the next day. 
+
+## Merge changes from release into master
+
+![](./merge-guidance-schema.png)
+
+### Here are steps described in the diagram above.
+
+1. Make sure you are in release branch:
+```
+git checkout release
+git pull
+```
+2. Create PR to merge changes back in master and preserve history:
+```
+export MERGE_BRANCH='merge-release-in-master'
+git checkout -b ${MERGE_BRANCH}
+git push --set-upstream origin ${MERGE_BRANCH}
+git merge origin/master
+```
+3. Resolve conflicts. Choose to keep the version of master branch. If it is needed to revert versions of modules, see at the bottom.
+
+4. Add conflicts:
+```
+git add resolved files
+```
+5. Commit changes with default merge message:
+```
+git commit
+git push
 ```
 
-3. Create new branch for the release:
+6. Create pull request. Replace replace env ${MERGE_BRANCH} with its value
 ```
-git checkout -b username/release-version
-```
-
-4. Run `npm version` to bump the version in the `package.json`, tag the release and update the CHANGELOG.md:
-```
-npm version [patch|minor|major]
+curl -d '{"title": "chore: merge release in master","body": "chore: merge release in master","head": "merge-release-in-master","base": "master"}' -X POST https://api.github.com/repos/NativeScript/NativeScript/pulls -H "Authorization: token ${GIT_TOKEN}"
 ```
 
-5. Push all changes to your branch and create a PR.
-```bash
-git push --set-upstream origin username/release-version --tags
+**If needed, revert version of modules and platform declarations to take the one from master:**
 ```
-
-6. Publish the package to npm after the PR is merged.
-```bash
-npm publish
+git checkout origin/master tns-platform-declarations/package.json tns-core-modules/package.json
+git commit --amend
+git push --force-with-lease
 ```
-
+This will require to repeat steps from 1 to 4, since we need to keep the branches with the same history
