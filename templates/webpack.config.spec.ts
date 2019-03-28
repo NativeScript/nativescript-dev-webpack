@@ -22,8 +22,7 @@ const nativeScriptDevWebpack = {
     getEntryModule: () => 'EntryModule',
     getResolver: () => null,
     getEntryPathRegExp: () => null,
-    getConvertedExternals: nsWebpackIndex.getConvertedExternals,
-    getAngularCompilerPlugin: () => AngularCompilerStub
+    getConvertedExternals: nsWebpackIndex.getConvertedExternals
 };
 
 const emptyObject = {};
@@ -37,6 +36,7 @@ const webpackConfigAngular = proxyquire('./webpack.angular', {
     'nativescript-dev-webpack/transformers/ns-replace-lazy-loader': { nsReplaceLazyLoader: () => { return FakeLazyTransformerFlag } },
     'nativescript-dev-webpack/transformers/ns-support-hmr-ng': { nsSupportHmrNg: () => { return FakeHmrTransformerFlag } },
     'nativescript-dev-webpack/utils/ast-utils': { getMainModulePath: () => { return "fakePath"; } },
+    'nativescript-dev-webpack/plugins/NativeScriptAngularCompilerPlugin': { getAngularCompilerPlugin: () => { return AngularCompilerStub; } },
     '@ngtools/webpack': {
         AngularCompilerPlugin: AngularCompilerStub
     }
