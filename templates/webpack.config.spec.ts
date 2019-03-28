@@ -22,7 +22,8 @@ const nativeScriptDevWebpack = {
     getEntryModule: () => 'EntryModule',
     getResolver: () => null,
     getEntryPathRegExp: () => null,
-    getConvertedExternals: nsWebpackIndex.getConvertedExternals
+    getConvertedExternals: nsWebpackIndex.getConvertedExternals,
+    getAngularCompilerPlugin: () => AngularCompilerStub
 };
 
 const emptyObject = {};
