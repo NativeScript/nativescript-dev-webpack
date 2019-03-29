@@ -2,7 +2,7 @@ const { join, relative } = require("path");
 
 module.exports = function ({ appFullPath, projectRoot, angular, rootPagesRegExp }) {
     // TODO: Consider to use the files property from karma.conf.js
-    const testFilesRegExp = /tests\/.*\.js/;
+    const testFilesRegExp = /tests\/.*\.(ts|js)/;
     const runnerFullPath = join(projectRoot, "node_modules", "nativescript-unit-test-runner");
     const runnerRelativePath = relative(appFullPath, runnerFullPath);
     let source = `
