@@ -25,14 +25,21 @@ exports.getAotEntryModule = function (appDirectory) {
     return aotEntry;
 }
 
-exports.getEntryModule = function (appDirectory) {
+exports.getEntryModule = function (appDirectory, platform) {
     verifyEntryModuleDirectory(appDirectory);
 
     const entry = getPackageJsonEntry(appDirectory);
 
     const tsEntryPath = path.resolve(appDirectory, `${entry}.ts`);
     const jsEntryPath = path.resolve(appDirectory, `${entry}.js`);
-    if (!existsSync(tsEntryPath) && !existsSync(jsEntryPath)) {
+    let entryExists = existsSync(tsEntryPath) || existsSync(jsEntryPath);
+    if (!entryExists && platform) {
+        const platformTsEntryPath = path.resolve(appDirectory, `${entry}.${platform}.ts`);
+        const platformJsEntryPath = path.resolve(appDirectory, `${entry}.${platform}.js`);
+        entryExists = existsSync(platformTsEntryPath) || existsSync(platformJsEntryPath);
+    }
+
+    if (!entryExists) {
         throw new Error(`The entry module ${entry} specified in ` +
             `${appDirectory}/package.json doesn't exist!`)
     }

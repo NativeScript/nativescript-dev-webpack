@@ -12,8 +12,8 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
-const { AngularCompilerPlugin } = require("@ngtools/webpack");
-const hashSalt =  Date.now().toString();
+const { getAngularCompilerPlugin } = require("nativescript-dev-webpack/plugins/NativeScriptAngularCompilerPlugin");
+const hashSalt = Date.now().toString();
 
 module.exports = env => {
     // Add your custom Activities, Services and other Android app components here.
@@ -27,6 +27,7 @@ module.exports = env => {
         throw new Error("You need to provide a target platform!");
     }
 
+    const AngularCompilerPlugin = getAngularCompilerPlugin(platform);
     const projectRoot = __dirname;
 
     // Default destination inside platforms/<platform>/...
@@ -54,7 +55,7 @@ module.exports = env => {
     const appFullPath = resolve(projectRoot, appPath);
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
     const tsConfigName = "tsconfig.tns.json";
-    const entryModule = `${nsWebpack.getEntryModule(appFullPath)}.ts`;
+    const entryModule = `${nsWebpack.getEntryModule(appFullPath, platform)}.ts`;
     const entryPath = `.${sep}${entryModule}`;
     const entries = { bundle: entryPath };
     if (platform === "ios") {
@@ -261,10 +262,10 @@ module.exports = env => {
                 // configures the WebPack runtime to be generated inside the snapshot
                 // module and no `runtime.js` module exist.
                 (snapshot ? [] : ["./runtime"])
-                .concat([
-                    "./vendor",
-                    "./bundle",
-              ])
+                    .concat([
+                        "./vendor",
+                        "./bundle",
+                    ])
             ),
             // For instructions on how to set up workers with webpack
             // check out https://github.com/nativescript/worker-loader
