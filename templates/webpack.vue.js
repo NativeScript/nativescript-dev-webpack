@@ -12,7 +12,7 @@ const NsVueTemplateCompiler = require("nativescript-vue-template-compiler");
 const nsWebpack = require("nativescript-dev-webpack");
 const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target");
 const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
-const hashSalt =  Date.now().toString();
+const hashSalt = Date.now().toString();
 
 module.exports = env => {
     // Add your custom Activities, Services and other android app components here.
@@ -155,62 +155,62 @@ module.exports = env => {
         },
         module: {
             rules: [{
-                    test: nsWebpack.getEntryPathRegExp(appFullPath, entryPath + ".(js|ts)"),
-                    use: [
-                        // Require all Android app components
-                        platform === "android" && {
-                            loader: "nativescript-dev-webpack/android-app-components-loader",
-                            options: { modules: appComponents },
-                        },
+                test: nsWebpack.getEntryPathRegExp(appFullPath, entryPath + ".(js|ts)"),
+                use: [
+                    // Require all Android app components
+                    platform === "android" && {
+                        loader: "nativescript-dev-webpack/android-app-components-loader",
+                        options: { modules: appComponents },
+                    },
 
-                        {
-                            loader: "nativescript-dev-webpack/bundle-config-loader",
-                            options: {
-                                registerPages: true, // applicable only for non-angular apps
-                                loadCss: !snapshot, // load the application css if in debug mode
-                                unitTesting,
-                                appFullPath,
-                                projectRoot,
-                            },
+                    {
+                        loader: "nativescript-dev-webpack/bundle-config-loader",
+                        options: {
+                            registerPages: true, // applicable only for non-angular apps
+                            loadCss: !snapshot, // load the application css if in debug mode
+                            unitTesting,
+                            appFullPath,
+                            projectRoot,
                         },
-                    ].filter(loader => Boolean(loader)),
-                },
-                {
-                    test: /\.css$/,
-                    use: [
-                        'nativescript-dev-webpack/style-hot-loader',
-                        'nativescript-dev-webpack/apply-css-loader.js',
-                        { loader: "css-loader", options: { minimize: false, url: false } },
-                    ],
-                },
-                {
-                    test: /\.scss$/,
-                    use: [
-                        'nativescript-dev-webpack/style-hot-loader',
-                        'nativescript-dev-webpack/apply-css-loader.js',
-                        { loader: "css-loader", options: { minimize: false, url: false } },
-                        "sass-loader",
-                    ],
-                },
-                {
-                    test: /\.js$/,
-                    loader: 'babel-loader',
-                },
-                {
-                    test: /\.ts$/,
-                    loader: 'ts-loader',
-                    options: {
-                        appendTsSuffixTo: [/\.vue$/],
-                        allowTsInNodeModules: true,
                     },
+                ].filter(loader => Boolean(loader)),
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    'nativescript-dev-webpack/style-hot-loader',
+                    'nativescript-dev-webpack/apply-css-loader.js',
+                    { loader: "css-loader", options: { url: false } },
+                ],
+            },
+            {
+                test: /\.scss$/,
+                use: [
+                    'nativescript-dev-webpack/style-hot-loader',
+                    'nativescript-dev-webpack/apply-css-loader.js',
+                    { loader: "css-loader", options: { url: false } },
+                    "sass-loader",
+                ],
+            },
+            {
+                test: /\.js$/,
+                loader: 'babel-loader',
+            },
+            {
+                test: /\.ts$/,
+                loader: 'ts-loader',
+                options: {
+                    appendTsSuffixTo: [/\.vue$/],
+                    allowTsInNodeModules: true,
                 },
-                {
-                    test: /\.vue$/,
-                    loader: "vue-loader",
-                    options: {
-                        compiler: NsVueTemplateCompiler,
-                    },
+            },
+            {
+                test: /\.vue$/,
+                loader: "vue-loader",
+                options: {
+                    compiler: NsVueTemplateCompiler,
                 },
+            },
             ],
         },
         plugins: [
@@ -236,10 +236,10 @@ module.exports = env => {
                 // configures the WebPack runtime to be generated inside the snapshot
                 // module and no `runtime.js` module exist.
                 (snapshot ? [] : ["./runtime"])
-                .concat([
-                    "./vendor",
-                    "./bundle",
-              ])
+                    .concat([
+                        "./vendor",
+                        "./bundle",
+                    ])
             ),
             // For instructions on how to set up workers with webpack
             // check out https://github.com/nativescript/worker-loader
@@ -264,7 +264,7 @@ module.exports = env => {
                 use: "nativescript-dev-webpack/markup-hot-loader"
             },
 
-            { test: /\.(html|xml)$/, use: "nativescript-dev-webpack/xml-namespace-loader"}
+            { test: /\.(html|xml)$/, use: "nativescript-dev-webpack/xml-namespace-loader" }
         );
     }
 
