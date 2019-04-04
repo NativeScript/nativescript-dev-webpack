@@ -1,4 +1,4 @@
-# NativeScript Webpack
+# TEST
 
 This repository contains the code for the nativescript-dev-webpack plugin which helps in webpacking [NativeScript](https://www.nativescript.org/) apps.
 
