@@ -125,6 +125,7 @@ module.exports = env => {
                 new UglifyJsPlugin({
                     parallel: true,
                     cache: true,
+                    sourceMap: !!sourceMap,
                     uglifyOptions: {
                         output: {
                             comments: false,
