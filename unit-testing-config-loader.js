@@ -1,7 +1,8 @@
 const { join, relative } = require("path");
 
 module.exports = function ({ appFullPath, projectRoot, angular, rootPagesRegExp }) {
-    const testFilesRegExp = getKarmaConfig().files;
+    // TODO: Consider to use the files property from karma.conf.js
+    const testFilesRegExp = /tests\/.*\.(ts|js)/;
     const runnerFullPath = join(projectRoot, "node_modules", "nativescript-unit-test-runner");
     const runnerRelativePath = relative(appFullPath, runnerFullPath);
     let source = `
@@ -29,16 +30,4 @@ module.exports = function ({ appFullPath, projectRoot, angular, rootPagesRegExp 
     `;
 
     return source;
-}
-
-function getKarmaConfig() {
-    let result = { files: /tests\/.*\.(js|ts)/ };
-    const pathToKarmaConfig = join(__dirname, "../../karma.conf.js");
-    if (existsSync(pathToKarmaConfig)) {
-        try {
-            require(pathToKarmaConfig)({ set: (options) => result = options });
-        } catch (err) { }
-    }
-
-    return result;
 }
