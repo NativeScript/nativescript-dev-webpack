@@ -1,10 +1,11 @@
 const { join, relative } = require("path");
+const { convertSlashesInPath } = require("./projectHelpers");
 
 module.exports = function ({ appFullPath, projectRoot, angular, rootPagesRegExp }) {
     // TODO: Consider to use the files property from karma.conf.js
     const testFilesRegExp = /tests\/.*\.(ts|js)/;
     const runnerFullPath = join(projectRoot, "node_modules", "nativescript-unit-test-runner");
-    const runnerRelativePath = relative(appFullPath, runnerFullPath);
+    const runnerRelativePath = convertSlashesInPath(relative(appFullPath, runnerFullPath));
     let source = `
         require("tns-core-modules/bundle-entry-points");
         const runnerContext = require.context("${runnerRelativePath}", true, ${rootPagesRegExp});
@@ -24,7 +25,7 @@ module.exports = function ({ appFullPath, projectRoot, angular, rootPagesRegExp 
         `;
     }
 
-    const runnerEntryPointPath = join(runnerRelativePath, "bundle-app.js");
+    const runnerEntryPointPath = convertSlashesInPath(join(runnerRelativePath, "bundle-app.js"));
     source += `
         require("${runnerEntryPointPath}");
     `;
