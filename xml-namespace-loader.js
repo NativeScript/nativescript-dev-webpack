@@ -2,7 +2,7 @@ const { parse, relative, join, basename, extname } = require("path");
 const { promisify } = require('util');
 const { convertSlashesInPath } = require("./projectHelpers");
 
-module.exports = function (source) {
+module.exports = function (source, map) {
     this.value = source;
     const { ignore } = this.query;
     const callback = this.async();
@@ -41,14 +41,14 @@ module.exports = function (source) {
                             this.addDependency(xml);
                             namespaces.push({ name: `${moduleName}.xml`, path: xml });
                         })
-                        .catch((err) => {}),
+                        .catch((err) => { }),
 
                     resolvePromise(this.context, `${noExtFilename}.css`)
                         .then((css) => {
                             this.addDependency(css);
                             namespaces.push({ name: `${moduleName}.css`, path: css });
                         })
-                        .catch((err) => {})
+                        .catch((err) => { })
                 ]);
             };
 
@@ -75,7 +75,7 @@ module.exports = function (source) {
                                         namespaces.push({ name: `${moduleName}.css`, path: css });
                                         this.addDependency(css);
                                     })
-                                    .catch(() => {})
+                                    .catch(() => { })
                             ]);
 
                         });
@@ -102,7 +102,7 @@ module.exports = function (source) {
 
         const wrapped = `${moduleRegisters}\nmodule.exports = ${json}`;
 
-        callback(null, wrapped);
+        callback(null, wrapped, map);
     }).catch((err) => {
         callback(err);
     })

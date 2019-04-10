@@ -1,6 +1,6 @@
 const unitTestingConfigLoader = require("./unit-testing-config-loader");
 
-module.exports = function (source) {
+module.exports = function (source, map) {
     this.cacheable();
     const { angular = false, loadCss = true, unitTesting, projectRoot, appFullPath, registerModules = /(root|page)\.(xml|css|js|ts|scss)$/ } = this.query;
 
@@ -66,5 +66,5 @@ module.exports = function (source) {
         `;
     }
 
-    this.callback(null, source);
+    this.callback(null, source, map);
 };
