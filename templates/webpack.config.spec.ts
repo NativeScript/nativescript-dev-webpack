@@ -17,7 +17,7 @@ class AngularCompilerStub {
 };
 
 let uglifyJsOptions: any;
-class UglifyJsStub {
+class TerserJsStub {
     constructor(options) {
         uglifyJsOptions = options;
     }
@@ -50,19 +50,19 @@ const webpackConfigAngular = proxyquire('./webpack.angular', {
     '@ngtools/webpack': {
         AngularCompilerPlugin: AngularCompilerStub
     },
-    'uglifyjs-webpack-plugin': UglifyJsStub
+    'terser-webpack-plugin': TerserJsStub
 });
 
 const webpackConfigTypeScript = proxyquire('./webpack.typescript', {
     'nativescript-dev-webpack': nativeScriptDevWebpack,
     'nativescript-dev-webpack/nativescript-target': emptyObject,
-    'uglifyjs-webpack-plugin': UglifyJsStub
+    'terser-webpack-plugin': TerserJsStub
 });
 
 const webpackConfigJavaScript = proxyquire('./webpack.javascript', {
     'nativescript-dev-webpack': nativeScriptDevWebpack,
     'nativescript-dev-webpack/nativescript-target': emptyObject,
-    'uglifyjs-webpack-plugin': UglifyJsStub
+    'terser-webpack-plugin': TerserJsStub
 });
 
 const webpackConfigVue = proxyquire('./webpack.vue', {
@@ -70,7 +70,7 @@ const webpackConfigVue = proxyquire('./webpack.vue', {
     'nativescript-dev-webpack/nativescript-target': emptyObject,
     'vue-loader/lib/plugin': EmptyClass,
     'nativescript-vue-template-compiler': emptyObject,
-    'uglifyjs-webpack-plugin': UglifyJsStub
+    'terser-webpack-plugin': TerserJsStub
 });
 
 describe('webpack.config.js', () => {

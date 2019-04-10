@@ -28,7 +28,7 @@ function addProjectDeps(packageJson, force = false) {
     };
 
     const depsToAdd = getRequiredDeps(packageJson);
-    Object.keys(depsToAdd).forEach(function(name) {
+    Object.keys(depsToAdd).forEach(function (name) {
         const version = depsToAdd[name];
         Object.assign(postinstallOptions,
             addDependency(postinstallOptions.deps, name, version, force));
@@ -54,7 +54,7 @@ function removeObsoleteDeps(packageJson) {
         "raw-loader",
         "css-loader",
         "nativescript-worker-loader",
-        "uglifyjs-webpack-plugin",
+        "terser-webpack-plugin",
         "@angular-devkit/core",
         "resolve-url-loader",
         "sass-loader",
@@ -79,12 +79,12 @@ function addDependency(deps, name, version, force) {
 }
 
 function getRequiredDeps(packageJson) {
-    if (!isAngular({packageJson})) {
+    if (!isAngular({ packageJson })) {
         return false;
     }
 
     const deps = {
-       "@angular/compiler-cli": "~7.2.0",
+        "@angular/compiler-cli": "~7.2.0",
     };
 
     if (!dependsOn(packageJson, "@angular-devkit/build-angular")) {

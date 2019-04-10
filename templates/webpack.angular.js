@@ -11,7 +11,7 @@ const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 const { getAngularCompilerPlugin } = require("nativescript-dev-webpack/plugins/NativeScriptAngularCompilerPlugin");
 const hashSalt = Date.now().toString();
 
@@ -165,11 +165,11 @@ module.exports = env => {
             },
             minimize: !!uglify,
             minimizer: [
-                new UglifyJsPlugin({
+                new TerserPlugin({
                     parallel: true,
                     cache: true,
                     sourceMap: !!sourceMap || !!hiddenSourceMap,
-                    uglifyOptions: {
+                    terserOptions: {
                         output: {
                             comments: false,
                         },
