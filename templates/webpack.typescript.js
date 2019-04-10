@@ -41,6 +41,7 @@ module.exports = env => {
         uglify, // --env.uglify
         report, // --env.report
         sourceMap, // --env.sourceMap
+        hiddenSourceMap, // --env.hiddenSourceMap
         hmr, // --env.hmr,
         unitTesting, // --env.unitTesting
     } = env;
@@ -55,6 +56,8 @@ module.exports = env => {
     if (platform === "ios") {
         entries["tns_modules/tns-core-modules/inspector_modules"] = "inspector_modules.js";
     };
+
+    let sourceMapFilename = nsWebpack.getSourceMapFilename(hiddenSourceMap, __dirname, dist);
 
     const config = {
         mode: uglify ? "production" : "development",
@@ -72,6 +75,7 @@ module.exports = env => {
         output: {
             pathinfo: false,
             path: dist,
+            sourceMapFilename,
             libraryTarget: "commonjs2",
             filename: "[name].js",
             globalObject: "global",
@@ -104,7 +108,7 @@ module.exports = env => {
             "fs": "empty",
             "__dirname": false,
         },
-        devtool: sourceMap ? "inline-source-map" : "none",
+        devtool: hiddenSourceMap ? "hidden-source-map" : (sourceMap ? "inline-source-map" : "none"),
         optimization: {
             runtimeChunk: "single",
             splitChunks: {
@@ -127,7 +131,7 @@ module.exports = env => {
                 new UglifyJsPlugin({
                     parallel: true,
                     cache: true,
-                    sourceMap: !!sourceMap,
+                    sourceMap: !!sourceMap || !!hiddenSourceMap,
                     uglifyOptions: {
                         output: {
                             comments: false,

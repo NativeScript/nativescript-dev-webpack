@@ -66,6 +66,19 @@ exports.getEntryPathRegExp = (appFullPath, entryModule) => {
     const escapedPath = entryModuleFullPath.replace(/\\/g, "\\\\");
     return new RegExp(escapedPath);
 }
+
+exports.getSourceMapFilename = (hiddenSourceMap, appFolderPath, outputPath) => {
+    const appFolderRelativePath = path.join(path.relative(outputPath, appFolderPath));
+    let sourceMapFilename = "[file].map";
+    if (typeof hiddenSourceMap === "string") {
+        sourceMapFilename = path.join(appFolderRelativePath, hiddenSourceMap, "[file].map");
+    } else if (typeof hiddenSourceMap === "boolean" && !!hiddenSourceMap) {
+        sourceMapFilename = path.join(appFolderRelativePath, "sourceMap", "[file].map");
+    }
+
+    return sourceMapFilename;
+}
+
 /**
  * Converts an array of strings externals to an array of regular expressions.
  * Input is an array of string, which we need to convert to regular expressions, so all imports for this module will be treated as externals.

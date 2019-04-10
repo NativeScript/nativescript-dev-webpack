@@ -46,6 +46,7 @@ module.exports = env => {
         report, // --env.report
         hmr, // --env.hmr
         sourceMap, // --env.sourceMap
+        hiddenSourceMap, // --env.hiddenSourceMap
         unitTesting, // --env.unitTesting
     } = env;
 
@@ -64,6 +65,8 @@ module.exports = env => {
     };
     console.log(`Bundling application for entryPath ${entryPath}...`);
 
+    let sourceMapFilename = nsWebpack.getSourceMapFilename(hiddenSourceMap, __dirname, dist);
+
     const config = {
         mode: mode,
         context: appFullPath,
@@ -81,6 +84,7 @@ module.exports = env => {
         output: {
             pathinfo: false,
             path: dist,
+            sourceMapFilename,
             libraryTarget: "commonjs2",
             filename: "[name].js",
             globalObject: "global",
@@ -115,7 +119,7 @@ module.exports = env => {
             "fs": "empty",
             "__dirname": false,
         },
-        devtool: sourceMap ? "inline-source-map" : "none",
+        devtool: hiddenSourceMap ? "hidden-source-map" : (sourceMap ? "inline-source-map" : "none"),
         optimization: {
             runtimeChunk: "single",
             splitChunks: {
@@ -138,7 +142,7 @@ module.exports = env => {
                 new UglifyJsPlugin({
                     parallel: true,
                     cache: true,
-                    sourceMap: !!sourceMap,
+                    sourceMap: !!sourceMap || !!hiddenSourceMap,
                     uglifyOptions: {
                         output: {
                             comments: false,
