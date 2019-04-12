@@ -88,7 +88,7 @@ module.exports = env => {
     const ngCompilerPlugin = new AngularCompilerPlugin({
         hostReplacementPaths: nsWebpack.getResolver([platform, "tns"]),
         platformTransformers: ngCompilerTransformers.map(t => t(() => ngCompilerPlugin, resolve(appFullPath, entryModule))),
-        mainPath: resolve(appPath, entryModule),
+        mainPath: join(appFullPath, entryModule),
         tsConfigPath: join(__dirname, tsConfigName),
         skipCodeGeneration: !aot,
         sourceMap: !!sourceMap,
