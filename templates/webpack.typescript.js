@@ -206,6 +206,9 @@ module.exports = env => {
                         options: {
                             configFile: "tsconfig.tns.json",
                             allowTsInNodeModules: true,
+                            compilerOptions: {
+                                sourceMap
+                            }
                         },
                     }
                 },
