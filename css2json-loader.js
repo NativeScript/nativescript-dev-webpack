@@ -1,15 +1,15 @@
 const parse = require("tns-core-modules/css").parse;
 const nl = "\n";
 
-module.exports = function(content) {
+module.exports = function (content, map) {
     const ast = parse(content);
     const dependencies = getImportsFrom(ast)
         .map(mapURI)
-        .reduce((dependencies, {uri, requireURI}) =>
+        .reduce((dependencies, { uri, requireURI }) =>
             dependencies + `global.registerModule(${uri}, () => require(${requireURI}));${nl}`, "");
 
     const str = JSON.stringify(ast, (k, v) => k === "position" ? undefined : v);
-    return `${dependencies}module.exports = ${str};`;
+    this.callback(null, `${dependencies}module.exports = ${str};`, map);
 }
 
 function getImportsFrom(ast) {
