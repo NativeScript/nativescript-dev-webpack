@@ -1,4 +1,4 @@
-module.exports = function(content) {
+module.exports = function (content, map) {
     if (this.request.match(/\/app\.(css|scss|less|sass)$/)) {
         return content;
     }
@@ -14,5 +14,5 @@ module.exports = function(content) {
     });
     `;
 
-    return content;
+    this.callback(null, content, map);
 }
