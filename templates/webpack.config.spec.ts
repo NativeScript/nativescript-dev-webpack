@@ -273,6 +273,7 @@ describe('webpack.config.js', () => {
 
                     expect(config.devtool).toEqual("none");
                     expect(uglifyJsOptions.sourceMap).toBeFalsy();
+                    expect(uglifyJsOptions.terserOptions.output.semicolons).toBeTruthy();
                     expect(config.output.sourceMapFilename).toEqual("[file].map");
                 });
 
@@ -283,6 +284,7 @@ describe('webpack.config.js', () => {
 
                     expect(config.devtool).toEqual("inline-source-map");
                     expect(uglifyJsOptions.sourceMap).toBeTruthy();
+                    expect(uglifyJsOptions.terserOptions.output.semicolons).toBeFalsy();
                     expect(config.output.sourceMapFilename).toEqual("[file].map");
                 });
             });
@@ -300,6 +302,7 @@ describe('webpack.config.js', () => {
 
                     expect(config.devtool).toEqual("none");
                     expect(uglifyJsOptions.sourceMap).toBeFalsy();
+                    expect(uglifyJsOptions.terserOptions.output.semicolons).toBeTruthy();
                     expect(config.output.sourceMapFilename).toEqual("[file].map");
                 });
 
@@ -310,6 +313,7 @@ describe('webpack.config.js', () => {
 
                     expect(config.devtool).toEqual("hidden-source-map");
                     expect(uglifyJsOptions.sourceMap).toBeTruthy();
+                    expect(uglifyJsOptions.terserOptions.output.semicolons).toBeFalsy();
                     expect(config.output.sourceMapFilename).toEqual(join("..", "sourceMap", "[file].map"));
                 });
 
@@ -320,6 +324,7 @@ describe('webpack.config.js', () => {
 
                     expect(config.devtool).toEqual("hidden-source-map");
                     expect(uglifyJsOptions.sourceMap).toBeTruthy();
+                    expect(uglifyJsOptions.terserOptions.output.semicolons).toBeFalsy();
                     expect(config.output.sourceMapFilename).toEqual(join("..", "sourceMap", "[file].map"));
                 });
 
@@ -331,6 +336,7 @@ describe('webpack.config.js', () => {
 
                     expect(config.devtool).toEqual("hidden-source-map");
                     expect(uglifyJsOptions.sourceMap).toBeTruthy();
+                    expect(uglifyJsOptions.terserOptions.output.semicolons).toBeFalsy();
                     expect(config.output.sourceMapFilename).toEqual(join("..", newSourceMapFolder, "[file].map"));
                 });
             });

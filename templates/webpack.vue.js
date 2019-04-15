@@ -50,6 +50,7 @@ module.exports = env => {
         unitTesting, // --env.unitTesting
     } = env;
 
+    const isAnySourceMapEnabled = !!sourceMap || !!hiddenSourceMap;
     const externals = nsWebpack.getConvertedExternals(env.externals);
 
     const mode = production ? "production" : "development"
@@ -142,10 +143,11 @@ module.exports = env => {
                 new TerserPlugin({
                     parallel: true,
                     cache: true,
-                    sourceMap: !!sourceMap || !!hiddenSourceMap,
+                    sourceMap: isAnySourceMapEnabled,
                     terserOptions: {
                         output: {
                             comments: false,
+                            semicolons: !isAnySourceMapEnabled
                         },
                         compress: {
                             // The Android SBG has problems parsing the output

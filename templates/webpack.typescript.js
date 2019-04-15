@@ -45,6 +45,7 @@ module.exports = env => {
         hmr, // --env.hmr,
         unitTesting, // --env.unitTesting
     } = env;
+    const isAnySourceMapEnabled = !!sourceMap || !!hiddenSourceMap;
     const externals = nsWebpack.getConvertedExternals(env.externals);
 
     const appFullPath = resolve(projectRoot, appPath);
@@ -131,10 +132,11 @@ module.exports = env => {
                 new TerserPlugin({
                     parallel: true,
                     cache: true,
-                    sourceMap: !!sourceMap || !!hiddenSourceMap,
+                    sourceMap: isAnySourceMapEnabled,
                     terserOptions: {
                         output: {
                             comments: false,
+                            semicolons: !isAnySourceMapEnabled
                         },
                         compress: {
                             // The Android SBG has problems parsing the output
@@ -207,7 +209,7 @@ module.exports = env => {
                             configFile: "tsconfig.tns.json",
                             allowTsInNodeModules: true,
                             compilerOptions: {
-                                sourceMap
+                                sourceMap: isAnySourceMapEnabled
                             }
                         },
                     }
