@@ -17,7 +17,7 @@ class AngularCompilerStub {
 };
 
 let uglifyJsOptions: any;
-class UglifyJsStub {
+class TerserJsStub {
     constructor(options) {
         uglifyJsOptions = options;
     }
@@ -50,19 +50,19 @@ const webpackConfigAngular = proxyquire('./webpack.angular', {
     '@ngtools/webpack': {
         AngularCompilerPlugin: AngularCompilerStub
     },
-    'uglifyjs-webpack-plugin': UglifyJsStub
+    'terser-webpack-plugin': TerserJsStub
 });
 
 const webpackConfigTypeScript = proxyquire('./webpack.typescript', {
     'nativescript-dev-webpack': nativeScriptDevWebpack,
     'nativescript-dev-webpack/nativescript-target': emptyObject,
-    'uglifyjs-webpack-plugin': UglifyJsStub
+    'terser-webpack-plugin': TerserJsStub
 });
 
 const webpackConfigJavaScript = proxyquire('./webpack.javascript', {
     'nativescript-dev-webpack': nativeScriptDevWebpack,
     'nativescript-dev-webpack/nativescript-target': emptyObject,
-    'uglifyjs-webpack-plugin': UglifyJsStub
+    'terser-webpack-plugin': TerserJsStub
 });
 
 const webpackConfigVue = proxyquire('./webpack.vue', {
@@ -70,7 +70,7 @@ const webpackConfigVue = proxyquire('./webpack.vue', {
     'nativescript-dev-webpack/nativescript-target': emptyObject,
     'vue-loader/lib/plugin': EmptyClass,
     'nativescript-vue-template-compiler': emptyObject,
-    'uglifyjs-webpack-plugin': UglifyJsStub
+    'terser-webpack-plugin': TerserJsStub
 });
 
 describe('webpack.config.js', () => {
@@ -273,6 +273,7 @@ describe('webpack.config.js', () => {
 
                     expect(config.devtool).toEqual("none");
                     expect(uglifyJsOptions.sourceMap).toBeFalsy();
+                    expect(uglifyJsOptions.terserOptions.output.semicolons).toBeTruthy();
                     expect(config.output.sourceMapFilename).toEqual("[file].map");
                 });
 
@@ -283,6 +284,7 @@ describe('webpack.config.js', () => {
 
                     expect(config.devtool).toEqual("inline-source-map");
                     expect(uglifyJsOptions.sourceMap).toBeTruthy();
+                    expect(uglifyJsOptions.terserOptions.output.semicolons).toBeFalsy();
                     expect(config.output.sourceMapFilename).toEqual("[file].map");
                 });
             });
@@ -300,6 +302,7 @@ describe('webpack.config.js', () => {
 
                     expect(config.devtool).toEqual("none");
                     expect(uglifyJsOptions.sourceMap).toBeFalsy();
+                    expect(uglifyJsOptions.terserOptions.output.semicolons).toBeTruthy();
                     expect(config.output.sourceMapFilename).toEqual("[file].map");
                 });
 
@@ -310,6 +313,7 @@ describe('webpack.config.js', () => {
 
                     expect(config.devtool).toEqual("hidden-source-map");
                     expect(uglifyJsOptions.sourceMap).toBeTruthy();
+                    expect(uglifyJsOptions.terserOptions.output.semicolons).toBeFalsy();
                     expect(config.output.sourceMapFilename).toEqual(join("..", "sourceMap", "[file].map"));
                 });
 
@@ -320,6 +324,7 @@ describe('webpack.config.js', () => {
 
                     expect(config.devtool).toEqual("hidden-source-map");
                     expect(uglifyJsOptions.sourceMap).toBeTruthy();
+                    expect(uglifyJsOptions.terserOptions.output.semicolons).toBeFalsy();
                     expect(config.output.sourceMapFilename).toEqual(join("..", "sourceMap", "[file].map"));
                 });
 
@@ -331,6 +336,7 @@ describe('webpack.config.js', () => {
 
                     expect(config.devtool).toEqual("hidden-source-map");
                     expect(uglifyJsOptions.sourceMap).toBeTruthy();
+                    expect(uglifyJsOptions.terserOptions.output.semicolons).toBeFalsy();
                     expect(config.output.sourceMapFilename).toEqual(join("..", newSourceMapFolder, "[file].map"));
                 });
             });
