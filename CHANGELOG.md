@@ -1,3 +1,16 @@
+<a name="0.21.1"></a>
+## [0.21.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.21.0...0.21.1) (2019-04-18)
+
+
+### Bug Fixes
+
+* add support for ts files on test command when `--bundle` is provided ([#848](https://github.com/NativeScript/nativescript-dev-webpack/issues/848)) ([bd4fa9c](https://github.com/NativeScript/nativescript-dev-webpack/commit/bd4fa9c))
+* fix "ERROR in Must have a source file to refactor." error from ngCompilerPlugin on `test` command ([#859](https://github.com/NativeScript/nativescript-dev-webpack/issues/859)) ([196d977](https://github.com/NativeScript/nativescript-dev-webpack/commit/196d977))
+* typescript source maps are containing javascript code ([#857](https://github.com/NativeScript/nativescript-dev-webpack/issues/857)) ([384bee2](https://github.com/NativeScript/nativescript-dev-webpack/commit/384bee2))
+* use correct slashes on windows ([#851](https://github.com/NativeScript/nativescript-dev-webpack/issues/851)) ([9020c47](https://github.com/NativeScript/nativescript-dev-webpack/commit/9020c47))
+
+
+
 <a name="0.21.0"></a>
 # [0.21.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.20.3...0.21.0) (2019-03-21)
 
