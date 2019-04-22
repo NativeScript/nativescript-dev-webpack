@@ -1,3 +1,13 @@
+<a name="0.21.2"></a>
+## [0.21.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.21.0...0.21.2) (2019-04-22)
+
+
+### Bug Fixes
+
+* add support for executing unit tests for vue projects ([#870](https://github.com/NativeScript/nativescript-dev-webpack/issues/870)) ([c8afe9f](https://github.com/NativeScript/nativescript-dev-webpack/commit/c8afe9f))
+
+
+
 <a name="0.21.1"></a>
 ## [0.21.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.21.0...0.21.1) (2019-04-18)
 
