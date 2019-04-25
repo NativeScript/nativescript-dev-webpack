@@ -31,7 +31,7 @@ export class WatchStateLoggerPlugin {
                 console.log(messages.compilationComplete);
             }
 
-            const runtimeOnlyFiles = getWebpackRuntimeOnlyFiles(compilation, compiler);
+            const runtimeOnlyFiles = getWebpackRuntimeOnlyFiles(compilation, compiler.context);
             let emittedFiles = Object
                 .keys(compilation.assets)
                 .filter(assetKey => compilation.assets[assetKey].emitted);
@@ -48,19 +48,18 @@ export class WatchStateLoggerPlugin {
     }
 }
 
-function getWebpackRuntimeOnlyFiles(compilation, compiler) {
+function getWebpackRuntimeOnlyFiles(compilation, basePath) {
     let runtimeOnlyFiles = [];
     try {
-        runtimeOnlyFiles = [].concat(...compilation.chunkGroups
-            // get the chunk group of each entry points (e.g. main.js and inspector-modules.js)
-            .map(chunkGroup => chunkGroup.runtimeChunk)
+        runtimeOnlyFiles = [].concat(...Array.from<any>(compilation.entrypoints.values())
+            .map(entrypoint => entrypoint.runtimeChunk)
             // filter embedded runtime chunks (e.g. part of bundle.js or inspector-modules.js)
-            .filter(runtimeChunk => runtimeChunk.preventIntegration)
+            .filter(runtimeChunk => !!runtimeChunk && runtimeChunk.preventIntegration)
             .map(runtimeChunk => runtimeChunk.files))
             // get only the unique files in case of "single" runtime (e.g. runtime.js)
             .filter((value, index, self) => self.indexOf(value) === index)
             // convert to absolute paths
-            .map(fileName => join(compiler.context, fileName));
+            .map(fileName => join(basePath, fileName));
     } catch (e) {
         // breaking change in the Webpack API
         console.log("Warning: Unable to find Webpack runtime files.");
