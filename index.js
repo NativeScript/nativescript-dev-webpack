@@ -31,12 +31,16 @@ exports.getEntryModule = function (appDirectory, platform) {
     const entry = getPackageJsonEntry(appDirectory);
 
     const tsEntryPath = path.resolve(appDirectory, `${entry}.ts`);
+    const tsxEntryPath = path.resolve(appDirectory, `${entry}.tsx`);
     const jsEntryPath = path.resolve(appDirectory, `${entry}.js`);
-    let entryExists = existsSync(tsEntryPath) || existsSync(jsEntryPath);
+    const jsxEntryPath = path.resolve(appDirectory, `${entry}.jsx`);
+    let entryExists = existsSync(tsEntryPath) || existsSync(jsEntryPath) || existsSync(tsxEntryPath) || existsSync(jsxEntryPath);
     if (!entryExists && platform) {
         const platformTsEntryPath = path.resolve(appDirectory, `${entry}.${platform}.ts`);
+        const platformTsxEntryPath = path.resolve(appDirectory, `${entry}.${platform}.tsx`);
         const platformJsEntryPath = path.resolve(appDirectory, `${entry}.${platform}.js`);
-        entryExists = existsSync(platformTsEntryPath) || existsSync(platformJsEntryPath);
+        const platformJsxEntryPath = path.resolve(appDirectory, `${entry}.${platform}.jsx`);
+        entryExists = existsSync(platformTsEntryPath) || existsSync(platformJsEntryPath) || existsSync(platformTsxEntryPath) || existsSync(platformJsxEntryPath);
     }
 
     if (!entryExists) {
@@ -111,7 +115,7 @@ function getPackageJsonEntry(appDirectory) {
         throw new Error(`${appDirectory}/package.json must contain a 'main' attribute!`);
     }
 
-    return entry.replace(/\.js$/i, "");
+    return entry.replace(/\.js(x)?$/i, "");
 }
 
 function verifyEntryModuleDirectory(appDirectory) {
