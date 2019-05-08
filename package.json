@@ -11,23 +11,8 @@
   "nativescript": {
     "hooks": [
       {
-        "type": "before-prepareJSApp",
-        "script": "lib/before-prepareJS.js",
-        "inject": true
-      },
-      {
         "type": "before-cleanApp",
         "script": "lib/before-cleanApp.js",
-        "inject": true
-      },
-      {
-        "type": "before-watch",
-        "script": "lib/before-watch.js",
-        "inject": true
-      },
-      {
-        "type": "after-watch",
-        "script": "lib/after-watch.js",
         "inject": true
       },
       {
@@ -36,18 +21,8 @@
         "inject": true
       },
       {
-        "type": "before-shouldPrepare",
-        "script": "lib/before-shouldPrepare.js",
-        "inject": true
-      },
-      {
         "type": "after-prepare",
         "script": "lib/after-prepare.js",
-        "inject": true
-      },
-      {
-        "type": "before-preview-sync",
-        "script": "lib/before-preview-sync",
         "inject": true
       }
     ]
@@ -60,7 +35,7 @@
   "scripts": {
     "postinstall": "node postinstall.js",
     "postpack": "rm -rf node_modules",
-    "prepare": "tsc && npm run jasmine",
+    "prepare": "tsc",
     "test": "npm run prepare && npm run jasmine",
     "jasmine": "jasmine --config=jasmine-config/jasmine.json",
     "version": "rm package-lock.json && conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md"
