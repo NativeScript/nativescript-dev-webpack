@@ -36,14 +36,9 @@ export class WatchStateLoggerPlugin {
                 .keys(compilation.assets)
                 .filter(assetKey => compilation.assets[assetKey].emitted);
 
-            // provide fake paths to the {N} CLI - relative to the 'app' folder
-            // in order to trigger the livesync process
-            const emittedFilesFakePaths = emittedFiles
-                .map(file => join(compiler.context, file));
-
             process.send && process.send(messages.compilationComplete, error => null);
             // Send emitted files so they can be LiveSynced if need be
-            process.send && process.send({ emittedFiles: emittedFilesFakePaths, webpackRuntimeFiles: runtimeOnlyFiles }, error => null);
+            process.send && process.send({ emittedFiles, webpackRuntimeFiles: runtimeOnlyFiles }, error => null);
         });
     }
 }
