@@ -1,10 +1,10 @@
 import { AppiumDriver, createDriver, SearchOptions } from "nativescript-dev-appium";
 import { assert } from "chai";
 
-describe("sample scenario", () => {
+describe("sample scenario", async function () {
     let driver: AppiumDriver;
 
-    before(async () => {
+    before(async function () {
         driver = await createDriver();
     });
 
@@ -26,17 +26,16 @@ describe("sample scenario", () => {
 
     afterEach(async function () {
         if (this.currentTest.state === "failed") {
-            await driver.logPageSource(this.currentTest.title);
-            await driver.logScreenshot(this.currentTest.title);
+            await driver.logTestArtifacts(this.currentTest.title);
         }
     });
 
-    after(async () => {
+    after(async function () {
         await driver.quit();
         console.log("Quit driver!");
     });
 
-    it("should navigate to a ninja", async () => {
+    it("should navigate to a ninja", async function () {
         const btnNinjas = await driver.findElementByText("Ninjas");
         await btnNinjas.click();
 
@@ -67,5 +66,5 @@ describe("sample scenario", () => {
         });
     }
 
-    const getItems = async () => { return driver.isAndroid ? await driver.findElementsByText("(Android)") : await driver.findElementsByText("(ios)"); }
+    const getItems = async function () { return driver.isAndroid ? await driver.findElementsByText("(Android)") : await driver.findElementsByText("(ios)"); }
 });
