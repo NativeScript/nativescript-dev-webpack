@@ -4,7 +4,7 @@ const webpack = require("webpack");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const NsVueTemplateCompiler = require("nativescript-vue-template-compiler");
@@ -12,7 +12,7 @@ const NsVueTemplateCompiler = require("nativescript-vue-template-compiler");
 const nsWebpack = require("nativescript-dev-webpack");
 const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target");
 const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
-const hashSalt =  Date.now().toString();
+const hashSalt = Date.now().toString();
 
 module.exports = env => {
     // Add your custom Activities, Services and other android app components here.
@@ -46,9 +46,11 @@ module.exports = env => {
         report, // --env.report
         hmr, // --env.hmr
         sourceMap, // --env.sourceMap
+        hiddenSourceMap, // --env.hiddenSourceMap
         unitTesting, // --env.unitTesting
     } = env;
 
+    const isAnySourceMapEnabled = !!sourceMap || !!hiddenSourceMap;
     const externals = nsWebpack.getConvertedExternals(env.externals);
 
     const mode = production ? "production" : "development"
@@ -56,13 +58,15 @@ module.exports = env => {
     const appFullPath = resolve(projectRoot, appPath);
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
 
-    const entryModule = nsWebpack.getEntryModule(appFullPath);
+    const entryModule = nsWebpack.getEntryModule(appFullPath, platform);
     const entryPath = `.${sep}${entryModule}`;
     const entries = { bundle: entryPath };
     if (platform === "ios") {
         entries["tns_modules/tns-core-modules/inspector_modules"] = "inspector_modules.js";
     };
     console.log(`Bundling application for entryPath ${entryPath}...`);
+
+    let sourceMapFilename = nsWebpack.getSourceMapFilename(hiddenSourceMap, __dirname, dist);
 
     const config = {
         mode: mode,
@@ -81,6 +85,7 @@ module.exports = env => {
         output: {
             pathinfo: false,
             path: dist,
+            sourceMapFilename,
             libraryTarget: "commonjs2",
             filename: "[name].js",
             globalObject: "global",
@@ -115,7 +120,7 @@ module.exports = env => {
             "fs": "empty",
             "__dirname": false,
         },
-        devtool: sourceMap ? "inline-source-map" : "none",
+        devtool: hiddenSourceMap ? "hidden-source-map" : (sourceMap ? "inline-source-map" : "none"),
         optimization: {
             runtimeChunk: "single",
             splitChunks: {
@@ -135,12 +140,14 @@ module.exports = env => {
             },
             minimize: Boolean(production),
             minimizer: [
-                new UglifyJsPlugin({
+                new TerserPlugin({
                     parallel: true,
                     cache: true,
-                    uglifyOptions: {
+                    sourceMap: isAnySourceMapEnabled,
+                    terserOptions: {
                         output: {
                             comments: false,
+                            semicolons: !isAnySourceMapEnabled
                         },
                         compress: {
                             // The Android SBG has problems parsing the output
@@ -155,62 +162,62 @@ module.exports = env => {
         },
         module: {
             rules: [{
-                    test: nsWebpack.getEntryPathRegExp(appFullPath, entryPath + ".(js|ts)"),
-                    use: [
-                        // Require all Android app components
-                        platform === "android" && {
-                            loader: "nativescript-dev-webpack/android-app-components-loader",
-                            options: { modules: appComponents },
-                        },
+                test: nsWebpack.getEntryPathRegExp(appFullPath, entryPath + ".(js|ts)"),
+                use: [
+                    // Require all Android app components
+                    platform === "android" && {
+                        loader: "nativescript-dev-webpack/android-app-components-loader",
+                        options: { modules: appComponents },
+                    },
 
-                        {
-                            loader: "nativescript-dev-webpack/bundle-config-loader",
-                            options: {
-                                registerPages: true, // applicable only for non-angular apps
-                                loadCss: !snapshot, // load the application css if in debug mode
-                                unitTesting,
-                                appFullPath,
-                                projectRoot,
-                            },
+                    {
+                        loader: "nativescript-dev-webpack/bundle-config-loader",
+                        options: {
+                            registerPages: true, // applicable only for non-angular apps
+                            loadCss: !snapshot, // load the application css if in debug mode
+                            unitTesting,
+                            appFullPath,
+                            projectRoot,
                         },
-                    ].filter(loader => Boolean(loader)),
-                },
-                {
-                    test: /\.css$/,
-                    use: [
-                        'nativescript-dev-webpack/style-hot-loader',
-                        'nativescript-dev-webpack/apply-css-loader.js',
-                        { loader: "css-loader", options: { minimize: false, url: false } },
-                    ],
-                },
-                {
-                    test: /\.scss$/,
-                    use: [
-                        'nativescript-dev-webpack/style-hot-loader',
-                        'nativescript-dev-webpack/apply-css-loader.js',
-                        { loader: "css-loader", options: { minimize: false, url: false } },
-                        "sass-loader",
-                    ],
-                },
-                {
-                    test: /\.js$/,
-                    loader: 'babel-loader',
-                },
-                {
-                    test: /\.ts$/,
-                    loader: 'ts-loader',
-                    options: {
-                        appendTsSuffixTo: [/\.vue$/],
-                        allowTsInNodeModules: true,
                     },
+                ].filter(loader => Boolean(loader)),
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    'nativescript-dev-webpack/style-hot-loader',
+                    'nativescript-dev-webpack/apply-css-loader.js',
+                    { loader: "css-loader", options: { url: false } },
+                ],
+            },
+            {
+                test: /\.scss$/,
+                use: [
+                    'nativescript-dev-webpack/style-hot-loader',
+                    'nativescript-dev-webpack/apply-css-loader.js',
+                    { loader: "css-loader", options: { url: false } },
+                    "sass-loader",
+                ],
+            },
+            {
+                test: /\.js$/,
+                loader: 'babel-loader',
+            },
+            {
+                test: /\.ts$/,
+                loader: 'ts-loader',
+                options: {
+                    appendTsSuffixTo: [/\.vue$/],
+                    allowTsInNodeModules: true,
                 },
-                {
-                    test: /\.vue$/,
-                    loader: "vue-loader",
-                    options: {
-                        compiler: NsVueTemplateCompiler,
-                    },
+            },
+            {
+                test: /\.vue$/,
+                loader: "vue-loader",
+                options: {
+                    compiler: NsVueTemplateCompiler,
                 },
+            },
             ],
         },
         plugins: [
@@ -236,10 +243,10 @@ module.exports = env => {
                 // configures the WebPack runtime to be generated inside the snapshot
                 // module and no `runtime.js` module exist.
                 (snapshot ? [] : ["./runtime"])
-                .concat([
-                    "./vendor",
-                    "./bundle",
-              ])
+                    .concat([
+                        "./vendor",
+                        "./bundle",
+                    ])
             ),
             // For instructions on how to set up workers with webpack
             // check out https://github.com/nativescript/worker-loader
@@ -264,7 +271,7 @@ module.exports = env => {
                 use: "nativescript-dev-webpack/markup-hot-loader"
             },
 
-            { test: /\.(html|xml)$/, use: "nativescript-dev-webpack/xml-namespace-loader"}
+            { test: /\.(html|xml)$/, use: "nativescript-dev-webpack/xml-namespace-loader" }
         );
     }
 

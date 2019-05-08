@@ -25,14 +25,21 @@ exports.getAotEntryModule = function (appDirectory) {
     return aotEntry;
 }
 
-exports.getEntryModule = function (appDirectory) {
+exports.getEntryModule = function (appDirectory, platform) {
     verifyEntryModuleDirectory(appDirectory);
 
     const entry = getPackageJsonEntry(appDirectory);
 
     const tsEntryPath = path.resolve(appDirectory, `${entry}.ts`);
     const jsEntryPath = path.resolve(appDirectory, `${entry}.js`);
-    if (!existsSync(tsEntryPath) && !existsSync(jsEntryPath)) {
+    let entryExists = existsSync(tsEntryPath) || existsSync(jsEntryPath);
+    if (!entryExists && platform) {
+        const platformTsEntryPath = path.resolve(appDirectory, `${entry}.${platform}.ts`);
+        const platformJsEntryPath = path.resolve(appDirectory, `${entry}.${platform}.js`);
+        entryExists = existsSync(platformTsEntryPath) || existsSync(platformJsEntryPath);
+    }
+
+    if (!entryExists) {
         throw new Error(`The entry module ${entry} specified in ` +
             `${appDirectory}/package.json doesn't exist!`)
     }
@@ -59,6 +66,19 @@ exports.getEntryPathRegExp = (appFullPath, entryModule) => {
     const escapedPath = entryModuleFullPath.replace(/\\/g, "\\\\");
     return new RegExp(escapedPath);
 }
+
+exports.getSourceMapFilename = (hiddenSourceMap, appFolderPath, outputPath) => {
+    const appFolderRelativePath = path.join(path.relative(outputPath, appFolderPath));
+    let sourceMapFilename = "[file].map";
+    if (typeof hiddenSourceMap === "string") {
+        sourceMapFilename = path.join(appFolderRelativePath, hiddenSourceMap, "[file].map");
+    } else if (typeof hiddenSourceMap === "boolean" && !!hiddenSourceMap) {
+        sourceMapFilename = path.join(appFolderRelativePath, "sourceMap", "[file].map");
+    }
+
+    return sourceMapFilename;
+}
+
 /**
  * Converts an array of strings externals to an array of regular expressions.
  * Input is an array of string, which we need to convert to regular expressions, so all imports for this module will be treated as externals.
