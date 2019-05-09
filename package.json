@@ -78,6 +78,7 @@
     "clean-webpack-plugin": "~1.0.0",
     "copy-webpack-plugin": "~4.6.0",
     "css-loader": "~2.1.1",
+    "fork-ts-checker-webpack-plugin": "^1.2.0",
     "global-modules-path": "2.0.0",
     "minimatch": "3.0.4",
     "nativescript-hook": "0.2.4",
