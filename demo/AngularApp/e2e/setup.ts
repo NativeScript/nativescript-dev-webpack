@@ -1,4 +1,5 @@
 import { startServer, stopServer, ITestReporter, nsCapabilities, LogImageType } from "nativescript-dev-appium";
+const mochaFake = require("mocha");
 const addContext = require('mochawesome/addContext');
 
 const testReporterContext = <ITestReporter>{};

@@ -1,4 +1,5 @@
 const nsAppium = require("nativescript-dev-appium");
+const mochaFake = require("mocha");
 const addContext = require('mochawesome/addContext');
 
 const testReporterContext = {};
