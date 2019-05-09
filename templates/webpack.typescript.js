@@ -5,6 +5,7 @@ const nsWebpack = require("nativescript-dev-webpack");
 const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
 const TerserPlugin = require("terser-webpack-plugin");
@@ -54,6 +55,9 @@ module.exports = env => {
     const entryModule = nsWebpack.getEntryModule(appFullPath, platform);
     const entryPath = `.${sep}${entryModule}.ts`;
     const entries = { bundle: entryPath };
+
+    const tsConfigPath = resolve(projectRoot, "tsconfig.tns.json");
+
     if (platform === "ios") {
         entries["tns_modules/tns-core-modules/inspector_modules"] = "inspector_modules.js";
     };
@@ -206,7 +210,8 @@ module.exports = env => {
                     use: {
                         loader: "ts-loader",
                         options: {
-                            configFile: "tsconfig.tns.json",
+                            configFile: tsConfigPath,
+                            transpileOnly: !!hmr,
                             allowTsInNodeModules: true,
                             compilerOptions: {
                                 sourceMap: isAnySourceMapEnabled
@@ -289,6 +294,12 @@ module.exports = env => {
 
     if (hmr) {
         config.plugins.push(new webpack.HotModuleReplacementPlugin());
+
+        // With HMR ts-loader should run in `transpileOnly` mode,
+        // so assure type-checking with fork-ts-checker-webpack-plugin
+        config.plugins.push(new ForkTsCheckerWebpackPlugin({
+            tsconfig: tsConfigPath
+        }));
     }
 
 
