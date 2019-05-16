@@ -47,6 +47,7 @@ const webpackConfigAngular = proxyquire('./webpack.angular', {
     'nativescript-dev-webpack/transformers/ns-support-hmr-ng': { nsSupportHmrNg: () => { return FakeHmrTransformerFlag } },
     'nativescript-dev-webpack/utils/ast-utils': { getMainModulePath: () => { return "fakePath"; } },
     'nativescript-dev-webpack/plugins/NativeScriptAngularCompilerPlugin': { getAngularCompilerPlugin: () => { return AngularCompilerStub; } },
+    'nativescript-hook': (dir) => { return { findProjectDir: (dir) => dir } },
     '@ngtools/webpack': {
         AngularCompilerPlugin: AngularCompilerStub
     },

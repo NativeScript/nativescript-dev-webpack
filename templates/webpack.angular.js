@@ -7,6 +7,7 @@ const { nsReplaceBootstrap } = require("nativescript-dev-webpack/transformers/ns
 const { nsReplaceLazyLoader } = require("nativescript-dev-webpack/transformers/ns-replace-lazy-loader");
 const { nsSupportHmrNg } = require("nativescript-dev-webpack/transformers/ns-support-hmr-ng");
 const { getMainModulePath } = require("nativescript-dev-webpack/utils/ast-utils");
+const hook = require("nativescript-hook")(__dirname);
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
@@ -28,7 +29,7 @@ module.exports = env => {
     }
 
     const AngularCompilerPlugin = getAngularCompilerPlugin(platform);
-    const projectRoot = __dirname;
+    const projectRoot = hook.findProjectDir(__dirname) || __dirname;
 
     // Default destination inside platforms/<platform>/...
     const dist = resolve(projectRoot, nsWebpack.getAppPath(platform, projectRoot));
@@ -55,7 +56,7 @@ module.exports = env => {
     const externals = nsWebpack.getConvertedExternals(env.externals);
     const appFullPath = resolve(projectRoot, appPath);
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
-    const tsConfigName = "tsconfig.tns.json";
+    const tsConfigName = relative(__dirname, join(projectRoot, 'tsconfig.tns.json'));
     const entryModule = `${nsWebpack.getEntryModule(appFullPath, platform)}.ts`;
     const entryPath = `.${sep}${entryModule}`;
     const entries = { bundle: entryPath };

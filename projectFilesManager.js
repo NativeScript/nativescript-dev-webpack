@@ -1,9 +1,12 @@
 const path = require("path");
 const fs = require("fs");
 
-const { isTypeScript, isAngular, isVue } = require("./projectHelpers");
+const { getNsConfig, getWebpackConfigPath, isTypeScript, isAngular, isVue, setWebpackConfigPath } = require("./projectHelpers");
+
 
 function addProjectFiles(projectDir) {
+    const nsConfig = JSON.parse(fs.readFileSync(getNsConfig()));
+    setWebpackConfigPath(nsConfig && nsConfig.webpackConfig ? nsConfig.webpackConfig : undefined);
     const projectTemplates = getProjectTemplates(projectDir);
     Object.keys(projectTemplates).forEach(function(templateName) {
         const templateDestination = projectTemplates[templateName];
@@ -52,12 +55,17 @@ function copyTemplate(templateName, destinationPath) {
     if (!fs.existsSync(destinationPath)) {
         console.info(`Creating file: ${destinationPath}`);
         const content = fs.readFileSync(templateName, "utf8");
+        const destinationDir = path.dirname(destinationPath);
+        if (!fs.existsSync(destinationDir)) {
+          fs.mkdirSync(destinationDir, { recursive: true })
+        }
+
         fs.writeFileSync(destinationPath, content);
     }
 }
 
 function getProjectTemplates(projectDir) {
-    const WEBPACK_CONFIG_NAME = "webpack.config.js";
+    const WEBPACK_CONFIG_NAME = getWebpackConfigPath();
     const TSCONFIG_TNS_NAME = "tsconfig.tns.json";
 
     let templates;

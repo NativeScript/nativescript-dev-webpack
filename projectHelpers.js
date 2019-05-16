@@ -8,6 +8,8 @@ const PROJECT_DATA_GETTERS = {
     appResourcesPath: "getAppResourcesRelativeDirectoryPath",
 };
 
+let webpackConfigPath = 'webpack.config.js';
+
 const isTypeScript = ({ projectDir, packageJson } = {}) => {
     packageJson = packageJson || getPackageJson(projectDir);
 
@@ -96,13 +98,29 @@ function convertSlashesInPath(modulePath) {
     return modulePath;
 }
 
+function setWebpackConfigPath(path) {
+  if (path) {
+    webpackConfigPath = path;
+  }
+}
+
+function getNsConfig() {
+  return resolve(getProjectDir(), "nsconfig.json")
+}
+
+function getWebpackConfigPath() {
+    return webpackConfigPath;
+}
+
 const isWindows = process.platform.startsWith("win32");
 
 module.exports = {
     getAppPathFromProjectData,
     getAppResourcesPathFromProjectData,
+    getNsConfig,
     getPackageJson,
     getProjectDir,
+    getWebpackConfigPath,
     isAndroid,
     isIos,
     isAngular,
@@ -112,4 +130,5 @@ module.exports = {
     convertSlashesInPath,
     getIndentationCharacter,
     safeGet,
+    setWebpackConfigPath,
 };
