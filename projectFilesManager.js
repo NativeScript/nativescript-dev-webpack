@@ -3,7 +3,6 @@ const fs = require("fs");
 
 const { getNsConfigPath, getWebpackConfigPath, isTypeScript, isAngular, isVue, setWebpackConfigPath } = require("./projectHelpers");
 
-
 function addProjectFiles(projectDir) {
     const nsConfig = getNsConfigPath() ? JSON.parse(fs.readFileSync(getNsConfigPath())) : undefined;
     setWebpackConfigPath(nsConfig && nsConfig.webpackConfig ? nsConfig.webpackConfig : undefined);
