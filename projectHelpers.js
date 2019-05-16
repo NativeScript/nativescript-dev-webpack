@@ -104,8 +104,11 @@ function setWebpackConfigPath(path) {
   }
 }
 
-function getNsConfig() {
-  return resolve(getProjectDir(), "nsconfig.json")
+function getNsConfigPath() {
+  const nsConfigPath = resolve(getProjectDir(__dirname), "nsconfig.json");
+  if (fs.existsSync(nsConfigPath)) {
+    return nsConfigPath;
+  }
 }
 
 function getWebpackConfigPath() {
@@ -117,7 +120,7 @@ const isWindows = process.platform.startsWith("win32");
 module.exports = {
     getAppPathFromProjectData,
     getAppResourcesPathFromProjectData,
-    getNsConfig,
+    getNsConfigPath,
     getPackageJson,
     getProjectDir,
     getWebpackConfigPath,

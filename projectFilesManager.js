@@ -1,11 +1,11 @@
 const path = require("path");
 const fs = require("fs");
 
-const { getNsConfig, getWebpackConfigPath, isTypeScript, isAngular, isVue, setWebpackConfigPath } = require("./projectHelpers");
+const { getNsConfigPath, getWebpackConfigPath, isTypeScript, isAngular, isVue, setWebpackConfigPath } = require("./projectHelpers");
 
 
 function addProjectFiles(projectDir) {
-    const nsConfig = JSON.parse(fs.readFileSync(getNsConfig()));
+    const nsConfig = getNsConfigPath() ? JSON.parse(fs.readFileSync(getNsConfigPath())) : undefined;
     setWebpackConfigPath(nsConfig && nsConfig.webpackConfig ? nsConfig.webpackConfig : undefined);
     const projectTemplates = getProjectTemplates(projectDir);
     Object.keys(projectTemplates).forEach(function(templateName) {
