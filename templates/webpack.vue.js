@@ -11,6 +11,7 @@ const NsVueTemplateCompiler = require("nativescript-vue-template-compiler");
 
 const nsWebpack = require("nativescript-dev-webpack");
 const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target");
+const hook = require("nativescript-hook")(__dirname);
 const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
 const hashSalt = Date.now().toString();
 
@@ -27,7 +28,7 @@ module.exports = env => {
     }
 
     const platforms = ["ios", "android"];
-    const projectRoot = __dirname;
+    const projectRoot = hook.findProjectDir(__dirname) || __dirname;
 
     // Default destination inside platforms/<platform>/...
     const dist = resolve(projectRoot, nsWebpack.getAppPath(platform, projectRoot));
