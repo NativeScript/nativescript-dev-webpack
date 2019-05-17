@@ -17,7 +17,7 @@ You can now bundle your project by passing --bundle flag to NativeScript CLI com
     - tns build ios --bundle
     - tns run android --bundle
     - tns run ios --bundle
-You can also pass the "--env.uglify" flag to use UglifyJS for minification.
+You can also pass the "--env.uglify" flag to use Terser for minification.
 For more information check out https://docs.nativescript.org/tooling/bundling-with-webpack#bundling.
 `;
 
