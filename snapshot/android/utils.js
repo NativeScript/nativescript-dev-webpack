@@ -12,9 +12,9 @@ const CONSTANTS = {
 
 const createDirectory = dir => mkdir('-p', dir);
 
-const downloadFile = (url, destinationFilePath) =>
+const downloadFile = (url, destinationFilePath, timeout) =>
     new Promise((resolve, reject) => {
-        getRequestOptions(url)
+        getRequestOptions(url, timeout)
             .then(options =>
                 get(options)
                     .on("error", reject)
@@ -49,9 +49,9 @@ const getJsonFile = url =>
             ).catch(reject);
     });
 
-const getRequestOptions = (url) =>
+const getRequestOptions = (url, timeout) =>
     new Promise((resolve, reject) => {
-        const options = { url };
+        const options = { url, timeout };
         getProxySettings()
             .then(proxySettings => {
                 const allOptions = Object.assign(options, proxySettings);
