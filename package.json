@@ -11,16 +11,6 @@
   "nativescript": {
     "hooks": [
       {
-        "type": "before-cleanApp",
-        "script": "lib/before-cleanApp.js",
-        "inject": true
-      },
-      {
-        "type": "before-watchPatterns",
-        "script": "lib/before-watchPatterns.js",
-        "inject": true
-      },
-      {
         "type": "after-prepare",
         "script": "lib/after-prepare.js",
         "inject": true
@@ -35,7 +25,7 @@
   "scripts": {
     "postinstall": "node postinstall.js",
     "postpack": "rm -rf node_modules",
-    "prepare": "tsc",
+    "prepare": "tsc && npm run jasmine",
     "test": "npm run prepare && npm run jasmine",
     "jasmine": "jasmine --config=jasmine-config/jasmine.json",
     "version": "rm package-lock.json && conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md"
