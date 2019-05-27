@@ -84,7 +84,7 @@ function getRequiredDeps(packageJson) {
     }
 
     const deps = {
-        "@angular/compiler-cli": "8.0.0-rc.4",
+        "@angular/compiler-cli": "8.0.0-rc.5",
     };
 
     if (!dependsOn(packageJson, "@angular-devkit/build-angular")) {
