@@ -29,6 +29,12 @@ const isAngular = ({ projectDir, packageJson } = {}) => {
         .some(dependency => /^@angular\b/.test(dependency));
 };
 
+const getAngularVersion = ({ projectDir, packageJson } = {}) => {
+    packageJson = packageJson || getPackageJson(projectDir);
+
+    return packageJson.dependencies && packageJson.dependencies["@angular/core"];
+}
+
 const isVue = ({ projectDir, packageJson } = {}) => {
     packageJson = packageJson || getPackageJson(projectDir);
 
@@ -38,7 +44,14 @@ const isVue = ({ projectDir, packageJson } = {}) => {
 
 const getPackageJson = projectDir => {
     const packageJsonPath = getPackageJsonPath(projectDir);
-    return JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+    let result;
+    try {
+        result = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+    } catch (e) {
+        result = {};
+    }
+
+    return result;
 };
 
 const writePackageJson = (content, projectDir) => {
@@ -106,6 +119,7 @@ module.exports = {
     isAndroid,
     isIos,
     isAngular,
+    getAngularVersion,
     isVue,
     isTypeScript,
     writePackageJson,

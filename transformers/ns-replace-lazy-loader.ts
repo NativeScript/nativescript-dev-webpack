@@ -17,12 +17,12 @@ import { AngularCompilerPlugin } from "@ngtools/webpack";
 import { findIdentifierNode, getObjectPropertyMatches, getDecoratorMetadata } from "../utils/ast-utils";
 import { getResolvedEntryModule } from "../utils/transformers-utils";
 
-export function nsReplaceLazyLoader(getNgCompiler: () => AngularCompilerPlugin): ts.TransformerFactory<ts.SourceFile> {
+export function nsReplaceLazyLoader(getNgCompiler: () => AngularCompilerPlugin, entryPath: string, projectDir: string): ts.TransformerFactory<ts.SourceFile> {
     const getTypeChecker = () => getNgCompiler().typeChecker;
 
-    const standardTransform: StandardTransform = function(sourceFile: ts.SourceFile) {
+    const standardTransform: StandardTransform = function (sourceFile: ts.SourceFile) {
         let ops: TransformOperation[] = [];
-        const entryModule = getResolvedEntryModule(getNgCompiler());
+        const entryModule = getResolvedEntryModule(getNgCompiler(), projectDir);
         const sourceFilePath = join(dirname(sourceFile.fileName), basename(sourceFile.fileName, extname(sourceFile.fileName)));
         if (!entryModule || normalize(sourceFilePath) !== normalize(entryModule.path)) {
             return ops;

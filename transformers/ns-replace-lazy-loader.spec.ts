@@ -211,14 +211,16 @@ describe("@ngtools/webpack transformers", () => {
                 const input = tags.stripIndent`${testCase.rawAppModule}`;
                 const output = tags.stripIndent`${testCase.transformedAppModule}`;
                 const { program, compilerHost } = createTypescriptContext(input);
+                const projectDir = "/project/src/";
+                const testFile = `${projectDir}test-file`;
                 const ngCompiler = <AngularCompilerPlugin>{
                     typeChecker: program.getTypeChecker(),
                     entryModule: {
-                        path: "/project/src/test-file",
+                        path: testFile,
                         className: "AppModule",
                     },
                 };
-                const transformer = nsReplaceLazyLoader(() => ngCompiler);
+                const transformer = nsReplaceLazyLoader(() => ngCompiler, testFile, projectDir);
                 const result = transformTypescript(undefined, [transformer], program, compilerHost);
 
                 expect(tags.oneLine`${result}`).toEqual(tags.oneLine`${output}`);

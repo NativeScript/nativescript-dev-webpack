@@ -21,14 +21,16 @@ describe('@ngtools/webpack transformers', () => {
       `;
 
       const { program, compilerHost } = createTypescriptContext(input);
+      const projectDir = "/project/src/";
+      const appModule = `${projectDir}app/app.module`;
       const ngCompiler = <AngularCompilerPlugin>{
         typeChecker: program.getTypeChecker(),
         entryModule: {
-          path: '/project/src/app/app.module',
+          path: appModule,
           className: 'AppModule',
         },
       };
-      const transformer = nsReplaceBootstrap(() => ngCompiler);
+      const transformer = nsReplaceBootstrap(() => ngCompiler, appModule, projectDir);
       const result = transformTypescript(undefined, [transformer], program, compilerHost);
 
       expect(tags.oneLine`${result}`).toEqual(tags.oneLine`${output}`);
@@ -50,17 +52,19 @@ describe('@ngtools/webpack transformers', () => {
       `;
 
       const { program, compilerHost } = createTypescriptContext(input);
+      const projectDir = "/project/src/";
+      const appModule = `${projectDir}app/app.module`;
       const ngCompiler: any = {
         _compilerOptions: {
           enableIvy: true
         },
         typeChecker: program.getTypeChecker(),
         entryModule: {
-          path: '/project/src/app/app.module',
+          path: appModule,
           className: 'AppModule',
         },
       };
-      const transformer = nsReplaceBootstrap(() => ngCompiler);
+      const transformer = nsReplaceBootstrap(() => ngCompiler, appModule, projectDir);
       const result = transformTypescript(undefined, [transformer], program, compilerHost);
 
       expect(tags.oneLine`${result}`).toEqual(tags.oneLine`${output}`);
@@ -82,14 +86,16 @@ describe('@ngtools/webpack transformers', () => {
       `;
 
       const { program, compilerHost } = createTypescriptContext(input);
+      const projectDir = "/project/src/";
+      const appModule = `${projectDir}app/app.module`;
       const ngCompiler = <AngularCompilerPlugin>{
         typeChecker: program.getTypeChecker(),
         entryModule: {
-          path: '/project/src/app/app.module',
+          path: appModule,
           className: 'AppModule',
         },
       };
-      const transformer = nsReplaceBootstrap(() => ngCompiler);
+      const transformer = nsReplaceBootstrap(() => ngCompiler, appModule, projectDir);
       const result = transformTypescript(undefined, [transformer], program, compilerHost);
 
       expect(tags.oneLine`${result}`).toEqual(tags.oneLine`${output}`);
@@ -113,14 +119,16 @@ describe('@ngtools/webpack transformers', () => {
       `;
 
       const { program, compilerHost } = createTypescriptContext(input);
+      const projectDir = "/project/src/";
+      const appModule = `${projectDir}app/app.module`;
       const ngCompiler = <AngularCompilerPlugin>{
         typeChecker: program.getTypeChecker(),
         entryModule: {
-          path: '/project/src/app/app.module',
+          path: appModule,
           className: 'AppModule',
         },
       };
-      const transformer = nsReplaceBootstrap(() => ngCompiler);
+      const transformer = nsReplaceBootstrap(() => ngCompiler, appModule, projectDir);
       const result = transformTypescript(undefined, [transformer], program, compilerHost);
 
       expect(tags.oneLine`${result}`).toEqual(tags.oneLine`${output}`);
