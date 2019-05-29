@@ -1,3 +1,18 @@
+<a name="0.24.0"></a>
+# [0.24.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.22.0...0.24.0) (2019-05-30)
+
+
+### Bug Fixes
+
+* import the workaroundResolve funciton based on the Angular version (it was moved from compiler_host to utils in Angular 8) ([#904](https://github.com/NativeScript/nativescript-dev-webpack/pull/904)) ([56224a8](https://github.com/NativeScript/nativescript-dev-webpack/commit/56224a898b46fc8542f8b5928c52e9e4cb6022e2))
+
+
+### Features
+
+* update deps to Angular 8.0.0 deps ([#904](https://github.com/NativeScript/nativescript-dev-webpack/pull/904)) ([d6afb74](https://github.com/NativeScript/nativescript-dev-webpack/commit/d6afb7436585d41c4188a2373d376f2b51bc541e))
+
+
+
 <a name="0.22.0"></a>
 # [0.22.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.21.0...0.22.0) (2019-05-15)
 
