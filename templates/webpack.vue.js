@@ -71,7 +71,7 @@ module.exports = env => {
     const config = {
         mode: mode,
         context: appFullPath,
-        externals,
+        externals: nsWebpack.getExternalsHandler(externals),
         watchOptions: {
             ignored: [
                 appResourcesFullPath,

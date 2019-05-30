@@ -23,6 +23,12 @@ class TerserJsStub {
     }
 };
 
+let providedExternalRegExps: any;
+const fakeExternalsHandler = () => null;
+const testGetExternalsHandler = (regExps) => {
+    providedExternalRegExps = regExps;
+    return fakeExternalsHandler;
+};
 const nativeScriptDevWebpack = {
     GenerateBundleStarterPlugin: EmptyClass,
     WatchStateLoggerPlugin: EmptyClass,
@@ -32,6 +38,7 @@ const nativeScriptDevWebpack = {
     getResolver: () => null,
     getEntryPathRegExp: () => null,
     getConvertedExternals: nsWebpackIndex.getConvertedExternals,
+    getExternalsHandler: testGetExternalsHandler,
     getSourceMapFilename: nsWebpackIndex.getSourceMapFilename
 };
 
@@ -94,41 +101,50 @@ describe('webpack.config.js', () => {
             describe(`verify externals for webpack.${type}.js (${platform})`, () => {
                 afterEach(() => {
                     nativeScriptDevWebpack.getConvertedExternals = nsWebpackIndex.getConvertedExternals;
+                    nativeScriptDevWebpack.getExternalsHandler = testGetExternalsHandler;
                 });
 
                 it('returns empty array when externals are not passed', () => {
                     const input = getInput({ platform });
                     const config = webpackConfig(input);
-                    expect(config.externals).toEqual([]);
+                    expect(config.externals).toEqual(fakeExternalsHandler);
+                    expect(providedExternalRegExps).toEqual([]);
                 });
 
                 it('calls getConvertedExternals to convert externals', () => {
-                    let isCalled = false;
+                    let isConvertExternalsCalled = false;
+                    let isGetExternalsHandlerCalled = false;
                     nativeScriptDevWebpack.getConvertedExternals = () => {
-                        isCalled = true;
+                        isConvertExternalsCalled = true;
                         return [];
+                    };
+                    nativeScriptDevWebpack.getExternalsHandler = () => {
+                        isGetExternalsHandlerCalled = true;
+                        return () => null;
                     };
 
                     const input = getInput({ platform, externals: ['nativescript-vue'] });
                     webpackConfig(input);
-                    expect(isCalled).toBe(true, 'Webpack.config.js must use the getConvertedExternals method');
+                    expect(isConvertExternalsCalled).toBe(true, 'Webpack.config.js must use the getConvertedExternals method');
+                    expect(isGetExternalsHandlerCalled).toBe(true, 'Webpack.config.js must use the getExternalsHandler method');
                 });
 
                 [
                     {
                         input: ['nativescript-vue'],
-                        expectedOutput: [/^nativescript-vue((\/.*)|$)/]
+                        expectedOutput: [/((node_modules\/)|^)nativescript-vue((\/.*)|$)/]
                     },
                     {
                         input: ['nativescript-vue', 'nativescript-angular'],
-                        expectedOutput: [/^nativescript-vue((\/.*)|$)/, /^nativescript-angular((\/.*)|$)/]
+                        expectedOutput: [/((node_modules\/)|^)nativescript-vue((\/.*)|$)/, /((node_modules\/)|^)nativescript-angular((\/.*)|$)/]
                     },
                 ].forEach(testCase => {
                     const input = getInput({ platform, externals: testCase.input });
 
                     it(`are correct regular expressions, for input ${testCase.input}`, () => {
                         const config = webpackConfig(input);
-                        expect(config.externals).toEqual(testCase.expectedOutput);
+                        expect(config.externals).toEqual(fakeExternalsHandler);
+                        expect(providedExternalRegExps).toEqual(testCase.expectedOutput);
                     });
                 });
             });

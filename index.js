@@ -92,11 +92,31 @@ exports.getSourceMapFilename = (hiddenSourceMap, appFolderPath, outputPath) => {
  */
 exports.getConvertedExternals = (externals) => {
     const modifiedExternals = (externals || []).map((e) => {
-        return new RegExp(`^${e}((/.*)|$)`);
+        return new RegExp(`((node_modules\/)|^)${e}((/.*)|$)`);
     });
 
     return modifiedExternals;
 };
+
+exports.getExternalsHandler = (externalRegexps) => {
+    if (!Array.isArray(externalRegexps) || externalRegexps.some(regExp => !(regExp instanceof RegExp))) {
+        throw new Error(`Expected Array of regular expressions. Got '${externalRegexps}'.`);
+    }
+
+    const handler = (context, request, callback) => {
+        let nonRelativeRequest = request;
+        if (request && request.startsWith(".")) {
+            nonRelativeRequest = path.join(context, request);
+        }
+
+        if (externalRegexps.some(regExp => regExp.test(nonRelativeRequest))) {
+            return callback(null, 'commonjs ' + request);
+        }
+        callback();
+    }
+
+    return handler;
+}
 
 const sanitize = name => name
     .split("")

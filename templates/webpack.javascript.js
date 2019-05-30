@@ -63,7 +63,7 @@ module.exports = env => {
     const config = {
         mode: uglify ? "production" : "development",
         context: appFullPath,
-        externals,
+        externals: nsWebpack.getExternalsHandler(externals),
         watchOptions: {
             ignored: [
                 appResourcesFullPath,
