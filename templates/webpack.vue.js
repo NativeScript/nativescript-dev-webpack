@@ -48,6 +48,7 @@ module.exports = env => {
         sourceMap, // --env.sourceMap
         hiddenSourceMap, // --env.hiddenSourceMap
         unitTesting, // --env.unitTesting
+        verbose, // --env.verbose
     } = env;
 
     const isAnySourceMapEnabled = !!sourceMap || !!hiddenSourceMap;
@@ -240,7 +241,7 @@ module.exports = env => {
                 "TNS_ENV": JSON.stringify(mode)
             }),
             // Remove all files from the out dir.
-            new CleanWebpackPlugin(itemsToClean),
+            new CleanWebpackPlugin(itemsToClean, { verbose: !!verbose }),
             // Copy assets to out dir. Add your own globs as needed.
             new CopyWebpackPlugin([
                 { from: { glob: "fonts/**" } },

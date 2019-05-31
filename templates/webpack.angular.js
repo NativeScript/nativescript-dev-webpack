@@ -50,6 +50,7 @@ module.exports = env => {
         hiddenSourceMap, // --env.hiddenSourceMap
         hmr, // --env.hmr,
         unitTesting, // --env.unitTesting
+        verbose, // --env.verbose
     } = env;
 
     const isAnySourceMapEnabled = !!sourceMap || !!hiddenSourceMap;
@@ -263,7 +264,7 @@ module.exports = env => {
                 "process": undefined,
             }),
             // Remove all files from the out dir.
-            new CleanWebpackPlugin(itemsToClean),
+            new CleanWebpackPlugin(itemsToClean, { verbose: !!verbose }),
             // Copy assets to out dir. Add your own globs as needed.
             new CopyWebpackPlugin([
                 { from: { glob: "fonts/**" } },
