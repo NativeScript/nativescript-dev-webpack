@@ -286,7 +286,7 @@ module.exports = env => {
         ]));
     }
 
-
+    
     if (report) {
         // Generate report files for bundles content
         config.plugins.push(new BundleAnalyzerPlugin({

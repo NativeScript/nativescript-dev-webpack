@@ -235,18 +235,6 @@ module.exports = env => {
         ],
     };
 
-    // Copy the native app resources to the out dir
-    // only if doing a full build (tns run/build) and not previewing (tns preview)
-    if (!externals || externals.length === 0) {
-        config.plugins.push(new CopyWebpackPlugin([
-            {
-                from: `${appResourcesFullPath}/${appResourcesPlatformDir}`,
-                to: `${dist}/App_Resources/${appResourcesPlatformDir}`,
-                context: projectRoot
-            },
-        ]));
-    }
-
     if (report) {
         // Generate report files for bundles content
         config.plugins.push(new BundleAnalyzerPlugin({
