@@ -214,7 +214,8 @@ module.exports = env => {
                             transpileOnly: !!hmr,
                             allowTsInNodeModules: true,
                             compilerOptions: {
-                                sourceMap: isAnySourceMapEnabled
+                                sourceMap: isAnySourceMapEnabled,
+                                declaration: false
                             }
                         },
                     }

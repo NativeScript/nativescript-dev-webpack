@@ -209,6 +209,9 @@ module.exports = env => {
                 options: {
                     appendTsSuffixTo: [/\.vue$/],
                     allowTsInNodeModules: true,
+                    compilerOptions: {
+                        declaration: false
+                    }
                 },
             },
             {
