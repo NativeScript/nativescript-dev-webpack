@@ -1,6 +1,6 @@
 const { RawSource } = require("webpack-sources");
 const { getPackageJson } = require("../projectHelpers");
-const { SNAPSHOT_ENTRY_MODULE } = require("./NativeScriptSnapshotPlugin");
+const { SNAPSHOT_ENTRY_NAME } = require("./NativeScriptSnapshotPlugin");
 
 exports.GenerateNativeScriptEntryPointsPlugin = (function () {
     function GenerateNativeScriptEntryPointsPlugin(appEntryName) {
@@ -39,8 +39,9 @@ exports.GenerateNativeScriptEntryPointsPlugin = (function () {
     }
 
     GenerateNativeScriptEntryPointsPlugin.prototype.generateEntryFile = function (compilation, entryPoint) {
-        const entryPointFileName = `${entryPoint.options.name}.js`;
-        if (entryPointFileName === SNAPSHOT_ENTRY_MODULE) {
+        const entryPointName = entryPoint.options.name;
+        let entryChunk;
+        if (entryPointName === SNAPSHOT_ENTRY_NAME) {
             // Do not require the snapshot entry dependencies as the snapshot will fail.
             return;
         }
@@ -48,17 +49,23 @@ exports.GenerateNativeScriptEntryPointsPlugin = (function () {
         const requireDeps =
             entryPoint.chunks.map(chunk => {
                 let requireChunkFiles = "";
-                chunk.files.forEach(fileName => {
-                    if (fileName !== entryPointFileName) {
+                if (chunk.name === entryPointName) {
+                    entryChunk = chunk;
+                } else {
+                    chunk.files.forEach(fileName => {
                         requireChunkFiles += `require("./${fileName}");`;
-                    }
-                });
+                    });
+                }
 
                 return requireChunkFiles;
             }).join("\n");
 
-        const currentEntryPointContent = compilation.assets[entryPointFileName].source();
-        compilation.assets[entryPointFileName] = new RawSource(`${requireDeps}${currentEntryPointContent}`);
+        if (entryChunk) {
+            entryChunk.files.forEach(fileName => {
+                const currentEntryFileContent = compilation.assets[fileName].source();
+                compilation.assets[fileName] = new RawSource(`${requireDeps}${currentEntryFileContent}`);
+            });
+        }
     }
 
     GenerateNativeScriptEntryPointsPlugin.prototype.addAsset = function (compilation, name, content) {
