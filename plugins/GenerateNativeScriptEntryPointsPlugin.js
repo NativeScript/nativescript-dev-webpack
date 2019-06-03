@@ -58,7 +58,7 @@ exports.GenerateNativeScriptEntryPointsPlugin = (function () {
                 }
 
                 return requireChunkFiles;
-            }).join("\n");
+            }).join("");
 
         if (entryChunk) {
             entryChunk.files.forEach(fileName => {
