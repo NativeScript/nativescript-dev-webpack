@@ -2,7 +2,10 @@ const { RawSource } = require("webpack-sources");
 const { getPackageJson } = require("../projectHelpers");
 const { SNAPSHOT_ENTRY_NAME } = require("./NativeScriptSnapshotPlugin");
 
+
 exports.GenerateNativeScriptEntryPointsPlugin = (function () {
+    const GenerationFailedError = "Unable to generate entry files.";
+
     function GenerateNativeScriptEntryPointsPlugin(appEntryName) {
         this.appEntryName = appEntryName;
         this.files = {};
@@ -60,12 +63,18 @@ exports.GenerateNativeScriptEntryPointsPlugin = (function () {
                 return requireChunkFiles;
             }).join("");
 
-        if (entryChunk) {
-            entryChunk.files.forEach(fileName => {
-                const currentEntryFileContent = compilation.assets[fileName].source();
-                compilation.assets[fileName] = new RawSource(`${requireDeps}${currentEntryFileContent}`);
-            });
+        if (!entryChunk) {
+            throw new Error(`${GenerationFailedError} Entry chunk not found for entry "${entryPointName}".`);
         }
+
+        entryChunk.files.forEach(fileName => {
+            if (!compilation.assets[fileName]) {
+                throw new Error(`${GenerationFailedError} File "${fileName}" not found for entry "${entryPointName}".`);
+            }
+
+            const currentEntryFileContent = compilation.assets[fileName].source();
+            compilation.assets[fileName] = new RawSource(`${requireDeps}${currentEntryFileContent}`);
+        });
     }
 
     GenerateNativeScriptEntryPointsPlugin.prototype.addAsset = function (compilation, name, content) {
