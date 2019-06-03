@@ -1,8 +1,11 @@
 const { RawSource } = require("webpack-sources");
 const { getPackageJson } = require("../projectHelpers");
-const { SNAPSHOT_ENTRY_MODULE } = require("./NativeScriptSnapshotPlugin");
+const { SNAPSHOT_ENTRY_NAME } = require("./NativeScriptSnapshotPlugin");
+
 
 exports.GenerateNativeScriptEntryPointsPlugin = (function () {
+    const GenerationFailedError = "Unable to generate entry files.";
+
     function GenerateNativeScriptEntryPointsPlugin(appEntryName) {
         this.appEntryName = appEntryName;
         this.files = {};
@@ -39,8 +42,9 @@ exports.GenerateNativeScriptEntryPointsPlugin = (function () {
     }
 
     GenerateNativeScriptEntryPointsPlugin.prototype.generateEntryFile = function (compilation, entryPoint) {
-        const entryPointFileName = `${entryPoint.options.name}.js`;
-        if (entryPointFileName === SNAPSHOT_ENTRY_MODULE) {
+        const entryPointName = entryPoint.options.name;
+        let entryChunk;
+        if (entryPointName === SNAPSHOT_ENTRY_NAME) {
             // Do not require the snapshot entry dependencies as the snapshot will fail.
             return;
         }
@@ -48,17 +52,29 @@ exports.GenerateNativeScriptEntryPointsPlugin = (function () {
         const requireDeps =
             entryPoint.chunks.map(chunk => {
                 let requireChunkFiles = "";
-                chunk.files.forEach(fileName => {
-                    if (fileName !== entryPointFileName) {
+                if (chunk.name === entryPointName) {
+                    entryChunk = chunk;
+                } else {
+                    chunk.files.forEach(fileName => {
                         requireChunkFiles += `require("./${fileName}");`;
-                    }
-                });
+                    });
+                }
 
                 return requireChunkFiles;
-            }).join("\n");
+            }).join("");
 
-        const currentEntryPointContent = compilation.assets[entryPointFileName].source();
-        compilation.assets[entryPointFileName] = new RawSource(`${requireDeps}${currentEntryPointContent}`);
+        if (!entryChunk) {
+            throw new Error(`${GenerationFailedError} Entry chunk not found for entry "${entryPointName}".`);
+        }
+
+        entryChunk.files.forEach(fileName => {
+            if (!compilation.assets[fileName]) {
+                throw new Error(`${GenerationFailedError} File "${fileName}" not found for entry "${entryPointName}".`);
+            }
+
+            const currentEntryFileContent = compilation.assets[fileName].source();
+            compilation.assets[fileName] = new RawSource(`${requireDeps}${currentEntryFileContent}`);
+        });
     }
 
     GenerateNativeScriptEntryPointsPlugin.prototype.addAsset = function (compilation, name, content) {

@@ -12,7 +12,7 @@ const schema = require("./options.json");
 
 const SNAPSHOT_ENTRY_NAME = "snapshot-entry";
 const SNAPSHOT_ENTRY_MODULE = `${SNAPSHOT_ENTRY_NAME}.js`;
-exports.SNAPSHOT_ENTRY_MODULE = SNAPSHOT_ENTRY_MODULE;
+exports.SNAPSHOT_ENTRY_NAME = SNAPSHOT_ENTRY_NAME;
 
 exports.NativeScriptSnapshotPlugin = (function () {
     function NativeScriptSnapshotPlugin(options) {
