@@ -56,7 +56,9 @@ exports.GenerateNativeScriptEntryPointsPlugin = (function () {
                     entryChunk = chunk;
                 } else {
                     chunk.files.forEach(fileName => {
-                        requireChunkFiles += `require("./${fileName}");`;
+                        if (!this.isHMRFile(fileName)) {
+                            requireChunkFiles += `require("./${fileName}");`;
+                        }
                     });
                 }
 
@@ -72,8 +74,10 @@ exports.GenerateNativeScriptEntryPointsPlugin = (function () {
                 throw new Error(`${GenerationFailedError} File "${fileName}" not found for entry "${entryPointName}".`);
             }
 
-            const currentEntryFileContent = compilation.assets[fileName].source();
-            compilation.assets[fileName] = new RawSource(`${requireDeps}${currentEntryFileContent}`);
+            if (!this.isHMRFile(fileName)) {
+                const currentEntryFileContent = compilation.assets[fileName].source();
+                compilation.assets[fileName] = new RawSource(`${requireDeps}${currentEntryFileContent}`);
+            }
         });
     }
 
@@ -82,6 +86,10 @@ exports.GenerateNativeScriptEntryPointsPlugin = (function () {
             this.files[name] = content;
             compilation.assets[name] = new RawSource(content);
         }
+    }
+
+    GenerateNativeScriptEntryPointsPlugin.prototype.isHMRFile = function (fileName) {
+        return fileName.indexOf("hot-update") > -1;
     }
 
     return GenerateNativeScriptEntryPointsPlugin;
