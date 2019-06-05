@@ -15,7 +15,7 @@ import {
 import { AngularCompilerPlugin } from '@ngtools/webpack';
 import { getResolvedEntryModule } from "../utils/transformers-utils";
 
-export function nsReplaceBootstrap(getNgCompiler: () => AngularCompilerPlugin): ts.TransformerFactory<ts.SourceFile> {
+export function nsReplaceBootstrap(getNgCompiler: () => AngularCompilerPlugin, entryPath: string, projectDir: string): ts.TransformerFactory<ts.SourceFile> {
     const shouldTransform = (fileName) => !fileName.endsWith('.ngfactory.ts') && !fileName.endsWith('.ngstyle.ts');
     const getTypeChecker = () => getNgCompiler().typeChecker;
 
@@ -24,7 +24,7 @@ export function nsReplaceBootstrap(getNgCompiler: () => AngularCompilerPlugin): 
         const ngCompiler = getNgCompiler();
         // TODO: use something public when available
         const enableIvy = (<any>ngCompiler)._compilerOptions && (<any>ngCompiler)._compilerOptions.enableIvy;
-        const entryModule = getResolvedEntryModule(ngCompiler);
+        const entryModule = getResolvedEntryModule(ngCompiler, projectDir);
 
         if (!shouldTransform(sourceFile.fileName) || !entryModule) {
             return ops;

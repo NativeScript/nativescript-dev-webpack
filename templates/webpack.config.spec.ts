@@ -16,15 +16,16 @@ class AngularCompilerStub {
     }
 };
 
-let uglifyJsOptions: any;
+let terserOptions: any;
 class TerserJsStub {
     constructor(options) {
-        uglifyJsOptions = options;
+        terserOptions = options;
     }
 };
 
 const nativeScriptDevWebpack = {
     GenerateBundleStarterPlugin: EmptyClass,
+    GenerateNativeScriptEntryPointsPlugin: EmptyClass,
     WatchStateLoggerPlugin: EmptyClass,
     PlatformFSPlugin: EmptyClass,
     getAppPath: () => 'app',
@@ -263,7 +264,7 @@ describe('webpack.config.js', () => {
             describe(`source map for webpack.${type}.js (${platform})`, () => {
 
                 beforeEach(() => {
-                    uglifyJsOptions = null;
+                    terserOptions = null;
                 });
 
                 it("should not set source maps without the flag", () => {
@@ -272,8 +273,8 @@ describe('webpack.config.js', () => {
                     const config = webpackConfig(input);
 
                     expect(config.devtool).toEqual("none");
-                    expect(uglifyJsOptions.sourceMap).toBeFalsy();
-                    expect(uglifyJsOptions.terserOptions.output.semicolons).toBeTruthy();
+                    expect(terserOptions.sourceMap).toBeFalsy();
+                    expect(terserOptions.terserOptions.output.semicolons).toBeTruthy();
                     expect(config.output.sourceMapFilename).toEqual("[file].map");
                 });
 
@@ -283,8 +284,8 @@ describe('webpack.config.js', () => {
                     const config = webpackConfig(input);
 
                     expect(config.devtool).toEqual("inline-source-map");
-                    expect(uglifyJsOptions.sourceMap).toBeTruthy();
-                    expect(uglifyJsOptions.terserOptions.output.semicolons).toBeFalsy();
+                    expect(terserOptions.sourceMap).toBeTruthy();
+                    expect(terserOptions.terserOptions.output.semicolons).toBeFalsy();
                     expect(config.output.sourceMapFilename).toEqual("[file].map");
                 });
             });
@@ -292,7 +293,7 @@ describe('webpack.config.js', () => {
             describe(`hidden source map for webpack.${type}.js (${platform})`, () => {
 
                 beforeEach(() => {
-                    uglifyJsOptions = null;
+                    terserOptions = null;
                 });
 
                 it("should not set source maps without the flag", () => {
@@ -301,8 +302,8 @@ describe('webpack.config.js', () => {
                     const config = webpackConfig(input);
 
                     expect(config.devtool).toEqual("none");
-                    expect(uglifyJsOptions.sourceMap).toBeFalsy();
-                    expect(uglifyJsOptions.terserOptions.output.semicolons).toBeTruthy();
+                    expect(terserOptions.sourceMap).toBeFalsy();
+                    expect(terserOptions.terserOptions.output.semicolons).toBeTruthy();
                     expect(config.output.sourceMapFilename).toEqual("[file].map");
                 });
 
@@ -312,8 +313,8 @@ describe('webpack.config.js', () => {
                     const config = webpackConfig(input);
 
                     expect(config.devtool).toEqual("hidden-source-map");
-                    expect(uglifyJsOptions.sourceMap).toBeTruthy();
-                    expect(uglifyJsOptions.terserOptions.output.semicolons).toBeFalsy();
+                    expect(terserOptions.sourceMap).toBeTruthy();
+                    expect(terserOptions.terserOptions.output.semicolons).toBeFalsy();
                     expect(config.output.sourceMapFilename).toEqual(join("..", "sourceMap", "[file].map"));
                 });
 
@@ -323,8 +324,8 @@ describe('webpack.config.js', () => {
                     const config = webpackConfig(input);
 
                     expect(config.devtool).toEqual("hidden-source-map");
-                    expect(uglifyJsOptions.sourceMap).toBeTruthy();
-                    expect(uglifyJsOptions.terserOptions.output.semicolons).toBeFalsy();
+                    expect(terserOptions.sourceMap).toBeTruthy();
+                    expect(terserOptions.terserOptions.output.semicolons).toBeFalsy();
                     expect(config.output.sourceMapFilename).toEqual(join("..", "sourceMap", "[file].map"));
                 });
 
@@ -335,8 +336,8 @@ describe('webpack.config.js', () => {
                     const config = webpackConfig(input);
 
                     expect(config.devtool).toEqual("hidden-source-map");
-                    expect(uglifyJsOptions.sourceMap).toBeTruthy();
-                    expect(uglifyJsOptions.terserOptions.output.semicolons).toBeFalsy();
+                    expect(terserOptions.sourceMap).toBeTruthy();
+                    expect(terserOptions.terserOptions.output.semicolons).toBeFalsy();
                     expect(config.output.sourceMapFilename).toEqual(join("..", newSourceMapFolder, "[file].map"));
                 });
             });

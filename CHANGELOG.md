@@ -1,3 +1,23 @@
+<a name="0.22.0"></a>
+# [0.22.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.21.0...0.22.0) (2019-05-15)
+
+
+### Bug Fixes
+
+* ignore the Webpack runtime chunks when sending HMR updates ([be82ab7](https://github.com/NativeScript/nativescript-dev-webpack/commit/be82ab7))
+* show proper stack traces from uglified code (split by new line instead of semicolon) ([0ae6030](https://github.com/NativeScript/nativescript-dev-webpack/commit/0ae6030))
+* sourceMap not generated with Uglify ([#819](https://github.com/NativeScript/nativescript-dev-webpack/issues/819)) ([b5fd066](https://github.com/NativeScript/nativescript-dev-webpack/commit/b5fd066))
+* support platform specific files that are not directly imported anywhere in the app ([#843](https://github.com/NativeScript/nativescript-dev-webpack/issues/843)) ([e1e9463](https://github.com/NativeScript/nativescript-dev-webpack/commit/e1e9463))
+* update the css loader in order to fix a bug with leading dashes of css classes ([#847](https://github.com/NativeScript/nativescript-dev-webpack/issues/847)) ([7670e33](https://github.com/NativeScript/nativescript-dev-webpack/commit/7670e33))
+* **hmr:** run ts-loader in transpileOnly mode ([#878](https://github.com/NativeScript/nativescript-dev-webpack/issues/878)) ([0317729](https://github.com/NativeScript/nativescript-dev-webpack/commit/0317729))
+
+
+### Features
+
+* replace UglifyJs with Terser ([621090a](https://github.com/NativeScript/nativescript-dev-webpack/commit/621090a))
+* support hidden source maps to map error stack traces from crash reports ([#854](https://github.com/NativeScript/nativescript-dev-webpack/issues/854)) ([dbcfbc2](https://github.com/NativeScript/nativescript-dev-webpack/commit/dbcfbc2))
+
+
 <a name="0.21.2"></a>
 ## [0.21.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.21.0...0.21.2) (2019-04-22)
 
@@ -531,7 +551,7 @@ module.exports = env => {
     nsWebpack.loadAdditionalPlugins({ projectDir: projectRoot }); // <----- Add this line
 
     // ...
-``` 
+```
 
 * The `getAppPath` method expects two arguments now - `platform` and `projectRoot`. The usage inside the project's `webpack.config.js` should be changed in the following way:
 

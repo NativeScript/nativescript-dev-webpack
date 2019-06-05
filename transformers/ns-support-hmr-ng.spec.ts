@@ -351,7 +351,8 @@ describe("@ngtools/webpack transformers", () => {
             });
 
             it(`${testCase.name} (in combination with AOT transformer)`, async () => {
-                const testFile = "/project/src/test-file.ts";
+                const projectDir = "/project/src/";
+                const testFile = `${projectDir}test-file.ts`;
                 const input = tags.stripIndent`${testCase.rawFile}`;
                 const output = tags.stripIndent`${testCase.transformedFileWithAot}`;
                 const { program, compilerHost } = createTypescriptContext(input);
@@ -363,7 +364,7 @@ describe("@ngtools/webpack transformers", () => {
                     },
                 };
 
-                const aotTransformer = nsReplaceBootstrap(() => ngCompiler);
+                const aotTransformer = nsReplaceBootstrap(() => ngCompiler, testFile, projectDir);
                 const hmrTransformer = nsSupportHmrNg(() => ngCompiler, testFile);
                 const result = transformTypescript(undefined, [aotTransformer, hmrTransformer], program, compilerHost);
 

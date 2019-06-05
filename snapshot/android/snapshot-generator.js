@@ -1,5 +1,5 @@
 const fs = require("fs");
-const { dirname, join } = require("path");
+const { dirname, join, EOL } = require("path");
 const os = require("os");
 const child_process = require("child_process");
 
@@ -12,6 +12,7 @@ const BUNDLE_PREAMBLE_PATH = join(__dirname, "snapshot-generator-tools/bundle-pr
 const BUNDLE_ENDING_PATH = join(__dirname, "snapshot-generator-tools/bundle-ending.js");
 const INCLUDE_GRADLE_PATH = join(__dirname, "snapshot-generator-tools/include.gradle");
 const MKSNAPSHOT_TOOLS_DOWNLOAD_ROOT_URL = "https://raw.githubusercontent.com/NativeScript/mksnapshot-tools/production/";
+const MKSNAPSHOT_TOOLS_DOWNLOAD_TIMEOUT = 60000;
 const SNAPSHOT_BLOB_NAME = "TNSSnapshot";
 
 function shellJsExecuteInDir(dir, action) {
@@ -66,7 +67,20 @@ SnapshotGenerator.prototype.downloadMksnapshotTool = function(snapshotToolsPath,
 
     const downloadUrl = MKSNAPSHOT_TOOLS_DOWNLOAD_ROOT_URL + mksnapshotToolRelativePath;
     createDirectory(dirname(mksnapshotToolPath));
-    snapshotToolsDownloads[mksnapshotToolPath] = downloadFile(downloadUrl, mksnapshotToolPath);
+    snapshotToolsDownloads[mksnapshotToolPath] = downloadFile(downloadUrl, mksnapshotToolPath, MKSNAPSHOT_TOOLS_DOWNLOAD_TIMEOUT);
+    snapshotToolsDownloads[mksnapshotToolPath].catch(err => {
+        const errorMessage = err && err.message ? err.message : "";
+        let cleanupError = "";
+        try {
+            fs.unlinkSync(mksnapshotToolPath);
+        } catch (unlinkErr) {
+            if (unlinkErr && unlinkErr.code !== "ENOENT") {
+                cleanupError = `${EOL}Failed to cleanup mksnapshot tool.`;
+            }
+        }
+
+        throw new Error(`Failed to download mksnapshot tool. Error: ${errorMessage}.${cleanupError}`);
+    });
     return snapshotToolsDownloads[mksnapshotToolPath];
 }
 

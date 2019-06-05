@@ -1,10 +1,11 @@
-import { AppiumDriver, createDriver, SearchOptions } from "nativescript-dev-appium";
+import { AppiumDriver, createDriver, SearchOptions, nsCapabilities } from "nativescript-dev-appium";
 import { assert } from "chai";
 
 describe("sample scenario", () => {
     let driver: AppiumDriver;
 
-    before(async () => {
+    before(async function () {
+        nsCapabilities.testReporter.context = this;
         driver = await createDriver();
     });
 
@@ -24,12 +25,12 @@ describe("sample scenario", () => {
         }
     });
 
-    after(async () => {
+    after(async function () {
         await driver.quit();
         console.log("Quit driver!");
     });
 
-    it("should the button on second page work", async () => {
+    it("should the button on second page work", async function () {
         const btnNav = await driver.findElementByText("btnNav");
         await btnNav.tap();
 
@@ -45,7 +46,7 @@ describe("sample scenario", () => {
         await driver.navBack();
     });
 
-    it("should the button on main page work", async () => {
+    it("should the button on main page work", async function () {
         const btnTap = await driver.findElementByText("TAP");
         await btnTap.tap();
 
@@ -68,5 +69,5 @@ describe("sample scenario", () => {
         });
     }
 
-    const getPlatformLabel = async () => { return driver.isAndroid ? await driver.findElementByText("android") : await driver.findElementByText("ios"); }
+    const getPlatformLabel = async function () { return driver.isAndroid ? await driver.findElementByText("android") : await driver.findElementByText("ios"); }
 });
