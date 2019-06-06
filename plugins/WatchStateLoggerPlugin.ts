@@ -1,5 +1,3 @@
-import { join } from "path";
-
 export enum messages {
     compilationComplete = "Webpack compilation complete.",
     startWatching = "Webpack compilation complete. Watching for file changes.",
@@ -31,7 +29,7 @@ export class WatchStateLoggerPlugin {
                 console.log(messages.compilationComplete);
             }
 
-            const runtimeOnlyFiles = getWebpackRuntimeOnlyFiles(compilation, compiler.context);
+            const runtimeOnlyFiles = getWebpackRuntimeOnlyFiles(compilation);
             let emittedFiles = Object
                 .keys(compilation.assets)
                 .filter(assetKey => compilation.assets[assetKey].emitted);
@@ -43,7 +41,7 @@ export class WatchStateLoggerPlugin {
     }
 }
 
-function getWebpackRuntimeOnlyFiles(compilation, basePath) {
+function getWebpackRuntimeOnlyFiles(compilation) {
     let runtimeOnlyFiles = [];
     try {
         runtimeOnlyFiles = [].concat(...Array.from<any>(compilation.entrypoints.values())
@@ -52,9 +50,7 @@ function getWebpackRuntimeOnlyFiles(compilation, basePath) {
             .filter(runtimeChunk => !!runtimeChunk && runtimeChunk.preventIntegration)
             .map(runtimeChunk => runtimeChunk.files))
             // get only the unique files in case of "single" runtime (e.g. runtime.js)
-            .filter((value, index, self) => self.indexOf(value) === index)
-            // convert to absolute paths
-            .map(fileName => join(basePath, fileName));
+            .filter((value, index, self) => self.indexOf(value) === index);
     } catch (e) {
         // breaking change in the Webpack API
         console.log("Warning: Unable to find Webpack runtime files.");
