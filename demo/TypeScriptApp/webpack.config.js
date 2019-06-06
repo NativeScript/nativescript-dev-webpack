@@ -5,6 +5,7 @@ const nsWebpack = require("nativescript-dev-webpack");
 const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
 const TerserPlugin = require("terser-webpack-plugin");
@@ -55,6 +56,9 @@ module.exports = env => {
     const entryModule = nsWebpack.getEntryModule(appFullPath, platform);
     const entryPath = `.${sep}${entryModule}.ts`;
     const entries = { bundle: entryPath, application: "./application.android" };
+
+    const tsConfigPath = resolve(projectRoot, "tsconfig.tns.json");
+
     if (platform === "ios") {
         entries["tns_modules/tns-core-modules/inspector_modules"] = "inspector_modules.js";
     };
@@ -207,7 +211,8 @@ module.exports = env => {
                     use: {
                         loader: "ts-loader",
                         options: {
-                            configFile: "tsconfig.tns.json",
+                            configFile: tsConfigPath,
+                            transpileOnly: !!hmr,
                             allowTsInNodeModules: true,
                             compilerOptions: {
                                 sourceMap: isAnySourceMapEnabled
@@ -231,17 +236,7 @@ module.exports = env => {
                 { from: { glob: "**/*.jpg" } },
                 { from: { glob: "**/*.png" } },
             ], { ignore: [`${relative(appPath, appResourcesFullPath)}/**`] }),
-            // Generate a bundle starter script and activate it in package.json
-            new nsWebpack.GenerateBundleStarterPlugin(
-                // Don't include `runtime.js` when creating a snapshot. The plugin
-                // configures the WebPack runtime to be generated inside the snapshot
-                // module and no `runtime.js` module exist.
-                (snapshot ? [] : ["./runtime"])
-                    .concat([
-                        "./vendor",
-                        "./bundle",
-                    ])
-            ),
+            new nsWebpack.GenerateNativeScriptEntryPointsPlugin("bundle"),
             // For instructions on how to set up workers with webpack
             // check out https://github.com/nativescript/worker-loader
             new NativeScriptWorkerPlugin(),
@@ -290,6 +285,12 @@ module.exports = env => {
 
     if (hmr) {
         config.plugins.push(new webpack.HotModuleReplacementPlugin());
+
+        // With HMR ts-loader should run in `transpileOnly` mode,
+        // so assure type-checking with fork-ts-checker-webpack-plugin
+        config.plugins.push(new ForkTsCheckerWebpackPlugin({
+            tsconfig: tsConfigPath
+        }));
     }
 
 
