@@ -61,7 +61,7 @@ module.exports = env => {
     const entryPath = `.${sep}${entryModule}`;
     const entries = { bundle: entryPath };
     if (platform === "ios") {
-        entries["tns_modules/tns-core-modules/inspector_modules"] = "inspector_modules.js";
+        entries["tns_modules/tns-core-modules/inspector_modules"] = "inspector_modules";
     };
 
     const ngCompilerTransformers = [];
