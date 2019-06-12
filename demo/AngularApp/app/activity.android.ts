@@ -1,7 +1,7 @@
-import {setActivityCallbacks, AndroidActivityCallbacks} from "tns-core-modules/ui/frame";
+import { setActivityCallbacks, AndroidActivityCallbacks } from "tns-core-modules/ui/frame";
 
 @JavaProxy("org.myApp.MainActivity")
-class Activity extends android.support.v7.app.AppCompatActivity {
+class Activity extends androidx.appcompat.app.AppCompatActivity {
     public isNativeScriptActivity: boolean;
     private _callbacks: AndroidActivityCallbacks;
 
@@ -9,7 +9,7 @@ class Activity extends android.support.v7.app.AppCompatActivity {
         // Set isNativeScriptActivity in onCreate (as done in the original NativeScript activity code).
         // The JS constructor might not be called because the activity is created from Android.
         this.isNativeScriptActivity = true;
-        
+
         if (!this._callbacks) {
             setActivityCallbacks(this);
         }
