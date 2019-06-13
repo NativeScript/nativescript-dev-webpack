@@ -58,7 +58,8 @@ module.exports = env => {
 
     const tsConfigPath = resolve(projectRoot, "tsconfig.tns.json");
 
-    if (platform === "ios") {
+    const areCoreModulesExternal = Array.isArray(env.externals) && env.externals.some(e => e.indexOf("tns-core-modules") > -1);
+    if (platform === "ios" && !areCoreModulesExternal) {
         entries["tns_modules/tns-core-modules/inspector_modules"] = "inspector_modules";
     };
 
