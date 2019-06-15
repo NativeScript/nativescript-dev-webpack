@@ -27,10 +27,9 @@
     "mocha": "~5.2.0",
     "mochawesome": "~3.1.2",
     "nativescript-dev-appium": "next",
-    "nativescript-dev-sass": "next",
-    "nativescript-dev-typescript": "next",
     "nativescript-dev-webpack": "next",
-    "typescript": "~3.2.2"
+    "typescript": "~3.2.2",
+    "node-sass": "^4.12.0"
   },
   "scripts": {
     "setup": "npm pack ../../ && npm i -D nativescript-dev-webpack*.tgz",
