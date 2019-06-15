@@ -1,4 +1,4 @@
-import {setActivityCallbacks, AndroidActivityCallbacks} from "ui/frame";
+import {setActivityCallbacks, AndroidActivityCallbacks} from "tns-core-modules/ui/frame";
 
 @JavaProxy("org.myApp.MainActivity")
 class Activity extends androidx.appcompat.app.AppCompatActivity {
