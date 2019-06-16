@@ -58,8 +58,9 @@ module.exports = env => {
 
     const tsConfigPath = resolve(projectRoot, "tsconfig.tns.json");
 
-    if (platform === "ios") {
-        entries["tns_modules/tns-core-modules/inspector_modules"] = "inspector_modules.js";
+    const areCoreModulesExternal = Array.isArray(env.externals) && env.externals.some(e => e.indexOf("tns-core-modules") > -1);
+    if (platform === "ios" && !areCoreModulesExternal) {
+        entries["tns_modules/tns-core-modules/inspector_modules"] = "inspector_modules";
     };
 
     let sourceMapFilename = nsWebpack.getSourceMapFilename(hiddenSourceMap, __dirname, dist);
@@ -211,10 +212,13 @@ module.exports = env => {
                         loader: "ts-loader",
                         options: {
                             configFile: tsConfigPath,
-                            transpileOnly: !!hmr,
+                            // https://github.com/TypeStrong/ts-loader/blob/ea2fcf925ec158d0a536d1e766adfec6567f5fb4/README.md#faster-builds
+                            // https://github.com/TypeStrong/ts-loader/blob/ea2fcf925ec158d0a536d1e766adfec6567f5fb4/README.md#hot-module-replacement
+                            transpileOnly: true,
                             allowTsInNodeModules: true,
                             compilerOptions: {
-                                sourceMap: isAnySourceMapEnabled
+                                sourceMap: isAnySourceMapEnabled,
+                                declaration: false
                             }
                         },
                     }
@@ -245,6 +249,14 @@ module.exports = env => {
             }),
             // Does IPC communication with the {N} CLI to notify events when running in watch mode.
             new nsWebpack.WatchStateLoggerPlugin(),
+            // https://github.com/TypeStrong/ts-loader/blob/ea2fcf925ec158d0a536d1e766adfec6567f5fb4/README.md#faster-builds
+            // https://github.com/TypeStrong/ts-loader/blob/ea2fcf925ec158d0a536d1e766adfec6567f5fb4/README.md#hot-module-replacement
+            new ForkTsCheckerWebpackPlugin({
+                tsconfig: tsConfigPath,
+                async: false,
+                useTypescriptIncrementalApi: true,
+                memoryLimit: 4096
+            })
         ],
     };
 
@@ -284,12 +296,6 @@ module.exports = env => {
 
     if (hmr) {
         config.plugins.push(new webpack.HotModuleReplacementPlugin());
-
-        // With HMR ts-loader should run in `transpileOnly` mode,
-        // so assure type-checking with fork-ts-checker-webpack-plugin
-        config.plugins.push(new ForkTsCheckerWebpackPlugin({
-            tsconfig: tsConfigPath
-        }));
     }
 
 

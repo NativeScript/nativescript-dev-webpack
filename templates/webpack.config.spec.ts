@@ -115,6 +115,20 @@ describe('webpack.config.js', () => {
                     expect(isCalled).toBe(true, 'Webpack.config.js must use the getConvertedExternals method');
                 });
 
+                if (platform === "ios") {
+                    it('has inspector_modules entry when tns-core-modules are not externals', () => {
+                        const input = getInput({ platform, externals: ['nativescript-vue'] });
+                        const config = webpackConfig(input);
+                        expect(config.entry["tns_modules/tns-core-modules/inspector_modules"]).toEqual("inspector_modules");
+                    });
+
+                    it('does not have inspector_modules entry when tns-core-modules are externals', () => {
+                        const input = getInput({ platform, externals: ['tns-core-modules'] });
+                        const config = webpackConfig(input);
+                        expect(config.entry["tns_modules/tns-core-modules/inspector_modules"]).toBeUndefined();
+                    });
+                }
+
                 [
                     {
                         input: ['nativescript-vue'],
