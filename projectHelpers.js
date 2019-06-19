@@ -3,11 +3,6 @@ const fs = require("fs");
 
 const hook = require("nativescript-hook")(__dirname);
 
-const PROJECT_DATA_GETTERS = {
-    appPath: "getAppDirectoryRelativePath",
-    appResourcesPath: "getAppResourcesRelativeDirectoryPath",
-};
-
 const isTypeScript = ({ projectDir, packageJson } = {}) => {
     packageJson = packageJson || getPackageJson(projectDir);
 
@@ -78,14 +73,6 @@ const getPackageJsonPath = projectDir => resolve(projectDir, "package.json");
 const isAndroid = platform => /android/i.test(platform);
 const isIos = platform => /ios/i.test(platform);
 
-function getAppPathFromProjectData(data) {
-    return safeGet(data, PROJECT_DATA_GETTERS.appPath);
-}
-
-function getAppResourcesPathFromProjectData(data) {
-    return safeGet(data, PROJECT_DATA_GETTERS.appResourcesPath);
-}
-
 function safeGet(object, property, ...args) {
     if (!object) {
         return;
@@ -112,8 +99,6 @@ function convertSlashesInPath(modulePath) {
 const isWindows = process.platform.startsWith("win32");
 
 module.exports = {
-    getAppPathFromProjectData,
-    getAppResourcesPathFromProjectData,
     getPackageJson,
     getProjectDir,
     isAndroid,

@@ -11,43 +11,8 @@
   "nativescript": {
     "hooks": [
       {
-        "type": "before-prepareJSApp",
-        "script": "lib/before-prepareJS.js",
-        "inject": true
-      },
-      {
-        "type": "before-cleanApp",
-        "script": "lib/before-cleanApp.js",
-        "inject": true
-      },
-      {
-        "type": "before-watch",
-        "script": "lib/before-watch.js",
-        "inject": true
-      },
-      {
-        "type": "after-watch",
-        "script": "lib/after-watch.js",
-        "inject": true
-      },
-      {
-        "type": "before-watchPatterns",
-        "script": "lib/before-watchPatterns.js",
-        "inject": true
-      },
-      {
-        "type": "before-shouldPrepare",
-        "script": "lib/before-shouldPrepare.js",
-        "inject": true
-      },
-      {
         "type": "after-prepare",
         "script": "lib/after-prepare.js",
-        "inject": true
-      },
-      {
-        "type": "before-preview-sync",
-        "script": "lib/before-preview-sync",
         "inject": true
       }
     ]
@@ -79,6 +44,7 @@
     "copy-webpack-plugin": "~4.6.0",
     "css-loader": "~2.1.1",
     "fork-ts-checker-webpack-plugin": "1.3.0",
+    "extra-watch-webpack-plugin": "1.0.3",
     "global-modules-path": "2.0.0",
     "minimatch": "3.0.4",
     "nativescript-hook": "0.2.4",

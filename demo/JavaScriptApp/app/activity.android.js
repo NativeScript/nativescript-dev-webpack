@@ -1,4 +1,4 @@
-const frame = require("ui/frame");
+const frame = require("tns-core-modules/ui/frame");
 
 const superProto = androidx.appcompat.app.AppCompatActivity.prototype;
 androidx.appcompat.app.AppCompatActivity.extend("org.myApp.MainActivity", {

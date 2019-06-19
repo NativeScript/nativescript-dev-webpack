@@ -1,5 +1,3 @@
-import { join } from "path";
-
 export enum messages {
     compilationComplete = "Webpack compilation complete.",
     startWatching = "Webpack compilation complete. Watching for file changes.",
@@ -31,24 +29,21 @@ export class WatchStateLoggerPlugin {
                 console.log(messages.compilationComplete);
             }
 
-            const runtimeOnlyFiles = getWebpackRuntimeOnlyFiles(compilation, compiler.context);
             let emittedFiles = Object
                 .keys(compilation.assets)
                 .filter(assetKey => compilation.assets[assetKey].emitted);
 
-            // provide fake paths to the {N} CLI - relative to the 'app' folder
-            // in order to trigger the livesync process
-            const emittedFilesFakePaths = emittedFiles
-                .map(file => join(compiler.context, file));
+            const webpackRuntimeFiles = getWebpackRuntimeOnlyFiles(compilation);
+            const entryPointFiles = getEntryPointFiles(compilation);
 
             process.send && process.send(messages.compilationComplete, error => null);
             // Send emitted files so they can be LiveSynced if need be
-            process.send && process.send({ emittedFiles: emittedFilesFakePaths, webpackRuntimeFiles: runtimeOnlyFiles }, error => null);
+            process.send && process.send({ emittedFiles, webpackRuntimeFiles, entryPointFiles }, error => null);
         });
     }
 }
 
-function getWebpackRuntimeOnlyFiles(compilation, basePath) {
+function getWebpackRuntimeOnlyFiles(compilation) {
     let runtimeOnlyFiles = [];
     try {
         runtimeOnlyFiles = [].concat(...Array.from<any>(compilation.entrypoints.values())
@@ -57,13 +52,32 @@ function getWebpackRuntimeOnlyFiles(compilation, basePath) {
             .filter(runtimeChunk => !!runtimeChunk && runtimeChunk.preventIntegration)
             .map(runtimeChunk => runtimeChunk.files))
             // get only the unique files in case of "single" runtime (e.g. runtime.js)
-            .filter((value, index, self) => self.indexOf(value) === index)
-            // convert to absolute paths
-            .map(fileName => join(basePath, fileName));
+            .filter((value, index, self) => self.indexOf(value) === index);
     } catch (e) {
         // breaking change in the Webpack API
         console.log("Warning: Unable to find Webpack runtime files.");
     }
 
     return runtimeOnlyFiles;
+}
+
+function getEntryPointFiles(compilation) {
+    const entryPointFiles = [];
+    try {
+       Array.from(compilation.entrypoints.values())
+            .forEach((entrypoint: any) => {
+                const entryChunk = entrypoint.chunks.find(chunk => chunk.name === entrypoint.options.name);
+                if (entryChunk) {
+                    entryChunk.files.forEach(fileName => {
+                        if (fileName.indexOf("hot-update") === -1) {
+                            entryPointFiles.push(fileName);
+                        }
+                    });
+                }
+            });
+    } catch (e) {
+        console.log("Warning: Unable to find Webpack entry point files.");
+    }
+
+    return entryPointFiles;
 }
