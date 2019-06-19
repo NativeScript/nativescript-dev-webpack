@@ -94,7 +94,7 @@ module.exports = env => {
                 '~': appFullPath
             },
             // don't resolve symlinks to symlinked modules
-            symlinks: false
+            symlinks: true
         },
         resolveLoader: {
             // don't resolve symlinks to symlinked loaders
