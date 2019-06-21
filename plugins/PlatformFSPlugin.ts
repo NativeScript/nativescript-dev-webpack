@@ -33,11 +33,11 @@ export class PlatformFSPlugin {
     public apply(compiler) {
         this.context = compiler.context;
         compiler.inputFileSystem = mapFileSystem({
-            fs: compiler.inputFileSystem,
             platform: this.platform,
             platforms: this.platforms,
             ignore: this.ignore,
-            context: this.context
+            context: this.context,
+            compiler
         });
     }
 }
@@ -46,15 +46,16 @@ export interface MapFileSystemArgs {
     /**
      * This is the underlying webpack compiler.inputFileSystem, its interface is similar to Node's fs.
      */
-    readonly fs: any;
     readonly context: string;
     readonly platform: string;
     readonly platforms: ReadonlyArray<string>;
     readonly ignore: ReadonlyArray<string>;
+    readonly compiler: any;
 }
 
 export function mapFileSystem(args: MapFileSystemArgs): any {
-    let { fs, platform, platforms, ignore, context } = args;
+    let { platform, platforms, ignore, context, compiler } = args;
+    const fs = compiler.inputFileSystem;
     ignore = args.ignore || [];
 
     const minimatchFileFilters = ignore.map(pattern => {
@@ -122,7 +123,8 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
     }
 
     const platformSuffix = "." + platform + ".";
-    mappedFS.watch = function(
+    const baseWatch = compiler.watchFileSystem.watch;
+    compiler.watchFileSystem.watch = function(
         files,
         dirs,
         missing,
@@ -135,11 +137,15 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
             missingModified,
             fileTimestamps,
             contextTimestamps
+        ) => void,
+        callbackUndelayed: (
+            filename,
+            timestamp
         ) => void) {
 
         const mappedFiles = listWithPlatformSpecificFiles(files);
 
-        const callbackCalled = function(
+        const newCallback = function(
                 err,
                 filesModified,
                 contextModified,
@@ -148,13 +154,17 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
                 contextTimestamps) {
 
             const mappedFilesModified = filterIgnoredFilesAlienFilesAndMap(filesModified);
-
             const mappedTimestamps = new Map();
-            for(const file in fileTimestamps) {
-                const timestamp = fileTimestamps[file];
+            const fileTimestampsAsArray = Array.from(fileTimestamps);
+
+            for (const entry of fileTimestampsAsArray) {
+                const file = entry[0];
+                const timestamp = entry[1];
                 mappedTimestamps.set(file, timestamp);
+
                 const platformSuffixIndex = file.lastIndexOf(platformSuffix);
                 if (platformSuffixIndex != -1) {
+                    // file name without platform suffix
                     const mappedFile = file.substr(0, platformSuffixIndex) + file.substr(platformSuffixIndex + platformSuffix.length - 1);
                     if (!(mappedFile in fileTimestamps)) {
                         mappedTimestamps.set(mappedFile, timestamp);
@@ -165,7 +175,12 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
             callback.call(this, err, mappedFilesModified, contextModified, missingModified, mappedTimestamps, contextTimestamps);
         }
 
-        fs.watch(mappedFiles, dirs, missing, startTime, watchOptions, callbackCalled);
+        const newCallbackUndelayed = function(filename, timestamp) {
+            compiler.watchFileSystem.inputFileSystem.purge(filename);
+            callbackUndelayed(filename, timestamp);
+        };
+
+        baseWatch.apply(compiler.watchFileSystem.watch, [mappedFiles, dirs, missing, startTime, watchOptions, newCallback, newCallbackUndelayed]);
     }
 
     /**
