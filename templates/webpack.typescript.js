@@ -6,7 +6,6 @@ const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const ExtraWatchWebpackPlugin = require('extra-watch-webpack-plugin');
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
 const TerserPlugin = require("terser-webpack-plugin");
@@ -265,9 +264,6 @@ module.exports = env => {
                 async: false,
                 useTypescriptIncrementalApi: true,
                 memoryLimit: 4096
-            }),
-            new ExtraWatchWebpackPlugin({
-                files: [`node_modules/**/*.${platform}.ts`]
             })
         ],
     };

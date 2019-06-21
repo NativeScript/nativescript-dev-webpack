@@ -3,7 +3,6 @@ const { join, relative, resolve, sep } = require("path");
 const webpack = require("webpack");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
-const ExtraWatchWebpackPlugin = require('extra-watch-webpack-plugin');
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const TerserPlugin = require("terser-webpack-plugin");
 
@@ -258,10 +257,7 @@ module.exports = env => {
                 platforms,
             }),
             // Does IPC communication with the {N} CLI to notify events when running in watch mode.
-            new nsWebpack.WatchStateLoggerPlugin(),
-            new ExtraWatchWebpackPlugin({
-                files: [`node_modules/**/*.${platform}.ts`, `node_modules/**/*.${platform}.js`]
-            })
+            new nsWebpack.WatchStateLoggerPlugin()
         ],
     };
 
