@@ -2,7 +2,14 @@ const unitTestingConfigLoader = require("./unit-testing-config-loader");
 
 module.exports = function (source, map) {
     this.cacheable();
-    const { angular = false, loadCss = true, unitTesting, projectRoot, appFullPath, registerModules = /(root|page)\.(xml|css|js|ts|scss)$/ } = this.query;
+    const {
+        angular = false,
+        loadCss = true,
+        unitTesting,
+        projectRoot,
+        appFullPath,
+        registerModules = /(root|page)(\.(land|port|phone|tablet|minH\d+|minW\d+|minWH\d+))?\.(xml|css|js|ts|scss)$/ 
+    } = this.query;
 
     if (unitTesting) {
         source = unitTestingConfigLoader({ appFullPath, projectRoot, angular, rootPagesRegExp: registerModules });

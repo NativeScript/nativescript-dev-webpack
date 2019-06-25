@@ -265,7 +265,7 @@ module.exports = env => {
     if (unitTesting) {
         config.module.rules.push(
             {
-                test: /-page\.js$/,
+                test: /-page(\.(land|port|phone|tablet|minH\d+|minW\d+|minWH\d+))?\.js$/,
                 use: "nativescript-dev-webpack/script-hot-loader"
             },
             {

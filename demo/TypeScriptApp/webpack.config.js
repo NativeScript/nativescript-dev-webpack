@@ -186,7 +186,7 @@ module.exports = env => {
                 },
 
                 {
-                    test: /-page\.ts$/,
+                    test: /-page(\.(land|port|phone|tablet|minH\d+|minW\d+|minWH\d+))?\.ts$/,
                     use: "nativescript-dev-webpack/script-hot-loader"
                 },
 
