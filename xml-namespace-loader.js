@@ -62,7 +62,6 @@ module.exports = function (source, map) {
                                 resolvePromise(this.context, `${localModulePath}.xml`)
                                     .then((xml) => {
                                         namespaces.push({ name: `${moduleName}.xml`, path: xml });
-                                        namespaces.push({ name: moduleName, path: xml });
                                         this.addDependency(xml);
                                     })
                                     .catch(() => {
