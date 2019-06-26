@@ -6,10 +6,13 @@ module.exports = function ({ appFullPath, projectRoot, angular, rootPagesRegExp 
     const testFilesRegExp = /tests\/.*\.(ts|js)/;
     const runnerFullPath = join(projectRoot, "node_modules", "nativescript-unit-test-runner");
     const runnerRelativePath = convertSlashesInPath(relative(appFullPath, runnerFullPath));
+    const appCssFilePath = join(runnerRelativePath, "app.css");
     let source = `
         require("tns-core-modules/bundle-entry-points");
         const runnerContext = require.context("${runnerRelativePath}", true, ${rootPagesRegExp});
         global.registerWebpackModules(runnerContext);
+        global.registerModule("${appCssFilePath}", () => require("${appCssFilePath}"));
+        require("tns-core-modules/application").setCssFileName("${appCssFilePath}");
     `;
 
     if (angular) {
