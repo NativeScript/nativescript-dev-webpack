@@ -64,10 +64,9 @@ function getWebpackRuntimeOnlyFiles(compilation) {
 function getEntryPointFiles(compilation) {
     const entryPointFiles = [];
     try {
-       Array.from(compilation.entrypoints.values())
+        Array.from(compilation.entrypoints.values())
             .forEach((entrypoint: any) => {
-                const entryChunk = entrypoint.chunks.find(chunk => chunk.name === entrypoint.options.name);
-                if (entryChunk) {
+                for (const entryChunk of entrypoint.chunks) {
                     entryChunk.files.forEach(fileName => {
                         if (fileName.indexOf("hot-update") === -1) {
                             entryPointFiles.push(fileName);
@@ -79,5 +78,6 @@ function getEntryPointFiles(compilation) {
         console.log("Warning: Unable to find Webpack entry point files.");
     }
 
-    return entryPointFiles;
+    return entryPointFiles
+        .filter((value, index, self) => self.indexOf(value) === index); // get only the unique files
 }
