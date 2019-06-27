@@ -13,7 +13,7 @@ class Activity extends androidx.appcompat.app.AppCompatActivity {
             setActivityCallbacks(this);
         }
 
-        this._callbacks.onCreate(this, savedInstanceState, super.onCreate);
+        this._callbacks.onCreate(this, savedInstanceState, this.getIntent(), super.onCreate);
     }
 
     protected onSaveInstanceState(outState: any): void { // android.os.Bundle
