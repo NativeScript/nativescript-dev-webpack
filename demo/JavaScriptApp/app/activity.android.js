@@ -10,7 +10,7 @@ androidx.appcompat.app.AppCompatActivity.extend("org.myApp.MainActivity", {
         if(!this._callbacks) {
             frame.setActivityCallbacks(this);
         }
-        this._callbacks.onCreate(this, savedInstanceState, superProto.onCreate);
+        this._callbacks.onCreate(this, savedInstanceState, this.getIntent(), superProto.onCreate);
     },
     onSaveInstanceState: function(outState) {
         this._callbacks.onSaveInstanceState(this, outState, superProto.onSaveInstanceState);

@@ -6,7 +6,7 @@ purpose of the file is to pass control to the app’s first module.
 
 var application = require("tns-core-modules/application");
 
-application.start({ moduleName: "main-page" });
+application.run({ moduleName: "app-root" });
 
 /*
 Do not place any code after the application has been started as it will not
