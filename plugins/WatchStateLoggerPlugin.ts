@@ -33,51 +33,28 @@ export class WatchStateLoggerPlugin {
                 .keys(compilation.assets)
                 .filter(assetKey => compilation.assets[assetKey].emitted);
 
-            const webpackRuntimeFiles = getWebpackRuntimeOnlyFiles(compilation);
-            const entryPointFiles = getEntryPointFiles(compilation);
+            const chunkFiles = getChunkFiles(compilation);
 
             process.send && process.send(messages.compilationComplete, error => null);
             // Send emitted files so they can be LiveSynced if need be
-            process.send && process.send({ emittedFiles, webpackRuntimeFiles, entryPointFiles }, error => null);
+            process.send && process.send({ emittedFiles, chunkFiles }, error => null);
         });
     }
 }
 
-function getWebpackRuntimeOnlyFiles(compilation) {
-    let runtimeOnlyFiles = [];
+function getChunkFiles(compilation) {
+    const chunkFiles = [];
     try {
-        runtimeOnlyFiles = [].concat(...Array.from<any>(compilation.entrypoints.values())
-            .map(entrypoint => entrypoint.runtimeChunk)
-            // filter embedded runtime chunks (e.g. part of bundle.js or inspector-modules.js)
-            .filter(runtimeChunk => !!runtimeChunk && runtimeChunk.preventIntegration)
-            .map(runtimeChunk => runtimeChunk.files))
-            // get only the unique files in case of "single" runtime (e.g. runtime.js)
-            .filter((value, index, self) => self.indexOf(value) === index);
-    } catch (e) {
-        // breaking change in the Webpack API
-        console.log("Warning: Unable to find Webpack runtime files.");
-    }
-
-    return runtimeOnlyFiles;
-}
-
-function getEntryPointFiles(compilation) {
-    const entryPointFiles = [];
-    try {
-        Array.from(compilation.entrypoints.values())
-            .forEach((entrypoint: any) => {
-                for (const entryChunk of entrypoint.chunks) {
-                    entryChunk.files.forEach(fileName => {
-                        if (fileName.indexOf("hot-update") === -1) {
-                            entryPointFiles.push(fileName);
-                        }
-                    });
+        compilation.chunks.forEach(chunk => {
+            chunk.files.forEach(file => {
+                if (file.indexOf("hot-update") === -1) {
+                    chunkFiles.push(file);
                 }
             });
+        });
     } catch (e) {
-        console.log("Warning: Unable to find Webpack entry point files.");
+        console.log("Warning: Unable to find chunk files.");
     }
 
-    return entryPointFiles
-        .filter((value, index, self) => self.indexOf(value) === index); // get only the unique files
+    return chunkFiles;
 }
