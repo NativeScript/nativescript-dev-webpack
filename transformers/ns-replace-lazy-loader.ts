@@ -93,7 +93,8 @@ export function addArrayPropertyValueToNgModule(
 
             // the target field is missing, we will insert it @NgModule({ otherProps })
             const lastConfigObjPropertyNode = ngModuleConfigObjectNode.properties[ngModuleConfigObjectNode.properties.length - 1];
-            const newTargetPropertyNode = ts.createIdentifier(`${targetPropertyName}: [${newPropertyValue}]`);
+
+            const newTargetPropertyNode = ts.createPropertyAssignment(targetPropertyName, ts.createIdentifier(`[${newPropertyValue}]`));
 
             return [
                 new AddNodeOperation(sourceFile, lastConfigObjPropertyNode, undefined, newTargetPropertyNode),
