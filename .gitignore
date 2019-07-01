@@ -31,6 +31,10 @@ jasmine-config/reporter.d.ts
 jasmine-config/reporter.js
 jasmine-config/reporter.js.map
 
+bundle-config-loader.d.ts
+bundle-config-loader.js
+bundle-config-loader.js.map
+
 **/*.spec.js*
 **/*.spec.d.ts*
 

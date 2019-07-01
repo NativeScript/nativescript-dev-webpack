@@ -1,15 +1,16 @@
-const unitTestingConfigLoader = require("./unit-testing-config-loader");
+import unitTestingConfigLoader from "./unit-testing-config-loader";
+import { loader } from "webpack";
+import { getOptions } from "loader-utils";
 
-module.exports = function (source, map) {
-    this.cacheable();
+const loader: loader.Loader = function (source, map) {
     const {
         angular = false,
         loadCss = true,
         unitTesting,
         projectRoot,
         appFullPath,
-        registerModules = /(root|page)(\.(land|port|phone|tablet|minH\d+|minW\d+|minWH\d+))?\.(xml|css|js|ts|scss)$/ 
-    } = this.query;
+        registerModules = /(root|page)(\.(land|port|phone|tablet|minH\d+|minW\d+|minWH\d+))?\.(xml|css|js|ts|scss)$/
+    } = getOptions(this);;
 
     if (unitTesting) {
         source = unitTestingConfigLoader({ appFullPath, projectRoot, angular, rootPagesRegExp: registerModules });
@@ -75,3 +76,6 @@ module.exports = function (source, map) {
 
     this.callback(null, source, map);
 };
+
+
+export default loader;
