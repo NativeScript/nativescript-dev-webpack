@@ -44,6 +44,43 @@ describe("@ngtools/webpack transformers", () => {
                     export { AppModule };`
             },
             {
+                name: "should add providers and NgModuleFactoryLoader when providers is missing and decomposition is used",
+                rawAppModule: `
+                    import { NgModule } from "@angular/core";
+                    import { NativeScriptModule } from "nativescript-angular/nativescript.module";
+                    import { AppComponent } from "./app.component";
+
+                    const declarationsArray = [AppComponent];
+                    @NgModule({
+                        bootstrap: [
+                            AppComponent
+                        ],
+                        imports: [
+                            NativeScriptModule
+                        ],
+                        declarations: [
+                            ...declarationsArray
+                        ]
+                    })
+                    export class AppModule { }
+              `,
+                transformedAppModule: `
+                    import * as tslib_1 from "tslib"; import { NgModule } from "@angular/core";
+                    import { NativeScriptModule } from "nativescript-angular/nativescript.module";
+                    import { AppComponent } from "./app.component";
+                    ${NgLazyLoaderCode}
+                    const declarationsArray = [AppComponent];
+                    let AppModule = class AppModule { };
+                    AppModule = tslib_1.__decorate([ NgModule({
+                        bootstrap: [ AppComponent ],
+                        imports: [ NativeScriptModule ],
+                        declarations: [ ...declarationsArray ],
+                        providers: [{ provide: nsNgCoreImport_Generated.NgModuleFactoryLoader, useClass: NSLazyModulesLoader_Generated }] })
+                    ],
+                    AppModule);
+                    export { AppModule };`
+            },
+            {
                 name: "should add NgModuleFactoryLoader when the providers array is empty",
                 rawAppModule: `
                     import { NgModule } from "@angular/core";
