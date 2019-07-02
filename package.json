@@ -24,6 +24,7 @@
   },
   "scripts": {
     "postinstall": "node postinstall.js",
+    "preuninstall": "node preuninstall.js",
     "postpack": "rm -rf node_modules",
     "prepare": "tsc && npm run jasmine",
     "test": "npm run prepare && npm run jasmine",

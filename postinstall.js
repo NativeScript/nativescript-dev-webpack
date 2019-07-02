@@ -1,6 +1,5 @@
 "use strict";
 
-const { dirname } = require("path");
 const hook = require("nativescript-hook")(__dirname);
 
 const { compareProjectFiles } = require("./projectFilesManager");
