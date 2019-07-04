@@ -88,6 +88,7 @@
     "jasmine-spec-reporter": "^4.2.1",
     "loader-utils": "^1.2.3",
     "proxyquire": "2.1.0",
+    "tns-core-modules": "next",
     "typescript": "~3.4.0"
   }
 }
