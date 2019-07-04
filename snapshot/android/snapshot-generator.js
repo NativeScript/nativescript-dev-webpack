@@ -43,7 +43,7 @@ module.exports = SnapshotGenerator;
 
 SnapshotGenerator.SNAPSHOT_PACKAGE_NANE = "nativescript-android-snapshot";
 
-SnapshotGenerator.prototype.preprocessInputFiles = function(inputFiles, outputFile) {
+SnapshotGenerator.prototype.preprocessInputFiles = function (inputFiles, outputFile) {
     // Make some modifcations on the original bundle and save it on the specified path
     const bundlePreambleContent = fs.readFileSync(BUNDLE_PREAMBLE_PATH, "utf8");
     const bundleEndingContent = fs.readFileSync(BUNDLE_ENDING_PATH, "utf8");
@@ -67,7 +67,7 @@ SnapshotGenerator.prototype.preprocessInputFiles = function(inputFiles, outputFi
 
 const snapshotToolsDownloads = {};
 
-SnapshotGenerator.prototype.downloadMksnapshotTool = function(snapshotToolsPath, v8Version, targetArch) {
+SnapshotGenerator.prototype.downloadMksnapshotTool = function (snapshotToolsPath, v8Version, targetArch) {
     const hostOS = getHostOS();
     const mksnapshotToolRelativePath = join("mksnapshot-tools", "v8-v" + v8Version, hostOS + "-" + os.arch(), "mksnapshot-" + targetArch);
     const mksnapshotToolPath = join(snapshotToolsPath, mksnapshotToolRelativePath);
@@ -96,7 +96,7 @@ SnapshotGenerator.prototype.downloadMksnapshotTool = function(snapshotToolsPath,
     return snapshotToolsDownloads[mksnapshotToolPath];
 }
 
-SnapshotGenerator.prototype.convertToAndroidArchName = function(archName) {
+SnapshotGenerator.prototype.convertToAndroidArchName = function (archName) {
     switch (archName) {
         case "arm": return "armeabi-v7a";
         case "arm64": return "arm64-v8a";
@@ -106,7 +106,7 @@ SnapshotGenerator.prototype.convertToAndroidArchName = function(archName) {
     }
 }
 
-SnapshotGenerator.prototype.runMksnapshotTool = function(snapshotToolsPath, inputFile, v8Version, targetArchs, buildCSource, mksnapshotParams) {
+SnapshotGenerator.prototype.runMksnapshotTool = function (snapshotToolsPath, inputFile, v8Version, targetArchs, buildCSource, mksnapshotParams) {
     // Cleans the snapshot build folder
     shelljs.rm("-rf", join(this.buildPath, "snapshots"));
 
@@ -132,14 +132,22 @@ SnapshotGenerator.prototype.runMksnapshotTool = function(snapshotToolsPath, inpu
             const command = `${currentArchMksnapshotToolPath} ${inputFile} --startup_blob ${join(currentArchBlobOutputPath, `${SNAPSHOT_BLOB_NAME}.blob`)} ${params}`;
 
             return new Promise((resolve, reject) => {
-                const child = child_process.exec(command, {encoding: "utf8"}, (error, stdout, stderr) => {
+                const child = child_process.exec(command, { encoding: "utf8" }, (error, stdout, stderr) => {
                     const errorHeader = `Target architecture: ${androidArch}\n`;
+                    let errorFooter = ``;
+                    if (stderr.length || error) {
+                        try {
+                            require(inputFile);
+                        } catch (e) {
+                            errorFooter = `\nJavaScript execution error: ${e.stack}$`;
+                        }
+                    }
 
                     if (stderr.length) {
-                        const message = `${errorHeader}${stderr}`;
+                        const message = `${errorHeader}${stderr}${errorFooter}`;
                         reject(new Error(message));
                     } else if (error) {
-                        error.message = `${errorHeader}${error.message}`;
+                        error.message = `${errorHeader}${error.message}${errorFooter}`;
                         reject(error);
                     } else {
                         console.log(stdout);
@@ -151,7 +159,7 @@ SnapshotGenerator.prototype.runMksnapshotTool = function(snapshotToolsPath, inpu
                 if (buildCSource) {
                     const currentArchSrcOutputPath = join(this.buildPath, "snapshots/src", androidArch);
                     shelljs.mkdir("-p", currentArchSrcOutputPath);
-                    shellJsExecuteInDir(currentArchBlobOutputPath, function() {
+                    shellJsExecuteInDir(currentArchBlobOutputPath, function () {
                         shelljs.exec(`xxd -i ${SNAPSHOT_BLOB_NAME}.blob > ${join(currentArchSrcOutputPath, `${SNAPSHOT_BLOB_NAME}.c`)}`);
                     });
                 }
@@ -162,7 +170,7 @@ SnapshotGenerator.prototype.runMksnapshotTool = function(snapshotToolsPath, inpu
     });
 }
 
-SnapshotGenerator.prototype.buildSnapshotLibs = function(androidNdkBuildPath, targetArchs) {
+SnapshotGenerator.prototype.buildSnapshotLibs = function (androidNdkBuildPath, targetArchs) {
     // Compile *.c files to produce *.so libraries with ndk-build tool
     const ndkBuildPath = join(this.buildPath, "ndk-build");
     const androidArchs = targetArchs.map(arch => this.convertToAndroidArchName(arch));
@@ -171,22 +179,22 @@ SnapshotGenerator.prototype.buildSnapshotLibs = function(androidNdkBuildPath, ta
     shelljs.cp("-r", NDK_BUILD_SEED_PATH, ndkBuildPath);
     fs.writeFileSync(join(ndkBuildPath, "jni/Application.mk"), "APP_ABI := " + androidArchs.join(" ")); // create Application.mk file
     shelljs.mv(join(this.buildPath, "snapshots/src/*"), join(ndkBuildPath, "jni"));
-    shellJsExecuteInDir(ndkBuildPath, function(){
+    shellJsExecuteInDir(ndkBuildPath, function () {
         shelljs.exec(androidNdkBuildPath);
     });
     return join(ndkBuildPath, "libs");
 }
 
-SnapshotGenerator.prototype.buildIncludeGradle = function() {
+SnapshotGenerator.prototype.buildIncludeGradle = function () {
     shelljs.cp(INCLUDE_GRADLE_PATH, join(this.buildPath, "include.gradle"));
 }
 
-SnapshotGenerator.prototype.generate = function(options) {
+SnapshotGenerator.prototype.generate = function (options) {
     // Arguments validation
     options = options || {};
     if (!options.v8Version) { throw new Error("No v8 version specified."); }
     if (!options.snapshotToolsPath) { throw new Error("snapshotToolsPath option is not specified."); }
-    const preprocessedInputFile = options.preprocessedInputFile ||  join(this.buildPath, "inputFile.preprocessed");
+    const preprocessedInputFile = options.preprocessedInputFile || join(this.buildPath, "inputFile.preprocessed");
 
     console.log("***** Starting snapshot generation using V8 version: ", options.v8Version);
 
