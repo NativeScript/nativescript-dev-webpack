@@ -48,7 +48,19 @@ SnapshotGenerator.prototype.preprocessInputFiles = function(inputFiles, outputFi
     const bundlePreambleContent = fs.readFileSync(BUNDLE_PREAMBLE_PATH, "utf8");
     const bundleEndingContent = fs.readFileSync(BUNDLE_ENDING_PATH, "utf8");
 
-    const inputFilesContent = inputFiles.map(file => fs.readFileSync(file, "utf8")).join("\n");
+    // IMPORTANT: join by "\n;" as we are joining IIFE functions and if the snapshot tool is used
+    // along with Uglify configuration for replacing `;` with `/n`, we will generate invalid JavaScript
+    // Example:
+    // (function() {
+    //  some code here
+    //  })() 
+    //  // sourceMapUrl......
+    //  ** when we join without `;` here, the next IIFE is assumed as a function call to the result of the first IIFE
+    // (function() {
+    //  some code here
+    //  })()
+    //  // sourceMapUrl......
+    const inputFilesContent = inputFiles.map(file => fs.readFileSync(file, "utf8")).join("\n;");
     const snapshotFileContent = bundlePreambleContent + "\n" + inputFilesContent + "\n" + bundleEndingContent;
     fs.writeFileSync(outputFile, snapshotFileContent, { encoding: "utf8" });
 }
