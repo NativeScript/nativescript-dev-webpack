@@ -29,7 +29,6 @@ module.exports = env => {
 
     // Default destination inside platforms/<platform>/...
     const dist = resolve(projectRoot, nsWebpack.getAppPath(platform, projectRoot));
-    const appResourcesPlatformDir = platform === "android" ? "Android" : "iOS";
 
     const {
         // The 'appPath' and 'appResourcesPath' values are fetched from
@@ -186,18 +185,8 @@ module.exports = env => {
                 },
 
                 {
-                    test: /-page(\.(land|port|phone|tablet|minH\d+|minW\d+|minWH\d+))?\.ts$/,
-                    use: "nativescript-dev-webpack/script-hot-loader"
-                },
-
-                {
-                    test: /\.(css|scss)$/,
-                    use: "nativescript-dev-webpack/style-hot-loader"
-                },
-
-                {
-                    test: /\.(html|xml)$/,
-                    use: "nativescript-dev-webpack/markup-hot-loader"
+                    test: /\.(ts|css|scss|html|xml)$/,
+                    use: "nativescript-dev-webpack/hmr/hot-loader"
                 },
 
                 { test: /\.(html|xml)$/, use: "nativescript-dev-webpack/xml-namespace-loader" },
@@ -265,7 +254,7 @@ module.exports = env => {
                 async: false,
                 useTypescriptIncrementalApi: true,
                 memoryLimit: 4096
-            }),
+            })
         ],
     };
 

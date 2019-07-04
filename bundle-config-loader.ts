@@ -2,6 +2,9 @@ import unitTestingConfigLoader from "./unit-testing-config-loader";
 import { loader } from "webpack";
 import { getOptions } from "loader-utils";
 
+// Matches all source, markup and style files that are not in App_Resources
+const defaultMatch = /(?<!App_Resources.*)\.(xml|css|js|ts|scss)$/;
+
 const loader: loader.Loader = function (source, map) {
     const {
         angular = false,
@@ -9,8 +12,8 @@ const loader: loader.Loader = function (source, map) {
         unitTesting,
         projectRoot,
         appFullPath,
-        registerModules = /(root|page)(\.(land|port|phone|tablet|minH\d+|minW\d+|minWH\d+))?\.(xml|css|js|ts|scss)$/
-    } = getOptions(this);;
+        registerModules = defaultMatch,
+    } = getOptions(this);
 
     if (unitTesting) {
         source = unitTestingConfigLoader({ appFullPath, projectRoot, angular, rootPagesRegExp: registerModules });

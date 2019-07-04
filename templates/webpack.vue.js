@@ -31,7 +31,6 @@ module.exports = env => {
 
     // Default destination inside platforms/<platform>/...
     const dist = resolve(projectRoot, nsWebpack.getAppPath(platform, projectRoot));
-    const appResourcesPlatformDir = platform === "android" ? "Android" : "iOS";
 
     const {
         // The 'appPath' and 'appResourcesPath' values are fetched from
@@ -265,7 +264,7 @@ module.exports = env => {
     if (unitTesting) {
         config.module.rules.push(
             {
-                test: /-page(\.(land|port|phone|tablet|minH\d+|minW\d+|minWH\d+))?\.js$/,
+                test: /-page\.js$/,
                 use: "nativescript-dev-webpack/script-hot-loader"
             },
             {

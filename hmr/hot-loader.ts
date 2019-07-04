@@ -1,15 +1,16 @@
 import { loader } from "webpack";
 import { convertToUnixPath } from "../lib/utils";
 import { extname } from "path";
+import { getOptions } from "loader-utils";
 
 const extMap = {
-    ".css" : "style",
-    ".scss" : "style",
-    ".less" : "style",
-    ".js" : "script",
-    ".ts" : "script",
-    ".xml" : "markup",
-    ".html" : "markup",
+    ".css": "style",
+    ".scss": "style",
+    ".less": "style",
+    ".js": "script",
+    ".ts": "script",
+    ".xml": "markup",
+    ".html": "markup",
 }
 
 const loader: loader.Loader = function (source, map) {
@@ -18,16 +19,23 @@ const loader: loader.Loader = function (source, map) {
     const ext = extname(modulePath).toLowerCase();
     const typeStyle = extMap[ext] || "unknown";
 
+    const options = getOptions(this) || {};
+    const alwaysSelfAccept = options.alwaysSelfAccept;
+    const trace = options.trace;
+
+    const shouldAutoAcceptCheck = `&& global._isModuleLoadedForUI && global._isModuleLoadedForUI("${modulePath}")`;
+    const traceCode = `console.log("[hot-loader]: Self-accept module: ${modulePath}");`;
+
     const hotCode = `
-if (module.hot && global._shouldAutoAcceptModule && global._shouldAutoAcceptModule(module.id)) {
-    console.log("AUTO ACCEPT MODULE: ", module.id, '${modulePath}')
+if (module.hot ${alwaysSelfAccept ? "" : shouldAutoAcceptCheck} ) {
+    ${trace ? traceCode : ""}
     module.hot.accept();
     module.hot.dispose(() => {
-        global.hmrRefresh({ type: '${typeStyle}', path: '${modulePath}' });
-    })
+        global.hmrRefresh({ type: "${typeStyle}", path: "${modulePath}" });
+    });
 }`;
 
-    this.callback(null, `${source};${hotCode}`, map);
+    this.callback(null, `${source}; ${hotCode} `, map);
 };
 
 export default loader;
