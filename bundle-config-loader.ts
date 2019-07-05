@@ -3,7 +3,7 @@ import { loader } from "webpack";
 import { getOptions } from "loader-utils";
 
 // Matches all source, markup and style files that are not in App_Resources
-const defaultMatch = /(?<!App_Resources.*)\.(xml|css|js|ts|scss)$/;
+const defaultMatch = /(?<!App_Resources.*)\.(xml|css|js|(?<!d\.)ts|scss)$/;
 
 const loader: loader.Loader = function (source, map) {
     const {
