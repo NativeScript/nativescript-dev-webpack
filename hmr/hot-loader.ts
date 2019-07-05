@@ -17,7 +17,7 @@ const loader: loader.Loader = function (source, map) {
     const moduleRelativePath = this.resourcePath.replace(this.rootContext, ".");
     const modulePath = convertToUnixPath(moduleRelativePath);
     const ext = extname(modulePath).toLowerCase();
-    const typeStyle = extMap[ext] || "unknown";
+    const moduleType = extMap[ext] || "unknown";
 
     const options = getOptions(this) || {};
     const alwaysSelfAccept = options.alwaysSelfAccept;
@@ -31,7 +31,7 @@ if (module.hot ${alwaysSelfAccept ? "" : shouldAutoAcceptCheck} ) {
     ${trace ? traceCode : ""}
     module.hot.accept();
     module.hot.dispose(() => {
-        global.hmrRefresh({ type: "${typeStyle}", path: "${modulePath}" });
+        global.hmrRefresh({ type: "${moduleType}", path: "${modulePath}" });
     });
 }`;
 

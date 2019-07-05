@@ -1,4 +1,3 @@
-
 import update from "../hot";
 import { knownFolders } from "tns-core-modules/file-system";
 
