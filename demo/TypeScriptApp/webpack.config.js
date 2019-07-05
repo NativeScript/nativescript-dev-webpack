@@ -179,6 +179,7 @@ module.exports = env => {
                                 unitTesting,
                                 appFullPath,
                                 projectRoot,
+                                registerModules: /(?<!App_Resources.*)(?<!\.\/application)(?<!\.\/activity)\.(xml|css|js|(?<!d\.)ts|scss)$/
                             }
                         },
                     ].filter(loader => !!loader)
