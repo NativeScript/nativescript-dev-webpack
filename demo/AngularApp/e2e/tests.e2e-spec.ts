@@ -1,27 +1,12 @@
-import { AppiumDriver, createDriver, SearchOptions } from "nativescript-dev-appium";
+import { AppiumDriver, createDriver, nsCapabilities } from "nativescript-dev-appium";
 import { assert } from "chai";
 
 describe("sample scenario", async function () {
     let driver: AppiumDriver;
 
     before(async function () {
+        nsCapabilities.testReporter.context = this;
         driver = await createDriver();
-    });
-
-    beforeEach(async function () {
-        try {
-            const items = await getItems();
-        } catch (err) {
-            try {
-                const lblNinjas = await driver.findElementByText("Ninjas!");
-            }
-            catch (err) {
-                console.log("Navigating to ninjas page ...");
-                await driver.navBack();
-            }
-            console.log("Navigating to main page ...");
-            await driver.navBack();
-        }
     });
 
     afterEach(async function () {
@@ -36,7 +21,7 @@ describe("sample scenario", async function () {
     });
 
     it("should navigate to a ninja", async function () {
-        const btnNinjas = await driver.findElementByText("Ninjas");
+        const btnNinjas = await driver.waitForElement("Ninjas");
         await btnNinjas.click();
 
         const itemMichaelangelo = await driver.findElementByText("Michaelangelo");
@@ -61,10 +46,10 @@ describe("sample scenario", async function () {
     for (let styleType in styleTypes) {
         it(`should find an element with ${styleType} style applied`, async function () {
             const element = await driver.findElementByText(styleTypes[styleType]);
+            driver.imageHelper.options.keepOriginalImageSize = false;
+            driver.imageHelper.options.isDeviceSpecific = false;
             const result = await driver.compareElement(element, "style");
             assert.isTrue(result);
         });
     }
-
-    const getItems = async function () { return driver.isAndroid ? await driver.findElementsByText("(Android)") : await driver.findElementsByText("(ios)"); }
 });
