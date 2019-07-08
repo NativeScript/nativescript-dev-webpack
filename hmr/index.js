@@ -1,1 +1,0 @@
-module.exports.hmrUpdate = require("./hmr-update");
