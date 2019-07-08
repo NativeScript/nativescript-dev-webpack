@@ -17,3 +17,4 @@ vendor.js
 vendor.ts
 
 tsconfig.esm.json
+mochawesome-report

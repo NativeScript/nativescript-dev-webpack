@@ -9,16 +9,6 @@ describe("sample scenario", function () {
         driver = await nsAppium.createDriver();
     }));
 
-    beforeEach(async function () {
-        try {
-            const lblPlatform = await getPlatformLabel();
-        }
-        catch (err) {
-            console.log("Navigating to main page ...");
-            await driver.navBack();
-        }
-    });
-
     afterEach(async function () {
         if (this.currentTest.state === "failed") {
             await driver.logTestArtifacts(this.currentTest.title);
@@ -53,12 +43,10 @@ describe("sample scenario", function () {
 
         it(`should find an element with ${styleType} style applied`, async function () {
             const element = await driver.findElementByText(styleTypes[styleType]);
+            driver.imageHelper.options.keepOriginalImageSize = false;
+            driver.imageHelper.options.isDeviceSpecific = false;
             const result = await driver.compareElement(element, "style");
-            chai.assert.isTrue(result);
+            assert.isTrue(result);
         });
-    }
-
-    const getPlatformLabel = async function() { 
-        return driver.isAndroid ? await driver.findElementByText("android") : await driver.findElementByText("ios");
     }
 });
