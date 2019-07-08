@@ -1,4 +1,4 @@
-import unitTestingConfigLoader from "./unit-testing-config-loader";
+import * as unitTestingConfigLoader from "./unit-testing-config-loader";
 import { loader } from "webpack";
 import { getOptions } from "loader-utils";
 
