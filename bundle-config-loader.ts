@@ -62,6 +62,11 @@ const loader: loader.Loader = function (source, map) {
             ${hmr}
             const context = require.context("~/", true, ${registerModules});
             global.registerWebpackModules(context);
+            if (module.hot) {
+                module.hot.accept(context.id, () => { 
+                    console.log("HMR: Accept module '" + context.id + "' from '" + module.id + "'"); 
+                });
+            }
             ${source}
         `;
     }
