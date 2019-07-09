@@ -75,6 +75,7 @@ module.exports = env => {
         itemsToClean.push(`${join(projectRoot, "platforms", "android", "app", "build", "configurations", "nativescript-android-snapshot")}`);
     }
 
+    nsWebpack.processAppComponents(appComponents, platform);
     const config = {
         mode: mode,
         context: appFullPath,
@@ -185,6 +186,7 @@ module.exports = env => {
                             unitTesting,
                             appFullPath,
                             projectRoot,
+                            ignoredFiles: nsWebpack.getUserDefinedEntries(entries, platform)
                         },
                     },
                 ].filter(loader => Boolean(loader)),
