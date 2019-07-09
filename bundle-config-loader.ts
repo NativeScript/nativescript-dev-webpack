@@ -1,19 +1,29 @@
 import * as unitTestingConfigLoader from "./unit-testing-config-loader";
 import { loader } from "webpack";
 import { getOptions } from "loader-utils";
+import * as escapeRegExp from "escape-string-regexp";
 
 // Matches all source, markup and style files that are not in App_Resources
-const defaultMatch = /(?<!App_Resources.*)\.(xml|css|js|(?<!d\.)ts|scss)$/;
+const defaultMatch = "(?<!App_Resources.*)\.(xml|css|js|(?<!d\.)ts|scss)$";
 
 const loader: loader.Loader = function (source, map) {
-    const {
+    let {
         angular = false,
         loadCss = true,
         unitTesting,
         projectRoot,
         appFullPath,
-        registerModules = defaultMatch,
+        registerModules,
+        ignoredFiles = []
     } = getOptions(this);
+
+    if (!registerModules) {
+        registerModules = defaultMatch;
+        for (const key in ignoredFiles) {
+            registerModules = `(?<!${escapeRegExp(ignoredFiles[key])})` + registerModules;
+        }
+        registerModules = new RegExp(registerModules);
+    }
 
     if (unitTesting) {
         source = unitTestingConfigLoader({ appFullPath, projectRoot, angular, rootPagesRegExp: registerModules });

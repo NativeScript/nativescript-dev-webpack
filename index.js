@@ -98,6 +98,41 @@ exports.getConvertedExternals = (externals) => {
     return modifiedExternals;
 };
 
+
+/**
+ * The `require.context` call in `bundle-config-loader` will ask the FS for files and
+ * the PlatformFSPlugin will return files without `.${platform}`. The SplitChunksPlugin will
+ * compare the `appComponents` with the files returned from the `PlatformFSPlugin` and when they
+ * do not match because of the platform extension, it will duplicate the custom components
+ * in `bundle` (activity.js - included by the `require.context` call in `bundle-config-loader`)
+ * and `vendor` (activity.android.js - included by `android-app-components-loader` and `SplitChunksPlugin`).
+ * We are post-processing the `appComponents` in order to unify the file names and avoid getting
+ * a build-time SBG exception for duplicate native class definition.
+ */
+exports.processAppComponents = (appComponents, platform) => {
+    for (const key in appComponents) {
+        appComponents[key] = appComponents[key].replace(`.${platform}`, "");
+    }
+};
+
+/**
+ * The `bundle-config-loader` needs this in order to skip the custom entries in its `require.context` call.
+ * If we don't skip them, custom entries like custom Android application will be included in both `application.js`
+ * (because its defined as an entry) and `bundle.js` (included by the `require.context` call in `bundle-config-loader`)
+ * causing a build-time SBG exception for duplicate native class definition.
+ * We are removing the extension in order to unify the file names with the `PlatformFSPlugin`.
+ */
+exports.getUserDefinedEntries = (entries, platform) => {
+    const userDefinedEntries = [];
+    for (const entry in entries) {
+        if (entry !== "bundle" && entry !== "tns_modules/tns-core-modules/inspector_modules") {
+            userDefinedEntries.push(entries[entry].replace(`.${platform}`, ""));
+        }
+    }
+
+    return userDefinedEntries;
+};
+
 const sanitize = name => name
     .split("")
     .filter(char => /[a-zA-Z0-9]/.test(char))
