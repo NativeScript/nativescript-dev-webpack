@@ -1,3 +1,43 @@
+<a name="1.0.0"></a>
+# [1.0.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.24.1...1.0.0) (2019-07-10)
+
+
+### Bug Fixes
+
+* allow overriding the `global.process` object from both the app and the plugins ([8c4292e](https://github.com/NativeScript/nativescript-dev-webpack/commit/8c4292e))
+* auto accept new or deleted files ([#972](https://github.com/NativeScript/nativescript-dev-webpack/issues/972)) ([bd893ce](https://github.com/NativeScript/nativescript-dev-webpack/commit/bd893ce))
+* avoid generating invalid JavaScript when merging IIFE files ([7586d4c](https://github.com/NativeScript/nativescript-dev-webpack/commit/7586d4c))
+* create PropertyAssignment instead of string literal (Identifier) when modifying the NgModule - in some cases (e.g. when there is a decomposition in another NgModule property), the TypeScipt program is trying to read `node.name.kind` on each property causing an exception for Identifiers) ([a70fb3b](https://github.com/NativeScript/nativescript-dev-webpack/commit/a70fb3b))
+* do not add inspector_modules entry when core modules are an external module ([e0cd8c1](https://github.com/NativeScript/nativescript-dev-webpack/commit/e0cd8c1))
+* do not show warning for format differences in templates ([#947](https://github.com/NativeScript/nativescript-dev-webpack/issues/947)) ([a352064](https://github.com/NativeScript/nativescript-dev-webpack/commit/a352064))
+* don't restart application when lazy loaded code is changed in angular app with uglify option ([121c3b2](https://github.com/NativeScript/nativescript-dev-webpack/commit/121c3b2))
+* emit inspector_modules as a module ([be2a5a6](https://github.com/NativeScript/nativescript-dev-webpack/commit/be2a5a6))
+* fix app.css file path on windows machines ([7d734d8](https://github.com/NativeScript/nativescript-dev-webpack/commit/7d734d8))
+* fix hmr for platform specific files in linked plugins ([#946](https://github.com/NativeScript/nativescript-dev-webpack/issues/946)) ([9e8c921](https://github.com/NativeScript/nativescript-dev-webpack/commit/9e8c921))
+* follow the symlinks in JavaScript apps ([#941](https://github.com/NativeScript/nativescript-dev-webpack/issues/941)) ([f0c62fb](https://github.com/NativeScript/nativescript-dev-webpack/commit/f0c62fb))
+* hmr should work with uglify ([#953](https://github.com/NativeScript/nativescript-dev-webpack/issues/953)) ([874e4f8](https://github.com/NativeScript/nativescript-dev-webpack/commit/874e4f8))
+* **xml-ns-loader:** remove wrong register of xml ([#940](https://github.com/NativeScript/nativescript-dev-webpack/issues/940)) ([bc2f6f1](https://github.com/NativeScript/nativescript-dev-webpack/commit/bc2f6f1))
+* inject app.css file from unit-test-runner on test command ([#949](https://github.com/NativeScript/nativescript-dev-webpack/issues/949)) ([a216ed3](https://github.com/NativeScript/nativescript-dev-webpack/commit/a216ed3))
+* log the real snapshot tool error by trying to evaluate the input file script ([1a9c4b2](https://github.com/NativeScript/nativescript-dev-webpack/commit/1a9c4b2))
+* migrate demo apps to android x ([c2d6684](https://github.com/NativeScript/nativescript-dev-webpack/commit/c2d6684))
+* unify the entry points handling and enable custom applications in android ([de10041](https://github.com/NativeScript/nativescript-dev-webpack/commit/de10041))
+* **hooks:** improve hooks handling ([#961](https://github.com/NativeScript/nativescript-dev-webpack/issues/961)) ([f558607](https://github.com/NativeScript/nativescript-dev-webpack/commit/f558607))
+
+### Features
+
+* introduce webpack only workflow ([#882](https://github.com/NativeScript/nativescript-dev-webpack/issues/882)) ([2de4c68](https://github.com/NativeScript/nativescript-dev-webpack/commit/2de4c68))
+* no need of "page" suffix ([#966](https://github.com/NativeScript/nativescript-dev-webpack/pull/966)) ([d4a8dec](https://github.com/NativeScript/nativescript-dev-webpack/commit/d4a8dec803acf39b7cdeb4f3bc8c23284046fe67))
+* support for file qualifiers ([#966](https://github.com/NativeScript/nativescript-dev-webpack/pull/966)) ([d4a8dec](https://github.com/NativeScript/nativescript-dev-webpack/commit/d4a8dec803acf39b7cdeb4f3bc8c23284046fe67))
+* universal hmr loader ([#966](https://github.com/NativeScript/nativescript-dev-webpack/pull/966)) ([d4a8dec](https://github.com/NativeScript/nativescript-dev-webpack/commit/d4a8dec803acf39b7cdeb4f3bc8c23284046fe67))
+
+### BREAKING CHANGES:
+
+* the file names of the NativeScript pages are not required to end with `-page` or `-root`. All `xml`, `css`, `js`, `ts` and `scss` files are not included in the bundle.
+
+* the plugin is not working with NativeScript CLI older than 6.0.0 (`nativescript@6.0.0`).
+
+* the Webpack mode it set to `production` based on the `--release` flag of the NativeScript CLI, instead of the `--env.uglify` one.
+
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.24.0...0.24.1) (2019-06-06)
 
