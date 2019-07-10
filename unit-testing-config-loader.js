@@ -4,7 +4,7 @@ const { convertSlashesInPath } = require("./projectHelpers");
 module.exports = function ({ appFullPath, projectRoot, angular, rootPagesRegExp }) {
     // TODO: Consider to use the files property from karma.conf.js
     const testFilesRegExp = /tests\/.*\.(ts|js)/;
-    const runnerFullPath = join(projectRoot, "node_modules", "nativescript-unit-test-runner");
+    const runnerFullPath = join(projectRoot, "node_modules", "nativescript-unit-test-runner", "app");
     const runnerRelativePath = convertSlashesInPath(relative(appFullPath, runnerFullPath));
     const appCssFilePath = convertSlashesInPath(join(runnerRelativePath, "app.css"));
     let source = `
