@@ -1,10 +1,19 @@
 const { join, relative } = require("path");
+const { existsSync } = require("fs");
 const { convertSlashesInPath } = require("./projectHelpers");
+
+function getRunnerFullPath(projectRoot) {
+    const runnerRootPath = join(projectRoot, "node_modules", "nativescript-unit-test-runner");
+    const runnerAppPath = join(runnerRootPath, "app");
+    const result = existsSync(runnerAppPath) ? runnerAppPath : runnerRootPath;
+
+    return result;
+}
 
 module.exports = function ({ appFullPath, projectRoot, angular, rootPagesRegExp }) {
     // TODO: Consider to use the files property from karma.conf.js
     const testFilesRegExp = /tests\/.*\.(ts|js)/;
-    const runnerFullPath = join(projectRoot, "node_modules", "nativescript-unit-test-runner", "app");
+    const runnerFullPath = getRunnerFullPath(projectRoot);
     const runnerRelativePath = convertSlashesInPath(relative(appFullPath, runnerFullPath));
     const appCssFilePath = convertSlashesInPath(join(runnerRelativePath, "app.css"));
     let source = `
