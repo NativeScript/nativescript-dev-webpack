@@ -1,5 +1,6 @@
 const path = require("path");
 const { existsSync } = require("fs");
+const escapeRegExp = require("escape-string-regexp");
 const { ANDROID_APP_PATH } = require("./androidProjectHelpers");
 const {
     getPackageJson,
@@ -62,8 +63,7 @@ exports.getAppPath = (platform, projectDir) => {
 
 exports.getEntryPathRegExp = (appFullPath, entryModule) => {
     const entryModuleFullPath = path.join(appFullPath, entryModule);
-    // Windows paths contain `\`, so we need to convert each of the `\` to `\\`, so it will be correct inside RegExp
-    const escapedPath = entryModuleFullPath.replace(/\\/g, "\\\\");
+    const escapedPath = escapeRegExp(entryModuleFullPath);
     return new RegExp(escapedPath);
 }
 
