@@ -61,7 +61,7 @@ describe('index', () => {
             path.join = originalPathJoin;
         });
 
-        it('returns RegExp that matches Windows', () => {
+        it('returns RegExp that works with Windows paths', () => {
             const appPath = "D:\\Work\\app1\\app";
             path.join = path.win32.join;
             const regExp = getEntryPathRegExp(appPath, entryModule);
@@ -70,6 +70,20 @@ describe('index', () => {
 
         it('returns RegExp that works with POSIX paths', () => {
             const appPath = "/usr/local/lib/app1/app";
+            path.join = path.posix.join;
+            const regExp = getEntryPathRegExp(appPath, entryModule);
+            expect(!!regExp.exec(`${appPath}/${entryModule}`)).toBe(true);
+        });
+
+        it('returns RegExp that works with Windows paths with special symbol in path', () => {
+            const appPath = "D:\\Work\\app1\\app (2)";
+            path.join = path.win32.join;
+            const regExp = getEntryPathRegExp(appPath, entryModule);
+            expect(!!regExp.exec(`${appPath}\\${entryModule}`)).toBe(true);
+        });
+
+        it('returns RegExp that works with POSIX paths with special symbol in path', () => {
+            const appPath = "/usr/local/lib/app1/app (2)";
             path.join = path.posix.join;
             const regExp = getEntryPathRegExp(appPath, entryModule);
             expect(!!regExp.exec(`${appPath}/${entryModule}`)).toBe(true);
