@@ -16,11 +16,8 @@
                 "999999",
                 "--colors",
                 "--opts",
-                "./e2e/config/mocha.opts",
-                "--runType",
-                "android23",
-                "--reuseDevice"
-                // "${workspaceFolder}/test"
+                "../config/mocha.opts",
+                "android"
             ],
             "internalConsoleOptions": "openOnSessionStart"
         },

@@ -27,7 +27,6 @@ module.exports = env => {
 
     // Default destination inside platforms/<platform>/...
     const dist = resolve(projectRoot, nsWebpack.getAppPath(platform, projectRoot));
-    const appResourcesPlatformDir = platform === "android" ? "Android" : "iOS";
 
     const {
         // The 'appPath' and 'appResourcesPath' values are fetched from
@@ -69,6 +68,8 @@ module.exports = env => {
         itemsToClean.push(`${join(projectRoot, "platforms", "android", "app", "build", "configurations", "nativescript-android-snapshot")}`);
     }
 
+
+    nsWebpack.processAppComponents(appComponents, platform);
     const config = {
         mode: production ? "production" : "development",
         context: appFullPath,
@@ -173,24 +174,15 @@ module.exports = env => {
                                 unitTesting,
                                 appFullPath,
                                 projectRoot,
+                                ignoredFiles: nsWebpack.getUserDefinedEntries(entries, platform)
                             }
                         },
                     ].filter(loader => !!loader)
                 },
 
                 {
-                    test: /-page\.js$/,
-                    use: "nativescript-dev-webpack/script-hot-loader"
-                },
-
-                {
-                    test: /\.(css|scss)$/,
-                    use: "nativescript-dev-webpack/style-hot-loader"
-                },
-
-                {
-                    test: /\.(html|xml)$/,
-                    use: "nativescript-dev-webpack/markup-hot-loader"
+                    test: /\.(js|css|scss|html|xml)$/,
+                    use: "nativescript-dev-webpack/hmr/hot-loader"
                 },
 
                 { test: /\.(html|xml)$/, use: "nativescript-dev-webpack/xml-namespace-loader" },

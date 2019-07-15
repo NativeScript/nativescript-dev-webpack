@@ -19,6 +19,16 @@
             "args": [ "--env.android", "--env.aot" ],
             "runtimeArgs": [ "--preserve-symlinks" ],
             "stopOnEntry": true,
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "TypeScriptApp Webpack",
+            "cwd": "${workspaceFolder}/demo/TypeScriptApp",
+            "program": "${workspaceFolder}/demo/TypeScriptApp/node_modules/.bin/webpack",
+            "args": [ "--env.android" ],
+            "stopOnEntry": true,
+            "preLaunchTask": "npm:tsc"
         }
     ]
 }
