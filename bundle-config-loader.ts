@@ -4,7 +4,7 @@ import { getOptions } from "loader-utils";
 import * as escapeRegExp from "escape-string-regexp";
 
 // Matches all source, markup and style files that are not in App_Resources
-const defaultMatch = "(?<!App_Resources.*)\.(xml|css|js|(?<!d\.)ts|scss)$";
+const defaultMatch = "(?<!App_Resources.*)\\.(xml|css|js|(?<!\\.d\\.)ts|(?<!_[\\w-]*\\.)scss)$";
 
 const loader: loader.Loader = function (source, map) {
     let {
