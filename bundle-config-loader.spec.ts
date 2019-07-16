@@ -28,12 +28,17 @@ const defaultTestFiles = {
     "./main/main-page.land.ts": true,
     "./main/main-page-vm.ts": true,
 
-    "./package.json": false,
-    "./app.d.ts": false,
-    "./_app-common.scss": false,
-    "./_app-variables.scss": false,
-    "./App_Resources/Android/src/main/res/values/colors.xml": false,
-    "./App_Resources/Android/src/main/AndroidManifest.xml": false,
+    "./app_component.scss": true,
+    "./App_Resources123/some-file.xml": true,
+    "./MyApp_Resources/some-file.xml": true,
+    "./App_Resources_Nobody_Names_Folders_Like_That_Roska/some-file.xml": true,
+
+    "./package.json": false,          // do not include package.json files
+    "./app.d.ts": false,              // do not include ts definitions
+    "./_app-common.scss": false,      // do not include scss partial files
+    "./_app-variables.scss": false,   // do not include scss partial files
+    "./App_Resources/Android/src/main/res/values/colors.xml": false,    // do not include App_Resources
+    "./App_Resources/Android/src/main/AndroidManifest.xml": false,      // do not include App_Resources
 };
 
 const loaderOptionsWithIgnore = {
@@ -96,7 +101,7 @@ describe("BundleConfigLoader should create require.context", () => {
             callback: (error, source: string, map) => {
                 const regex = getRequireContextRegex(source);
                 const testFiles = { ...defaultTestFiles, ...ignoredTestFiles };
-                
+
                 assertTestFilesAreMatched(testFiles, regex);
 
                 done();
