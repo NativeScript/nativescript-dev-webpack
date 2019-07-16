@@ -1,3 +1,13 @@
+<a name="1.0.1"></a>
+## [1.0.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.0.0...1.0.1) (2019-07-16)
+
+
+### Bug Fixes
+
+* don't include partial scss files in bundle ([#988](https://github.com/NativeScript/nativescript-dev-webpack/issues/988)) ([786bd6c](https://github.com/NativeScript/nativescript-dev-webpack/commit/786bd6c))
+* **js:** try to resolve node_modules from the project root before resolving in a linked location ([#987](https://github.com/NativeScript/nativescript-dev-webpack/issues/987)) ([a3df142](https://github.com/NativeScript/nativescript-dev-webpack/commit/a3df142))
+
+
 <a name="1.0.0"></a>
 # [1.0.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.24.1...1.0.0) (2019-07-10)
 
