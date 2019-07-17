@@ -9,7 +9,7 @@ const defaultMatch = "(?<!App_Resources.*)\.(xml|css|js|(?<!d\.)ts|scss)$";
 const loader: loader.Loader = function (source, map) {
     let {
         angular = false,
-        loadCss = true,
+        loadCss = false, // explicit load of app.css is needed only for vue and angular
         unitTesting,
         projectRoot,
         appFullPath,

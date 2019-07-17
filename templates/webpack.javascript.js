@@ -170,7 +170,6 @@ module.exports = env => {
                         {
                             loader: "nativescript-dev-webpack/bundle-config-loader",
                             options: {
-                                loadCss: !snapshot, // load the application css if in debug mode
                                 unitTesting,
                                 appFullPath,
                                 projectRoot,
