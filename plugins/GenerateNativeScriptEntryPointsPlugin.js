@@ -55,7 +55,7 @@ exports.GenerateNativeScriptEntryPointsPlugin = (function () {
                 entryChunk = chunk;
             } else {
                 chunk.files.forEach(fileName => {
-                    if (!this.isHMRFile(fileName)) {
+                    if (!this.isHMRFile(fileName) && this.isSourceFile(fileName)) {
                         requiredFiles.push(fileName);
                     }
                 });
@@ -94,6 +94,10 @@ exports.GenerateNativeScriptEntryPointsPlugin = (function () {
 
     GenerateNativeScriptEntryPointsPlugin.prototype.isHMRFile = function (fileName) {
         return fileName.indexOf("hot-update") > -1;
+    }
+
+    GenerateNativeScriptEntryPointsPlugin.prototype.isSourceFile = function (fileName) {
+        return fileName.endsWith(".js");
     }
 
     return GenerateNativeScriptEntryPointsPlugin;
