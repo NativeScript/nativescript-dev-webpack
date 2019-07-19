@@ -1,6 +1,5 @@
 const path = require("path");
 const { existsSync } = require("fs");
-const escapeRegExp = require("escape-string-regexp");
 const { ANDROID_APP_PATH } = require("./androidProjectHelpers");
 const {
     getPackageJson,
@@ -60,12 +59,6 @@ exports.getAppPath = (platform, projectDir) => {
         throw new Error(`Invalid platform: ${platform}`);
     }
 };
-
-exports.getEntryPathRegExp = (appFullPath, entryModule) => {
-    const entryModuleFullPath = path.join(appFullPath, entryModule);
-    const escapedPath = escapeRegExp(entryModuleFullPath);
-    return new RegExp(escapedPath);
-}
 
 exports.getSourceMapFilename = (hiddenSourceMap, appFolderPath, outputPath) => {
     const appFolderRelativePath = path.join(path.relative(outputPath, appFolderPath));
