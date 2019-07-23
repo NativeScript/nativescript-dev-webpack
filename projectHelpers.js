@@ -17,6 +17,11 @@ const isTypeScript = ({ projectDir, packageJson } = {}) => {
         ) || isAngular({ packageJson });
 };
 
+const isShared = ({ projectDir }) => {
+    const nsConfig = getNsConfig(projectDir);
+    return nsConfig && !!nsConfig.shared;
+}
+
 const isAngular = ({ projectDir, packageJson } = {}) => {
     packageJson = packageJson || getPackageJson(projectDir);
 
@@ -39,9 +44,22 @@ const isVue = ({ projectDir, packageJson } = {}) => {
 
 const getPackageJson = projectDir => {
     const packageJsonPath = getPackageJsonPath(projectDir);
+    const result = readJsonFile(packageJsonPath);
+
+    return result;
+};
+
+const getNsConfig = projectDir => {
+    const nsConfigPath = getNsConfigPath(projectDir);
+    const result = readJsonFile(nsConfigPath);
+
+    return result;
+};
+
+const readJsonFile = filePath => {
     let result;
     try {
-        result = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+        result = JSON.parse(fs.readFileSync(filePath, "utf8"));
     } catch (e) {
         result = {};
     }
@@ -69,6 +87,7 @@ const getIndentationCharacter = (jsonContent) => {
 const getProjectDir = hook.findProjectDir;
 
 const getPackageJsonPath = projectDir => resolve(projectDir, "package.json");
+const getNsConfigPath = projectDir => resolve(projectDir, "nsconfig.json");
 
 const isAndroid = platform => /android/i.test(platform);
 const isIos = platform => /ios/i.test(platform);
@@ -104,6 +123,7 @@ module.exports = {
     isAndroid,
     isIos,
     isAngular,
+    isShared,
     getAngularVersion,
     isVue,
     isTypeScript,
@@ -112,3 +132,4 @@ module.exports = {
     getIndentationCharacter,
     safeGet,
 };
+
