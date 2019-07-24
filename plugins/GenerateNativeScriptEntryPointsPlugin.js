@@ -1,3 +1,4 @@
+const { convertToUnixPath } = require("../lib/utils");
 const { RawSource } = require("webpack-sources");
 const { getPackageJson } = require("../projectHelpers");
 const { SNAPSHOT_ENTRY_NAME } = require("./NativeScriptSnapshotPlugin");
@@ -77,8 +78,9 @@ exports.GenerateNativeScriptEntryPointsPlugin = (function () {
 
                 const requireDeps = requiredFiles.map(depPath => {
                     const depRelativePath = path.join(pathToRootFromCurrFile, depPath);
+                    const depRelativePathUnix = convertToUnixPath(depRelativePath);
 
-                    return `require("./${depRelativePath}");`;
+                    return `require("./${depRelativePathUnix}");`;
                 }).join("");
                 const currentEntryFileContent = compilation.assets[filePath].source();
                 compilation.assets[filePath] = new RawSource(`${requireDeps}${currentEntryFileContent}`);
