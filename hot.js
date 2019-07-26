@@ -147,6 +147,10 @@ function update(latestHash, options) {
 
 function getNextHash(hash, getFileContent) {
     const file = getFileContent(`${hash}.hot-update.json`);
+    if (!file) {
+        return Promise.resolve(hash);
+    }
+
     return file.readText().then(hotUpdateContent => {
         if (hotUpdateContent) {
             const manifest = JSON.parse(hotUpdateContent);
