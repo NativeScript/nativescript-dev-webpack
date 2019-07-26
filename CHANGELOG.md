@@ -1,3 +1,14 @@
+<a name="1.0.2"></a>
+## [1.0.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.0.1...1.0.2) (2019-07-26)
+
+
+### Bug Fixes
+
+*  do not require `.js.map` files in the entry points when someone is using devtool: "source-map" ([#968](https://github.com/NativeScript/nativescript-dev-webpack/issues/968)) ([4bb6124](https://github.com/NativeScript/nativescript-dev-webpack/commit/4bb6124))
+* avoid getting invalid require calls when building from Windows ([#989](https://github.com/NativeScript/nativescript-dev-webpack/issues/989)) ([4799271](https://github.com/NativeScript/nativescript-dev-webpack/commit/4799271))
+* escape the regex for the path to the entry module of application ([#998](https://github.com/NativeScript/nativescript-dev-webpack/issues/998)) ([571c7f2](https://github.com/NativeScript/nativescript-dev-webpack/commit/571c7f2))
+
+
 <a name="1.0.1"></a>
 ## [1.0.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.0.0...1.0.1) (2019-07-16)
 
