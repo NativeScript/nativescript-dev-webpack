@@ -72,7 +72,7 @@ exports.GenerateNativeScriptEntryPointsPlugin = (function () {
                 throw new Error(`${GenerationFailedError} File "${filePath}" not found for entry "${entryPointName}".`);
             }
 
-            if (!this.isHMRFile(filePath)) {
+            if (!this.isHMRFile(filePath) && this.isSourceFile(filePath)) {
                 const currFileDirRelativePath = path.dirname(filePath);
                 const pathToRootFromCurrFile = path.relative(currFileDirRelativePath, ".");
 
