@@ -1,7 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 
-const { isTypeScript, isAngular, isVue } = require("./projectHelpers");
+const { isTypeScript, isAngular, isVue, isShared } = require("./projectHelpers");
 
 function addProjectFiles(projectDir) {
     const projectTemplates = getProjectTemplates(projectDir);
@@ -62,7 +62,11 @@ function getProjectTemplates(projectDir) {
 
     let templates;
     if (isAngular({ projectDir })) {
-        templates = getAngularTemplates(WEBPACK_CONFIG_NAME, TSCONFIG_TNS_NAME);
+        if (isShared({ projectDir })) {
+            templates = getSharedAngularTemplates(WEBPACK_CONFIG_NAME);
+        } else {
+            templates = getAngularTemplates(WEBPACK_CONFIG_NAME, TSCONFIG_TNS_NAME);
+        }
     } else if (isVue({ projectDir })) {
         templates = getVueTemplates(WEBPACK_CONFIG_NAME);
     } else if (isTypeScript({ projectDir })) {
@@ -72,6 +76,12 @@ function getProjectTemplates(projectDir) {
     }
 
     return getFullTemplatesPath(projectDir, templates);
+}
+
+function getSharedAngularTemplates(webpackConfigName) {
+    return {
+        "webpack.angular.js": webpackConfigName,
+    };
 }
 
 function getAngularTemplates(webpackConfigName, tsconfigName) {
