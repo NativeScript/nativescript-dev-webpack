@@ -33,7 +33,7 @@
     "preuninstall": "node preuninstall.js",
     "postpack": "rm -rf node_modules",
     "prepare": "npm run tsc && npm run jasmine",
-    "test": "npm run prepare && npm run jasmine",
+    "test": "npm run prepare",
     "jasmine": "jasmine --config=jasmine-config/jasmine.json",
     "version": "rm package-lock.json && conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md"
   },
