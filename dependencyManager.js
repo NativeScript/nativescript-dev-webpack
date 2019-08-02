@@ -10,17 +10,6 @@ Some dependencies have already been added. \
 If you want to force update them, please run "node_modules/.bin/update-ns-webpack".
 `;
 
-const USAGE_MESSAGE = `
-NativeScript Webpack plugin was successfully added.
-You can now bundle your project by passing --bundle flag to NativeScript CLI commands:
-    - tns build android --bundle
-    - tns build ios --bundle
-    - tns run android --bundle
-    - tns run ios --bundle
-You can also pass the "--env.uglify" flag to use Terser for minification.
-For more information check out https://docs.nativescript.org/tooling/bundling-with-webpack#bundling.
-`;
-
 function addProjectDeps(packageJson, force = false) {
     packageJson.devDependencies = packageJson.devDependencies || {};
     const postinstallOptions = {
@@ -105,8 +94,6 @@ function dependsOn(packageJson, package) {
 }
 
 function showHelperMessages({ newDepsAdded, hasOldDeps }) {
-    console.info(USAGE_MESSAGE);
-
     if (hasOldDeps) {
         console.info(ALREADY_ADDED_MESSAGE);
     }

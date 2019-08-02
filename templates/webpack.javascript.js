@@ -96,13 +96,15 @@ module.exports = env => {
             extensions: [".js", ".scss", ".css"],
             // Resolve {N} system modules from tns-core-modules
             modules: [
+                resolve(__dirname, "node_modules/tns-core-modules"),
+                resolve(__dirname, "node_modules"),
                 "node_modules/tns-core-modules",
                 "node_modules",
             ],
             alias: {
                 '~': appFullPath
             },
-            // don't resolve symlinks to symlinked modules
+            // resolve symlinks to symlinked modules
             symlinks: true
         },
         resolveLoader: {
@@ -159,7 +161,7 @@ module.exports = env => {
         module: {
             rules: [
                 {
-                    test: nsWebpack.getEntryPathRegExp(appFullPath, entryPath),
+                    include: join(appFullPath, entryPath),
                     use: [
                         // Require all Android app components
                         platform === "android" && {

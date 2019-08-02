@@ -60,6 +60,11 @@ exports.getAppPath = (platform, projectDir) => {
     }
 };
 
+/**
+ * For backward compatibility. This method is deprecated. Do not use it anymore.
+ * This method also has a bug of not escaping valid regex symbols in entry path.
+ * For module rules use: "include" instead of "test".
+ */
 exports.getEntryPathRegExp = (appFullPath, entryModule) => {
     const entryModuleFullPath = path.join(appFullPath, entryModule);
     // Windows paths contain `\`, so we need to convert each of the `\` to `\\`, so it will be correct inside RegExp
