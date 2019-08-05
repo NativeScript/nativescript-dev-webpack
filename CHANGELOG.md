@@ -1,3 +1,14 @@
+<a name="1.0.3"></a>
+## [1.0.3](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.0.2...1.0.3) (2019-08-05)
+
+
+### Bug Fixes
+
+* crash with source-map instead of inline-source-map (https://github.com/NativeScript/nativescript-dev-webpack/issues/968) ([ff07d6c](https://github.com/NativeScript/nativescript-dev-webpack/commit/ff07d6c))
+* **update-ns-webpack:** skip the update of tsconfig.tns.json in… ([#1001](https://github.com/NativeScript/nativescript-dev-webpack/issues/1001)) ([2ed9850](https://github.com/NativeScript/nativescript-dev-webpack/commit/2ed9850))
+
+
+
 <a name="1.0.2"></a>
 ## [1.0.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.0.1...1.0.2) (2019-07-26)
 
