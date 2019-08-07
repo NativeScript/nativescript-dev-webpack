@@ -31,7 +31,6 @@ module.exports = env => {
     const {
         // The 'appPath' and 'appResourcesPath' values are fetched from
         // the nsconfig.json configuration file
-        // when bundling with `tns run android|ios --bundle`.
         appPath = "app",
         appResourcesPath = "app/App_Resources",
 
