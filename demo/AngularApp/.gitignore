@@ -11,3 +11,5 @@ test-results.xml
 app/item/items.component.android.css
 app/item/items.component.ios.css
 mochawesome-report
+
+webpack.config.js
