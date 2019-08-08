@@ -73,11 +73,11 @@ function getRequiredDeps(packageJson) {
     }
 
     const deps = {
-        "@angular/compiler-cli": "8.0.0",
+        "@angular/compiler-cli": "8.2.0",
     };
 
     if (!dependsOn(packageJson, "@angular-devkit/build-angular")) {
-        deps["@ngtools/webpack"] = "8.0.0";
+        deps["@ngtools/webpack"] = "8.2.0";
     }
 
     return deps;
