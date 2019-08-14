@@ -33,9 +33,9 @@ For more details, see the [NativeScript docs for building with webpack](http://d
 ```sh
 $ npm install --save-dev nativescript-dev-webpack
 
-$ tns run android --bundle
+$ tns run android
 or
-$ tns run ios --bundle
+$ tns run ios
 ```
 
 ## Contribute
