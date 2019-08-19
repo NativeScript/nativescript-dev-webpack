@@ -1,3 +1,18 @@
+<a name="1.1.0"></a>
+# [1.1.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.0.2...1.1.0) (2019-08-19)
+
+
+### Bug Fixes
+
+* **hmr:** check for hot update should not create new file ([c9656a9](https://github.com/NativeScript/nativescript-dev-webpack/commit/c9656a9))
+
+
+### Features
+
+* update to angular 8.2 ([d13441a](https://github.com/NativeScript/nativescript-dev-webpack/commit/d13441a))
+
+
+
 <a name="1.0.3"></a>
 ## [1.0.3](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.0.2...1.0.3) (2019-08-05)
 
