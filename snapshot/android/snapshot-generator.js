@@ -102,7 +102,6 @@ SnapshotGenerator.prototype.convertToAndroidArchName = function (archName) {
         case "arm64": return "arm64-v8a";
         case "ia32": return "x86";
         case "ia64": return "x86_64";
-        case "x64": return "x64";
         default: return archName;
     }
 }
