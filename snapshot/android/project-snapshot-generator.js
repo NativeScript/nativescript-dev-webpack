@@ -237,9 +237,18 @@ ProjectSnapshotGenerator.prototype.generate = function (generationOptions) {
             throw new Error(noV8VersionFoundMessage);
         }
 
+        // NOTE: Order is important! Add new archs at the end of the array
+        const defaultTargetArchs = ["arm", "arm64", "ia32", "ia64"];
+        const runtimeVersion = getAndroidRuntimeVersion(this.options.projectRoot);
+        if (runtimeVersion && semver.lt(semver.coerce(runtimeVersion), "6.0.2")) {
+            const indexOfIa64 = defaultTargetArchs.indexOf("ia64");
+            // Before 6.0.2 version of Android runtime we supported only arm, arm64 and ia32.
+            defaultTargetArchs.splice(indexOfIa64, defaultTargetArchs.length - indexOfIa64);
+        }
+
         const options = {
             snapshotToolsPath,
-            targetArchs: generationOptions.targetArchs || ["arm", "arm64", "ia32"],
+            targetArchs: generationOptions.targetArchs || defaultTargetArchs,
             v8Version: generationOptions.v8Version || v8Version,
             preprocessedInputFile: generationOptions.preprocessedInputFile,
             useLibs: generationOptions.useLibs || false,
