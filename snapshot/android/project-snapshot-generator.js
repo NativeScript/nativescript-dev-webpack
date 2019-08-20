@@ -239,7 +239,7 @@ ProjectSnapshotGenerator.prototype.generate = function (generationOptions) {
 
         const options = {
             snapshotToolsPath,
-            targetArchs: generationOptions.targetArchs || ["arm", "arm64", "ia32"],
+            targetArchs: generationOptions.targetArchs || ["arm", "arm64", "ia32", "ia64"],
             v8Version: generationOptions.v8Version || v8Version,
             preprocessedInputFile: generationOptions.preprocessedInputFile,
             useLibs: generationOptions.useLibs || false,
