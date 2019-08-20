@@ -53,7 +53,7 @@ SnapshotGenerator.prototype.preprocessInputFiles = function (inputFiles, outputF
     // Example:
     // (function() {
     //  some code here
-    //  })() 
+    //  })()
     //  // sourceMapUrl......
     //  ** when we join without `;` here, the next IIFE is assumed as a function call to the result of the first IIFE
     // (function() {
@@ -101,7 +101,7 @@ SnapshotGenerator.prototype.convertToAndroidArchName = function (archName) {
         case "arm": return "armeabi-v7a";
         case "arm64": return "arm64-v8a";
         case "ia32": return "x86";
-        case "x64": return "x64";
+        case "ia64": return "x86_64";
         default: return archName;
     }
 }

@@ -28,14 +28,16 @@
       "default": [
         "arm",
         "arm64",
-        "ia32"
+        "ia32",
+        "ia64"
       ],
       "items": {
         "type": "string",
         "enum": [
           "arm",
           "arm64",
-          "ia32"
+          "ia32",
+          "ia64"
         ]
       }
     },
