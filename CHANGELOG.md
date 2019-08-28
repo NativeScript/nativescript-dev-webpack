@@ -1,3 +1,13 @@
+<a name="1.1.1"></a>
+## [1.1.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.1.0...1.1.1) (2019-08-22)
+
+
+### Bug Fixes
+
+* add ia64 as supported architecture ([65d5d3f](https://github.com/NativeScript/nativescript-dev-webpack/commit/65d5d3f))
+
+
+
 <a name="1.1.0"></a>
 # [1.1.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.0.2...1.1.0) (2019-08-19)
 
