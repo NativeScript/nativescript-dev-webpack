@@ -1,3 +1,17 @@
+<a name="1.2.0"></a>
+# [1.2.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.1.1...1.2.0) (2019-09-03)
+
+
+### Bug Fixes
+
+* register non-relative app.css module ([710acd7](https://github.com/NativeScript/nativescript-dev-webpack/commit/710acd7))
+
+
+### Features
+
+* support dynamic ES6 import ([4a07932](https://github.com/NativeScript/nativescript-dev-webpack/commit/4a07932))
+
+
 <a name="1.1.1"></a>
 ## [1.1.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.1.0...1.1.1) (2019-08-22)
 
