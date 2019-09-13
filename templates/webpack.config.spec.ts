@@ -32,8 +32,12 @@ const nativeScriptDevWebpack = {
     getEntryModule: () => 'EntryModule',
     getResolver: () => null,
     getConvertedExternals: nsWebpackIndex.getConvertedExternals,
-    getSourceMapFilename: nsWebpackIndex.getSourceMapFilename
+    getSourceMapFilename: nsWebpackIndex.getSourceMapFilename,
+    processAppComponents: nsWebpackIndex.processAppComponents,
+    getUserDefinedEntries: nsWebpackIndex.getUserDefinedEntries,
 };
+
+
 
 const emptyObject = {};
 const FakeAotTransformerFlag = "aot";

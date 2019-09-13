@@ -36,5 +36,6 @@ bundle-config-loader.js
 
 hooks
 .DS_Store
-
+.nyc_output
+coverage
 !projectHelpers.spec.js
