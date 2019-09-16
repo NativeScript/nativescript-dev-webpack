@@ -1,5 +1,4 @@
-import * as xmlNsLoader from "./xml-namespace-loader";
-import { join } from "path";
+import xmlNsLoader from "./xml-namespace-loader";
 
 const CODE_FILE = `
 <Page xmlns="http://www.nativescript.org/tns.xsd">
@@ -17,12 +16,14 @@ const CODE_FILE = `
 interface TestSetup {
     resolveMap: { [path: string]: string },
     expectedDeps: string[],
-    expectedRegs: { name: string, path: string }[]
+    expectedRegs: { name: string, path: string }[],
+    ignore?: RegExp,
+    assureNoDeps?: boolean;
 }
 
 function getContext(
     done: DoneFn,
-    { resolveMap, expectedDeps, expectedRegs }: TestSetup) {
+    { resolveMap, expectedDeps, expectedRegs, assureNoDeps, ignore }: TestSetup) {
     const actualDeps: string[] = [];
 
     const loaderContext = {
@@ -35,6 +36,11 @@ function getContext(
                 const regCode = `global.registerModule("${name}", function() { return require("${path}"); });`;
                 expect(source).toContain(regCode);
             })
+
+            if (assureNoDeps) {
+                expect(actualDeps.length).toBe(0);
+                expect(source).not.toContain("global.registerModule");
+            }
 
             done();
         },
@@ -49,7 +55,7 @@ function getContext(
         addDependency: (dep: string) => {
             actualDeps.push(dep);
         },
-        query: {}
+        query: { ignore }
     }
 
     return loaderContext;
@@ -76,7 +82,7 @@ fdescribe("XmlNamespaceLoader", () => {
             { name: "nativescript-ui-chart/RadCartesianChart.css", path: "app/nativescript-ui-chart.css" },
         ];
 
-        const loaderContext = getContext(done, {resolveMap, expectedDeps, expectedRegs });
+        const loaderContext = getContext(done, { resolveMap, expectedDeps, expectedRegs });
 
         xmlNsLoader.call(loaderContext, CODE_FILE);
     })
@@ -102,7 +108,7 @@ fdescribe("XmlNamespaceLoader", () => {
             { name: "nativescript-ui-chart/RadCartesianChart.css", path: "app/nativescript-ui-chart/RadCartesianChart.css" },
         ];
 
-        const loaderContext = getContext(done, {resolveMap, expectedDeps, expectedRegs });
+        const loaderContext = getContext(done, { resolveMap, expectedDeps, expectedRegs });
         xmlNsLoader.call(loaderContext, CODE_FILE);
     })
 
@@ -126,7 +132,7 @@ fdescribe("XmlNamespaceLoader", () => {
             { name: "nativescript-ui-chart/RadCartesianChart.css", path: "app/nativescript-ui-chart/RadCartesianChart.css" },
         ];
 
-        const loaderContext = getContext(done, {resolveMap, expectedDeps, expectedRegs });
+        const loaderContext = getContext(done, { resolveMap, expectedDeps, expectedRegs });
         xmlNsLoader.call(loaderContext, CODE_FILE);
     })
 
@@ -146,7 +152,7 @@ fdescribe("XmlNamespaceLoader", () => {
             { name: "nativescript-ui-chart/RadCartesianChart.css", path: "app/nativescript-ui-chart/RadCartesianChart.css" },
         ];
 
-        const loaderContext = getContext(done, {resolveMap, expectedDeps, expectedRegs });
+        const loaderContext = getContext(done, { resolveMap, expectedDeps, expectedRegs });
         xmlNsLoader.call(loaderContext, CODE_FILE);
     })
 
@@ -157,15 +163,44 @@ fdescribe("XmlNamespaceLoader", () => {
 
         const expectedDeps = [
         ];
-        
+
         const expectedRegs = [
             { name: "nativescript-ui-chart", path: "nativescript-ui-chart" },
             { name: "nativescript-ui-chart/RadCartesianChart", path: "nativescript-ui-chart" },
         ];
 
-        const loaderContext = getContext(done, {resolveMap, expectedDeps, expectedRegs });
+        const loaderContext = getContext(done, { resolveMap, expectedDeps, expectedRegs });
+        xmlNsLoader.call(loaderContext, CODE_FILE);
+    })
+
+    it("with plugin path", (done) => {
+        const resolveMap = {
+            "nativescript-ui-chart": "node_module/nativescript-ui-chart/ui-chart.js",
+        }
+
+        const expectedDeps = [
+        ];
+
+        const expectedRegs = [
+            { name: "nativescript-ui-chart", path: "nativescript-ui-chart" },
+            { name: "nativescript-ui-chart/RadCartesianChart", path: "nativescript-ui-chart" },
+        ];
+
+        const loaderContext = getContext(done, { resolveMap, expectedDeps, expectedRegs });
+        xmlNsLoader.call(loaderContext, CODE_FILE);
+    })
+
+    it("with ignored namespace should not add deps or register calls", (done) => {
+        const resolveMap = {
+            "app/nativescript-ui-chart": "app/nativescript-ui-chart.js",
+            "app/nativescript-ui-chart.xml": "app/nativescript-ui-chart.xml",
+            "app/nativescript-ui-chart.css": "app/nativescript-ui-chart.css",
+        };
+        const expectedDeps = [];
+        const expectedRegs = [];
+
+        const loaderContext = getContext(done, { resolveMap, expectedDeps, expectedRegs, ignore: /nativescript\-ui\-chart/, assureNoDeps: true });
+
         xmlNsLoader.call(loaderContext, CODE_FILE);
     })
 });
-
-
