@@ -37,8 +37,6 @@ const nativeScriptDevWebpack = {
     getUserDefinedEntries: nsWebpackIndex.getUserDefinedEntries,
 };
 
-
-
 const emptyObject = {};
 const FakeAotTransformerFlag = "aot";
 const FakeHmrTransformerFlag = "hmr";
