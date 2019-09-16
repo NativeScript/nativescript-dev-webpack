@@ -1,8 +1,9 @@
-const { parse, relative, join, basename, extname } = require("path");
-const { promisify } = require('util');
-const { convertSlashesInPath } = require("./projectHelpers");
+import { parse, join } from "path";
+import { promisify } from "util";
+import { loader } from "webpack";
+import { convertSlashesInPath } from "./projectHelpers";
 
-module.exports = function (source, map) {
+const loader: loader.Loader = function (source, map) {
     this.value = source;
     const { ignore } = this.query;
     const callback = this.async();
@@ -55,7 +56,7 @@ module.exports = function (source, map) {
             promises.push(resolvePromise(this.context, localNamespacePath)
                 .then(path => pathResolved(path))
                 .catch(() => {
-                    return promise = resolvePromise(this.context, localModulePath)
+                    return resolvePromise(this.context, localModulePath)
                         .then(path => pathResolved(path))
                         .catch(() => {
                             return Promise.all([
@@ -112,3 +113,5 @@ function convertPath(obj) {
     obj.path = convertSlashesInPath(obj.path);
     return obj;
 }
+
+export default loader;

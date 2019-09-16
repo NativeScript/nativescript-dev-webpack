@@ -31,6 +31,9 @@ jasmine-config/reporter.js
 bundle-config-loader.d.ts
 bundle-config-loader.js
 
+xml-namespace-loader.d.ts
+xml-namespace-loader.js
+
 **/*.spec.js*
 **/*.spec.d.ts*
 
