@@ -89,7 +89,7 @@ module.exports = function (source, map) {
         const moduleRegisters = namespaces
             .map(convertPath)
             .map(n =>
-                `global.registerModule("${n.name}", function() { return require("${n.path}"); });`
+                `global.registerModule("${n.name}", function() { return require("${n.path}"); });\n`
             )
             .join("");
 
