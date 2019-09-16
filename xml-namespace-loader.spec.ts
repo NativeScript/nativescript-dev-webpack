@@ -173,23 +173,6 @@ fdescribe("XmlNamespaceLoader", () => {
         xmlNsLoader.call(loaderContext, CODE_FILE);
     })
 
-    it("with plugin path", (done) => {
-        const resolveMap = {
-            "nativescript-ui-chart": "node_module/nativescript-ui-chart/ui-chart.js",
-        }
-
-        const expectedDeps = [
-        ];
-
-        const expectedRegs = [
-            { name: "nativescript-ui-chart", path: "nativescript-ui-chart" },
-            { name: "nativescript-ui-chart/RadCartesianChart", path: "nativescript-ui-chart" },
-        ];
-
-        const loaderContext = getContext(done, { resolveMap, expectedDeps, expectedRegs });
-        xmlNsLoader.call(loaderContext, CODE_FILE);
-    })
-
     it("with ignored namespace should not add deps or register calls", (done) => {
         const resolveMap = {
             "app/nativescript-ui-chart": "app/nativescript-ui-chart.js",

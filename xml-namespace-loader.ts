@@ -3,6 +3,11 @@ import { promisify } from "util";
 import { loader } from "webpack";
 import { convertSlashesInPath } from "./projectHelpers";
 
+interface NamespaceEntry {
+    name: string;
+    path: string
+}
+
 const loader: loader.Loader = function (source, map) {
     this.value = source;
     const { ignore } = this.query;
@@ -11,9 +16,9 @@ const loader: loader.Loader = function (source, map) {
     const { XmlParser } = require("tns-core-modules/xml");
 
     const resolvePromise = promisify(this.resolve);
-    const promises = [];
+    const promises: Promise<any>[] = [];
 
-    const namespaces = [];
+    const namespaces: NamespaceEntry[] = [];
     const parser = new XmlParser((event) => {
         const { namespace, elementName } = event;
         const moduleName = `${namespace}/${elementName}`;
@@ -87,12 +92,13 @@ const loader: loader.Loader = function (source, map) {
     parser.parse(source);
 
     Promise.all(promises).then(() => {
-        const moduleRegisters = namespaces
-            .map(convertPath)
-            .map(n =>
-                `global.registerModule("${n.name}", function() { return require("${n.path}"); });\n`
-            )
-            .join("");
+        const distinctNamespaces = new Map<string, string>();
+        namespaces.forEach(({ name, path }) => distinctNamespaces.set(name, convertSlashesInPath(path)));
+
+        const moduleRegisters: string[] = [];
+        distinctNamespaces.forEach((path, name) => {
+            moduleRegisters.push(`global.registerModule("${name}", function() { return require("${path}"); });\n`);
+        });
 
         // escape special whitespace characters
         // see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#Issue_with_plain_JSON.stringify_for_use_as_JavaScript
@@ -100,18 +106,13 @@ const loader: loader.Loader = function (source, map) {
             .replace(/\u2028/g, '\\u2028')
             .replace(/\u2029/g, '\\u2029');
 
-        const wrapped = `${moduleRegisters}\nmodule.exports = ${json}`;
+        const wrapped = `${moduleRegisters.join("")}\nmodule.exports = ${json}`;
 
         callback(null, wrapped, map);
     }).catch((err) => {
         callback(err);
     })
 
-}
-
-function convertPath(obj) {
-    obj.path = convertSlashesInPath(obj.path);
-    return obj;
 }
 
 export default loader;
