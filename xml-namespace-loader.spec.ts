@@ -18,12 +18,13 @@ interface TestSetup {
     expectedDeps: string[],
     expectedRegs: { name: string, path: string }[],
     ignore?: RegExp,
-    assureNoDeps?: boolean;
+    assureNoDeps?: boolean,
+    expectError?: boolean
 }
 
 function getContext(
     done: DoneFn,
-    { resolveMap, expectedDeps, expectedRegs, assureNoDeps, ignore }: TestSetup) {
+    { resolveMap, expectedDeps, expectedRegs, assureNoDeps, ignore, expectError }: TestSetup) {
     const actualDeps: string[] = [];
 
     const loaderContext = {
@@ -42,7 +43,13 @@ function getContext(
                 expect(source).not.toContain("global.registerModule");
             }
 
-            done();
+            if (error && !expectError) {
+                done.fail(error)
+            } else if (!error && expectError) {
+                done.fail("Error expected here")
+            } else {
+                done();
+            }
         },
         resolve: (context: string, request: string, callback: (err: Error, result: string) => void) => {
             // console.log(`Resolve request: ${request}, result: ${resolveMap[request]}`);
@@ -61,7 +68,7 @@ function getContext(
     return loaderContext;
 }
 
-fdescribe("XmlNamespaceLoader", () => {
+describe("XmlNamespaceLoader", () => {
     it("with namespace pointing to files", (done) => {
         const resolveMap = {
             "app/nativescript-ui-chart": "app/nativescript-ui-chart.js",
@@ -185,5 +192,32 @@ fdescribe("XmlNamespaceLoader", () => {
         const loaderContext = getContext(done, { resolveMap, expectedDeps, expectedRegs, ignore: /nativescript\-ui\-chart/, assureNoDeps: true });
 
         xmlNsLoader.call(loaderContext, CODE_FILE);
+    })
+
+    it("with XML declaration and Doctype does not fail", (done) => {
+        const resolveMap = {};
+        const expectedDeps = [];
+        const expectedRegs = [];
+
+        const testXml = `
+    <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <!-- comment.xml -->
+    <Page xmlns="http://www.nativescript.org/tns.xsd"></Page>`;
+
+        const loaderContext = getContext(done, { resolveMap, expectedDeps, expectedRegs, assureNoDeps: true });
+
+        xmlNsLoader.call(loaderContext, testXml);
+    })
+    it("with invalid XML fails", (done) => {
+        const resolveMap = {};
+        const expectedDeps = [];
+        const expectedRegs = [];
+
+        const testXml = `<Page xmlns="http://www.nativescript.org/tns.xsd"></PageOpsWrongTagHere>`;
+
+        const loaderContext = getContext(done, { resolveMap, expectedDeps, expectedRegs, expectError: true });
+
+        xmlNsLoader.call(loaderContext, testXml);
     })
 });
