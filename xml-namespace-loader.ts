@@ -1,6 +1,8 @@
 import { parse, join } from "path";
 import { promisify } from "util";
 import { loader } from "webpack";
+import { parser, QualifiedTag } from "sax";
+
 import { convertSlashesInPath } from "./projectHelpers";
 
 interface NamespaceEntry {
@@ -8,21 +10,18 @@ interface NamespaceEntry {
     path: string
 }
 
-const loader: loader.Loader = function (source, map) {
+const loader: loader.Loader = function (source: string, map) {
     this.value = source;
     const { ignore } = this.query;
     const callback = this.async();
 
-    const { XmlParser } = require("tns-core-modules/xml");
-
     const resolvePromise = promisify(this.resolve);
     const promises: Promise<any>[] = [];
-
     const namespaces: NamespaceEntry[] = [];
-    const parser = new XmlParser((event) => {
-        const { namespace, elementName } = event;
-        const moduleName = `${namespace}/${elementName}`;
+    let parsingError = false;
 
+    const handleOpenTag = (namespace: string, elementName: string) => {
+        const moduleName = `${namespace}/${elementName}`;
         if (
             namespace &&
             !namespace.startsWith("http") &&
@@ -87,9 +86,16 @@ const loader: loader.Loader = function (source, map) {
                 })
             );
         }
-    }, undefined, true);
+    }
 
-    parser.parse(source);
+    const saxParser = parser(true, { xmlns: true });
+    saxParser.onopentag = (node: QualifiedTag) => { handleOpenTag(node.uri, node.local); };
+    saxParser.onerror = (err) => {
+        saxParser.error = null;
+        parsingError = true;
+        callback(err);
+    };
+    saxParser.write(source).close();
 
     Promise.all(promises).then(() => {
         const distinctNamespaces = new Map<string, string>();
@@ -108,11 +114,14 @@ const loader: loader.Loader = function (source, map) {
 
         const wrapped = `${moduleRegisters.join("")}\nmodule.exports = ${json}`;
 
-        callback(null, wrapped, map);
+        if (!parsingError) {
+            callback(null, wrapped, map);
+        }
     }).catch((err) => {
-        callback(err);
+        if (!parsingError) {
+            callback(err);
+        }
     })
-
 }
 
 export default loader;
