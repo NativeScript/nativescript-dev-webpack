@@ -11,7 +11,6 @@ interface NamespaceEntry {
 }
 
 const loader: loader.Loader = function (source: string, map) {
-    this.value = source;
     const { ignore } = this.query;
     const callback = this.async();
 
