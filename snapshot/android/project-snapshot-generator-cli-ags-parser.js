@@ -9,6 +9,10 @@ module.exports = function parseProjectSnapshotGeneratorArgs() {
         result.useLibs = parseBool(result.useLibs);
     }
 
+    if (result.snapshotInDocker !== undefined) {
+        result.snapshotInDocker = parseBool(result.snapshotInDocker);
+    }
+
     if (result.install !== undefined) {
         result.install = parseBool(result.install);
     }
@@ -22,7 +26,7 @@ function parseJsonFromProcessArgs() {
 
     var currentKey = "";
     var currentValue = "";
-    args.forEach(function(value, index, array) {
+    args.forEach(function (value, index, array) {
         if (value.startsWith("--")) { // if is key
             addKeyAndValueToResult(currentKey, currentValue, result);
             currentKey = value.slice(2);

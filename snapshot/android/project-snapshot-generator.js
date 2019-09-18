@@ -114,7 +114,9 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function (projectRoot) {
         shelljs.cp("-R", blobsSrcPath + "/", resolve(appPath, "../snapshots"));
 
         /*
-        Rename TNSSnapshot.blob files to snapshot.blob files. The xxd tool uses the file name for the name of the static array. This is why the *.blob files are initially named  TNSSnapshot.blob. After the xxd step, they must be renamed to snapshot.blob, because this is the filename that the Android runtime is looking for.
+        Rename TNSSnapshot.blob files to snapshot.blob files. The xxd tool uses the file name for the name of the static array. 
+        This is why the *.blob files are initially named  TNSSnapshot.blob. 
+        After the xxd step, they must be renamed to snapshot.blob, because this is the filename that the Android runtime is looking for.
         */
         shelljs.exec("find " + blobsDestinationPath + " -name '*.blob' -execdir mv {} snapshot.blob ';'");
 
@@ -170,7 +172,7 @@ ProjectSnapshotGenerator.prototype.getV8Version = function (generationOptions) {
 
         // try to get the V8 Version from the settings.json file in android runtime folder
         const runtimeV8Version = getAndroidV8Version(this.options.projectRoot);
-        if(runtimeV8Version) {
+        if (runtimeV8Version) {
             return resolve(runtimeV8Version);
         }
 
@@ -184,7 +186,7 @@ ProjectSnapshotGenerator.prototype.getV8Version = function (generationOptions) {
                         const version = findV8Version(runtimeVersion, latestVersionsMap)
                         return resolve(version);
                     })
-                    .catch(reject);
+                        .catch(reject);
                 } else {
                     return resolve(v8Version);
                 }
@@ -254,7 +256,8 @@ ProjectSnapshotGenerator.prototype.generate = function (generationOptions) {
             useLibs: generationOptions.useLibs || false,
             inputFiles: generationOptions.inputFiles || [join(this.options.projectRoot, "__snapshot.js")],
             androidNdkPath,
-            mksnapshotParams: mksnapshotParams
+            mksnapshotParams: mksnapshotParams,
+            snapshotInDocker: generationOptions.snapshotInDocker
         };
 
         return generator.generate(options).then(() => {

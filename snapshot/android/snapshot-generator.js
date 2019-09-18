@@ -1,12 +1,13 @@
 const fs = require("fs");
-const { dirname, join, EOL } = require("path");
-const os = require("os");
+const { dirname, relative, join, EOL } = require("path");
 const child_process = require("child_process");
 
 const shelljs = require("shelljs");
 
-const { createDirectory, downloadFile } = require("./utils");
+const { createDirectory, downloadFile, getHostOS, getHostOSArch, CONSTANTS, has32BitArch, isMacOSCatalinaOrHigher } = require("./utils");
 
+const SNAPSHOTS_DOCKER_IMAGE = "nativescript/v8-snapshot:latest";
+const SNAPSHOT_TOOLS_DIR_NAME = "mksnapshot-tools";
 const NDK_BUILD_SEED_PATH = join(__dirname, "snapshot-generator-tools/ndk-build");
 const BUNDLE_PREAMBLE_PATH = join(__dirname, "snapshot-generator-tools/bundle-preamble.js");
 const BUNDLE_ENDING_PATH = join(__dirname, "snapshot-generator-tools/bundle-ending.js");
@@ -14,6 +15,8 @@ const INCLUDE_GRADLE_PATH = join(__dirname, "snapshot-generator-tools/include.gr
 const MKSNAPSHOT_TOOLS_DOWNLOAD_ROOT_URL = "https://raw.githubusercontent.com/NativeScript/mksnapshot-tools/production/";
 const MKSNAPSHOT_TOOLS_DOWNLOAD_TIMEOUT = 60000;
 const SNAPSHOT_BLOB_NAME = "TNSSnapshot";
+const DOCKER_IMAGE_OS = "linux";
+const DOCKER_IMAGE_ARCH = "x64";
 
 function shellJsExecuteInDir(dir, action) {
     const currentDir = shelljs.pwd();
@@ -25,17 +28,6 @@ function shellJsExecuteInDir(dir, action) {
     }
 }
 
-function getHostOS() {
-    const hostOS = os.type().toLowerCase();
-    if (hostOS.startsWith("darwin"))
-        return "darwin";
-    if (hostOS.startsWith("linux"))
-        return "linux";
-    if (hostOS.startsWith("win"))
-        return "win";
-    return hostOS;
-}
-
 function SnapshotGenerator(options) {
     this.buildPath = options.buildPath || join(__dirname, "build");
 }
@@ -43,8 +35,24 @@ module.exports = SnapshotGenerator;
 
 SnapshotGenerator.SNAPSHOT_PACKAGE_NANE = "nativescript-android-snapshot";
 
+SnapshotGenerator.prototype.shouldSnapshotInDocker = function (hostOS) {
+    let shouldSnapshotInDocker = false;
+    const generateInDockerMessage = "The snapshots will be generated in a docker container.";
+    if (hostOS == CONSTANTS.WIN_OS_NAME) {
+        console.log(`The V8 snapshot tools are not supported on Windows. ${generateInDockerMessage}`);
+        shouldSnapshotInDocker = true;
+    } else if (isMacOSCatalinaOrHigher() && has32BitArch(options.targetArchs)) {
+        console.log(`Starting from macOS Catalina, the 32-bit processes are no longer supported. ${generateInDockerMessage}`);
+        shouldSnapshotInDocker = true;
+    }
+
+    return shouldSnapshotInDocker;
+}
+
 SnapshotGenerator.prototype.preprocessInputFiles = function (inputFiles, outputFile) {
     // Make some modifcations on the original bundle and save it on the specified path
+
+
     const bundlePreambleContent = fs.readFileSync(BUNDLE_PREAMBLE_PATH, "utf8");
     const bundleEndingContent = fs.readFileSync(BUNDLE_ENDING_PATH, "utf8");
 
@@ -67,9 +75,34 @@ SnapshotGenerator.prototype.preprocessInputFiles = function (inputFiles, outputF
 
 const snapshotToolsDownloads = {};
 
-SnapshotGenerator.prototype.downloadMksnapshotTool = function (snapshotToolsPath, v8Version, targetArch) {
-    const hostOS = getHostOS();
-    const mksnapshotToolRelativePath = join("mksnapshot-tools", "v8-v" + v8Version, hostOS + "-" + os.arch(), "mksnapshot-" + targetArch);
+SnapshotGenerator.prototype.downloadMkSnapshotTools = function (snapshotToolsPath, v8Version, targetArchs, useDocker) {
+    var toolsOS = "";
+    var toolsArch = "";
+    if (typeof useDocker === "boolean") {
+        if (useDocker) {
+            toolsOS = DOCKER_IMAGE_OS;
+            toolsArch = DOCKER_IMAGE_ARCH;
+        } else {
+            toolsOS = getHostOS();
+            toolsArch = getHostOSArch();
+        }
+    } else {
+        toolsOS = getHostOS();
+        toolsArch = getHostOSArch();
+        fallbackToDocker = true;
+    }
+
+
+
+    return Promise.all(targetArchs.map((arch) => {
+        return this.downloadMkSnapshotTool(snapshotToolsPath, v8Version, arch, toolsOS, toolsArch).then(path => {
+            return { path, arch };
+        });
+    }));
+}
+
+SnapshotGenerator.prototype.downloadMkSnapshotTool = function (snapshotToolsPath, v8Version, targetArch, hostOS, hostArch) {
+    const mksnapshotToolRelativePath = join(SNAPSHOT_TOOLS_DIR_NAME, "v8-v" + v8Version, hostOS + "-" + hostArch, "mksnapshot-" + targetArch);
     const mksnapshotToolPath = join(snapshotToolsPath, mksnapshotToolRelativePath);
     if (fs.existsSync(mksnapshotToolPath))
         return Promise.resolve(mksnapshotToolPath);
@@ -106,68 +139,71 @@ SnapshotGenerator.prototype.convertToAndroidArchName = function (archName) {
     }
 }
 
-SnapshotGenerator.prototype.runMksnapshotTool = function (snapshotToolsPath, inputFile, v8Version, targetArchs, buildCSource, mksnapshotParams) {
+SnapshotGenerator.prototype.generateSnapshots = function (snapshotToolsPath, inputFile, v8Version, targetArchs, buildCSource, mksnapshotParams, useDocker) {
     // Cleans the snapshot build folder
+    debugger;
     shelljs.rm("-rf", join(this.buildPath, "snapshots"));
+    return this.downloadMkSnapshotTools(snapshotToolsPath, v8Version, targetArchs, useDocker).then((localTools) => {
+        var snapshotInDocker = !!useDocker;
+        var shouldDownloadDockerTools = false;
+        if (!snapshotInDocker) {
+            snapshotInDocker = localTools.some(tool => !this.canUseSnapshotTool(tool.path));
+            shouldDownloadDockerTools = snapshotInDocker;
+        }
 
-    const mksnapshotStdErrPath = join(this.buildPath, "mksnapshot-stderr.txt");
-
-    return Promise.all(targetArchs.map((arch) => {
-        return this.downloadMksnapshotTool(snapshotToolsPath, v8Version, arch).then((currentArchMksnapshotToolPath) => {
-            if (!fs.existsSync(currentArchMksnapshotToolPath)) {
-                throw new Error("Can't find mksnapshot tool for " + arch + " at path " + currentArchMksnapshotToolPath);
-            }
-
-            const androidArch = this.convertToAndroidArchName(arch);
-            console.log("***** Generating snapshot for " + androidArch + " *****");
-
-            // Generate .blob file
-            const currentArchBlobOutputPath = join(this.buildPath, "snapshots/blobs", androidArch);
-            shelljs.mkdir("-p", currentArchBlobOutputPath);
-            var params = "--profile_deserialization";
-            if (mksnapshotParams) {
-                // Starting from android runtime 5.3.0, the parameters passed to mksnapshot are read from the settings.json file
-                params = mksnapshotParams;
-            }
-            const command = `${currentArchMksnapshotToolPath} ${inputFile} --startup_blob ${join(currentArchBlobOutputPath, `${SNAPSHOT_BLOB_NAME}.blob`)} ${params}`;
-
-            return new Promise((resolve, reject) => {
-                const child = child_process.exec(command, { encoding: "utf8" }, (error, stdout, stderr) => {
-                    const errorHeader = `Target architecture: ${androidArch}\n`;
-                    let errorFooter = ``;
-                    if (stderr.length || error) {
-                        try {
-                            require(inputFile);
-                        } catch (e) {
-                            errorFooter = `\nJavaScript execution error: ${e.stack}$`;
-                        }
-                    }
-
-                    if (stderr.length) {
-                        const message = `${errorHeader}${stderr}${errorFooter}`;
-                        reject(new Error(message));
-                    } else if (error) {
-                        error.message = `${errorHeader}${error.message}${errorFooter}`;
-                        reject(error);
-                    } else {
-                        console.log(stdout);
-                        resolve();
-                    }
-                })
-            }).then(() => {
-                // Generate .c file
-                if (buildCSource) {
-                    const currentArchSrcOutputPath = join(this.buildPath, "snapshots/src", androidArch);
-                    shelljs.mkdir("-p", currentArchSrcOutputPath);
-                    shellJsExecuteInDir(currentArchBlobOutputPath, function () {
-                        shelljs.exec(`xxd -i ${SNAPSHOT_BLOB_NAME}.blob > ${join(currentArchSrcOutputPath, `${SNAPSHOT_BLOB_NAME}.c`)}`);
-                    });
-                }
+        if (shouldDownloadDockerTools) {
+            return this.downloadMkSnapshotTools(snapshotToolsPath, v8Version, targetArchs, true).then((dockerTools) => {
+                console.log(`Executing '${snapshotToolPath}' in a docker container.`);
+                return this.runMKSnapshotTools(snapshotToolsPath, dockerTools, inputFile, mksnapshotParams, buildCSource, snapshotInDocker);
             });
-        });
+        } else {
+            return this.runMKSnapshotTools(snapshotToolsPath, localTools, inputFile, mksnapshotParams, buildCSource, snapshotInDocker);
+        }
+    });
+}
+
+
+SnapshotGenerator.prototype.runMKSnapshotTools = function (snapshotToolsBasePath, snapshotTools, inputFile, mksnapshotParams, buildCSource, snapshotInDocker) {
+    let currentSnapshotOperation = Promise.resolve();
+    const canRunInParallel = snapshotTools.length <= 1 || !snapshotInDocker;
+    return Promise.all(snapshotTools.map((tool) => {
+        if (canRunInParallel) {
+            return this.runMKSnapshotTool(tool, mksnapshotParams, inputFile, snapshotInDocker, snapshotToolsBasePath, buildCSource);
+        } else {
+            currentSnapshotOperation = currentSnapshotOperation.then(() => {
+                return this.runMKSnapshotTool(tool, mksnapshotParams, inputFile, snapshotInDocker, snapshotToolsBasePath, buildCSource);
+            });
+
+            return currentSnapshotOperation;
+        }
     })).then(() => {
         console.log("***** Finished generating snapshots. *****");
     });
+}
+
+SnapshotGenerator.prototype.canUseSnapshotTool = function (snapshotToolPath) {
+    try {
+        child_process.execSync(`${snapshotToolPath} --help`);
+        return true;
+    }
+    catch (error) {
+        console.log(`Unable to execute '${snapshotToolPath}' locally.Error message: '${error.message}'`);
+        return false;
+    }
+}
+
+SnapshotGenerator.prototype.setupDocker = function () {
+    const installMessage = "Install Docker and add it to your PATH in order to build snapshots.";
+    try {
+        // e.g. Docker version 19.03.2, build 6a30dfc
+        child_process.execSync(`docker --version`);
+        // TODO: require a minimum version?
+    }
+    catch (error) {
+        throw new Error(`Docker installation cannot be found. ${installMessage}`);
+    }
+
+    child_process.execSync(`docker pull ${SNAPSHOTS_DOCKER_IMAGE}`);
 }
 
 SnapshotGenerator.prototype.buildSnapshotLibs = function (androidNdkBuildPath, targetArchs) {
@@ -199,15 +235,18 @@ SnapshotGenerator.prototype.generate = function (options) {
     console.log("***** Starting snapshot generation using V8 version: ", options.v8Version);
 
     this.preprocessInputFiles(options.inputFiles, preprocessedInputFile);
+    const hostOS = getHostOS();
+    const snapshotInDocker = options.snapshotInDocker || this.shouldSnapshotInDocker(hostOS);
 
     // generates the actual .blob and .c files
-    return this.runMksnapshotTool(
+    return this.generateSnapshots(
         options.snapshotToolsPath,
         preprocessedInputFile,
         options.v8Version,
         options.targetArchs,
         options.useLibs,
-        options.mksnapshotParams
+        options.mksnapshotParams,
+        snapshotInDocker
     ).then(() => {
         this.buildIncludeGradle();
         if (options.useLibs) {
@@ -217,3 +256,117 @@ SnapshotGenerator.prototype.generate = function (options) {
         return this.buildPath;
     });
 }
+
+SnapshotGenerator.prototype.runMKSnapshotTool = function (tool, mksnapshotParams, inputFile, snapshotInDocker, snapshotToolsBasePath, buildCSource) {
+    const currentArchMksnapshotToolPath = tool.path;
+    const arch = tool.arch;
+    if (!fs.existsSync(currentArchMksnapshotToolPath)) {
+        throw new Error("Can't find mksnapshot tool for " + arch + " at path " + currentArchMksnapshotToolPath);
+    }
+
+    const androidArch = this.convertToAndroidArchName(arch);
+    console.log("***** Generating snapshot for " + androidArch + " *****");
+    // Generate .blob file
+    const currentArchBlobOutputPath = join(this.buildPath, "snapshots/blobs", androidArch);
+    shelljs.mkdir("-p", currentArchBlobOutputPath);
+    let dockerCurrentArchBlobOutputPath = "";
+    var params = "--profile_deserialization";
+    if (mksnapshotParams) {
+        // Starting from android runtime 5.3.0, the parameters passed to mksnapshot are read from the settings.json file
+        params = mksnapshotParams;
+    }
+    return new Promise((resolve, reject) => {
+        let snapshotToolPath = currentArchMksnapshotToolPath;
+        const inputFileDir = dirname(inputFile);
+        let inputFilePath = inputFile;
+        const appDirInDocker = "/app";
+        let outputPath = currentArchBlobOutputPath;
+        if (snapshotInDocker) {
+            this.setupDocker();
+            // create snapshots dir in docker
+            dockerCurrentArchBlobOutputPath = join(inputFileDir, "snapshots", androidArch);
+            shelljs.mkdir("-p", dockerCurrentArchBlobOutputPath);
+            outputPath = join(appDirInDocker, relative(inputFileDir, dockerCurrentArchBlobOutputPath));
+            // calculate input in docker
+            inputFilePath = join(appDirInDocker, relative(inputFileDir, inputFile));
+            // calculate snapshotTool path
+            snapshotToolPath = join(appDirInDocker, relative(snapshotToolsBasePath, currentArchMksnapshotToolPath));
+        }
+        let command = `${snapshotToolPath} ${inputFilePath} --startup_blob ${join(outputPath, `${SNAPSHOT_BLOB_NAME}.blob`)} ${params}`;
+        if (snapshotInDocker) {
+            // we cannot mount the source tools folder as its not shared by default:
+            // docker: Error response from daemon: Mounts denied: 
+            // The path /var/folders/h2/1yck52fx2mg7c790vhcw90s8087sk8/T/snapshot-tools/mksnapshot-tools
+            // is not shared from OS X and is not known to Docker.
+            const currentToolRelativeToSnapshotTools = relative(snapshotToolsBasePath, currentArchMksnapshotToolPath);
+            const currentToolDestination = join(inputFileDir, currentToolRelativeToSnapshotTools)
+            debugger;
+            createDirectory(dirname(currentToolDestination));
+            shelljs.cp(currentArchMksnapshotToolPath, join(inputFileDir, currentToolRelativeToSnapshotTools));
+            command = `docker run -v "${inputFileDir}:${appDirInDocker}" ${SNAPSHOTS_DOCKER_IMAGE} /bin/sh -c "${command}"`;
+        }
+        child_process.exec(command, { encoding: "utf8" }, (error, stdout, stderr) => {
+            const errorHeader = `Target architecture: ${androidArch}\n`;
+            let errorFooter = ``;
+            if (stderr.length || error) {
+                try {
+                    require(inputFile);
+                }
+                catch (e) {
+                    errorFooter = `\nJavaScript execution error: ${e.stack}$`;
+                }
+            }
+            if (stderr.length) {
+                const message = `${errorHeader}${stderr}${errorFooter}`;
+                reject(new Error(message));
+            }
+            else if (error) {
+                error.message = `${errorHeader}${error.message}${errorFooter}`;
+                reject(error);
+            }
+            else {
+                console.log(stdout);
+                // Generate .c file
+                /// TODO: test in docker
+                if (buildCSource) {
+                    let srcOutputPath = "";
+                    let dockerCurrentArchSrcOutputPath = "";
+                    if (snapshotInDocker) {
+                        dockerCurrentArchSrcOutputPath = join(inputFileDir, "snapshots/src", androidArch);
+                        shelljs.mkdir("-p", dockerCurrentArchSrcOutputPath);
+                        srcOutputPath = join(appDirInDocker, relative(inputFileDir, dockerCurrentArchSrcOutputPath));
+                    } else {
+                        srcOutputPath = join(this.buildPath, "snapshots/src", androidArch);
+                        shelljs.mkdir("-p", srcOutputPath);
+                    }
+
+                    const buildCSourceCommand = `xxd -i ${SNAPSHOT_BLOB_NAME}.blob > ${join(srcOutputPath, `${SNAPSHOT_BLOB_NAME}.c`)}`;
+                    if (snapshotInDocker) {
+                        // add vim in order to get xxd
+                        const commandInDocker =
+                            `docker run -v "${inputFileDir}:${appDirInDocker}" ${SNAPSHOTS_DOCKER_IMAGE} /bin/sh -c "cd ${outputPath} && apk add vim && ${buildCSourceCommand}"`;
+                        child_process.execSync(commandInDocker);
+                    } else {
+                        shellJsExecuteInDir(currentArchBlobOutputPath, function () {
+                            shelljs.exec(buildCSourceCommand);
+                        });
+                    }
+
+                    if (snapshotInDocker) {
+                        createDirectory(join(this.buildPath, "snapshots/src", androidArch));
+                        shelljs.cp("-R", dockerCurrentArchSrcOutputPath + "/", join(this.buildPath, "snapshots/src", androidArch));
+                        shelljs.rm("-rf", dockerCurrentArchSrcOutputPath);
+                    }
+                }
+
+                // TODO: move cleanup to afterPrepare?
+                if (snapshotInDocker) {
+                    shelljs.cp("-R", dockerCurrentArchBlobOutputPath + "/", currentArchBlobOutputPath);
+                    shelljs.rm("-rf", dockerCurrentArchBlobOutputPath);
+                }
+                resolve();
+            }
+        });
+    });
+}
+

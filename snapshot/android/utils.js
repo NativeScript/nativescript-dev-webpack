@@ -1,16 +1,58 @@
 const { chmodSync, createWriteStream, existsSync } = require("fs");
 const { tmpdir, EOL } = require("os");
-const { dirname, join } = require("path");
+const { join } = require("path");
+const os = require("os");
 
 const { mkdir } = require("shelljs");
 const { get } = require("request");
 const { getProxySettings } = require("proxy-lib");
+const semver = require("semver");
 
 const CONSTANTS = {
     SNAPSHOT_TMP_DIR: join(tmpdir(), "snapshot-tools"),
+    MAC_OS_NAME: "darwin",
+    WIN_OS_NAME: "win",
+    LINUX_OS_NAME: "linux"
 };
 
 const createDirectory = dir => mkdir('-p', dir);
+
+function getHostOS() {
+    const hostOS = os.type().toLowerCase();
+    if (hostOS.startsWith(CONSTANTS.MAC_OS_NAME))
+        return CONSTANTS.MAC_OS_NAME;
+    if (hostOS.startsWith(CONSTANTS.LINUX_OS_NAME))
+        return CONSTANTS.LINUX_OS_NAME;
+    if (hostOS.startsWith(CONSTANTS.WIN_OS_NAME))
+        return CONSTANTS.WIN_OS_NAME;
+    return hostOS;
+}
+
+function getHostOSVersion() {
+    return os.release();
+}
+
+function getHostOSArch() {
+    return os.arch();
+}
+
+function has32BitArch(targetArchs) {
+    return Array.isArray(targetArchs) && targetArchs.some(arch => arch === "arm" || arch === "ia32")
+}
+
+function isMacOSCatalinaOrHigher() {
+    const isCatalinaOrHigher = false;
+    const catalinaVersion = "19.0.0";
+    const hostOS = getHostOS();
+    if (hostOS === CONSTANTS.MAC_OS_NAME) {
+        const hostOSVersion = getHostOSVersion();
+        if (semver.gte(hostOSVersion, catalinaVersion)) {
+            isCatalinaOrHigher = true;
+        }
+    }
+
+    return isCatalinaOrHigher;
+}
 
 const downloadFile = (url, destinationFilePath, timeout) =>
     new Promise((resolve, reject) => {
@@ -64,6 +106,11 @@ const getRequestOptions = (url, timeout) =>
 module.exports = {
     CONSTANTS,
     createDirectory,
+    has32BitArch,
+    getHostOS,
+    getHostOSVersion,
+    getHostOSArch,
+    isMacOSCatalinaOrHigher,
     downloadFile,
     getJsonFile,
 };
