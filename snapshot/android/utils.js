@@ -1,6 +1,6 @@
 const { chmodSync, createWriteStream, existsSync } = require("fs");
 const { tmpdir, EOL } = require("os");
-const { join } = require("path");
+const { join, relative, isAbsolute } = require("path");
 const os = require("os");
 
 const { mkdir } = require("shelljs");
@@ -38,6 +38,13 @@ function getHostOSArch() {
 
 function has32BitArch(targetArchs) {
     return Array.isArray(targetArchs) && targetArchs.some(arch => arch === "arm" || arch === "ia32")
+}
+
+function isSubPath(parentPath, childPath) {
+    const relativePath = relative(parentPath, childPath);
+
+    return relativePath === "" ||
+        (relativePath && !relativePath.startsWith('..') && !isAbsolute(relativePath));
 }
 
 function isMacOSCatalinaOrHigher() {
@@ -113,4 +120,5 @@ module.exports = {
     isMacOSCatalinaOrHigher,
     downloadFile,
     getJsonFile,
+    isSubPath
 };
