@@ -1,6 +1,7 @@
 <a name="1.1.1"></a>
 ## [1.1.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.1.0...1.1.1) (2019-08-22)
-
+ 
+ 
 
 ### Bug Fixes
 
