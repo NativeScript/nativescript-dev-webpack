@@ -4,5 +4,6 @@ module.exports = Object.assign({},
     require("./NativeScriptSnapshotPlugin"),
     require("./PlatformSuffixPlugin"),
     require("./PlatformFSPlugin"),
-    require("./WatchStateLoggerPlugin")
+    require("./WatchStateLoggerPlugin"),
+    require("./DedupePlugin")
 );
