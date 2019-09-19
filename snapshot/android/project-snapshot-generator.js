@@ -10,7 +10,6 @@ const {
     createDirectory,
     getJsonFile,
 } = require("./utils");
-const { getPackageJson } = require("../../projectHelpers");
 const {
     ANDROID_PROJECT_DIR,
     ANDROID_APP_PATH,

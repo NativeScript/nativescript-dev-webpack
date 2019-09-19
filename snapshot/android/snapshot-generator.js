@@ -36,13 +36,13 @@ module.exports = SnapshotGenerator;
 
 SnapshotGenerator.SNAPSHOT_PACKAGE_NANE = "nativescript-android-snapshot";
 
-SnapshotGenerator.prototype.shouldSnapshotInDocker = function (hostOS) {
+SnapshotGenerator.prototype.shouldSnapshotInDocker = function (hostOS, targetArchs) {
     let shouldSnapshotInDocker = false;
     const generateInDockerMessage = "The snapshots will be generated in a docker container.";
     if (hostOS == CONSTANTS.WIN_OS_NAME) {
         console.log(`The V8 snapshot tools are not supported on Windows. ${generateInDockerMessage}`);
         shouldSnapshotInDocker = true;
-    } else if (isMacOSCatalinaOrHigher() && has32BitArch(options.targetArchs)) {
+    } else if (isMacOSCatalinaOrHigher() && has32BitArch(targetArchs)) {
         console.log(`Starting from macOS Catalina, the 32-bit processes are no longer supported. ${generateInDockerMessage}`);
         shouldSnapshotInDocker = true;
     }
@@ -52,8 +52,6 @@ SnapshotGenerator.prototype.shouldSnapshotInDocker = function (hostOS) {
 
 SnapshotGenerator.prototype.preprocessInputFiles = function (inputFiles, outputFile) {
     // Make some modifcations on the original bundle and save it on the specified path
-
-
     const bundlePreambleContent = fs.readFileSync(BUNDLE_PREAMBLE_PATH, "utf8");
     const bundleEndingContent = fs.readFileSync(BUNDLE_ENDING_PATH, "utf8");
 
@@ -143,20 +141,20 @@ SnapshotGenerator.prototype.generateSnapshots = function (snapshotToolsPath, inp
         }
 
         if (shouldDownloadDockerTools) {
-            return this.downloadMksnapshotTools(snapshotToolsPath, v8Version, targetArchs, true).then((dockerTools) => {
-                console.log(`Executing '${snapshotToolPath}' in a docker container.`);
+            return this.downloadMksnapshotTools(snapshotToolsPath, v8Version, targetArchs, snapshotInDocker).then((dockerTools) => {
+                console.log(`Generating snapshots in a docker container.`);
                 return this.runMksnapshotTools(snapshotToolsPath, dockerTools, inputFile, mksnapshotParams, buildCSource, snapshotInDocker);
             });
-        } else {
-            return this.runMksnapshotTools(snapshotToolsPath, localTools, inputFile, mksnapshotParams, buildCSource, snapshotInDocker);
         }
+
+        return this.runMksnapshotTools(snapshotToolsPath, localTools, inputFile, mksnapshotParams, buildCSource, snapshotInDocker);
     });
 }
 
 
 SnapshotGenerator.prototype.runMksnapshotTools = function (snapshotToolsBasePath, snapshotTools, inputFile, mksnapshotParams, buildCSource, snapshotInDocker) {
     let currentSnapshotOperation = Promise.resolve();
-    const canRunInParallel = snapshotTools.length <= 1 || !snapshotInDocker;
+    const canRunInParallel = !snapshotInDocker;
     return Promise.all(snapshotTools.map((tool) => {
         if (canRunInParallel) {
             return this.runMksnapshotTool(tool, mksnapshotParams, inputFile, snapshotInDocker, snapshotToolsBasePath, buildCSource);
@@ -224,7 +222,7 @@ SnapshotGenerator.prototype.generate = function (options) {
 
     this.preprocessInputFiles(options.inputFiles, preprocessedInputFile);
     const hostOS = getHostOS();
-    const snapshotInDocker = options.snapshotInDocker || this.shouldSnapshotInDocker(hostOS);
+    const snapshotInDocker = options.snapshotInDocker || this.shouldSnapshotInDocker(hostOS, options.targetArchs);
 
     // generates the actual .blob and .c files
     return this.generateSnapshots(
@@ -263,11 +261,11 @@ SnapshotGenerator.prototype.getPathInDocker = function (mappedLocalDir, mappedDo
     return convertToUnixPath(pathInDocker);
 }
 
-SnapshotGenerator.prototype.handleSnapshotToolResult = function (error, stdout, stderr, androidArch) {
+SnapshotGenerator.prototype.handleSnapshotToolResult = function (error, stdout, stderr, inputFile, androidArch) {
     let toolError = null;
     const errorHeader = `Target architecture: ${androidArch}\n`;
     let errorFooter = ``;
-    if (stderr.length || error) {
+    if ((stderr && stderr.length) || error) {
         try {
             require(inputFile);
         }
@@ -276,7 +274,7 @@ SnapshotGenerator.prototype.handleSnapshotToolResult = function (error, stdout, 
         }
     }
 
-    if (stderr.length) {
+    if (stderr && stderr.length) {
         const message = `${errorHeader}${stderr}${errorFooter}`;
         toolError = new Error(message);
     }
@@ -322,11 +320,11 @@ SnapshotGenerator.prototype.buildCSource = function (androidArch, blobInputDir, 
     });
 }
 
-SnapshotGenerator.prototype.runMksnapshotTool = function (tool, mksnapshotParams, inputFile, snapshotInDocker, allToolsDir, buildCSource) {
+SnapshotGenerator.prototype.runMksnapshotTool = function (tool, mksnapshotParams, inputFile, snapshotInDocker, snapshotToolsPath, buildCSource) {
     const toolPath = tool.path;
     const androidArch = this.convertToAndroidArchName(tool.arch);
     if (!fs.existsSync(toolPath)) {
-        throw new Error("Can't find mksnapshot tool for " + androidArch + " at path " + toolPath);
+        throw new Error(`Can't find mksnapshot tool for ${androidArch} at path ${toolPath}`);
     }
 
     const tempFolders = [];
@@ -344,14 +342,14 @@ SnapshotGenerator.prototype.runMksnapshotTool = function (tool, mksnapshotParams
             const blobOutputDirInDocker = `/dist/blobs/${androidArch}`;
             const toolsTempFolder = join(inputFileDir, "tmp");
             tempFolders.push(toolsTempFolder);
-            const toolPathInAppDir = this.copySnapshotTool(allToolsDir, toolPath, toolsTempFolder);
+            const toolPathInAppDir = this.copySnapshotTool(snapshotToolsPath, toolPath, toolsTempFolder);
             const toolPathInDocker = this.getPathInDocker(inputFileDir, appDirInDocker, toolPathInAppDir);
             const inputFilePathInDocker = this.getPathInDocker(inputFileDir, appDirInDocker, inputFile);
             const outputPathInDocker = this.getPathInDocker(blobOutputDir, blobOutputDirInDocker, blobOutputDir);
             const toolCommandInDocker = this.getSnapshotToolCommand(toolPathInDocker, inputFilePathInDocker, outputPathInDocker, toolParams);
             command = `docker run -v "${inputFileDir}:${appDirInDocker}" -v "${blobOutputDir}:${blobOutputDirInDocker}" ${SNAPSHOTS_DOCKER_IMAGE} /bin/sh -c "${toolCommandInDocker}"`;
         } else {
-            command = this.getSnapshotToolCommand(toolPath, inputFilePath, outputPath, toolParams);
+            command = this.getSnapshotToolCommand(toolPath, inputFile, blobOutputDir, toolParams);
         }
 
         // Generate .blob file
@@ -360,9 +358,9 @@ SnapshotGenerator.prototype.runMksnapshotTool = function (tool, mksnapshotParams
                 shelljs.rm("-rf", tempFolder);
             });
 
-            const snapshotError = this.handleSnapshotToolResult(error, stdout, stderr, androidArch);
+            const snapshotError = this.handleSnapshotToolResult(error, stdout, stderr, inputFile, androidArch);
             if (snapshotError) {
-                return reject(error);
+                return reject(snapshotError);
             }
 
             return resolve(blobOutputDir);

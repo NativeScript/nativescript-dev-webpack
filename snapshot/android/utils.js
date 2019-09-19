@@ -1,4 +1,4 @@
-const { chmodSync, createWriteStream, existsSync } = require("fs");
+const { chmodSync, createWriteStream } = require("fs");
 const { tmpdir, EOL } = require("os");
 const { join, relative, isAbsolute } = require("path");
 const os = require("os");
@@ -37,7 +37,8 @@ function getHostOSArch() {
 }
 
 function has32BitArch(targetArchs) {
-    return Array.isArray(targetArchs) && targetArchs.some(arch => arch === "arm" || arch === "ia32")
+    return (Array.isArray(targetArchs) && targetArchs.some(arch => arch === "arm" || arch === "ia32")) ||
+        (targetArchs === "arm" || targetArchs === "ia32");
 }
 
 function isSubPath(parentPath, childPath) {
@@ -48,14 +49,12 @@ function isSubPath(parentPath, childPath) {
 }
 
 function isMacOSCatalinaOrHigher() {
-    const isCatalinaOrHigher = false;
+    let isCatalinaOrHigher = false;
     const catalinaVersion = "19.0.0";
     const hostOS = getHostOS();
     if (hostOS === CONSTANTS.MAC_OS_NAME) {
         const hostOSVersion = getHostOSVersion();
-        if (semver.gte(hostOSVersion, catalinaVersion)) {
-            isCatalinaOrHigher = true;
-        }
+        isCatalinaOrHigher = semver.gte(hostOSVersion, catalinaVersion);
     }
 
     return isCatalinaOrHigher;
