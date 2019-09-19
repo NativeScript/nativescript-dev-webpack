@@ -130,6 +130,7 @@ module.exports = env => {
         devtool: hiddenSourceMap ? "hidden-source-map" : (sourceMap ? "inline-source-map" : "none"),
         optimization: {
             runtimeChunk: "single",
+            noEmitOnErrors: true,
             splitChunks: {
                 cacheGroups: {
                     vendor: {

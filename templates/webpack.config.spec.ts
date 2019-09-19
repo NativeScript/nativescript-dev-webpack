@@ -48,6 +48,7 @@ const webpackConfigAngular = proxyquire('./webpack.angular', {
     'nativescript-dev-webpack/transformers/ns-replace-lazy-loader': { nsReplaceLazyLoader: () => { return FakeLazyTransformerFlag } },
     'nativescript-dev-webpack/transformers/ns-support-hmr-ng': { nsSupportHmrNg: () => { return FakeHmrTransformerFlag } },
     'nativescript-dev-webpack/utils/ast-utils': { getMainModulePath: () => { return "fakePath"; } },
+    'nativescript-dev-webpack/utils/tsconfig-utils': { getNoEmitOnErrorFromTSConfig: () => { return false; } },
     'nativescript-dev-webpack/plugins/NativeScriptAngularCompilerPlugin': { getAngularCompilerPlugin: () => { return AngularCompilerStub; } },
     '@ngtools/webpack': {
         AngularCompilerPlugin: AngularCompilerStub
@@ -58,6 +59,7 @@ const webpackConfigAngular = proxyquire('./webpack.angular', {
 const webpackConfigTypeScript = proxyquire('./webpack.typescript', {
     'nativescript-dev-webpack': nativeScriptDevWebpack,
     'nativescript-dev-webpack/nativescript-target': emptyObject,
+    'nativescript-dev-webpack/utils/tsconfig-utils': { getNoEmitOnErrorFromTSConfig: () => { return false; } },
     'terser-webpack-plugin': TerserJsStub
 });
 
