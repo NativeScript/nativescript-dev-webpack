@@ -1,4 +1,5 @@
 import xmlNsLoader from "./xml-namespace-loader";
+import { convertSlashesInPath } from "./projectHelpers";
 
 const CODE_FILE = `
 <Page xmlns="http://www.nativescript.org/tns.xsd">
@@ -52,7 +53,7 @@ function getContext(
             }
         },
         resolve: (context: string, request: string, callback: (err: Error, result: string) => void) => {
-            // console.log(`Resolve request: ${request}, result: ${resolveMap[request]}`);
+            request = convertSlashesInPath(request);
             if (resolveMap[request]) {
                 callback(undefined, resolveMap[request]);
             } else {
