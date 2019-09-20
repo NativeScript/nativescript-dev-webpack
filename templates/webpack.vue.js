@@ -47,7 +47,8 @@ module.exports = env => {
         hiddenSourceMap, // --env.hiddenSourceMap
         unitTesting, // --env.unitTesting
         verbose, // --env.verbose
-        snapshotInDocker // --env.snapshotInDocker
+        snapshotInDocker, // --env.snapshotInDocker
+        skipSnapshotTools // --env.skipSnapshotTools
     } = env;
 
     const isAnySourceMapEnabled = !!sourceMap || !!hiddenSourceMap;
@@ -297,7 +298,8 @@ module.exports = env => {
             ],
             projectRoot,
             webpackConfig: config,
-            snapshotInDocker
+            snapshotInDocker,
+            skipSnapshotTools
         }));
     }
 

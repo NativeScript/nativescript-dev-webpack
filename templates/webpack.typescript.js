@@ -45,7 +45,8 @@ module.exports = env => {
         hmr, // --env.hmr,
         unitTesting, // --env.unitTesting,
         verbose, // --env.verbose
-        snapshotInDocker // --env.snapshotInDocker
+        snapshotInDocker, // --env.snapshotInDocker
+        skipSnapshotTools // --env.skipSnapshotTools
     } = env;
     const isAnySourceMapEnabled = !!sourceMap || !!hiddenSourceMap;
     const externals = nsWebpack.getConvertedExternals(env.externals);
@@ -278,7 +279,8 @@ module.exports = env => {
             ],
             projectRoot,
             webpackConfig: config,
-            snapshotInDocker
+            snapshotInDocker,
+            skipSnapshotTools
         }));
     }
 

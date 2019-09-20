@@ -210,6 +210,11 @@ ProjectSnapshotGenerator.prototype.validateAndroidRuntimeVersion = function () {
 }
 
 ProjectSnapshotGenerator.prototype.generate = function (generationOptions) {
+    if (generationOptions.skipSnapshotTools) {
+        console.log("Running snapshot generation with the following arguments: ");
+        return Promise.resolve();
+    }
+
     generationOptions = generationOptions || {};
 
     console.log("Running snapshot generation with the following arguments: ");

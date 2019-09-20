@@ -13,6 +13,10 @@ module.exports = function parseProjectSnapshotGeneratorArgs() {
         result.snapshotInDocker = parseBool(result.snapshotInDocker);
     }
 
+    if (result.skipSnapshotTools !== undefined) {
+        result.skipSnapshotTools = parseBool(result.skipSnapshotTools);
+    }
+
     if (result.install !== undefined) {
         result.install = parseBool(result.install);
     }

@@ -42,6 +42,10 @@
     "snapshotInDocker": {
       "type": "boolean"
     },
+    "skipSnapshotTools": {
+      "type": "boolean",
+      "default": false
+    },
     "v8Version": {
       "type": "string"
     },
