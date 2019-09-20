@@ -248,7 +248,8 @@ SnapshotGenerator.prototype.getSnapshotToolCommand = function (snapshotToolPath,
 }
 
 SnapshotGenerator.prototype.getXxdCommand = function (srcOutputDir) {
-    return `xxd -i ${SNAPSHOT_BLOB_NAME}.blob > ${join(srcOutputDir, `${SNAPSHOT_BLOB_NAME}.c`)}`;
+    // https://github.com/NativeScript/docker-images/tree/master/v8-snapshot/bin
+    return `/bin/xxd -i ${SNAPSHOT_BLOB_NAME}.blob > ${join(srcOutputDir, `${SNAPSHOT_BLOB_NAME}.c`)}`;
 }
 
 SnapshotGenerator.prototype.getPathInDocker = function (mappedLocalDir, mappedDockerDir, targetPath) {
@@ -309,8 +310,7 @@ SnapshotGenerator.prototype.buildCSource = function (androidArch, blobInputDir, 
         const blobsInputInDocker = `/blobs/${androidArch}`
         const srcOutputDirInDocker = `/dist/src/${androidArch}`;
         const buildCSourceCommand = this.getXxdCommand(srcOutputDirInDocker);
-        // add vim in order to get xxd
-        command = `docker run -v "${blobInputDir}:${blobsInputInDocker}" -v "${srcOutputDir}:${srcOutputDirInDocker}" ${SNAPSHOTS_DOCKER_IMAGE} /bin/sh -c "cd ${blobsInputInDocker} && apk add vim && ${buildCSourceCommand}"`;
+        command = `docker run --rm -v "${blobInputDir}:${blobsInputInDocker}" -v "${srcOutputDir}:${srcOutputDirInDocker}" ${SNAPSHOTS_DOCKER_IMAGE} /bin/sh -c "cd ${blobsInputInDocker} && ${buildCSourceCommand}"`;
     }
     else {
         command = this.getXxdCommand(srcOutputDir);
@@ -347,7 +347,7 @@ SnapshotGenerator.prototype.runMksnapshotTool = function (tool, mksnapshotParams
             const inputFilePathInDocker = this.getPathInDocker(inputFileDir, appDirInDocker, inputFile);
             const outputPathInDocker = this.getPathInDocker(blobOutputDir, blobOutputDirInDocker, blobOutputDir);
             const toolCommandInDocker = this.getSnapshotToolCommand(toolPathInDocker, inputFilePathInDocker, outputPathInDocker, toolParams);
-            command = `docker run -v "${inputFileDir}:${appDirInDocker}" -v "${blobOutputDir}:${blobOutputDirInDocker}" ${SNAPSHOTS_DOCKER_IMAGE} /bin/sh -c "${toolCommandInDocker}"`;
+            command = `docker run --rm -v "${inputFileDir}:${appDirInDocker}" -v "${blobOutputDir}:${blobOutputDirInDocker}" ${SNAPSHOTS_DOCKER_IMAGE} /bin/sh -c "${toolCommandInDocker}"`;
         } else {
             command = this.getSnapshotToolCommand(toolPath, inputFile, blobOutputDir, toolParams);
         }
