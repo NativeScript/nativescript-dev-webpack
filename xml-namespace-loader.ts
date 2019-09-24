@@ -1,22 +1,26 @@
-const { parse, relative, join, basename, extname } = require("path");
-const { promisify } = require('util');
-const { convertSlashesInPath } = require("./projectHelpers");
+import { parse, join } from "path";
+import { promisify } from "util";
+import { loader } from "webpack";
+import { parser, QualifiedTag } from "sax";
 
-module.exports = function (source, map) {
-    this.value = source;
+import { convertSlashesInPath } from "./projectHelpers";
+
+interface NamespaceEntry {
+    name: string;
+    path: string
+}
+
+const loader: loader.Loader = function (source: string, map) {
     const { ignore } = this.query;
     const callback = this.async();
 
-    const { XmlParser } = require("tns-core-modules/xml");
-
     const resolvePromise = promisify(this.resolve);
-    const promises = [];
+    const promises: Promise<any>[] = [];
+    const namespaces: NamespaceEntry[] = [];
+    let parsingError = false;
 
-    const namespaces = [];
-    const parser = new XmlParser((event) => {
-        const { namespace, elementName } = event;
+    const handleOpenTag = (namespace: string, elementName: string) => {
         const moduleName = `${namespace}/${elementName}`;
-
         if (
             namespace &&
             !namespace.startsWith("http") &&
@@ -55,7 +59,7 @@ module.exports = function (source, map) {
             promises.push(resolvePromise(this.context, localNamespacePath)
                 .then(path => pathResolved(path))
                 .catch(() => {
-                    return promise = resolvePromise(this.context, localModulePath)
+                    return resolvePromise(this.context, localModulePath)
                         .then(path => pathResolved(path))
                         .catch(() => {
                             return Promise.all([
@@ -81,17 +85,25 @@ module.exports = function (source, map) {
                 })
             );
         }
-    }, undefined, true);
+    }
 
-    parser.parse(source);
+    const saxParser = parser(true, { xmlns: true });
+    saxParser.onopentag = (node: QualifiedTag) => { handleOpenTag(node.uri, node.local); };
+    saxParser.onerror = (err) => {
+        saxParser.error = null;
+        parsingError = true;
+        callback(err);
+    };
+    saxParser.write(source).close();
 
     Promise.all(promises).then(() => {
-        const moduleRegisters = namespaces
-            .map(convertPath)
-            .map(n =>
-                `global.registerModule("${n.name}", function() { return require("${n.path}"); });`
-            )
-            .join("");
+        const distinctNamespaces = new Map<string, string>();
+        namespaces.forEach(({ name, path }) => distinctNamespaces.set(name, convertSlashesInPath(path)));
+
+        const moduleRegisters: string[] = [];
+        distinctNamespaces.forEach((path, name) => {
+            moduleRegisters.push(`global.registerModule("${name}", function() { return require("${path}"); });\n`);
+        });
 
         // escape special whitespace characters
         // see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#Issue_with_plain_JSON.stringify_for_use_as_JavaScript
@@ -99,16 +111,16 @@ module.exports = function (source, map) {
             .replace(/\u2028/g, '\\u2028')
             .replace(/\u2029/g, '\\u2029');
 
-        const wrapped = `${moduleRegisters}\nmodule.exports = ${json}`;
+        const wrapped = `${moduleRegisters.join("")}\nmodule.exports = ${json}`;
 
-        callback(null, wrapped, map);
+        if (!parsingError) {
+            callback(null, wrapped, map);
+        }
     }).catch((err) => {
-        callback(err);
+        if (!parsingError) {
+            callback(err);
+        }
     })
-
 }
 
-function convertPath(obj) {
-    obj.path = convertSlashesInPath(obj.path);
-    return obj;
-}
+export default loader;
