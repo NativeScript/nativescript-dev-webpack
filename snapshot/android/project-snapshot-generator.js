@@ -211,7 +211,7 @@ ProjectSnapshotGenerator.prototype.validateAndroidRuntimeVersion = function () {
 
 ProjectSnapshotGenerator.prototype.generate = function (generationOptions) {
     if (generationOptions.skipSnapshotTools) {
-        console.log("Running snapshot generation with the following arguments: ");
+        console.log("Skipping snapshot tools.");
         return Promise.resolve();
     }
 
