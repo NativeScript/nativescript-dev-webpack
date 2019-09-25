@@ -97,6 +97,11 @@ exports.NativeScriptSnapshotPlugin = (function () {
 
     NativeScriptSnapshotPlugin.prototype.generate = function (webpackChunks) {
         const options = this.options;
+        if (options.skipSnapshotTools) {
+            console.log(`Skipping snapshot tools.`);
+            return Promise.resolve();
+        }
+
         const inputFiles = webpackChunks.map(chunk => join(options.webpackConfig.output.path, chunk.files[0]));
         const preprocessedInputFile = join(
             this.options.projectRoot,
@@ -113,6 +118,8 @@ exports.NativeScriptSnapshotPlugin = (function () {
             useLibs: options.useLibs,
             androidNdkPath: options.androidNdkPath,
             v8Version: options.v8Version,
+            snapshotInDocker: options.snapshotInDocker,
+            skipSnapshotTools: options.skipSnapshotTools
         }).then(() => {
             // Make the original files empty
             inputFiles.forEach(inputFile =>
