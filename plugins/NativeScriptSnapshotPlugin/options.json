@@ -5,8 +5,8 @@
       "type": "string"
     },
     "angular": {
-        "type": "boolean",
-        "default": false
+      "type": "boolean",
+      "default": false
     },
     "chunk": {
       "type": "string"
@@ -36,6 +36,13 @@
       }
     },
     "useLibs": {
+      "type": "boolean",
+      "default": false
+    },
+    "snapshotInDocker": {
+      "type": "boolean"
+    },
+    "skipSnapshotTools": {
       "type": "boolean",
       "default": false
     },
