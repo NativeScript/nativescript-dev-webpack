@@ -12,12 +12,20 @@ interface NamespaceEntry {
 
 const loader: loader.Loader = function (source: string, map) {
     const { ignore } = this.query;
+
+    let callbackCalled = false;
     const callback = this.async();
+    const callbackWrapper = (error?: Error, content?: string, map?: any) => {
+        if (!callbackCalled) {
+            callbackCalled = true;
+            callback(error, content, map);
+        }
+    }
+
 
     const resolvePromise = promisify(this.resolve);
     const promises: Promise<any>[] = [];
     const namespaces: NamespaceEntry[] = [];
-    let parsingError = false;
 
     const handleOpenTag = (namespace: string, elementName: string) => {
         const moduleName = `${namespace}/${elementName}`;
@@ -88,11 +96,15 @@ const loader: loader.Loader = function (source: string, map) {
     }
 
     const saxParser = parser(true, { xmlns: true });
+
+    // Register ios and android prefixes as namespaces to avoid "unbound xml namespace" errors
+    (<any>saxParser).ns["ios"] = "http://schemas.nativescript.org/tns.xsd";
+    (<any>saxParser).ns["android"] = "http://schemas.nativescript.org/tns.xsd";
+
     saxParser.onopentag = (node: QualifiedTag) => { handleOpenTag(node.uri, node.local); };
     saxParser.onerror = (err) => {
         saxParser.error = null;
-        parsingError = true;
-        callback(err);
+        callbackWrapper(err);
     };
     saxParser.write(source).close();
 
@@ -113,13 +125,9 @@ const loader: loader.Loader = function (source: string, map) {
 
         const wrapped = `${moduleRegisters.join("")}\nmodule.exports = ${json}`;
 
-        if (!parsingError) {
-            callback(null, wrapped, map);
-        }
+        callbackWrapper(null, wrapped, map);
     }).catch((err) => {
-        if (!parsingError) {
-            callback(err);
-        }
+        callbackWrapper(err);
     })
 }
 

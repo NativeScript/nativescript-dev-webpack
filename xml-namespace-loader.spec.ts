@@ -27,11 +27,17 @@ function getContext(
     done: DoneFn,
     { resolveMap, expectedDeps, expectedRegs, assureNoDeps, ignore, expectError }: TestSetup) {
     const actualDeps: string[] = [];
+    let callbackCalled = false;
 
     const loaderContext = {
         rootContext: "app",
         context: "app/component",
         async: () => (error, source: string) => {
+            if (callbackCalled) {
+                done.fail("Callback called more than once!");
+            }
+            callbackCalled = true;
+
             expectedDeps.forEach(expectedDep => expect(actualDeps).toContain(expectedDep));
 
             expectedRegs.forEach(({ name, path }) => {
@@ -216,6 +222,56 @@ describe("XmlNamespaceLoader", () => {
         const expectedRegs = [];
 
         const testXml = `<Page xmlns="http://www.nativescript.org/tns.xsd"></PageOpsWrongTagHere>`;
+
+        const loaderContext = getContext(done, { resolveMap, expectedDeps, expectedRegs, expectError: true });
+
+        xmlNsLoader.call(loaderContext, testXml);
+    })
+
+    it("doesn't throw with ios and android platform namespaces", (done) => {
+        const resolveMap = {};
+        const expectedDeps = [];
+        const expectedRegs = [];
+
+        const testXml = `
+        <Page xmlns="http://www.nativescript.org/tns.xsd">
+            <ios:GridLayout />
+            <android:GridLayout />
+        </Page>`;
+
+        const loaderContext = getContext(done, { resolveMap, expectedDeps, expectedRegs, assureNoDeps: true });
+
+        xmlNsLoader.call(loaderContext, testXml);
+    })
+
+    it("doesn't throw with ios and android platform namespaces", (done) => {
+        const resolveMap = {};
+        const expectedDeps = [];
+        const expectedRegs = [];
+
+        const testXml = `
+        <Page xmlns="http://www.nativescript.org/tns.xsd">
+            <ios:GridLayout />
+            <ios:GridLayout></ios:GridLayout>
+            <android:GridLayout />
+            <android:GridLayout></android:GridLayout>
+        </Page>`;
+
+        const loaderContext = getContext(done, { resolveMap, expectedDeps, expectedRegs, assureNoDeps: true });
+
+        xmlNsLoader.call(loaderContext, testXml);
+    })
+
+    it("throws with unbound namespace namespaces", (done) => {
+        const resolveMap = {};
+        const expectedDeps = [];
+        const expectedRegs = [];
+
+        const testXml = `
+        <Page xmlns="http://www.nativescript.org/tns.xsd">
+            <custom1:CustomComponent />
+            <custom2:CustomComponent />
+        </Page>`;
 
         const loaderContext = getContext(done, { resolveMap, expectedDeps, expectedRegs, expectError: true });
 
