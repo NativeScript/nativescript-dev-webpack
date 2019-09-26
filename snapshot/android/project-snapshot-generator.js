@@ -1,4 +1,4 @@
-const { dirname, isAbsolute, join, resolve } = require("path");
+const { dirname, isAbsolute, join, resolve, sep } = require("path");
 const { existsSync, readFileSync, writeFileSync } = require("fs");
 
 const shelljs = require("shelljs");
@@ -102,7 +102,7 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function (projectRoot) {
 
         // Copy the libs to the specified destination in the platforms folder
         shelljs.mkdir("-p", libsDestinationPath);
-        shelljs.cp("-R", join(buildPath, "ndk-build/libs") + "/", libsDestinationPath);
+        shelljs.cp("-R", join(buildPath, "ndk-build/libs") + sep, libsDestinationPath);
     } else {
         // useLibs = false
         const blobsSrcPath = join(buildPath, "snapshots/blobs");
@@ -110,14 +110,7 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function (projectRoot) {
         const appPackageJsonPath = join(appPath, "package.json");
 
         // Copy the blobs in the prepared app folder
-        shelljs.cp("-R", blobsSrcPath + "/", resolve(appPath, "../snapshots"));
-
-        /*
-        Rename TNSSnapshot.blob files to snapshot.blob files. The xxd tool uses the file name for the name of the static array. 
-        This is why the *.blob files are initially named  TNSSnapshot.blob. 
-        After the xxd step, they must be renamed to snapshot.blob, because this is the filename that the Android runtime is looking for.
-        */
-        shelljs.exec("find " + blobsDestinationPath + " -name '*.blob' -execdir mv {} snapshot.blob ';'");
+        shelljs.cp("-R", blobsSrcPath + sep, resolve(appPath, "../snapshots"));
 
         // Update the package.json file
         const appPackageJson = shelljs.test("-e", appPackageJsonPath) ? JSON.parse(readFileSync(appPackageJsonPath, 'utf8')) : {};

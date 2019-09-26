@@ -244,12 +244,12 @@ SnapshotGenerator.prototype.generate = function (options) {
 }
 
 SnapshotGenerator.prototype.getSnapshotToolCommand = function (snapshotToolPath, inputFilePath, outputPath, toolParams) {
-    return `${snapshotToolPath} ${inputFilePath} --startup_blob ${join(outputPath, `${SNAPSHOT_BLOB_NAME}.blob`)} ${toolParams}`;
+    return `${snapshotToolPath} ${inputFilePath} --startup_blob ${outputPath} ${toolParams}`;
 }
 
 SnapshotGenerator.prototype.getXxdCommand = function (srcOutputDir, xxdLocation) {
     // https://github.com/NativeScript/docker-images/tree/master/v8-snapshot/bin
-    return `${xxdLocation || ""}xxd -i ${SNAPSHOT_BLOB_NAME}.blob > ${join(srcOutputDir, `${SNAPSHOT_BLOB_NAME}.c`)}`;
+    return `/bin/xxd -i ${SNAPSHOT_BLOB_NAME}.blob > ${srcOutputDir}`;
 }
 
 SnapshotGenerator.prototype.getPathInDocker = function (mappedLocalDir, mappedDockerDir, targetPath) {
@@ -309,11 +309,12 @@ SnapshotGenerator.prototype.buildCSource = function (androidArch, blobInputDir, 
     if (snapshotInDocker) {
         const blobsInputInDocker = `/blobs/${androidArch}`
         const srcOutputDirInDocker = `/dist/src/${androidArch}`;
-        const buildCSourceCommand = this.getXxdCommand(srcOutputDirInDocker, "/bin/");
+        const outputPathInDocker = this.getPathInDocker(srcOutputDir, srcOutputDirInDocker, join(srcOutputDir, `${SNAPSHOT_BLOB_NAME}.c`));
+        const buildCSourceCommand = this.getXxdCommand(outputPathInDocker);
         command = `docker run --rm -v "${blobInputDir}:${blobsInputInDocker}" -v "${srcOutputDir}:${srcOutputDirInDocker}" ${SNAPSHOTS_DOCKER_IMAGE} /bin/sh -c "cd ${blobsInputInDocker} && ${buildCSourceCommand}"`;
     }
     else {
-        command = this.getXxdCommand(srcOutputDir);
+        command = this.getXxdCommand(join(srcOutputDir, `${SNAPSHOT_BLOB_NAME}.c`));
     }
     shellJsExecuteInDir(blobInputDir, function () {
         shelljs.exec(command);
@@ -345,11 +346,11 @@ SnapshotGenerator.prototype.runMksnapshotTool = function (tool, mksnapshotParams
             const toolPathInAppDir = this.copySnapshotTool(snapshotToolsPath, toolPath, toolsTempFolder);
             const toolPathInDocker = this.getPathInDocker(inputFileDir, appDirInDocker, toolPathInAppDir);
             const inputFilePathInDocker = this.getPathInDocker(inputFileDir, appDirInDocker, inputFile);
-            const outputPathInDocker = this.getPathInDocker(blobOutputDir, blobOutputDirInDocker, blobOutputDir);
+            const outputPathInDocker = this.getPathInDocker(blobOutputDir, blobOutputDirInDocker, join(blobOutputDir, `${SNAPSHOT_BLOB_NAME}.blob`));
             const toolCommandInDocker = this.getSnapshotToolCommand(toolPathInDocker, inputFilePathInDocker, outputPathInDocker, toolParams);
             command = `docker run --rm -v "${inputFileDir}:${appDirInDocker}" -v "${blobOutputDir}:${blobOutputDirInDocker}" ${SNAPSHOTS_DOCKER_IMAGE} /bin/sh -c "${toolCommandInDocker}"`;
         } else {
-            command = this.getSnapshotToolCommand(toolPath, inputFile, blobOutputDir, toolParams);
+            command = this.getSnapshotToolCommand(toolPath, inputFile, join(blobOutputDir, `${SNAPSHOT_BLOB_NAME}.blob`), toolParams);
         }
 
         // Generate .blob file
@@ -370,6 +371,12 @@ SnapshotGenerator.prototype.runMksnapshotTool = function (tool, mksnapshotParams
         if (buildCSource) {
             this.buildCSource(androidArch, blobOutputDir, snapshotInDocker)
         }
+
+        /*
+        Rename TNSSnapshot.blob files to snapshot.blob files. The xxd tool uses the file name for the name of the static array. 
+        This is why the *.blob files are initially named  TNSSnapshot.blob. 
+        After the xxd step, they must be renamed to snapshot.blob, because this is the filename that the Android runtime is looking for.
+        */
+       shelljs.mv(join(blobOutputDir, `${SNAPSHOT_BLOB_NAME}.blob`), join(blobOutputDir, `snapshot.blob`));
     });
 }
-
