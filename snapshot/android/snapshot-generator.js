@@ -249,7 +249,7 @@ SnapshotGenerator.prototype.getSnapshotToolCommand = function (snapshotToolPath,
 
 SnapshotGenerator.prototype.getXxdCommand = function (srcOutputDir, xxdLocation) {
     // https://github.com/NativeScript/docker-images/tree/master/v8-snapshot/bin
-    return `/bin/xxd -i ${SNAPSHOT_BLOB_NAME}.blob > ${srcOutputDir}`;
+    return `${xxdLocation || ""}xxd -i ${SNAPSHOT_BLOB_NAME}.blob > ${srcOutputDir}`;
 }
 
 SnapshotGenerator.prototype.getPathInDocker = function (mappedLocalDir, mappedDockerDir, targetPath) {
@@ -310,7 +310,7 @@ SnapshotGenerator.prototype.buildCSource = function (androidArch, blobInputDir, 
         const blobsInputInDocker = `/blobs/${androidArch}`
         const srcOutputDirInDocker = `/dist/src/${androidArch}`;
         const outputPathInDocker = this.getPathInDocker(srcOutputDir, srcOutputDirInDocker, join(srcOutputDir, `${SNAPSHOT_BLOB_NAME}.c`));
-        const buildCSourceCommand = this.getXxdCommand(outputPathInDocker);
+        const buildCSourceCommand = this.getXxdCommand(outputPathInDocker, "/bin/");
         command = `docker run --rm -v "${blobInputDir}:${blobsInputInDocker}" -v "${srcOutputDir}:${srcOutputDirInDocker}" ${SNAPSHOTS_DOCKER_IMAGE} /bin/sh -c "cd ${blobsInputInDocker} && ${buildCSourceCommand}"`;
     }
     else {
@@ -377,6 +377,6 @@ SnapshotGenerator.prototype.runMksnapshotTool = function (tool, mksnapshotParams
         This is why the *.blob files are initially named  TNSSnapshot.blob. 
         After the xxd step, they must be renamed to snapshot.blob, because this is the filename that the Android runtime is looking for.
         */
-       shelljs.mv(join(blobOutputDir, `${SNAPSHOT_BLOB_NAME}.blob`), join(blobOutputDir, `snapshot.blob`));
+        shelljs.mv(join(blobOutputDir, `${SNAPSHOT_BLOB_NAME}.blob`), join(blobOutputDir, `snapshot.blob`));
     });
 }
