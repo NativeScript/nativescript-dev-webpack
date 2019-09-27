@@ -3,8 +3,8 @@ import { loader } from "webpack";
 import { getOptions } from "loader-utils";
 import * as escapeRegExp from "escape-string-regexp";
 
-// Matches all source, markup and style files that are not in App_Resources
-const defaultMatch = "(?<!\\bApp_Resources\\b.*)\\.(xml|css|js|(?<!\\.d\\.)ts|(?<!\\b_[\\w-]*\\.)scss)$";
+// Matches all source, markup and style files that are not in App_Resources and in tests folder
+const defaultMatch = "(?<!\\bApp_Resources\\b.*)(?<!\\.\\/\\btests\\b\\/.*?)\\.(xml|css|js|(?<!\\.d\\.)ts|(?<!\\b_[\\w-]*\\.)scss)$";
 
 const loader: loader.Loader = function (source, map) {
     let {
