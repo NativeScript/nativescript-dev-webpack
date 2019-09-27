@@ -39,6 +39,9 @@ const defaultTestFiles = {
     "./_app-variables.scss": false,   // do not include scss partial files
     "./App_Resources/Android/src/main/res/values/colors.xml": false,    // do not include App_Resources
     "./App_Resources/Android/src/main/AndroidManifest.xml": false,      // do not include App_Resources
+    "./tests/example.js": false,                  // do not include files from tests folder
+    "./tests/component1/model1/file1.js": false,  // do not include files from tests folder
+    "./components/tests/example.js": true,
 };
 
 const loaderOptionsWithIgnore = {
