@@ -247,9 +247,9 @@ SnapshotGenerator.prototype.getSnapshotToolCommand = function (snapshotToolPath,
     return `${snapshotToolPath} ${inputFilePath} --startup_blob ${join(outputPath, `${SNAPSHOT_BLOB_NAME}.blob`)} ${toolParams}`;
 }
 
-SnapshotGenerator.prototype.getXxdCommand = function (srcOutputDir) {
+SnapshotGenerator.prototype.getXxdCommand = function (srcOutputDir, xxdLocation) {
     // https://github.com/NativeScript/docker-images/tree/master/v8-snapshot/bin
-    return `/bin/xxd -i ${SNAPSHOT_BLOB_NAME}.blob > ${join(srcOutputDir, `${SNAPSHOT_BLOB_NAME}.c`)}`;
+    return `${xxdLocation || ""}xxd -i ${SNAPSHOT_BLOB_NAME}.blob > ${join(srcOutputDir, `${SNAPSHOT_BLOB_NAME}.c`)}`;
 }
 
 SnapshotGenerator.prototype.getPathInDocker = function (mappedLocalDir, mappedDockerDir, targetPath) {
@@ -309,7 +309,7 @@ SnapshotGenerator.prototype.buildCSource = function (androidArch, blobInputDir, 
     if (snapshotInDocker) {
         const blobsInputInDocker = `/blobs/${androidArch}`
         const srcOutputDirInDocker = `/dist/src/${androidArch}`;
-        const buildCSourceCommand = this.getXxdCommand(srcOutputDirInDocker);
+        const buildCSourceCommand = this.getXxdCommand(srcOutputDirInDocker, "/bin/");
         command = `docker run --rm -v "${blobInputDir}:${blobsInputInDocker}" -v "${srcOutputDir}:${srcOutputDirInDocker}" ${SNAPSHOTS_DOCKER_IMAGE} /bin/sh -c "cd ${blobsInputInDocker} && ${buildCSourceCommand}"`;
     }
     else {
