@@ -3,6 +3,7 @@ const { join, relative, resolve, sep } = require("path");
 const webpack = require("webpack");
 const nsWebpack = require("nativescript-dev-webpack");
 const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target");
+const { getNoEmitOnErrorFromTSConfig } = require("nativescript-dev-webpack/utils/tsconfig-utils");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
@@ -73,6 +74,8 @@ module.exports = env => {
         itemsToClean.push(`${join(projectRoot, "platforms", "android", "app", "build", "configurations", "nativescript-android-snapshot")}`);
     }
 
+    const noEmitOnErrorFromTSConfig = getNoEmitOnErrorFromTSConfig(tsConfigPath);
+
     nsWebpack.processAppComponents(appComponents, platform);
     const config = {
         mode: production ? "production" : "development",
@@ -126,6 +129,7 @@ module.exports = env => {
         devtool: hiddenSourceMap ? "hidden-source-map" : (sourceMap ? "inline-source-map" : "none"),
         optimization: {
             runtimeChunk: "single",
+            noEmitOnErrors: noEmitOnErrorFromTSConfig,
             splitChunks: {
                 cacheGroups: {
                     vendor: {
@@ -255,6 +259,7 @@ module.exports = env => {
                 tsconfig: tsConfigPath,
                 async: false,
                 useTypescriptIncrementalApi: true,
+                checkSyntacticErrors: true,
                 memoryLimit: 4096
             })
         ],

@@ -18,6 +18,7 @@ import { dirname, join, relative } from "path";
 import * as ts from "typescript";
 import { readFileSync, existsSync } from "fs";
 import { collectDeepNodes } from "@ngtools/webpack/src/transformers";
+import { getCompilerOptionsFromTSConfig } from "./tsconfig-utils";
 
 export function getMainModulePath(entryFilePath: string, tsConfigName: string) {
     try {
@@ -43,22 +44,12 @@ export function getMainModulePath(entryFilePath: string, tsConfigName: string) {
 function tsResolve(moduleName: string, containingFilePath: string, tsConfigName: string) {
     let result = moduleName;
     try {
-        const parseConfigFileHost: ts.ParseConfigFileHost = {
-            getCurrentDirectory: ts.sys.getCurrentDirectory,
-            useCaseSensitiveFileNames: false,
-            readDirectory: ts.sys.readDirectory,
-            fileExists: ts.sys.fileExists,
-            readFile: ts.sys.readFile,
-            onUnRecoverableConfigFileDiagnostic: undefined
-        };
-
-        const tsConfig = ts.getParsedCommandLineOfConfigFile(tsConfigName, ts.getDefaultCompilerOptions(), parseConfigFileHost);
-
-        const compilerOptions: ts.CompilerOptions = tsConfig.options || ts.getDefaultCompilerOptions();
         const moduleResolutionHost: ts.ModuleResolutionHost = {
             fileExists: ts.sys.fileExists,
             readFile: ts.sys.readFile
         };
+
+        const compilerOptions = getCompilerOptionsFromTSConfig(tsConfigName);
 
         const resolutionResult = ts.resolveModuleName(moduleName, containingFilePath, compilerOptions, moduleResolutionHost);
 
