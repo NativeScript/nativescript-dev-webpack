@@ -20,13 +20,15 @@ interface TestSetup {
     expectedRegs: { name: string, path: string }[],
     ignore?: RegExp,
     assureNoDeps?: boolean,
-    expectError?: boolean
+    expectError?: boolean,
+    expectWarnings?: number
 }
 
 function getContext(
     done: DoneFn,
-    { resolveMap, expectedDeps, expectedRegs, assureNoDeps, ignore, expectError }: TestSetup) {
+    { resolveMap, expectedDeps, expectedRegs, assureNoDeps, ignore, expectError, expectWarnings }: TestSetup) {
     const actualDeps: string[] = [];
+    const actualWarnings: Error[] =[]
     let callbackCalled = false;
 
     const loaderContext = {
@@ -50,6 +52,10 @@ function getContext(
                 expect(source).not.toContain("global.registerModule");
             }
 
+            if(expectWarnings){
+                expect(actualWarnings.length).toEqual(expectWarnings);
+            }
+
             if (error && !expectError) {
                 done.fail(error)
             } else if (!error && expectError) {
@@ -68,6 +74,9 @@ function getContext(
         },
         addDependency: (dep: string) => {
             actualDeps.push(dep);
+        },
+        emitWarning: (err: Error) => {
+            actualWarnings.push(err);
         },
         query: { ignore }
     }
@@ -274,6 +283,32 @@ describe("XmlNamespaceLoader", () => {
         </Page>`;
 
         const loaderContext = getContext(done, { resolveMap, expectedDeps, expectedRegs, expectError: true });
+
+        xmlNsLoader.call(loaderContext, testXml);
+    })
+
+
+    it("with '&&', '||', '<=' and '>=' in binding expression, emits warnings, but does not fail", (done) => {
+        const resolveMap = {
+            "nativescript-ui-chart": "node_module/nativescript-ui-chart/ui-chart.js",
+        }
+
+        const expectedDeps = [];
+
+        const expectedRegs = [
+            { name: "nativescript-ui-chart", path: "nativescript-ui-chart" },
+            { name: "nativescript-ui-chart/RadCartesianChart", path: "nativescript-ui-chart" },
+        ];
+
+        const testXml = `
+        <Page xmlns="http://www.nativescript.org/tns.xsd">
+            <StackLayout xmlns:chart="nativescript-ui-chart">
+                <TextField text="{{ var1 && var2 || var1 >= var2 || var2 <= var1 }}" />
+                <chart:RadCartesianChart></chart:RadCartesianChart>
+            </StackLayout>        
+        </Page>`;
+
+        const loaderContext = getContext(done, { resolveMap, expectedDeps, expectedRegs, expectWarnings: 1 });
 
         xmlNsLoader.call(loaderContext, testXml);
     })

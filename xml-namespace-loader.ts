@@ -103,8 +103,17 @@ const loader: loader.Loader = function (source: string, map) {
 
     saxParser.onopentag = (node: QualifiedTag) => { handleOpenTag(node.uri, node.local); };
     saxParser.onerror = (err) => {
+        // Do only warning about invalid character "&"" for back-compatibility
+        // as it is common to use it in a binding expression
+        if (err && 
+            err.message.indexOf("Invalid character") >= 0 && 
+            err.message.indexOf("Char: &") >= 0) {
+            this.emitWarning(err)
+        } else {
+            callbackWrapper(err);
+        }
+
         saxParser.error = null;
-        callbackWrapper(err);
     };
     saxParser.write(source).close();
 
