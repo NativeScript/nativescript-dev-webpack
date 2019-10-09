@@ -16,6 +16,7 @@ const {
     ANDROID_CONFIGURATIONS_PATH,
     getAndroidRuntimeVersion,
     getAndroidV8Version,
+    getRuntimeNdkRevision,
     getMksnapshotParams
 } = require("../../androidProjectHelpers");
 
@@ -155,6 +156,7 @@ const getV8VersionsMap = runtimeVersion =>
         }
     });
 
+// TODO: remove?
 ProjectSnapshotGenerator.prototype.getV8Version = function (generationOptions) {
     return new Promise((resolve, reject) => {
         const maybeV8Version = generationOptions.v8Version;
@@ -229,6 +231,7 @@ ProjectSnapshotGenerator.prototype.generate = function (generationOptions) {
     let shouldRethrow = false;
 
     const mksnapshotParams = getMksnapshotParams(this.options.projectRoot);
+    const recommendedAndroidNdkRevision = getRuntimeNdkRevision(this.options.projectRoot);
 
     return this.getV8Version(generationOptions).then(v8Version => {
         shouldRethrow = true;
@@ -254,7 +257,8 @@ ProjectSnapshotGenerator.prototype.generate = function (generationOptions) {
             inputFiles: generationOptions.inputFiles || [join(this.options.projectRoot, "__snapshot.js")],
             androidNdkPath,
             mksnapshotParams: mksnapshotParams,
-            snapshotInDocker: generationOptions.snapshotInDocker
+            snapshotInDocker: generationOptions.snapshotInDocker,
+            recommendedAndroidNdkRevision
         };
 
         return generator.generate(options).then(() => {
