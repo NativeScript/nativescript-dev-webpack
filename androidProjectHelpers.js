@@ -50,11 +50,8 @@ const getMksnapshotParams = (projectDir) => {
 const getRuntimeNdkRevision = (projectDir) => {
     try {
         const androidSettingsJSON = getAndroidSettingsJson(projectDir);
-        if (androidSettingsJSON !== null) {
-            return androidSettingsJSON.ndkRevision;
-        } else {
-            return null;
-        }
+        const result = androidSettingsJSON && androidSettingsJSON.ndkRevision;
+        return result;
     } catch (e) {
         return null;
     }
