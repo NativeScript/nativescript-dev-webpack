@@ -1,14 +1,12 @@
-const { dirname, isAbsolute, join, resolve, sep } = require("path");
-const { existsSync, readFileSync, writeFileSync } = require("fs");
+const { isAbsolute, join, resolve, sep } = require("path");
+const { readFileSync, writeFileSync } = require("fs");
 
 const shelljs = require("shelljs");
 const semver = require("semver");
 
 const SnapshotGenerator = require("./snapshot-generator");
 const {
-    CONSTANTS,
-    createDirectory,
-    getJsonFile,
+    CONSTANTS
 } = require("./utils");
 const {
     ANDROID_PROJECT_DIR,
@@ -20,11 +18,9 @@ const {
     getMksnapshotParams
 } = require("../../androidProjectHelpers");
 
-const MIN_ANDROID_RUNTIME_VERSION = "3.0.0";
+// min version with settings.json file specifying the V8 version
+const MIN_ANDROID_RUNTIME_VERSION = "5.2.1";
 const VALID_ANDROID_RUNTIME_TAGS = Object.freeze(["next", "rc"]);
-const V8_VERSIONS_FILE_NAME = "v8-versions.json";
-const V8_VERSIONS_URL = `https://raw.githubusercontent.com/NativeScript/android-runtime/master/${V8_VERSIONS_FILE_NAME}`;
-const V8_VERSIONS_LOCAL_PATH = resolve(CONSTANTS.SNAPSHOT_TMP_DIR, V8_VERSIONS_FILE_NAME);
 
 const resolveRelativePath = (path) => {
     if (path)
@@ -121,74 +117,6 @@ ProjectSnapshotGenerator.installSnapshotArtefacts = function (projectRoot) {
     }
 }
 
-const versionIsPrerelease = version => version.indexOf("-") > -1;
-const v8VersionsFileExists = () => existsSync(V8_VERSIONS_LOCAL_PATH);
-const saveV8VersionsFile = versionsMap =>
-    writeFileSync(V8_VERSIONS_LOCAL_PATH, JSON.stringify(versionsMap));
-const readV8VersionsFile = () => JSON.parse(readFileSync(V8_VERSIONS_LOCAL_PATH));
-const fetchV8VersionsFile = () =>
-    new Promise((resolve, reject) => {
-        getJsonFile(V8_VERSIONS_URL)
-            .then(versionsMap => {
-                createDirectory(dirname(V8_VERSIONS_LOCAL_PATH));
-                saveV8VersionsFile(versionsMap);
-                return resolve(versionsMap);
-            })
-            .catch(reject);
-    });
-
-const findV8Version = (runtimeVersion, v8VersionsMap) => {
-    const runtimeRange = Object.keys(v8VersionsMap)
-        .find(range => semver.satisfies(runtimeVersion, range));
-
-    return v8VersionsMap[runtimeRange];
-}
-
-const getV8VersionsMap = runtimeVersion =>
-    new Promise((resolve, reject) => {
-        if (!v8VersionsFileExists() || versionIsPrerelease(runtimeVersion)) {
-            fetchV8VersionsFile()
-                .then(versionsMap => resolve({ versionsMap, latest: true }))
-                .catch(reject);
-        } else {
-            const versionsMap = readV8VersionsFile();
-            return resolve({ versionsMap, latest: false });
-        }
-    });
-
-// TODO: remove?
-ProjectSnapshotGenerator.prototype.getV8Version = function (generationOptions) {
-    return new Promise((resolve, reject) => {
-        const maybeV8Version = generationOptions.v8Version;
-        if (maybeV8Version) {
-            return resolve(maybeV8Version);
-        }
-
-        // try to get the V8 Version from the settings.json file in android runtime folder
-        const runtimeV8Version = getAndroidV8Version(this.options.projectRoot);
-        if (runtimeV8Version) {
-            return resolve(runtimeV8Version);
-        }
-
-        const runtimeVersion = getAndroidRuntimeVersion(this.options.projectRoot);
-        getV8VersionsMap(runtimeVersion)
-            .then(({ versionsMap, latest }) => {
-                const v8Version = findV8Version(runtimeVersion, versionsMap);
-
-                if (!v8Version && !latest) {
-                    fetchV8VersionsFile().then(latestVersionsMap => {
-                        const version = findV8Version(runtimeVersion, latestVersionsMap)
-                        return resolve(version);
-                    })
-                        .catch(reject);
-                } else {
-                    return resolve(v8Version);
-                }
-            })
-            .catch(reject);
-    });
-}
-
 ProjectSnapshotGenerator.prototype.validateAndroidRuntimeVersion = function () {
     const currentRuntimeVersion = getAndroidRuntimeVersion(this.options.projectRoot);
 
@@ -226,55 +154,45 @@ ProjectSnapshotGenerator.prototype.generate = function (generationOptions) {
 
     // Generate snapshots
     const generator = new SnapshotGenerator({ buildPath: this.getBuildPath() });
-
     const noV8VersionFoundMessage = `Cannot find suitable v8 version!`;
-    let shouldRethrow = false;
-
     const mksnapshotParams = getMksnapshotParams(this.options.projectRoot);
     const recommendedAndroidNdkRevision = getRuntimeNdkRevision(this.options.projectRoot);
+    const v8Version = generationOptions.v8Version || getAndroidV8Version(this.options.projectRoot);
+    if (!v8Version) {
+        throw new Error(noV8VersionFoundMessage);
+    }
 
-    return this.getV8Version(generationOptions).then(v8Version => {
-        shouldRethrow = true;
-        if (!v8Version) {
-            throw new Error(noV8VersionFoundMessage);
+    // NOTE: Order is important! Add new archs at the end of the array
+    const defaultTargetArchs = ["arm", "arm64", "ia32", "ia64"];
+    const runtimeVersion = getAndroidRuntimeVersion(this.options.projectRoot);
+    if (runtimeVersion && semver.lt(semver.coerce(runtimeVersion), "6.0.2")) {
+        const indexOfIa64 = defaultTargetArchs.indexOf("ia64");
+        // Before 6.0.2 version of Android runtime we supported only arm, arm64 and ia32.
+        defaultTargetArchs.splice(indexOfIa64, defaultTargetArchs.length - indexOfIa64);
+    }
+
+    const options = {
+        snapshotToolsPath,
+        targetArchs: generationOptions.targetArchs || defaultTargetArchs,
+        v8Version: generationOptions.v8Version || v8Version,
+        preprocessedInputFile: generationOptions.preprocessedInputFile,
+        useLibs: generationOptions.useLibs || false,
+        inputFiles: generationOptions.inputFiles || [join(this.options.projectRoot, "__snapshot.js")],
+        androidNdkPath,
+        mksnapshotParams: mksnapshotParams,
+        snapshotInDocker: generationOptions.snapshotInDocker,
+        recommendedAndroidNdkRevision
+    };
+
+    return generator.generate(options).then(() => {
+        console.log("Snapshots build finished succesfully!");
+
+        if (generationOptions.install) {
+            ProjectSnapshotGenerator.cleanSnapshotArtefacts(this.options.projectRoot);
+            ProjectSnapshotGenerator.installSnapshotArtefacts(this.options.projectRoot);
+            console.log(generationOptions.useLibs ?
+                "Snapshot is included in the app as dynamically linked library (.so file)." :
+                "Snapshot is included in the app as binary .blob file. The more space-efficient option is to embed it in a dynamically linked library (.so file).");
         }
-
-        // NOTE: Order is important! Add new archs at the end of the array
-        const defaultTargetArchs = ["arm", "arm64", "ia32", "ia64"];
-        const runtimeVersion = getAndroidRuntimeVersion(this.options.projectRoot);
-        if (runtimeVersion && semver.lt(semver.coerce(runtimeVersion), "6.0.2")) {
-            const indexOfIa64 = defaultTargetArchs.indexOf("ia64");
-            // Before 6.0.2 version of Android runtime we supported only arm, arm64 and ia32.
-            defaultTargetArchs.splice(indexOfIa64, defaultTargetArchs.length - indexOfIa64);
-        }
-
-        const options = {
-            snapshotToolsPath,
-            targetArchs: generationOptions.targetArchs || defaultTargetArchs,
-            v8Version: generationOptions.v8Version || v8Version,
-            preprocessedInputFile: generationOptions.preprocessedInputFile,
-            useLibs: generationOptions.useLibs || false,
-            inputFiles: generationOptions.inputFiles || [join(this.options.projectRoot, "__snapshot.js")],
-            androidNdkPath,
-            mksnapshotParams: mksnapshotParams,
-            snapshotInDocker: generationOptions.snapshotInDocker,
-            recommendedAndroidNdkRevision
-        };
-
-        return generator.generate(options).then(() => {
-            console.log("Snapshots build finished succesfully!");
-
-            if (generationOptions.install) {
-                ProjectSnapshotGenerator.cleanSnapshotArtefacts(this.options.projectRoot);
-                ProjectSnapshotGenerator.installSnapshotArtefacts(this.options.projectRoot);
-                console.log(generationOptions.useLibs ?
-                    "Snapshot is included in the app as dynamically linked library (.so file)." :
-                    "Snapshot is included in the app as binary .blob file. The more space-efficient option is to embed it in a dynamically linked library (.so file).");
-            }
-        });
-    }).catch(error => {
-        throw shouldRethrow ?
-            error :
-            new Error(`${noV8VersionFoundMessage} Original error: ${error.message || error}`);
-    });
+    });;
 }
