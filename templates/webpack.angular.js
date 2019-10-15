@@ -52,9 +52,11 @@ module.exports = env => {
         unitTesting, // --env.unitTesting
         verbose, // --env.verbose
         snapshotInDocker, // --env.snapshotInDocker
-        skipSnapshotTools // --env.skipSnapshotTools
+        skipSnapshotTools, // --env.skipSnapshotTools
+        compileSnapshot // --env.compileSnapshot
     } = env;
 
+    const useLibs = compileSnapshot;
     const isAnySourceMapEnabled = !!sourceMap || !!hiddenSourceMap;
     const externals = nsWebpack.getConvertedExternals(env.externals);
     const appFullPath = resolve(projectRoot, appPath);
@@ -315,7 +317,8 @@ module.exports = env => {
             projectRoot,
             webpackConfig: config,
             snapshotInDocker,
-            skipSnapshotTools
+            skipSnapshotTools,
+            useLibs
         }));
     }
 

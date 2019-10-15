@@ -1,8 +1,8 @@
 const fs = require("fs");
 const { dirname, relative, join, EOL } = require("path");
 const child_process = require("child_process");
-const { convertToUnixPath } = require("../../lib/utils");
-
+const { convertToUnixPath, warn } = require("../../lib/utils");
+const PropertiesReader = require('properties-reader');
 const shelljs = require("shelljs");
 
 const { createDirectory, downloadFile, getHostOS, getHostOSArch, CONSTANTS, has32BitArch, isMacOSCatalinaOrHigher, isSubPath } = require("./utils");
@@ -192,8 +192,9 @@ SnapshotGenerator.prototype.setupDocker = function () {
     child_process.execSync(`docker pull ${SNAPSHOTS_DOCKER_IMAGE}`);
 }
 
-SnapshotGenerator.prototype.buildSnapshotLibs = function (androidNdkBuildPath, targetArchs) {
+SnapshotGenerator.prototype.buildSnapshotLibs = function (androidNdkPath, recommendedAndroidNdkRevision, targetArchs) {
     // Compile *.c files to produce *.so libraries with ndk-build tool
+    const androidNdkBuildPath = this.getAndroidNdkBuildPath(androidNdkPath, recommendedAndroidNdkRevision);
     const ndkBuildPath = join(this.buildPath, "ndk-build");
     const androidArchs = targetArchs.map(arch => this.convertToAndroidArchName(arch));
     console.log("Building native libraries for " + androidArchs.join());
@@ -205,6 +206,54 @@ SnapshotGenerator.prototype.buildSnapshotLibs = function (androidNdkBuildPath, t
         shelljs.exec(androidNdkBuildPath);
     });
     return join(ndkBuildPath, "libs");
+}
+
+SnapshotGenerator.prototype.getAndroidNdkBuildPath = function (androidNdkPath, recommendedAndroidNdkRevision) {
+    const ndkBuildExecutableName = "ndk-build";
+    // fallback for Android Runtime < 6.2.0 with the 6.1.0 value
+    recommendedAndroidNdkRevision = recommendedAndroidNdkRevision || "20.0.5594570";
+    let androidNdkBuildPath = "";
+    if (androidNdkPath) {
+        // specified by the user
+        const localNdkRevision = this.getAndroidNdkRevision(androidNdkPath);
+        androidNdkBuildPath = join(androidNdkPath, ndkBuildExecutableName);
+        if (!fs.existsSync(androidNdkBuildPath)) {
+            throw new Error(`The provided Android NDK path does not contain ${ndkBuildExecutableName} executable.`);
+        } else if (localNdkRevision !== recommendedAndroidNdkRevision) {
+            warn(`The provided Android NDK is v${localNdkRevision} while the recommended one is v${recommendedAndroidNdkRevision}`);
+        }
+    } else {
+        // available globally
+        let hasAndroidNdkInPath = true;
+        androidNdkBuildPath = ndkBuildExecutableName;
+        try {
+            child_process.execSync(`${androidNdkBuildPath} --version`);
+            console.log(`Cannot determine the version of the global Android NDK. The recommended versions is v${recommendedAndroidNdkRevision}`);
+        } catch (_) {
+            hasAndroidNdkInPath = false;
+        }
+
+        if (!hasAndroidNdkInPath) {
+            // installed in ANDROID_HOME
+            const androidHome = process.env.ANDROID_HOME;
+            androidNdkBuildPath = join(androidHome, "ndk", recommendedAndroidNdkRevision, ndkBuildExecutableName);
+            if (!fs.existsSync(androidNdkBuildPath)) {
+                throw new Error(`Android NDK v${recommendedAndroidNdkRevision} is not installed. You can find installation instructions in this article: https://developer.android.com/studio/projects/install-ndk#specific-version`);
+            }
+        }
+    }
+
+    return androidNdkBuildPath;
+}
+
+SnapshotGenerator.prototype.getAndroidNdkRevision = function (androidNdkPath) {
+    const ndkPropertiesFile = join(androidNdkPath, "source.properties");
+    if (fs.existsSync(ndkPropertiesFile)) {
+        const properties = PropertiesReader(ndkPropertiesFile);
+        return properties.get("Pkg.Revision");
+    } else {
+        return null;
+    }
 }
 
 SnapshotGenerator.prototype.buildIncludeGradle = function () {
@@ -236,8 +285,7 @@ SnapshotGenerator.prototype.generate = function (options) {
     ).then(() => {
         this.buildIncludeGradle();
         if (options.useLibs) {
-            const androidNdkBuildPath = options.androidNdkPath ? join(options.androidNdkPath, "ndk-build") : "ndk-build";
-            this.buildSnapshotLibs(androidNdkBuildPath, options.targetArchs);
+            this.buildSnapshotLibs(options.androidNdkPath, options.recommendedAndroidNdkRevision, options.targetArchs);
         }
         return this.buildPath;
     });
