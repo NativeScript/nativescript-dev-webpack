@@ -1,3 +1,13 @@
+<a name="1.2.1"></a>
+## [1.2.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.2.0...1.2.1) (2019-10-03)
+
+
+### Features
+
+* snapshot in docker container when the local tools are not available ([6861d22](https://github.com/NativeScript/nativescript-dev-webpack/commit/6861d22))
+
+
+
 <a name="1.2.0"></a>
 # [1.2.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.1.1...1.2.0) (2019-09-03)
 
