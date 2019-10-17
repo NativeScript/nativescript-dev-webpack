@@ -148,8 +148,6 @@ ProjectSnapshotGenerator.prototype.generate = function (generationOptions) {
     shelljs.mkdir("-p", this.getBuildPath());
 
     const snapshotToolsPath = resolveRelativePath(generationOptions.snapshotToolsPath) || CONSTANTS.SNAPSHOT_TMP_DIR;
-    const androidNdkPath = generationOptions.androidNdkPath || process.env.ANDROID_NDK_HOME;
-
     console.log("Snapshot tools path: " + snapshotToolsPath);
 
     // Generate snapshots
@@ -178,7 +176,7 @@ ProjectSnapshotGenerator.prototype.generate = function (generationOptions) {
         preprocessedInputFile: generationOptions.preprocessedInputFile,
         useLibs: generationOptions.useLibs || false,
         inputFiles: generationOptions.inputFiles || [join(this.options.projectRoot, "__snapshot.js")],
-        androidNdkPath,
+        androidNdkPath: generationOptions.androidNdkPath,
         mksnapshotParams: mksnapshotParams,
         snapshotInDocker: generationOptions.snapshotInDocker,
         recommendedAndroidNdkRevision

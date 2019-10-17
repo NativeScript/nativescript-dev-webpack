@@ -210,6 +210,7 @@ SnapshotGenerator.prototype.buildSnapshotLibs = function (androidNdkPath, recomm
 
 SnapshotGenerator.prototype.getAndroidNdkBuildPath = function (androidNdkPath, recommendedAndroidNdkRevision) {
     const ndkBuildExecutableName = "ndk-build";
+    let hasNdk = false;
     // fallback for Android Runtime < 6.2.0 with the 6.1.0 value
     recommendedAndroidNdkRevision = recommendedAndroidNdkRevision || "20.0.5594570";
     let androidNdkBuildPath = "";
@@ -220,27 +221,50 @@ SnapshotGenerator.prototype.getAndroidNdkBuildPath = function (androidNdkPath, r
         if (!fs.existsSync(androidNdkBuildPath)) {
             throw new Error(`The provided Android NDK path does not contain ${ndkBuildExecutableName} executable.`);
         } else if (localNdkRevision !== recommendedAndroidNdkRevision) {
-            warn(`The provided Android NDK is v${localNdkRevision} while the recommended one is v${recommendedAndroidNdkRevision}`);
-        }
-    } else {
-        // available globally
-        let hasAndroidNdkInPath = true;
-        androidNdkBuildPath = ndkBuildExecutableName;
-        try {
-            child_process.execSync(`${androidNdkBuildPath} --version`);
-            console.log(`Cannot determine the version of the global Android NDK. The recommended versions is v${recommendedAndroidNdkRevision}`);
-        } catch (_) {
-            hasAndroidNdkInPath = false;
+            warn(this.getRecommendedNdkWarning(localNdkRevision, recommendedAndroidNdkRevision));
         }
 
-        if (!hasAndroidNdkInPath) {
-            // installed in ANDROID_HOME
-            const androidHome = process.env.ANDROID_HOME;
-            androidNdkBuildPath = join(androidHome, "ndk", recommendedAndroidNdkRevision, ndkBuildExecutableName);
-            if (!fs.existsSync(androidNdkBuildPath)) {
-                throw new Error(`Android NDK v${recommendedAndroidNdkRevision} is not installed. You can find installation instructions in this article: https://developer.android.com/studio/projects/install-ndk#specific-version`);
+        hasNdk = true;
+        console.log("Using Android NDK from webpack.config.");
+    } else {
+        if (process.env.ANDROID_NDK_HOME) {
+            // check ANDROID_NDK_HOME
+            const localNdkRevision = this.getAndroidNdkRevision(process.env.ANDROID_NDK_HOME);
+            androidNdkBuildPath = join(process.env.ANDROID_NDK_HOME, ndkBuildExecutableName);
+            if (fs.existsSync(androidNdkBuildPath)) {
+                hasNdk = true;
+                console.log("Using Android NDK from ANDROID_NDK_HOME.");
+            }
+
+            if (localNdkRevision !== recommendedAndroidNdkRevision) {
+                warn(this.getRecommendedNdkWarning(localNdkRevision, recommendedAndroidNdkRevision));
             }
         }
+
+        if (!hasNdk) {
+            // available globally
+            androidNdkBuildPath = ndkBuildExecutableName;
+            try {
+                child_process.execSync(`${androidNdkBuildPath} --version`, { stdio: "ignore" });
+                hasNdk = true;
+                console.log("Using Android NDK from PATH.");
+                console.log(`Cannot determine the version of the global Android NDK. The recommended versions is v${recommendedAndroidNdkRevision}`);
+            } catch (_) {
+            }
+        }
+
+        if (!hasNdk) {
+            // installed in ANDROID_HOME
+            androidNdkBuildPath = join(process.env.ANDROID_HOME, "ndk", recommendedAndroidNdkRevision, ndkBuildExecutableName);
+            if (fs.existsSync(androidNdkBuildPath)) {
+                hasNdk = true;
+                console.log("Using Android NDK from ANDROID_HOME.");
+            }
+        }
+    }
+
+    if (!hasNdk) {
+        throw new Error(`Android NDK v${recommendedAndroidNdkRevision} is not installed. Install it from Android Studio or download it and set ANDROID_NDK_HOME or add it to your PATH. You can find installation instructions in this article: https://developer.android.com/studio/projects/install-ndk#specific-version`);
     }
 
     return androidNdkBuildPath;
@@ -367,6 +391,10 @@ SnapshotGenerator.prototype.buildCSource = function (androidArch, blobInputDir, 
     shellJsExecuteInDir(blobInputDir, function () {
         shelljs.exec(command);
     });
+}
+
+SnapshotGenerator.prototype.getRecommendedNdkWarning = function (localNdkRevision, recommendedAndroidNdkRevision) {
+    return `The provided Android NDK is v${localNdkRevision} while the recommended one is v${recommendedAndroidNdkRevision}`;
 }
 
 SnapshotGenerator.prototype.runMksnapshotTool = function (tool, mksnapshotParams, inputFile, snapshotInDocker, snapshotToolsPath, buildCSource) {
