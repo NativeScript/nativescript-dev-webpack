@@ -2,6 +2,7 @@ const fs = require("fs");
 const { dirname, relative, join, EOL } = require("path");
 const child_process = require("child_process");
 const { convertToUnixPath, warn } = require("../../lib/utils");
+const { isWindows } = require("./utils");
 const PropertiesReader = require('properties-reader');
 const shelljs = require("shelljs");
 
@@ -209,7 +210,7 @@ SnapshotGenerator.prototype.buildSnapshotLibs = function (androidNdkPath, recomm
 }
 
 SnapshotGenerator.prototype.getAndroidNdkBuildPath = function (androidNdkPath, recommendedAndroidNdkRevision) {
-    const ndkBuildExecutableName = "ndk-build";
+    const ndkBuildExecutableName = isWindows() ? "ndk-build.cmd" : "ndk-build";
     let hasNdk = false;
     // fallback for Android Runtime < 6.2.0 with the 6.1.0 value
     recommendedAndroidNdkRevision = recommendedAndroidNdkRevision || "20.0.5594570";
