@@ -1,5 +1,6 @@
 import { parse, Rule, SyntaxTree } from "tns-core-modules/css";
 import { loader } from "webpack";
+import { getOptions } from "loader-utils";
 
 interface ImportRule extends Rule {
     import: string;
@@ -7,8 +8,13 @@ interface ImportRule extends Rule {
 
 const betweenQuotesPattern = /('|")(.*?)\1/;
 const unpackUrlPattern = /url\(([^\)]+)\)/;
+const inlineLoader = "!nativescript-dev-webpack/css2json-loader?useForImports!"
 
 const loader: loader.Loader = function (content: string, map) {
+    const options = getOptions(this) || {};
+    const inline = !!options.useForImports;
+    const requirePrefix = inline ? inlineLoader : "";
+
     const ast = parse(content, undefined);
 
     let dependencies = [];
@@ -16,11 +22,11 @@ const loader: loader.Loader = function (content: string, map) {
         .map(extractUrlFromRule)
         .map(createRequireUri)
         .forEach(({ uri, requireURI }) => {
-            dependencies.push(`global.registerModule("${uri}", () => require("${requireURI}"));`);
+            dependencies.push(`global.registerModule("${uri}", () => require("${requirePrefix}${requireURI}"));`);
 
             // Call registerModule with requireURI to handle cases like @import "~@nativescript/theme/css/blue.css";
             if (uri !== requireURI) {
-                dependencies.push(`global.registerModule("${requireURI}", () => require("${requireURI}"));`);
+                dependencies.push(`global.registerModule("${requireURI}", () => require("${requirePrefix}${requireURI}"));`);
             }
         });
     const str = JSON.stringify(ast, (k, v) => k === "position" ? undefined : v);
