@@ -200,7 +200,7 @@ module.exports = env => {
                 use: [
                     'nativescript-dev-webpack/style-hot-loader',
                     'nativescript-dev-webpack/apply-css-loader.js',
-                    { loader: "css-loader", options: { url: false } },
+                    'nativescript-dev-webpack/css2json-loader',
                 ],
             },
             {
@@ -208,8 +208,8 @@ module.exports = env => {
                 use: [
                     'nativescript-dev-webpack/style-hot-loader',
                     'nativescript-dev-webpack/apply-css-loader.js',
-                    { loader: "css-loader", options: { url: false } },
-                    "sass-loader",
+                    'nativescript-dev-webpack/css2json-loader',
+                    'sass-loader',
                 ],
             },
             {

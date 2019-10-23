@@ -1,15 +1,22 @@
 const parse = require("tns-core-modules/css").parse;
-const nl = "\n";
 
 module.exports = function (content, map) {
     const ast = parse(content);
-    const dependencies = getImportsFrom(ast)
+
+    let dependencies = [];
+    getImportsFrom(ast)
         .map(mapURI)
-        .reduce((dependencies, { uri, requireURI }) =>
-            dependencies + `global.registerModule(${uri}, () => require(${requireURI}));${nl}`, "");
+        .forEach(({ uri, requireURI }) => {
+            dependencies.push(`global.registerModule(${uri}, () => require(${requireURI}));`);
+
+            // call registerModule with requireURI to handle cases like @import "~@nativescript/theme/css/blue.css";
+            if (uri !== requireURI) {
+                dependencies.push(`global.registerModule(${requireURI}, () => require(${requireURI}));`);
+            }
+        });
 
     const str = JSON.stringify(ast, (k, v) => k === "position" ? undefined : v);
-    this.callback(null, `${dependencies}module.exports = ${str};`, map);
+    this.callback(null, `${dependencies.join("\n")}module.exports = ${str};`, map);
 }
 
 function getImportsFrom(ast) {
