@@ -179,7 +179,8 @@ ProjectSnapshotGenerator.prototype.generate = function (generationOptions) {
         androidNdkPath: generationOptions.androidNdkPath,
         mksnapshotParams: mksnapshotParams,
         snapshotInDocker: generationOptions.snapshotInDocker,
-        recommendedAndroidNdkRevision
+        recommendedAndroidNdkRevision,
+        runtimeVersion
     };
 
     return generator.generate(options).then(() => {
