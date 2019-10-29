@@ -52,7 +52,7 @@
     "copy-webpack-plugin": "~4.6.0",
     "css-loader": "~2.1.1",
     "escape-string-regexp": "1.0.5",
-    "fork-ts-checker-webpack-plugin": "1.3.0",
+    "fork-ts-checker-webpack-plugin": "2.0.0",
     "global-modules-path": "2.0.0",
     "loader-utils": "^1.2.3",
     "minimatch": "3.0.4",
