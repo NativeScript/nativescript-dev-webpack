@@ -34,26 +34,22 @@ const loader: loader.Loader = function (source, map) {
     const hmr = `
         if (module.hot) {
             const hmrUpdate = require("nativescript-dev-webpack/hmr").hmrUpdate;
-            global.__initialHmrUpdate = true;
-            global.__hmrSyncBackup = global.__onLiveSync;
+            global.__coreModulesLiveSync = global.__onLiveSync;
 
             global.__onLiveSync = function () {
+                // handle hot updated on LiveSync
                 hmrUpdate();
             };
 
             global.hmrRefresh = function({ type, path } = {}) {
-                if (global.__initialHmrUpdate) {
-                    return;
-                }
-
+                // the hot updates are applied, ask the modules to apply the changes
                 setTimeout(() => {
-                    global.__hmrSyncBackup({ type, path });
+                    global.__coreModulesLiveSync({ type, path });
                 });
             };
 
-            hmrUpdate().then(() => {
-                global.__initialHmrUpdate = false;
-            })
+            // handle hot updated on initial app start
+            hmrUpdate();
         }
         `;
 
