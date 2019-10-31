@@ -1,3 +1,29 @@
+<a name="1.3.0"></a>
+# [1.3.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.2.1...1.3.0) (2019-10-31)
+
+
+### Bug Fixes
+
+* exclude files from tests folder from built application ([c61f10e](https://github.com/NativeScript/nativescript-dev-webpack/commit/c61f10e))
+* fix dependencies in package.json ([eefd042](https://github.com/NativeScript/nativescript-dev-webpack/commit/eefd042)), closes [/github.com/NativeScript/nativescript-dev-webpack/blob/master/bundle-config-loader.ts#L4](https://github.com//github.com/NativeScript/nativescript-dev-webpack/blob/master/bundle-config-loader.ts/issues/L4) [/github.com/NativeScript/nativescript-dev-webpack/blob/2978b81b5a8100774b2bb4a331ac8637205927b8/package.json#L54](https://github.com//github.com/NativeScript/nativescript-dev-webpack/blob/2978b81b5a8100774b2bb4a331ac8637205927b8/package.json/issues/L54)
+* fix xxd path for local snapshots generation ([f63d493](https://github.com/NativeScript/nativescript-dev-webpack/commit/f63d493))
+* handle correctly webpack compilation errors ([363c4da](https://github.com/NativeScript/nativescript-dev-webpack/commit/363c4da))
+* handle imports like [@import](https://github.com/import) url("./xxx.css") ([8921120](https://github.com/NativeScript/nativescript-dev-webpack/commit/8921120))
+* search for the proper NDK executable on Windows ([f93bb6c](https://github.com/NativeScript/nativescript-dev-webpack/commit/f93bb6c))
+* Unbound namespace error with ios and android ([#1053](https://github.com/NativeScript/nativescript-dev-webpack/issues/1053)) ([6cd6efe](https://github.com/NativeScript/nativescript-dev-webpack/commit/6cd6efe))
+
+
+### Features
+
+* add useForImports option ([632af4f](https://github.com/NativeScript/nativescript-dev-webpack/commit/632af4f))
+* ensure valid CLI version when Windows snapshot is requested ([3a687c0](https://github.com/NativeScript/nativescript-dev-webpack/commit/3a687c0))
+* support [@nativescript](https://github.com/nativescript) scope in host  resolver ([efda509](https://github.com/NativeScript/nativescript-dev-webpack/commit/efda509))
+* support useLibs though env.compileSnapshot and calculate the NDK path internally ([5431bd7](https://github.com/NativeScript/nativescript-dev-webpack/commit/5431bd7))
+* support V8 snapshots on Windows ([2e9b753](https://github.com/NativeScript/nativescript-dev-webpack/commit/2e9b753))
+* use css2json loader by default ([6b0c9ae](https://github.com/NativeScript/nativescript-dev-webpack/commit/6b0c9ae))
+
+
+
 <a name="1.2.1"></a>
 ## [1.2.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.2.0...1.2.1) (2019-10-03)
 
