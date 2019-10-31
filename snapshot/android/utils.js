@@ -60,6 +60,10 @@ function isMacOSCatalinaOrHigher() {
     return isCatalinaOrHigher;
 }
 
+function isWindows() {
+    return getHostOS() === CONSTANTS.WIN_OS_NAME;
+}
+
 const downloadFile = (url, destinationFilePath, timeout) =>
     new Promise((resolve, reject) => {
         getRequestOptions(url, timeout)
@@ -119,5 +123,6 @@ module.exports = {
     isMacOSCatalinaOrHigher,
     downloadFile,
     getJsonFile,
-    isSubPath
+    isSubPath,
+    isWindows
 };
