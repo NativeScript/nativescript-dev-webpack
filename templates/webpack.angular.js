@@ -147,7 +147,9 @@ module.exports = env => {
                 "node_modules",
             ],
             alias: {
-                '~': appFullPath
+                '~': appFullPath,
+                "tns-core-modules": "@nativescript/core",
+                "nativescript-angular": "@nativescript/angular",
             },
             symlinks: true
         },

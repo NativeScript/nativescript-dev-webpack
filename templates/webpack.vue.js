@@ -114,7 +114,8 @@ module.exports = env => {
             alias: {
                 '~': appFullPath,
                 '@': appFullPath,
-                'vue': 'nativescript-vue'
+                'vue': 'nativescript-vue',
+                "tns-core-modules": "@nativescript/core",
             },
             // resolve symlinks to symlinked modules
             symlinks: true,
