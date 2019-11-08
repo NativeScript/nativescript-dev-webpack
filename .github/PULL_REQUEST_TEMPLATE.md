@@ -55,9 +55,6 @@ Phrases:
 `test cli-device`: Test for `tns run` on real devices
 `test cli-debug`: Tests for `tns debug`
 `test cli-run`: Tests for `tns run`
-
 -->
-
-
 
 [CLA]: http://www.nativescript.org/cla
