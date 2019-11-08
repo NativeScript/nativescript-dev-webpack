@@ -1,10 +1,6 @@
-import { parse, Rule, SyntaxTree } from "tns-core-modules/css";
+import { parse, Import, Stylesheet } from "css";
 import { loader } from "webpack";
 import { getOptions } from "loader-utils";
-
-interface ImportRule extends Rule {
-    import: string;
-}
 
 const betweenQuotesPattern = /('|")(.*?)\1/;
 const unpackUrlPattern = /url\(([^\)]+)\)/;
@@ -33,18 +29,18 @@ const loader: loader.Loader = function (content: string, map) {
     this.callback(null, `${dependencies.join("\n")}module.exports = ${str};`, map);
 }
 
-function getImportRules(ast: SyntaxTree): ImportRule[] {
+function getImportRules(ast: Stylesheet): Import[] {
     if (!ast || (<any>ast).type !== "stylesheet" || !ast.stylesheet) {
         return [];
     }
-    return <ImportRule[]>ast.stylesheet.rules
+    return <Import[]>ast.stylesheet.rules
         .filter(rule => rule.type === "import" && (<any>rule).import)
 }
 
 /**
  * Extracts the url from import rule (ex. `url("./platform.css")`)
  */
-function extractUrlFromRule(importRule: ImportRule): string {
+function extractUrlFromRule(importRule: Import): string {
     const urlValue = importRule.import;
 
     const unpackedUrlMatch = urlValue.match(unpackUrlPattern);
