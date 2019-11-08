@@ -30,6 +30,7 @@ const nativeScriptDevWebpack = {
     PlatformFSPlugin: EmptyClass,
     getAppPath: () => 'app',
     getEntryModule: () => 'EntryModule',
+    hasRootLevelScopedModules: () => false,
     getResolver: () => null,
     getConvertedExternals: nsWebpackIndex.getConvertedExternals,
     getSourceMapFilename: nsWebpackIndex.getSourceMapFilename,

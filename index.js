@@ -10,6 +10,19 @@ const {
 Object.assign(exports, require("./plugins"));
 Object.assign(exports, require("./host/resolver"));
 
+exports.hasRootLevelScopedModules = function ({ projectDir }) {
+    let hasRootLevelScopedModules;
+    try {
+        const scopedModulesPackageName = '@nativescript/core';
+        require.resolve(scopedModulesPackageName, { paths: [projectDir] });
+        hasRootLevelScopedModules = true;
+    } catch (e) {
+        hasRootLevelScopedModules = false;
+    }
+
+    return hasRootLevelScopedModules;
+}
+
 exports.getAotEntryModule = function (appDirectory) {
     verifyEntryModuleDirectory(appDirectory);
 
