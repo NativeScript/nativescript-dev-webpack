@@ -1,5 +1,5 @@
 const { convertToUnixPath } = require("../lib/utils");
-const { RawSource } = require("webpack-sources");
+const { RawSource, ConcatSource } = require("webpack-sources");
 const { getPackageJson } = require("../projectHelpers");
 const { SNAPSHOT_ENTRY_NAME } = require("./NativeScriptSnapshotPlugin");
 const path = require("path");
@@ -83,7 +83,12 @@ exports.GenerateNativeScriptEntryPointsPlugin = (function () {
                     return `require("./${depRelativePathUnix}");`;
                 }).join("");
                 const currentEntryFileContent = compilation.assets[filePath].source();
-                compilation.assets[filePath] = new RawSource(`${requireDeps}${currentEntryFileContent}`);
+
+                if(compilation.assets[filePath] instanceof ConcatSource) {
+                    compilation.assets[filePath].children.unshift(`${requireDeps}`);
+                } else {
+                    compilation.assets[filePath] = new RawSource(`${requireDeps}${currentEntryFileContent}`);
+                }
             }
         });
     }
