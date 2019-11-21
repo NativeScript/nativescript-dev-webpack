@@ -1,7 +1,6 @@
 import * as proxyquire from 'proxyquire';
 import * as nsWebpackIndex from '../index';
 import { join } from 'path';
-import { skipPartiallyEmittedExpressions } from 'typescript';
 // With noCallThru enabled, `proxyquire` will not fall back to requiring the real module to populate properties that are not mocked.
 // This allows us to mock packages that are not available in node_modules.
 // In case you want to enable fallback for a specific object, just add `'@noCallThru': false`.
@@ -30,6 +29,7 @@ const nativeScriptDevWebpack = {
     PlatformFSPlugin: EmptyClass,
     getAppPath: () => 'app',
     getEntryModule: () => 'EntryModule',
+    hasRootLevelScopedModules: () => false,
     getResolver: () => null,
     getConvertedExternals: nsWebpackIndex.getConvertedExternals,
     getSourceMapFilename: nsWebpackIndex.getSourceMapFilename,
@@ -356,6 +356,27 @@ describe('webpack.config.js', () => {
                     expect(terserOptions.sourceMap).toBeTruthy();
                     expect(terserOptions.terserOptions.output.semicolons).toBeFalsy();
                     expect(config.output.sourceMapFilename).toEqual(join("..", newSourceMapFolder, "[file].map"));
+                });
+            });
+
+            describe(`alias for webpack.${type}.js (${platform})`, () => {
+                it('should add alias when @nativescript/core is at the root of node_modules', () => {
+                    nativeScriptDevWebpack.hasRootLevelScopedModules = () => true;
+                    const input = getInput({ platform });
+                    const config = webpackConfig(input);
+                    expect(config.resolve.alias['tns-core-modules']).toBe('@nativescript/core');
+                    if (type === 'angular') {
+                        expect(config.resolve.alias['nativescript-angular']).toBe('@nativescript/angular');
+                    }
+                });
+                it('shouldn\'t add alias when @nativescript/core is not at the root of node_modules', () => {
+                    nativeScriptDevWebpack.hasRootLevelScopedModules = () => false;
+                    const input = getInput({ platform });
+                    const config = webpackConfig(input);
+                    expect(config.resolve.alias['tns-core-modules']).toBeUndefined();
+                    if (type === 'angular') {
+                        expect(config.resolve.alias['nativescript-angular']).toBeUndefined();
+                    }
                 });
             });
         });
