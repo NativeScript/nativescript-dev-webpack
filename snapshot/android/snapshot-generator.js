@@ -4,6 +4,7 @@ const child_process = require("child_process");
 const { convertToUnixPath, warn } = require("../../lib/utils");
 const { isWindows } = require("./utils");
 const PropertiesReader = require('properties-reader');
+const semver = require("semver");
 const shelljs = require("shelljs");
 
 const { createDirectory, downloadFile, getHostOS, getHostOSArch, CONSTANTS, has32BitArch, isMacOSCatalinaOrHigher, isSubPath } = require("./utils");
@@ -37,11 +38,15 @@ module.exports = SnapshotGenerator;
 
 SnapshotGenerator.SNAPSHOT_PACKAGE_NANE = "nativescript-android-snapshot";
 
-SnapshotGenerator.prototype.shouldSnapshotInDocker = function (hostOS, targetArchs) {
+SnapshotGenerator.prototype.shouldSnapshotInDocker = function (hostOS, targetArchs, currentRuntimeVersion) {
     let shouldSnapshotInDocker = false;
+    const minRuntimeWithoutMacOSSnapshotTools = "6.3.0";
     const generateInDockerMessage = "The snapshots will be generated in a docker container.";
-    if (hostOS == CONSTANTS.WIN_OS_NAME) {
+    if (hostOS === CONSTANTS.WIN_OS_NAME) {
         console.log(`The V8 snapshot tools are not supported on Windows. ${generateInDockerMessage}`);
+        shouldSnapshotInDocker = true;
+    } else if (hostOS === CONSTANTS.MAC_OS_NAME && semver.gte(currentRuntimeVersion, minRuntimeWithoutMacOSSnapshotTools)) {
+        console.log(`Starting from Android Runtime 6.3.0, the Snapshot tools are no longer supported on macOS. ${generateInDockerMessage}`);
         shouldSnapshotInDocker = true;
     } else if (isMacOSCatalinaOrHigher() && has32BitArch(targetArchs)) {
         console.log(`Starting from macOS Catalina, the 32-bit processes are no longer supported. ${generateInDockerMessage}`);
@@ -296,7 +301,7 @@ SnapshotGenerator.prototype.generate = function (options) {
 
     this.preprocessInputFiles(options.inputFiles, preprocessedInputFile);
     const hostOS = getHostOS();
-    const snapshotInDocker = options.snapshotInDocker || this.shouldSnapshotInDocker(hostOS, options.targetArchs);
+    const snapshotInDocker = options.snapshotInDocker || this.shouldSnapshotInDocker(hostOS, options.targetArchs, options.runtimeVersion);
 
     // generates the actual .blob and .c files
     return this.generateSnapshots(
