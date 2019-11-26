@@ -1,6 +1,6 @@
 import { parse, Import, Stylesheet } from "css";
 import { loader } from "webpack";
-import { getOptions } from "loader-utils";
+import { getOptions, urlToRequest } from "loader-utils";
 
 const betweenQuotesPattern = /('|")(.*?)\1/;
 const unpackUrlPattern = /url\(([^\)]+)\)/;
@@ -53,7 +53,7 @@ function extractUrlFromRule(importRule: Import): string {
 function createRequireUri(uri): { uri: string, requireURI: string } {
     return {
         uri: uri,
-        requireURI: uri[0] === "~" && uri[1] !== "/" ? uri.substr(1) : uri
+        requireURI: urlToRequest(uri)
     };
 }
 
