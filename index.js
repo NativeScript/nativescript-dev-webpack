@@ -10,17 +10,28 @@ const {
 Object.assign(exports, require("./plugins"));
 Object.assign(exports, require("./host/resolver"));
 
-exports.hasRootLevelScopedModules = function ({ projectDir }) {
-    let hasRootLevelScopedModules;
-    try {
-        const scopedModulesPackageName = '@nativescript/core';
-        require.resolve(scopedModulesPackageName, { paths: [projectDir] });
-        hasRootLevelScopedModules = true;
-    } catch (e) {
-        hasRootLevelScopedModules = false;
-    }
+exports.processTsPathsForScopedModules = function ({ compilerOptions }) {
+    return replacePathInCompilerOptions({
+        compilerOptions,
+        targetPath: "tns-core-modules",
+        replacementPath: "@nativescript/core"
+    });
+}
 
-    return hasRootLevelScopedModules;
+exports.processTsPathsForScopedAngular = function ({ compilerOptions }) {
+    return replacePathInCompilerOptions({
+        compilerOptions,
+        targetPath: "nativescript-angular",
+        replacementPath: "@nativescript/angular"
+    });
+}
+
+exports.hasRootLevelScopedModules = function ({ projectDir }) {
+    return hasRootLevelPackage({ projectDir, packageName: "@nativescript/core" });
+}
+
+exports.hasRootLevelScopedAngular = function ({ projectDir }) {
+    return hasRootLevelPackage({ projectDir, packageName: "@nativescript/angular" });
 }
 
 exports.getAotEntryModule = function (appDirectory) {
@@ -174,5 +185,34 @@ function verifyEntryModuleDirectory(appDirectory) {
 
     if (!existsSync(appDirectory)) {
         throw new Error(`The specified path to app directory ${appDirectory} does not exist. Unable to find entry module.`);
+    }
+}
+
+
+function hasRootLevelPackage({ projectDir, packageName }) {
+    let hasRootLevelPackage;
+    try {
+        require.resolve(packageName, { paths: [projectDir] });
+        hasRootLevelPackage = true;
+    } catch (e) {
+        hasRootLevelPackage = false;
+    }
+
+    return hasRootLevelPackage;
+}
+
+function replacePathInCompilerOptions({ compilerOptions, targetPath, replacementPath }) {
+    const paths = (compilerOptions && compilerOptions.paths) || {};
+    for (const key in paths) {
+        if (paths.hasOwnProperty(key)) {
+            const pathsForPattern = paths[key];
+            if (Array.isArray(pathsForPattern)) {
+                for (let i = 0; i < pathsForPattern.length; ++i) {
+                    if (typeof pathsForPattern[i] === "string") {
+                        pathsForPattern[i] = pathsForPattern[i].replace(targetPath, replacementPath);
+                    }
+                }
+            }
+        }
     }
 }
