@@ -30,6 +30,9 @@ const nativeScriptDevWebpack = {
     getAppPath: () => 'app',
     getEntryModule: () => 'EntryModule',
     hasRootLevelScopedModules: () => false,
+    hasRootLevelScopedAngular: () => false,
+    processTsPathsForScopedModules: () => false,
+    processTsPathsForScopedAngular: () => false,
     getResolver: () => null,
     getConvertedExternals: nsWebpackIndex.getConvertedExternals,
     getSourceMapFilename: nsWebpackIndex.getSourceMapFilename,
@@ -48,7 +51,7 @@ const webpackConfigAngular = proxyquire('./webpack.angular', {
     'nativescript-dev-webpack/transformers/ns-replace-lazy-loader': { nsReplaceLazyLoader: () => { return FakeLazyTransformerFlag } },
     'nativescript-dev-webpack/transformers/ns-support-hmr-ng': { nsSupportHmrNg: () => { return FakeHmrTransformerFlag } },
     'nativescript-dev-webpack/utils/ast-utils': { getMainModulePath: () => { return "fakePath"; } },
-    'nativescript-dev-webpack/utils/tsconfig-utils': { getNoEmitOnErrorFromTSConfig: () => { return false; } },
+    'nativescript-dev-webpack/utils/tsconfig-utils': { getNoEmitOnErrorFromTSConfig: () => { return false; }, getCompilerOptionsFromTSConfig: () => { return false; } },
     'nativescript-dev-webpack/plugins/NativeScriptAngularCompilerPlugin': { getAngularCompilerPlugin: () => { return AngularCompilerStub; } },
     '@ngtools/webpack': {
         AngularCompilerPlugin: AngularCompilerStub
@@ -59,7 +62,7 @@ const webpackConfigAngular = proxyquire('./webpack.angular', {
 const webpackConfigTypeScript = proxyquire('./webpack.typescript', {
     'nativescript-dev-webpack': nativeScriptDevWebpack,
     'nativescript-dev-webpack/nativescript-target': emptyObject,
-    'nativescript-dev-webpack/utils/tsconfig-utils': { getNoEmitOnErrorFromTSConfig: () => { return false; } },
+    'nativescript-dev-webpack/utils/tsconfig-utils': { getNoEmitOnErrorFromTSConfig: () => { return false; }, getCompilerOptionsFromTSConfig: () => { return false; } },
     'terser-webpack-plugin': TerserJsStub
 });
 
@@ -362,6 +365,7 @@ describe('webpack.config.js', () => {
             describe(`alias for webpack.${type}.js (${platform})`, () => {
                 it('should add alias when @nativescript/core is at the root of node_modules', () => {
                     nativeScriptDevWebpack.hasRootLevelScopedModules = () => true;
+                    nativeScriptDevWebpack.hasRootLevelScopedAngular = () => true;
                     const input = getInput({ platform });
                     const config = webpackConfig(input);
                     expect(config.resolve.alias['tns-core-modules']).toBe('@nativescript/core');
@@ -371,6 +375,7 @@ describe('webpack.config.js', () => {
                 });
                 it('shouldn\'t add alias when @nativescript/core is not at the root of node_modules', () => {
                     nativeScriptDevWebpack.hasRootLevelScopedModules = () => false;
+                    nativeScriptDevWebpack.hasRootLevelScopedAngular = () => false;
                     const input = getInput({ platform });
                     const config = webpackConfig(input);
                     expect(config.resolve.alias['tns-core-modules']).toBeUndefined();
