@@ -11,18 +11,42 @@ Object.assign(exports, require("./plugins"));
 Object.assign(exports, require("./host/resolver"));
 
 exports.processTsPathsForScopedModules = function ({ compilerOptions }) {
-    return replacePathInCompilerOptions({
+    const tnsModulesOldPackage = "tns-core-modules";
+    const tnsModulesNewPackage = "@nativescript/core";
+    replacePathInCompilerOptions({
         compilerOptions,
-        targetPath: "tns-core-modules",
-        replacementPath: "@nativescript/core"
+        targetPath: tnsModulesOldPackage,
+        replacementPath: tnsModulesNewPackage
+    });
+    ensurePathInCompilerOptions({
+        compilerOptions,
+        sourcePath: tnsModulesOldPackage,
+        destinationPath: `./node_modules/${tnsModulesNewPackage}`
+    });
+    ensurePathInCompilerOptions({
+        compilerOptions,
+        sourcePath: `${tnsModulesOldPackage}/*`,
+        destinationPath: `./node_modules/${tnsModulesNewPackage}/*`
     });
 }
 
 exports.processTsPathsForScopedAngular = function ({ compilerOptions }) {
-    return replacePathInCompilerOptions({
+    const nsAngularOldPackage = "nativescript-angular";
+    const nsAngularNewPackage = "@nativescript/angular";
+    replacePathInCompilerOptions({
         compilerOptions,
-        targetPath: "nativescript-angular",
-        replacementPath: "@nativescript/angular"
+        targetPath: nsAngularOldPackage,
+        replacementPath: nsAngularNewPackage
+    });
+    ensurePathInCompilerOptions({
+        compilerOptions,
+        sourcePath: nsAngularOldPackage,
+        destinationPath: `./node_modules/${nsAngularNewPackage}`
+    });
+    ensurePathInCompilerOptions({
+        compilerOptions,
+        sourcePath: `${nsAngularOldPackage}/*`,
+        destinationPath: `./node_modules/${nsAngularNewPackage}/*`
     });
 }
 
@@ -214,5 +238,16 @@ function replacePathInCompilerOptions({ compilerOptions, targetPath, replacement
                 }
             }
         }
+    }
+}
+
+function ensurePathInCompilerOptions({ compilerOptions, sourcePath, destinationPath }) {
+    const paths = (compilerOptions && compilerOptions.paths) || {};
+    if (paths[sourcePath]) {
+        if (Array.isArray(paths[sourcePath]) && paths[sourcePath].indexOf(destinationPath) === -1) {
+            paths[sourcePath].push(destinationPath);
+        }
+    } else {
+        paths[sourcePath] = [destinationPath];
     }
 }
