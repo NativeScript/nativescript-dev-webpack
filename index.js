@@ -242,7 +242,9 @@ function replacePathInCompilerOptions({ compilerOptions, targetPath, replacement
 }
 
 function ensurePathInCompilerOptions({ compilerOptions, sourcePath, destinationPath }) {
-    const paths = (compilerOptions && compilerOptions.paths) || {};
+    compilerOptions = compilerOptions || {};
+    compilerOptions.paths = compilerOptions.paths || {};
+    const paths = compilerOptions.paths;
     if (paths[sourcePath]) {
         if (Array.isArray(paths[sourcePath]) && paths[sourcePath].indexOf(destinationPath) === -1) {
             paths[sourcePath].push(destinationPath);
