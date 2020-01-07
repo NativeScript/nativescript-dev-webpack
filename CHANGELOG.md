@@ -1,3 +1,34 @@
+<a name="1.4.1"></a>
+## [1.4.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.4.0...1.4.1) (2020-01-07)
+
+
+### Bug Fixes
+
+* add missing tsconfig paths when the app is using only scoped modules and angular ([87ec157](https://github.com/NativeScript/nativescript-dev-webpack/commit/87ec157))
+* handle missing paths obj in tsconfig ([867a9f1](https://github.com/NativeScript/nativescript-dev-webpack/commit/867a9f1))
+
+
+<a name="1.4.0"></a>
+# [1.4.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.3.1...1.4.0) (2019-12-08)
+
+### Bug Fixes
+
+* add import of `.css` file into another `.css` file ([c5e4552](https://github.com/NativeScript/nativescript-dev-webpack/commit/c5e4552))
+* avoid duplicate modules from tns-core-modules and [@nativescript](https://github.com/nativescript)/core causing app crashes on Android ([b74b231](https://github.com/NativeScript/nativescript-dev-webpack/commit/b74b231))
+* bundle emitted on save without changes ([2d01df9](https://github.com/NativeScript/nativescript-dev-webpack/commit/2d01df9)), closes [/github.com/webpack/webpack/blob/4056506488c1e071dfc9a0127daa61bf531170bf/lib/Compiler.js#L326](https://github.com//github.com/webpack/webpack/blob/4056506488c1e071dfc9a0127daa61bf531170bf/lib/Compiler.js/issues/L326)
+* fix module import of local css files ([2c0a36e](https://github.com/NativeScript/nativescript-dev-webpack/commit/2c0a36e)), closes [/github.com/webpack-contrib/css-loader/blob/967fb66da2545f04055eb0900a69f86e484dd842/src/utils.js#L220](https://github.com//github.com/webpack-contrib/css-loader/blob/967fb66da2545f04055eb0900a69f86e484dd842/src/utils.js/issues/L220)
+* remove the tns-core-modules dependency in order to allow [@nativescrip](https://github.com/nativescrip)/core migration ([7d60958](https://github.com/NativeScript/nativescript-dev-webpack/commit/7d60958))
+* stop ignoring the initial hot updates ([d032e4c](https://github.com/NativeScript/nativescript-dev-webpack/commit/d032e4c))
+* stop on compilation error in typescript applications ([df7d122](https://github.com/NativeScript/nativescript-dev-webpack/commit/df7d122))
+* update worker loader in order to fix HMR ([5ad141e](https://github.com/NativeScript/nativescript-dev-webpack/commit/5ad141e))
+
+### Features
+
+* snapshot in Docker on macOS with Android runtime 6.3.0 or higher as it will not contain snapshot tools for macOS anymore ([9e99683](https://github.com/NativeScript/nativescript-dev-webpack/commit/9e99683))
+* stop using the proxy `tns-core-modules` package when the `[@nativescript](https://github.com/nativescript)/core` is available ([061b270](https://github.com/NativeScript/nativescript-dev-webpack/commit/061b270))
+
+
+
 <a name="1.3.0"></a>
 # [1.3.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.2.1...1.3.0) (2019-10-31)
 
