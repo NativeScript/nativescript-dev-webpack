@@ -12,11 +12,11 @@ const hashSalt = Date.now().toString();
 
 module.exports = env => {
     // Add your custom Activities, Services and other android app components here.
-    const appComponents = [
+    const appComponents = env.appComponents || [];
+    appComponents.push(...[
         "tns-core-modules/ui/frame",
         "tns-core-modules/ui/frame/activity",
-        resolve(__dirname, "app/activity.android.js")
-    ];
+    ]);
 
     const platform = env && (env.android && "android" || env.ios && "ios");
     if (!platform) {
@@ -56,9 +56,8 @@ module.exports = env => {
     const appFullPath = resolve(projectRoot, appPath);
     const hasRootLevelScopedModules = nsWebpack.hasRootLevelScopedModules({ projectDir: projectRoot });
     let coreModulesPackageName = "tns-core-modules";
-    const alias = {
-        '~': appFullPath
-    };
+    const alias = env.alias || {};
+    alias['~'] = appFullPath;
 
     if (hasRootLevelScopedModules) {
         coreModulesPackageName = "@nativescript/core";
@@ -68,7 +67,9 @@ module.exports = env => {
 
     const entryModule = nsWebpack.getEntryModule(appFullPath, platform);
     const entryPath = `.${sep}${entryModule}.js`;
-    const entries = { bundle: entryPath, application: "./application.android" };
+    const entries = env.entries || {};
+    entries.bundle = entryPath;
+
     const areCoreModulesExternal = Array.isArray(env.externals) && env.externals.some(e => e.indexOf("tns-core-modules") > -1);
     if (platform === "ios" && !areCoreModulesExternal) {
         entries["tns_modules/tns-core-modules/inspector_modules"] = "inspector_modules";
@@ -81,6 +82,7 @@ module.exports = env => {
         itemsToClean.push(`${join(projectRoot, "platforms", "android", "app", "src", "main", "assets", "snapshots")}`);
         itemsToClean.push(`${join(projectRoot, "platforms", "android", "app", "build", "configurations", "nativescript-android-snapshot")}`);
     }
+
 
     nsWebpack.processAppComponents(appComponents, platform);
     const config = {
@@ -109,6 +111,8 @@ module.exports = env => {
             extensions: [".js", ".scss", ".css"],
             // Resolve {N} system modules from tns-core-modules
             modules: [
+                resolve(__dirname, `node_modules/${coreModulesPackageName}`),
+                resolve(__dirname, "node_modules"),
                 `node_modules/${coreModulesPackageName}`,
                 "node_modules",
             ],

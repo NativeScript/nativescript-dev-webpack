@@ -14,10 +14,11 @@ const hashSalt = Date.now().toString();
 
 module.exports = env => {
     // Add your custom Activities, Services and other Android app components here.
-    const appComponents = [
+    const appComponents = env.appComponents || [];
+    appComponents.push(...[
         "tns-core-modules/ui/frame",
         "tns-core-modules/ui/frame/activity",
-    ];
+    ]);
 
     const platform = env && (env.android && "android" || env.ios && "ios");
     if (!platform) {
@@ -58,9 +59,8 @@ module.exports = env => {
     const appFullPath = resolve(projectRoot, appPath);
     const hasRootLevelScopedModules = nsWebpack.hasRootLevelScopedModules({ projectDir: projectRoot });
     let coreModulesPackageName = "tns-core-modules";
-    const alias = {
-        '~': appFullPath
-    };
+    const alias = env.alias || {};
+    alias['~'] = appFullPath;
 
     if (hasRootLevelScopedModules) {
         coreModulesPackageName = "@nativescript/core";
@@ -70,7 +70,8 @@ module.exports = env => {
 
     const entryModule = nsWebpack.getEntryModule(appFullPath, platform);
     const entryPath = `.${sep}${entryModule}.ts`;
-    const entries = { bundle: entryPath };
+    const entries = env.entries || {};
+    entries.bundle = entryPath;
 
     const tsConfigPath = resolve(projectRoot, "tsconfig.tns.json");
 
