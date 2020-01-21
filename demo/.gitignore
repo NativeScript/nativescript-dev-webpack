@@ -18,3 +18,4 @@ vendor.ts
 
 tsconfig.esm.json
 mochawesome-report
+webpack.config.js
