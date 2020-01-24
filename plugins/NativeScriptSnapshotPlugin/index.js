@@ -1,5 +1,5 @@
-const { relative, resolve, join, dirname } = require("path");
-const { closeSync, openSync, writeFileSync, existsSync, mkdirSync } = require("fs");
+const { relative, resolve, join } = require("path");
+const { closeSync, openSync, writeFileSync } = require("fs");
 const validateOptions = require("schema-utils");
 
 const ProjectSnapshotGenerator = require("../../snapshot/android/project-snapshot-generator");
@@ -8,6 +8,7 @@ const {
     ANDROID_PROJECT_DIR,
     ANDROID_APP_PATH,
 } = require("../../androidProjectHelpers");
+const { ensureDirectoryExistence } = require("../../lib/utils");
 const schema = require("./options.json");
 
 const SNAPSHOT_ENTRY_NAME = "snapshot-entry";
@@ -69,16 +70,6 @@ exports.NativeScriptSnapshotPlugin = (function () {
         // ensure that the runtime is installed only in the snapshotted chunk
         webpackConfig.optimization.runtimeChunk = { name: SNAPSHOT_ENTRY_NAME };
     }
-
-    function ensureDirectoryExistence(filePath) {
-        var dir = dirname(filePath);
-        if (existsSync(dir)) {
-            return true;
-        }
-        ensureDirectoryExistence(dir);
-        mkdirSync(dir);
-    }
-
     NativeScriptSnapshotPlugin.getInternalRequireModules = function (webpackContext) {
         const packageJson = getPackageJson(webpackContext);
         return (packageJson && packageJson["android"] && packageJson["android"]["requireModules"]) || [];
