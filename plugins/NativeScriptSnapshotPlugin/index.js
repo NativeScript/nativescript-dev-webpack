@@ -8,6 +8,7 @@ const {
     ANDROID_PROJECT_DIR,
     ANDROID_APP_PATH,
 } = require("../../androidProjectHelpers");
+const { ensureDirectoryExistence } = require("../../lib/utils");
 const schema = require("./options.json");
 
 const SNAPSHOT_ENTRY_NAME = "snapshot-entry";
@@ -57,6 +58,7 @@ exports.NativeScriptSnapshotPlugin = (function () {
         snapshotEntryContent += [...requireModules, ...internalRequireModules]
             .map(mod => `require('${mod}')`).join(";");
 
+        ensureDirectoryExistence(snapshotEntryPath);
         writeFileSync(snapshotEntryPath, snapshotEntryContent, { encoding: "utf8" });
 
         // add the module to the entry points to make sure it's content is evaluated
@@ -68,7 +70,6 @@ exports.NativeScriptSnapshotPlugin = (function () {
         // ensure that the runtime is installed only in the snapshotted chunk
         webpackConfig.optimization.runtimeChunk = { name: SNAPSHOT_ENTRY_NAME };
     }
-
     NativeScriptSnapshotPlugin.getInternalRequireModules = function (webpackContext) {
         const packageJson = getPackageJson(webpackContext);
         return (packageJson && packageJson["android"] && packageJson["android"]["requireModules"]) || [];
