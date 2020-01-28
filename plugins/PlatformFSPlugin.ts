@@ -101,25 +101,21 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
         const {dir, name, ext} = parseFile(file);
         let platformFilePath = join(dir, `${name}.${platform}${ext}`);
 
-        try {
-            require.resolve(platformFilePath);
-        } catch (e) {
-            if (isExternal && dir.indexOf("/@nativescript/core/") !== -1) {
-                let replacedPath;
-                try {
-                    replacedPath = dir.replace(
-                        /node_modules(\/[^/]+)?\/@nativescript\/core/,
-                        `node_modules/nativescript-platform-${platform}`
-                    );
+        if (isExternal && dir.indexOf("/@nativescript/core/") !== -1) {
+            let replacedPath;
+            try {
+                replacedPath = dir.replace(
+                    /node_modules(\/[^/]+)?\/@nativescript\/core/,
+                    `node_modules/nativescript-platform-${platform}`
+                );
 
-                    platformFilePath = require.resolve(join(replacedPath, `${name}.${platform}${ext}`));
-                } catch (e) {
-                    if (replacedPath) {
-                        if (ext === ".d") {
-                            platformFilePath = undefined;
-                        } else {
-                            platformFilePath = join(replacedPath, `${name}${ext}`);
-                        }
+                platformFilePath = require.resolve(join(replacedPath, `${name}.${platform}${ext}`));
+            } catch (e) {
+                if (replacedPath) {
+                    if (ext === ".d") {
+                        platformFilePath = undefined;
+                    } else {
+                        platformFilePath = join(replacedPath, `${name}${ext}`);
                     }
                 }
             }
