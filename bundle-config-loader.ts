@@ -10,6 +10,7 @@ const loader: loader.Loader = function (source, map) {
     let {
         angular = false,
         loadCss = true,
+        platform,
         unitTesting,
         projectRoot,
         appFullPath,
@@ -53,8 +54,14 @@ const loader: loader.Loader = function (source, map) {
         }
         `;
 
+    let sourceModule = "tns-core-modules";
+
+    if (platform !== "ios" && platform !== "android") {
+        sourceModule = `nativescript-platform-${platform}`;
+    }
+
     source = `
-        require("tns-core-modules/bundle-entry-points");
+        require("${sourceModule}/bundle-entry-points");
         ${source}
     `;
 

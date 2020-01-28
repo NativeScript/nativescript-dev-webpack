@@ -100,13 +100,15 @@ const loader: loader.Loader = function (source: string, map) {
     // Register ios and android prefixes as namespaces to avoid "unbound xml namespace" errors
     (<any>saxParser).ns["ios"] = "http://schemas.nativescript.org/tns.xsd";
     (<any>saxParser).ns["android"] = "http://schemas.nativescript.org/tns.xsd";
+    (<any>saxParser).ns["desktop"] = "http://schemas.nativescript.org/tns.xsd";
+    (<any>saxParser).ns["web"] = "http://schemas.nativescript.org/tns.xsd";
 
     saxParser.onopentag = (node: QualifiedTag) => { handleOpenTag(node.uri, node.local); };
     saxParser.onerror = (err) => {
         // Do only warning about invalid character "&"" for back-compatibility
         // as it is common to use it in a binding expression
-        if (err && 
-            err.message.indexOf("Invalid character") >= 0 && 
+        if (err &&
+            err.message.indexOf("Invalid character") >= 0 &&
             err.message.indexOf("Char: &") >= 0) {
             this.emitWarning(err)
         } else {
