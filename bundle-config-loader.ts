@@ -56,7 +56,7 @@ const loader: loader.Loader = function (source, map) {
 
     let sourceModule = "tns-core-modules";
 
-    if (platform !== "ios" && platform !== "android") {
+    if (platform && platform !== "ios" && platform !== "android") {
         sourceModule = `nativescript-platform-${platform}`;
     }
 
