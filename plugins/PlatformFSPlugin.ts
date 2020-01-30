@@ -8,7 +8,7 @@ export interface PlatformFSPluginOptions {
     platform?: string;
 
     /**
-     * A list of all platforms. By default it is `["ios", "android"]`.
+     * A list of all platforms. By default it is `["ios", "android", "desktop"]`.
      */
     platforms?: string[];
 
@@ -18,6 +18,8 @@ export interface PlatformFSPluginOptions {
     ignore?: string[];
 }
 
+const internalPlatforms = ["ios", "android"];
+
 export class PlatformFSPlugin {
     protected readonly platform: string;
     protected readonly platforms: ReadonlyArray<string>;
@@ -26,7 +28,7 @@ export class PlatformFSPlugin {
 
     constructor({ platform, platforms, ignore }: PlatformFSPluginOptions) {
         this.platform = platform || "";
-        this.platforms = platforms || ["ios", "android"];
+        this.platforms = platforms || internalPlatforms;
         this.ignore = ignore || [];
     }
 
@@ -58,6 +60,8 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
     const fs = compiler.inputFileSystem;
     ignore = args.ignore || [];
 
+    const isExternal = internalPlatforms.indexOf(platform) === -1;
+
     const minimatchFileFilters = ignore.map(pattern => {
         const minimatchFilter = minimatch.filter(pattern);
         return file => minimatchFilter(relative(context, file));
@@ -80,7 +84,7 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
             return join(dir, name.substr(0, name.length - currentPlatformExt.length) + ext);
         }
         return file;
-    }
+    };
 
     const isNotIgnored = file => !isIgnored(file);
 
@@ -95,7 +99,28 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
 
     function platformSpecificFile(file: string): string {
         const {dir, name, ext} = parseFile(file);
-        const platformFilePath = join(dir, `${name}.${platform}${ext}`);
+        let platformFilePath = join(dir, `${name}.${platform}${ext}`);
+
+        if (isExternal && dir.indexOf("/@nativescript/core/") !== -1) {
+            let replacedPath;
+            try {
+                replacedPath = dir.replace(
+                    /node_modules(\/[^/]+)?\/@nativescript\/core/,
+                    `node_modules/nativescript-platform-${platform}`
+                );
+
+                platformFilePath = require.resolve(join(replacedPath, `${name}.${platform}${ext}`));
+            } catch (e) {
+                if (replacedPath) {
+                    if (ext === ".d") {
+                        platformFilePath = undefined;
+                    } else {
+                        platformFilePath = join(replacedPath, `${name}${ext}`);
+                    }
+                }
+            }
+        }
+
         return platformFilePath;
     }
 

@@ -103,6 +103,8 @@ exports.getAppPath = (platform, projectDir) => {
         return `platforms/ios/${sanitizedName}/app`;
     } else if (isAndroid(platform)) {
         return ANDROID_APP_PATH;
+    } else if (hasPlatformPlugin(projectDir, platform)) {
+        return `platforms/${platform}/app`;
     } else {
         throw new Error(`Invalid platform: ${platform}`);
     }
@@ -190,6 +192,13 @@ const sanitize = name => name
     .split("")
     .filter(char => /[a-zA-Z0-9]/.test(char))
     .join("");
+
+function hasPlatformPlugin(appDirectory, platform) {
+    const packageJsonSource = getPackageJson(appDirectory);
+    const { dependencies } = packageJsonSource;
+
+    return !!dependencies[`nativescript-platform-${platform}`];
+}
 
 function getPackageJsonEntry(appDirectory) {
     const packageJsonSource = getPackageJson(appDirectory);
