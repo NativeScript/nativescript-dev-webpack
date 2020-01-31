@@ -1,3 +1,20 @@
+<a name="1.5.0"></a>
+# [1.5.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.4.1...1.5.0) (2020-02-04)
+
+
+### Bug Fixes
+
+* ensure the js snapshot entry dir if not created (avoid ENOENT error) ([2a0eaf6](https://github.com/NativeScript/nativescript-dev-webpack/commit/2a0eaf6))
+* stop searching for snapshot artefacts when the snapshot tools are skipped (it's a cloud build, there aren't any snapshot artefacts locally) ([b8da140](https://github.com/NativeScript/nativescript-dev-webpack/commit/b8da140))
+
+
+### Features
+
+* **dependencies:** updated `[@angular](https://github.com/angular)/compiler-cli` dependency ([1dbcbf2](https://github.com/NativeScript/nativescript-dev-webpack/commit/1dbcbf2)), closes [#1114](https://github.com/NativeScript/nativescript-dev-webpack/issues/1114)
+* allow extending webpack.config.js through env ([69ace1e](https://github.com/NativeScript/nativescript-dev-webpack/commit/69ace1e))
+
+
+
 <a name="1.4.1"></a>
 ## [1.4.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.4.0...1.4.1) (2020-01-07)
 
