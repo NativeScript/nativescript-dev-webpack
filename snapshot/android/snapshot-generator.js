@@ -400,7 +400,11 @@ SnapshotGenerator.prototype.buildCSource = function (androidArch, blobInputDir, 
 }
 
 SnapshotGenerator.prototype.getRecommendedNdkWarning = function (localNdkRevision, recommendedAndroidNdkRevision) {
-    return `The provided Android NDK is v${localNdkRevision} while the recommended one is v${recommendedAndroidNdkRevision}`;
+    if (localNdkRevision) {
+        return `The provided Android NDK is v${localNdkRevision} while the required one is v${recommendedAndroidNdkRevision}`;
+    } else {
+        return `The provided Android NDK version is different than the required one - v${recommendedAndroidNdkRevision}`;
+    }
 }
 
 SnapshotGenerator.prototype.runMksnapshotTool = function (tool, mksnapshotParams, inputFile, snapshotInDocker, snapshotToolsPath, buildCSource) {
