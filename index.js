@@ -210,7 +210,7 @@ function getPackageJsonEntry(appDirectory) {
         throw new Error(`${appDirectory}/package.json must contain a 'main' attribute!`);
     }
 
-    return entry.replace(/\.js$/i, "");
+    return entry.replace(/\.js$/i, "").replace(/\.kt$/i, "");
 }
 
 function verifyEntryModuleDirectory(appDirectory) {
