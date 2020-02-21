@@ -58,7 +58,7 @@
     "loader-utils": "^1.2.3",
     "minimatch": "3.0.4",
     "nativescript-hook": "0.2.4",
-    "nativescript-worker-loader": "~0.10.0",
+    "nativescript-worker-loader": "~0.11.0",
     "properties-reader": "0.3.1",
     "proxy-lib": "0.4.0",
     "raw-loader": "~0.5.1",
