@@ -79,12 +79,14 @@ exports.getEntryModule = function (appDirectory, platform) {
     const entry = getPackageJsonEntry(appDirectory);
 
     const tsEntryPath = path.resolve(appDirectory, `${entry}.ts`);
+    const ktEntryPath = path.resolve(appDirectory, `${entry}.kt`);
     const jsEntryPath = path.resolve(appDirectory, `${entry}.js`);
-    let entryExists = existsSync(tsEntryPath) || existsSync(jsEntryPath);
+    let entryExists = existsSync(tsEntryPath) || existsSync(ktEntryPath) || existsSync(jsEntryPath);
     if (!entryExists && platform) {
         const platformTsEntryPath = path.resolve(appDirectory, `${entry}.${platform}.ts`);
+        const platformKtEntryPath = path.resolve(appDirectory, `${entry}.${platform}.kt`);
         const platformJsEntryPath = path.resolve(appDirectory, `${entry}.${platform}.js`);
-        entryExists = existsSync(platformTsEntryPath) || existsSync(platformJsEntryPath);
+        entryExists = existsSync(platformTsEntryPath) || existsSync(platformKtEntryPath) || existsSync(platformJsEntryPath);
     }
 
     if (!entryExists) {
