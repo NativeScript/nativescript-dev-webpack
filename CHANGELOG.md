@@ -1,3 +1,21 @@
+<a name="1.5.1"></a>
+## [1.5.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/v1.5.0...v1.5.1) (2020-02-25)
+
+
+### Bug Fixes
+
+* `The provided Android NDK is vnull while the recommended one is v21.0.6113669` error in some cases ([23aa6c5](https://github.com/NativeScript/nativescript-dev-webpack/commit/23aa6c5))
+* AOT compilation of multiple workers should work ([af5cb84](https://github.com/NativeScript/nativescript-dev-webpack/commit/af5cb84))
+* replace extension coming from package.json ([a04c0f8](https://github.com/NativeScript/nativescript-dev-webpack/commit/a04c0f8))
+
+
+### Features
+
+* Add .kt extension to known entry types ([55b56c8](https://github.com/NativeScript/nativescript-dev-webpack/commit/55b56c8))
+* Add .kt extension to known ones ([6e145a4](https://github.com/NativeScript/nativescript-dev-webpack/commit/6e145a4))
+
+
+
 <a name="1.5.0"></a>
 # [1.5.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.4.1...1.5.0) (2020-02-04)
 
