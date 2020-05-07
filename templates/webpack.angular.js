@@ -37,8 +37,7 @@ module.exports = env => {
         // The 'appPath' and 'appResourcesPath' values are fetched from
         // the nsconfig.json configuration file
         // when bundling with `tns run android|ios --bundle`.
-        appPath = "src",
-        appResourcesPath = "App_Resources",
+        ...nsWebpack.getNSConfigPaths(projectRoot, "src"),
 
         // You can provide the following flags when running 'tns run android|ios'
         aot, // --env.aot
