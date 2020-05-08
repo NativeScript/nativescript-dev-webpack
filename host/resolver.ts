@@ -3,7 +3,7 @@ import { statSync } from "fs";
 
 export function getResolver(platforms: string[], explicitResolve?: string[], nsPackageFilters?: string[], platformSpecificExt?: string[]) {
     explicitResolve = explicitResolve || [];
-    nsPackageFilters = nsPackageFilters || ['nativescript', 'tns', 'ns'];
+    nsPackageFilters = nsPackageFilters || ['nativescript', 'tns', 'ns', '@nativescript'];
     platformSpecificExt = platformSpecificExt || [".ts", ".js", ".scss", ".less", ".css", ".html", ".xml", ".vue", ".json"];
 
     return function (path: string) {

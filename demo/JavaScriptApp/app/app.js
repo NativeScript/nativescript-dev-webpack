@@ -4,9 +4,9 @@ You can use this file to perform app-level initialization, but the primary
 purpose of the file is to pass control to the app’s first module.
 */
 
-var application = require("application");
+var application = require("tns-core-modules/application");
 
-application.start({ moduleName: "main-page" });
+application.run({ moduleName: "app-root" });
 
 /*
 Do not place any code after the application has been started as it will not

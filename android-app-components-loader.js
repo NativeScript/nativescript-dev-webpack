@@ -1,6 +1,6 @@
 const { convertSlashesInPath } = require("./projectHelpers");
 
-module.exports = function (source) {
+module.exports = function (source, map) {
     this.cacheable();
     const { modules } = this.query;
     const imports = modules.map(convertSlashesInPath)
@@ -14,5 +14,5 @@ module.exports = function (source) {
         ${source}
     `;
 
-    this.callback(null, augmentedSource);
+    this.callback(null, augmentedSource, map);
 };

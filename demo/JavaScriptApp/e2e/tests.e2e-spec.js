@@ -1,77 +1,52 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const nativescript_dev_appium_1 = require("nativescript-dev-appium");
-const chai_1 = require("chai");
-describe("sample scenario", () => {
+const nsAppium = require("nativescript-dev-appium");
+const chai = require("chai");
+
+describe("sample scenario", function () {
     let driver;
-    before(() => __awaiter(this, void 0, void 0, function* () {
-        driver = yield nativescript_dev_appium_1.createDriver();
+    before((async function () {
+        nsAppium.nsCapabilities.testReporter.context = this;
+        driver = await nsAppium.createDriver();
     }));
-    beforeEach(function () {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const lblPlatform = yield getPlatformLabel();
-            }
-            catch (err) {
-                console.log("Navigating to main page ...");
-                yield driver.navBack();
-            }
-        });
+
+    afterEach(async function () {
+        if (this.currentTest.state === "failed") {
+            await driver.logTestArtifacts(this.currentTest.title);
+        }
     });
-    afterEach(function () {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (this.currentTest.state === "failed") {
-                yield driver.logPageSource(this.currentTest.title);
-                yield driver.logScreenshot(this.currentTest.title);
-            }
-        });
+
+    it("should the button on second page work", async function () {
+        const btnNav = await driver.findElementByText("btnNav");
+        await btnNav.tap();
+        const secondPage = await driver.findElementByText("Second Page");
+        const btnZero = await driver.findElementByText("0");
+        await btnZero.tap();
+        const btnOne = await driver.findElementByText("1");
+        await driver.navBack();
     });
-    after(() => __awaiter(this, void 0, void 0, function* () {
-        yield driver.quit();
-        console.log("Quit driver!");
-    }));
-    it("should the button on second page work", () => __awaiter(this, void 0, void 0, function* () {
-        const btnNav = yield driver.findElementByText("btnNav");
-        yield btnNav.tap();
-        const secondPage = yield driver.findElementByText("Second Page");
-        const btnZero = yield driver.findElementByText("0");
-        yield btnZero.tap();
-        // In iOS, the `automationText` property applies on both `name` and `label`:
-        // https://github.com/NativeScript/NativeScript/issues/3150
-        // <XCUIElementTypeButton type="XCUIElementTypeButton" name="0" label="0" enabled="true" visible="true" x="132" y="395" width="111" height="110"/>
-        // <XCUIElementTypeButton type="XCUIElementTypeButton" name="btn" label="btn" enabled="true" visible="true" x="132" y="395" width="111" height="110"/>
-        const btnOne = yield driver.findElementByText("1");
-        yield driver.navBack();
-    }));
-    it("should the button on main page work", () => __awaiter(this, void 0, void 0, function* () {
-        const btnTap = yield driver.findElementByText("TAP");
-        yield btnTap.tap();
-        const lblTaps = yield driver.findElementByText("taps left", 1 /* contains */);
-        const lblTapsText = yield lblTaps.text();
-        chai_1.assert.isTrue(lblTapsText.includes("41"));
-    }));
+
+    it("should the button on main page work", async function () {
+        const btnTap = await driver.findElementByText("TAP");
+        await btnTap.tap();
+        const lblTaps = await driver.findElementByText("taps left", 1 /* contains */);
+        const lblTapsText = await lblTaps.text();
+        chai.assert.isTrue(lblTapsText.includes("41"));
+    });
+
     const styleTypes = {
         "inline": "styleInline",
         "page": "stylePage",
         "app": "styleApp"
     };
-    for (let styleType in styleTypes) {
-        it(`should find an element with ${styleType} style applied`, function () {
-            return __awaiter(this, void 0, void 0, function* () {
-                const element = yield driver.findElementByText(styleTypes[styleType]);
-                const result = yield driver.compareElement(element, "style");
-                chai_1.assert.isTrue(result);
-            });
+    for (let index = 0; index < styleTypes.length; index++) {
+        const styleType = array[index];
+
+        it(`should find an element with ${styleType} style applied`, async function () {
+            const element = await driver.findElementByText(styleTypes[styleType]);
+            driver.imageHelper.options.keepOriginalImageSize = false;
+            driver.imageHelper.options.isDeviceSpecific = false;
+            const result = await driver.compareElement(element, "style");
+            assert.isTrue(result);
         });
     }
-    const getPlatformLabel = () => __awaiter(this, void 0, void 0, function* () { return driver.isAndroid ? yield driver.findElementByText("android") : yield driver.findElementByText("ios"); });
 });
-//# sourceMappingURL=tests.e2e-spec.js.map

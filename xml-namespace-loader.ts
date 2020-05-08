@@ -1,22 +1,34 @@
-const { parse, relative, join, basename, extname } = require("path");
-const { promisify } = require('util');
-const { convertSlashesInPath } = require("./projectHelpers");
+import { parse, join } from "path";
+import { promisify } from "util";
+import { loader } from "webpack";
+import { parser, QualifiedTag } from "sax";
 
-module.exports = function (source) {
-    this.value = source;
+import { convertSlashesInPath } from "./projectHelpers";
+
+interface NamespaceEntry {
+    name: string;
+    path: string
+}
+
+const loader: loader.Loader = function (source: string, map) {
     const { ignore } = this.query;
-    const callback = this.async();
 
-    const { XmlParser } = require("tns-core-modules/xml");
+    let callbackCalled = false;
+    const callback = this.async();
+    const callbackWrapper = (error?: Error, content?: string, map?: any) => {
+        if (!callbackCalled) {
+            callbackCalled = true;
+            callback(error, content, map);
+        }
+    }
+
 
     const resolvePromise = promisify(this.resolve);
-    const promises = [];
+    const promises: Promise<any>[] = [];
+    const namespaces: NamespaceEntry[] = [];
 
-    const namespaces = [];
-    const parser = new XmlParser((event) => {
-        const { namespace, elementName } = event;
+    const handleOpenTag = (namespace: string, elementName: string) => {
         const moduleName = `${namespace}/${elementName}`;
-
         if (
             namespace &&
             !namespace.startsWith("http") &&
@@ -41,28 +53,27 @@ module.exports = function (source) {
                             this.addDependency(xml);
                             namespaces.push({ name: `${moduleName}.xml`, path: xml });
                         })
-                        .catch((err) => {}),
+                        .catch((err) => { }),
 
                     resolvePromise(this.context, `${noExtFilename}.css`)
                         .then((css) => {
                             this.addDependency(css);
                             namespaces.push({ name: `${moduleName}.css`, path: css });
                         })
-                        .catch((err) => {})
+                        .catch((err) => { })
                 ]);
             };
 
             promises.push(resolvePromise(this.context, localNamespacePath)
                 .then(path => pathResolved(path))
                 .catch(() => {
-                    return promise = resolvePromise(this.context, localModulePath)
+                    return resolvePromise(this.context, localModulePath)
                         .then(path => pathResolved(path))
                         .catch(() => {
                             return Promise.all([
                                 resolvePromise(this.context, `${localModulePath}.xml`)
                                     .then((xml) => {
                                         namespaces.push({ name: `${moduleName}.xml`, path: xml });
-                                        namespaces.push({ name: moduleName, path: xml });
                                         this.addDependency(xml);
                                     })
                                     .catch(() => {
@@ -75,24 +86,47 @@ module.exports = function (source) {
                                         namespaces.push({ name: `${moduleName}.css`, path: css });
                                         this.addDependency(css);
                                     })
-                                    .catch(() => {})
+                                    .catch(() => { })
                             ]);
 
                         });
                 })
             );
         }
-    }, undefined, true);
+    }
 
-    parser.parse(source);
+    const saxParser = parser(true, { xmlns: true });
+
+    // Register ios and android prefixes as namespaces to avoid "unbound xml namespace" errors
+    (<any>saxParser).ns["ios"] = "http://schemas.nativescript.org/tns.xsd";
+    (<any>saxParser).ns["android"] = "http://schemas.nativescript.org/tns.xsd";
+    (<any>saxParser).ns["desktop"] = "http://schemas.nativescript.org/tns.xsd";
+    (<any>saxParser).ns["web"] = "http://schemas.nativescript.org/tns.xsd";
+
+    saxParser.onopentag = (node: QualifiedTag) => { handleOpenTag(node.uri, node.local); };
+    saxParser.onerror = (err) => {
+        // Do only warning about invalid character "&"" for back-compatibility
+        // as it is common to use it in a binding expression
+        if (err &&
+            err.message.indexOf("Invalid character") >= 0 &&
+            err.message.indexOf("Char: &") >= 0) {
+            this.emitWarning(err)
+        } else {
+            callbackWrapper(err);
+        }
+
+        saxParser.error = null;
+    };
+    saxParser.write(source).close();
 
     Promise.all(promises).then(() => {
-        const moduleRegisters = namespaces
-            .map(convertPath)
-            .map(n =>
-                `global.registerModule("${n.name}", function() { return require("${n.path}"); });`
-            )
-            .join("");
+        const distinctNamespaces = new Map<string, string>();
+        namespaces.forEach(({ name, path }) => distinctNamespaces.set(name, convertSlashesInPath(path)));
+
+        const moduleRegisters: string[] = [];
+        distinctNamespaces.forEach((path, name) => {
+            moduleRegisters.push(`global.registerModule("${name}", function() { return require("${path}"); });\n`);
+        });
 
         // escape special whitespace characters
         // see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#Issue_with_plain_JSON.stringify_for_use_as_JavaScript
@@ -100,16 +134,12 @@ module.exports = function (source) {
             .replace(/\u2028/g, '\\u2028')
             .replace(/\u2029/g, '\\u2029');
 
-        const wrapped = `${moduleRegisters}\nmodule.exports = ${json}`;
+        const wrapped = `${moduleRegisters.join("")}\nmodule.exports = ${json}`;
 
-        callback(null, wrapped);
+        callbackWrapper(null, wrapped, map);
     }).catch((err) => {
-        callback(err);
+        callbackWrapper(err);
     })
-
 }
 
-function convertPath(obj) {
-    obj.path = convertSlashesInPath(obj.path);
-    return obj;
-}
+export default loader;

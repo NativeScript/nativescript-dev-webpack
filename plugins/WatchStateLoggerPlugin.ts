@@ -1,5 +1,3 @@
-import { join } from "path";
-
 export enum messages {
     compilationComplete = "Webpack compilation complete.",
     startWatching = "Webpack compilation complete. Watching for file changes.",
@@ -31,18 +29,31 @@ export class WatchStateLoggerPlugin {
                 console.log(messages.compilationComplete);
             }
 
-            let emittedFiles = Object
+            const emittedFiles = Object
                 .keys(compilation.assets)
                 .filter(assetKey => compilation.assets[assetKey].emitted);
 
-            // provide fake paths to the {N} CLI - relative to the 'app' folder
-            // in order to trigger the livesync process
-            const emittedFilesFakePaths = emittedFiles
-                .map(file => join(compiler.context, file));
-
+            const chunkFiles = getChunkFiles(compilation);
             process.send && process.send(messages.compilationComplete, error => null);
             // Send emitted files so they can be LiveSynced if need be
-            process.send && process.send({ emittedFiles: emittedFilesFakePaths }, error => null);
+            process.send && process.send({ emittedFiles, chunkFiles, hash: compilation.hash }, error => null);
         });
     }
+}
+
+function getChunkFiles(compilation) {
+    const chunkFiles = [];
+    try {
+        compilation.chunks.forEach(chunk => {
+            chunk.files.forEach(file => {
+                if (file.indexOf("hot-update") === -1) {
+                    chunkFiles.push(file);
+                }
+            });
+        });
+    } catch (e) {
+        console.log("Warning: Unable to find chunk files.");
+    }
+
+    return chunkFiles;
 }

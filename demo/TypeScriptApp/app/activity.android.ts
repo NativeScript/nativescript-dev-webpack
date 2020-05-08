@@ -1,7 +1,7 @@
-import {setActivityCallbacks, AndroidActivityCallbacks} from "ui/frame";
+import {setActivityCallbacks, AndroidActivityCallbacks} from "tns-core-modules/ui/frame";
 
 @JavaProxy("org.myApp.MainActivity")
-class Activity extends android.support.v7.app.AppCompatActivity {
+class Activity extends androidx.appcompat.app.AppCompatActivity {
     public isNativeScriptActivity: boolean;
     private _callbacks: AndroidActivityCallbacks;
     protected onCreate(savedInstanceState: any): void { // android.os.Bundle
@@ -13,7 +13,7 @@ class Activity extends android.support.v7.app.AppCompatActivity {
             setActivityCallbacks(this);
         }
 
-        this._callbacks.onCreate(this, savedInstanceState, super.onCreate);
+        this._callbacks.onCreate(this, savedInstanceState, this.getIntent(), super.onCreate);
     }
 
     protected onSaveInstanceState(outState: any): void { // android.os.Bundle

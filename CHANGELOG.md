@@ -1,3 +1,271 @@
+<a name="1.4.1"></a>
+## [1.4.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.4.0...1.4.1) (2020-01-07)
+
+
+### Bug Fixes
+
+* add missing tsconfig paths when the app is using only scoped modules and angular ([87ec157](https://github.com/NativeScript/nativescript-dev-webpack/commit/87ec157))
+* handle missing paths obj in tsconfig ([867a9f1](https://github.com/NativeScript/nativescript-dev-webpack/commit/867a9f1))
+
+
+<a name="1.4.0"></a>
+# [1.4.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.3.1...1.4.0) (2019-12-08)
+
+### Bug Fixes
+
+* add import of `.css` file into another `.css` file ([c5e4552](https://github.com/NativeScript/nativescript-dev-webpack/commit/c5e4552))
+* avoid duplicate modules from tns-core-modules and [@nativescript](https://github.com/nativescript)/core causing app crashes on Android ([b74b231](https://github.com/NativeScript/nativescript-dev-webpack/commit/b74b231))
+* bundle emitted on save without changes ([2d01df9](https://github.com/NativeScript/nativescript-dev-webpack/commit/2d01df9)), closes [/github.com/webpack/webpack/blob/4056506488c1e071dfc9a0127daa61bf531170bf/lib/Compiler.js#L326](https://github.com//github.com/webpack/webpack/blob/4056506488c1e071dfc9a0127daa61bf531170bf/lib/Compiler.js/issues/L326)
+* fix module import of local css files ([2c0a36e](https://github.com/NativeScript/nativescript-dev-webpack/commit/2c0a36e)), closes [/github.com/webpack-contrib/css-loader/blob/967fb66da2545f04055eb0900a69f86e484dd842/src/utils.js#L220](https://github.com//github.com/webpack-contrib/css-loader/blob/967fb66da2545f04055eb0900a69f86e484dd842/src/utils.js/issues/L220)
+* remove the tns-core-modules dependency in order to allow [@nativescrip](https://github.com/nativescrip)/core migration ([7d60958](https://github.com/NativeScript/nativescript-dev-webpack/commit/7d60958))
+* stop ignoring the initial hot updates ([d032e4c](https://github.com/NativeScript/nativescript-dev-webpack/commit/d032e4c))
+* stop on compilation error in typescript applications ([df7d122](https://github.com/NativeScript/nativescript-dev-webpack/commit/df7d122))
+* update worker loader in order to fix HMR ([5ad141e](https://github.com/NativeScript/nativescript-dev-webpack/commit/5ad141e))
+
+### Features
+
+* snapshot in Docker on macOS with Android runtime 6.3.0 or higher as it will not contain snapshot tools for macOS anymore ([9e99683](https://github.com/NativeScript/nativescript-dev-webpack/commit/9e99683))
+* stop using the proxy `tns-core-modules` package when the `[@nativescript](https://github.com/nativescript)/core` is available ([061b270](https://github.com/NativeScript/nativescript-dev-webpack/commit/061b270))
+
+
+
+<a name="1.3.0"></a>
+# [1.3.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.2.1...1.3.0) (2019-10-31)
+
+
+### Bug Fixes
+
+* exclude files from tests folder from built application ([c61f10e](https://github.com/NativeScript/nativescript-dev-webpack/commit/c61f10e))
+* fix dependencies in package.json ([eefd042](https://github.com/NativeScript/nativescript-dev-webpack/commit/eefd042)), closes [/github.com/NativeScript/nativescript-dev-webpack/blob/master/bundle-config-loader.ts#L4](https://github.com//github.com/NativeScript/nativescript-dev-webpack/blob/master/bundle-config-loader.ts/issues/L4) [/github.com/NativeScript/nativescript-dev-webpack/blob/2978b81b5a8100774b2bb4a331ac8637205927b8/package.json#L54](https://github.com//github.com/NativeScript/nativescript-dev-webpack/blob/2978b81b5a8100774b2bb4a331ac8637205927b8/package.json/issues/L54)
+* fix xxd path for local snapshots generation ([f63d493](https://github.com/NativeScript/nativescript-dev-webpack/commit/f63d493))
+* handle correctly webpack compilation errors ([363c4da](https://github.com/NativeScript/nativescript-dev-webpack/commit/363c4da))
+* handle imports like [@import](https://github.com/import) url("./xxx.css") ([8921120](https://github.com/NativeScript/nativescript-dev-webpack/commit/8921120))
+* search for the proper NDK executable on Windows ([f93bb6c](https://github.com/NativeScript/nativescript-dev-webpack/commit/f93bb6c))
+* Unbound namespace error with ios and android ([#1053](https://github.com/NativeScript/nativescript-dev-webpack/issues/1053)) ([6cd6efe](https://github.com/NativeScript/nativescript-dev-webpack/commit/6cd6efe))
+
+
+### Features
+
+* add useForImports option ([632af4f](https://github.com/NativeScript/nativescript-dev-webpack/commit/632af4f))
+* ensure valid CLI version when Windows snapshot is requested ([3a687c0](https://github.com/NativeScript/nativescript-dev-webpack/commit/3a687c0))
+* support [@nativescript](https://github.com/nativescript) scope in host  resolver ([efda509](https://github.com/NativeScript/nativescript-dev-webpack/commit/efda509))
+* support useLibs though env.compileSnapshot and calculate the NDK path internally ([5431bd7](https://github.com/NativeScript/nativescript-dev-webpack/commit/5431bd7))
+* support V8 snapshots on Windows ([2e9b753](https://github.com/NativeScript/nativescript-dev-webpack/commit/2e9b753))
+* use css2json loader by default ([6b0c9ae](https://github.com/NativeScript/nativescript-dev-webpack/commit/6b0c9ae))
+
+
+
+<a name="1.2.1"></a>
+## [1.2.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.2.0...1.2.1) (2019-10-03)
+
+
+### Features
+
+* snapshot in docker container when the local tools are not available ([6861d22](https://github.com/NativeScript/nativescript-dev-webpack/commit/6861d22))
+
+
+
+<a name="1.2.0"></a>
+# [1.2.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.1.1...1.2.0) (2019-09-03)
+
+
+### Bug Fixes
+
+* register non-relative app.css module ([710acd7](https://github.com/NativeScript/nativescript-dev-webpack/commit/710acd7))
+
+
+### Features
+
+* support dynamic ES6 import ([4a07932](https://github.com/NativeScript/nativescript-dev-webpack/commit/4a07932))
+
+
+<a name="1.1.1"></a>
+## [1.1.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.1.0...1.1.1) (2019-08-22)
+
+
+### Bug Fixes
+
+* add ia64 as supported architecture ([65d5d3f](https://github.com/NativeScript/nativescript-dev-webpack/commit/65d5d3f))
+
+
+
+<a name="1.1.0"></a>
+# [1.1.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.0.2...1.1.0) (2019-08-19)
+
+
+### Bug Fixes
+
+* **hmr:** check for hot update should not create new file ([c9656a9](https://github.com/NativeScript/nativescript-dev-webpack/commit/c9656a9))
+
+
+### Features
+
+* update to angular 8.2 ([d13441a](https://github.com/NativeScript/nativescript-dev-webpack/commit/d13441a))
+
+
+
+<a name="1.0.3"></a>
+## [1.0.3](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.0.2...1.0.3) (2019-08-05)
+
+
+### Bug Fixes
+
+* crash with source-map instead of inline-source-map (https://github.com/NativeScript/nativescript-dev-webpack/issues/968) ([ff07d6c](https://github.com/NativeScript/nativescript-dev-webpack/commit/ff07d6c))
+* **update-ns-webpack:** skip the update of tsconfig.tns.json in… ([#1001](https://github.com/NativeScript/nativescript-dev-webpack/issues/1001)) ([2ed9850](https://github.com/NativeScript/nativescript-dev-webpack/commit/2ed9850))
+
+
+
+<a name="1.0.2"></a>
+## [1.0.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.0.1...1.0.2) (2019-07-26)
+
+
+### Bug Fixes
+
+*  do not require `.js.map` files in the entry points when someone is using devtool: "source-map" ([#968](https://github.com/NativeScript/nativescript-dev-webpack/issues/968)) ([4bb6124](https://github.com/NativeScript/nativescript-dev-webpack/commit/4bb6124))
+* avoid getting invalid require calls when building from Windows ([#989](https://github.com/NativeScript/nativescript-dev-webpack/issues/989)) ([4799271](https://github.com/NativeScript/nativescript-dev-webpack/commit/4799271))
+* escape the regex for the path to the entry module of application ([#998](https://github.com/NativeScript/nativescript-dev-webpack/issues/998)) ([571c7f2](https://github.com/NativeScript/nativescript-dev-webpack/commit/571c7f2))
+
+
+<a name="1.0.1"></a>
+## [1.0.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/1.0.0...1.0.1) (2019-07-16)
+
+
+### Bug Fixes
+
+* don't include partial scss files in bundle ([#988](https://github.com/NativeScript/nativescript-dev-webpack/issues/988)) ([786bd6c](https://github.com/NativeScript/nativescript-dev-webpack/commit/786bd6c))
+* **js:** try to resolve node_modules from the project root before resolving in a linked location ([#987](https://github.com/NativeScript/nativescript-dev-webpack/issues/987)) ([a3df142](https://github.com/NativeScript/nativescript-dev-webpack/commit/a3df142))
+
+
+<a name="1.0.0"></a>
+# [1.0.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.24.1...1.0.0) (2019-07-10)
+
+
+### Bug Fixes
+
+* allow overriding the `global.process` object from both the app and the plugins ([8c4292e](https://github.com/NativeScript/nativescript-dev-webpack/commit/8c4292e))
+* auto accept new or deleted files ([#972](https://github.com/NativeScript/nativescript-dev-webpack/issues/972)) ([bd893ce](https://github.com/NativeScript/nativescript-dev-webpack/commit/bd893ce))
+* avoid generating invalid JavaScript when merging IIFE files ([7586d4c](https://github.com/NativeScript/nativescript-dev-webpack/commit/7586d4c))
+* create PropertyAssignment instead of string literal (Identifier) when modifying the NgModule - in some cases (e.g. when there is a decomposition in another NgModule property), the TypeScipt program is trying to read `node.name.kind` on each property causing an exception for Identifiers) ([a70fb3b](https://github.com/NativeScript/nativescript-dev-webpack/commit/a70fb3b))
+* do not add inspector_modules entry when core modules are an external module ([e0cd8c1](https://github.com/NativeScript/nativescript-dev-webpack/commit/e0cd8c1))
+* do not show warning for format differences in templates ([#947](https://github.com/NativeScript/nativescript-dev-webpack/issues/947)) ([a352064](https://github.com/NativeScript/nativescript-dev-webpack/commit/a352064))
+* don't restart application when lazy loaded code is changed in angular app with uglify option ([121c3b2](https://github.com/NativeScript/nativescript-dev-webpack/commit/121c3b2))
+* emit inspector_modules as a module ([be2a5a6](https://github.com/NativeScript/nativescript-dev-webpack/commit/be2a5a6))
+* fix app.css file path on windows machines ([7d734d8](https://github.com/NativeScript/nativescript-dev-webpack/commit/7d734d8))
+* fix hmr for platform specific files in linked plugins ([#946](https://github.com/NativeScript/nativescript-dev-webpack/issues/946)) ([9e8c921](https://github.com/NativeScript/nativescript-dev-webpack/commit/9e8c921))
+* follow the symlinks in JavaScript apps ([#941](https://github.com/NativeScript/nativescript-dev-webpack/issues/941)) ([f0c62fb](https://github.com/NativeScript/nativescript-dev-webpack/commit/f0c62fb))
+* hmr should work with uglify ([#953](https://github.com/NativeScript/nativescript-dev-webpack/issues/953)) ([874e4f8](https://github.com/NativeScript/nativescript-dev-webpack/commit/874e4f8))
+* **xml-ns-loader:** remove wrong register of xml ([#940](https://github.com/NativeScript/nativescript-dev-webpack/issues/940)) ([bc2f6f1](https://github.com/NativeScript/nativescript-dev-webpack/commit/bc2f6f1))
+* inject app.css file from unit-test-runner on test command ([#949](https://github.com/NativeScript/nativescript-dev-webpack/issues/949)) ([a216ed3](https://github.com/NativeScript/nativescript-dev-webpack/commit/a216ed3))
+* log the real snapshot tool error by trying to evaluate the input file script ([1a9c4b2](https://github.com/NativeScript/nativescript-dev-webpack/commit/1a9c4b2))
+* migrate demo apps to android x ([c2d6684](https://github.com/NativeScript/nativescript-dev-webpack/commit/c2d6684))
+* unify the entry points handling and enable custom applications in android ([de10041](https://github.com/NativeScript/nativescript-dev-webpack/commit/de10041))
+* **hooks:** improve hooks handling ([#961](https://github.com/NativeScript/nativescript-dev-webpack/issues/961)) ([f558607](https://github.com/NativeScript/nativescript-dev-webpack/commit/f558607))
+
+### Features
+
+* introduce webpack only workflow ([#882](https://github.com/NativeScript/nativescript-dev-webpack/issues/882)) ([2de4c68](https://github.com/NativeScript/nativescript-dev-webpack/commit/2de4c68))
+* no need of "page" suffix ([#966](https://github.com/NativeScript/nativescript-dev-webpack/pull/966)) ([d4a8dec](https://github.com/NativeScript/nativescript-dev-webpack/commit/d4a8dec803acf39b7cdeb4f3bc8c23284046fe67))
+* support for file qualifiers ([#966](https://github.com/NativeScript/nativescript-dev-webpack/pull/966)) ([d4a8dec](https://github.com/NativeScript/nativescript-dev-webpack/commit/d4a8dec803acf39b7cdeb4f3bc8c23284046fe67))
+* universal hmr loader ([#966](https://github.com/NativeScript/nativescript-dev-webpack/pull/966)) ([d4a8dec](https://github.com/NativeScript/nativescript-dev-webpack/commit/d4a8dec803acf39b7cdeb4f3bc8c23284046fe67))
+
+### BREAKING CHANGES:
+
+* the file names of the NativeScript pages are not required to end with `-page` or `-root`. All `xml`, `css`, `js`, `ts` and `scss` files are not included in the bundle.
+
+* the plugin is not working with NativeScript CLI older than 6.0.0 (`nativescript@6.0.0`).
+
+* the Webpack mode it set to `production` based on the `--release` flag of the NativeScript CLI, instead of the `--env.uglify` one.
+
+<a name="0.24.1"></a>
+## [0.24.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.24.0...0.24.1) (2019-06-06)
+
+
+### Bug Fixes
+
+* move the type check to a child process in order to make it faster in bigger apps and unify the hmr and no-hmr experience. ([#926](https://github.com/NativeScript/nativescript-dev-webpack/issues/926)) ([1398179](https://github.com/NativeScript/nativescript-dev-webpack/commit/1398179))
+* stop generating .d.ts on TS compilation ([#919](https://github.com/NativeScript/nativescript-dev-webpack/issues/919)) ([ccbf8de](https://github.com/NativeScript/nativescript-dev-webpack/commit/ccbf8de))
+
+
+
+<a name="0.24.0"></a>
+# [0.24.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.22.0...0.24.0) (2019-05-30)
+
+
+### Bug Fixes
+
+* import the workaroundResolve funciton based on the Angular version (it was moved from compiler_host to utils in Angular 8) ([#904](https://github.com/NativeScript/nativescript-dev-webpack/pull/904)) ([56224a8](https://github.com/NativeScript/nativescript-dev-webpack/commit/56224a898b46fc8542f8b5928c52e9e4cb6022e2))
+
+
+### Features
+
+* update deps to Angular 8.0.0 deps ([#904](https://github.com/NativeScript/nativescript-dev-webpack/pull/904)) ([d6afb74](https://github.com/NativeScript/nativescript-dev-webpack/commit/d6afb7436585d41c4188a2373d376f2b51bc541e))
+
+
+
+<a name="0.22.0"></a>
+# [0.22.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.21.0...0.22.0) (2019-05-15)
+
+
+### Bug Fixes
+
+* ignore the Webpack runtime chunks when sending HMR updates ([be82ab7](https://github.com/NativeScript/nativescript-dev-webpack/commit/be82ab7))
+* show proper stack traces from uglified code (split by new line instead of semicolon) ([0ae6030](https://github.com/NativeScript/nativescript-dev-webpack/commit/0ae6030))
+* sourceMap not generated with Uglify ([#819](https://github.com/NativeScript/nativescript-dev-webpack/issues/819)) ([b5fd066](https://github.com/NativeScript/nativescript-dev-webpack/commit/b5fd066))
+* support platform specific files that are not directly imported anywhere in the app ([#843](https://github.com/NativeScript/nativescript-dev-webpack/issues/843)) ([e1e9463](https://github.com/NativeScript/nativescript-dev-webpack/commit/e1e9463))
+* update the css loader in order to fix a bug with leading dashes of css classes ([#847](https://github.com/NativeScript/nativescript-dev-webpack/issues/847)) ([7670e33](https://github.com/NativeScript/nativescript-dev-webpack/commit/7670e33))
+* **hmr:** run ts-loader in transpileOnly mode ([#878](https://github.com/NativeScript/nativescript-dev-webpack/issues/878)) ([0317729](https://github.com/NativeScript/nativescript-dev-webpack/commit/0317729))
+
+
+### Features
+
+* replace UglifyJs with Terser ([621090a](https://github.com/NativeScript/nativescript-dev-webpack/commit/621090a))
+* support hidden source maps to map error stack traces from crash reports ([#854](https://github.com/NativeScript/nativescript-dev-webpack/issues/854)) ([dbcfbc2](https://github.com/NativeScript/nativescript-dev-webpack/commit/dbcfbc2))
+
+
+<a name="0.21.2"></a>
+## [0.21.2](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.21.0...0.21.2) (2019-04-22)
+
+
+### Bug Fixes
+
+* add support for executing unit tests for vue projects ([#870](https://github.com/NativeScript/nativescript-dev-webpack/issues/870)) ([c8afe9f](https://github.com/NativeScript/nativescript-dev-webpack/commit/c8afe9f))
+
+
+
+<a name="0.21.1"></a>
+## [0.21.1](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.21.0...0.21.1) (2019-04-18)
+
+
+### Bug Fixes
+
+* add support for ts files on test command when `--bundle` is provided ([#848](https://github.com/NativeScript/nativescript-dev-webpack/issues/848)) ([bd4fa9c](https://github.com/NativeScript/nativescript-dev-webpack/commit/bd4fa9c))
+* fix "ERROR in Must have a source file to refactor." error from ngCompilerPlugin on `test` command ([#859](https://github.com/NativeScript/nativescript-dev-webpack/issues/859)) ([196d977](https://github.com/NativeScript/nativescript-dev-webpack/commit/196d977))
+* typescript source maps are containing javascript code ([#857](https://github.com/NativeScript/nativescript-dev-webpack/issues/857)) ([384bee2](https://github.com/NativeScript/nativescript-dev-webpack/commit/384bee2))
+* use correct slashes on windows ([#851](https://github.com/NativeScript/nativescript-dev-webpack/issues/851)) ([9020c47](https://github.com/NativeScript/nativescript-dev-webpack/commit/9020c47))
+
+
+
+<a name="0.21.0"></a>
+# [0.21.0](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.20.3...0.21.0) (2019-03-21)
+
+
+### Bug Fixes
+
+* Emit inspector_modules.js as a separate entry point for iOS ([00ecaa0](https://github.com/NativeScript/nativescript-dev-webpack/commit/00ecaa0))
+* execute bundle-config-loader only for the entry point of the application ([#829](https://github.com/NativeScript/nativescript-dev-webpack/issues/829)) ([36824b1](https://github.com/NativeScript/nativescript-dev-webpack/commit/36824b1))
+* fix "Cannot read property 'kill' of undefined" error ([#822](https://github.com/NativeScript/nativescript-dev-webpack/issues/822)) ([8d18853](https://github.com/NativeScript/nativescript-dev-webpack/commit/8d18853))
+* stop deleting chunks with compilation errors in order to avoid outdated app state when deleting files or throwing errors ([#836](https://github.com/NativeScript/nativescript-dev-webpack/issues/836)) ([69cb061](https://github.com/NativeScript/nativescript-dev-webpack/commit/69cb061))
+* **HMR:** modulePath on Windows to apply changes in app styles at runtime ([#807](https://github.com/NativeScript/nativescript-dev-webpack/issues/807)) ([c4b4fee](https://github.com/NativeScript/nativescript-dev-webpack/commit/c4b4fee))
+* **inspector_modules:** Switch to `single` runtime chunk ([6e780af](https://github.com/NativeScript/nativescript-dev-webpack/commit/6e780af))
+
+
+### Features
+
+* Implement unit testing with bundle ([#835](https://github.com/NativeScript/nativescript-dev-webpack/issues/835)) ([7944611](https://github.com/NativeScript/nativescript-dev-webpack/commit/7944611))
+* Support Angular Ivy modules with AOT ([#828](https://github.com/NativeScript/nativescript-dev-webpack/issues/828)) ([f476c56](https://github.com/NativeScript/nativescript-dev-webpack/commit/f476c56))
+
+
+
 <a name="0.20.3"></a>
 ## [0.20.3](https://github.com/NativeScript/nativescript-dev-webpack/compare/0.20.2...0.20.3) (2019-03-14)
 
@@ -487,7 +755,7 @@ module.exports = env => {
     nsWebpack.loadAdditionalPlugins({ projectDir: projectRoot }); // <----- Add this line
 
     // ...
-``` 
+```
 
 * The `getAppPath` method expects two arguments now - `platform` and `projectRoot`. The usage inside the project's `webpack.config.js` should be changed in the following way:
 

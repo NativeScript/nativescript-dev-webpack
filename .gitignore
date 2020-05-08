@@ -2,39 +2,46 @@
 node_modules
 *.tgz
 package-lock.json
+*.js.map
 
 plugins/NativeScriptAngularCompilerPlugin.d.ts
 plugins/NativeScriptAngularCompilerPlugin.js
-plugins/NativeScriptAngularCompilerPlugin.js.map
 
 transformers/*.d.ts
 transformers/*.js
-transformers/*.js.map
 
 utils/*.d.ts
 utils/*.js
-utils/*.js.map
+
+hmr/*.d.ts
+hmr/*.js
 
 plugins/PlatformFSPlugin.d.ts
 plugins/PlatformFSPlugin.js
-plugins/PlatformFSPlugin.js.map
 
 plugins/WatchStateLoggerPlugin.d.ts
 plugins/WatchStateLoggerPlugin.js
-plugins/WatchStateLoggerPlugin.js.map
 
 host/resolver.d.ts
 host/resolver.js
-host/resolver.js.map
 
 jasmine-config/reporter.d.ts
 jasmine-config/reporter.js
-jasmine-config/reporter.js.map
+
+bundle-config-loader.d.ts
+bundle-config-loader.js
+
+xml-namespace-loader.d.ts
+xml-namespace-loader.js
+
+css2json-loader.d.ts
+css2json-loader.js
 
 **/*.spec.js*
 **/*.spec.d.ts*
 
 hooks
 .DS_Store
-
+.nyc_output
+coverage
 !projectHelpers.spec.js

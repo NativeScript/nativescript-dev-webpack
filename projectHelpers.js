@@ -3,11 +3,6 @@ const fs = require("fs");
 
 const hook = require("nativescript-hook")(__dirname);
 
-const PROJECT_DATA_GETTERS = {
-    appPath: "getAppDirectoryRelativePath",
-    appResourcesPath: "getAppResourcesRelativeDirectoryPath",
-};
-
 const isTypeScript = ({ projectDir, packageJson } = {}) => {
     packageJson = packageJson || getPackageJson(projectDir);
 
@@ -22,12 +17,23 @@ const isTypeScript = ({ projectDir, packageJson } = {}) => {
         ) || isAngular({ packageJson });
 };
 
+const isShared = ({ projectDir }) => {
+    const nsConfig = getNsConfig(projectDir);
+    return nsConfig && !!nsConfig.shared;
+}
+
 const isAngular = ({ projectDir, packageJson } = {}) => {
     packageJson = packageJson || getPackageJson(projectDir);
 
     return packageJson.dependencies && Object.keys(packageJson.dependencies)
         .some(dependency => /^@angular\b/.test(dependency));
 };
+
+const getAngularVersion = ({ projectDir, packageJson } = {}) => {
+    packageJson = packageJson || getPackageJson(projectDir);
+
+    return packageJson.dependencies && packageJson.dependencies["@angular/core"];
+}
 
 const isVue = ({ projectDir, packageJson } = {}) => {
     packageJson = packageJson || getPackageJson(projectDir);
@@ -38,7 +44,27 @@ const isVue = ({ projectDir, packageJson } = {}) => {
 
 const getPackageJson = projectDir => {
     const packageJsonPath = getPackageJsonPath(projectDir);
-    return JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+    const result = readJsonFile(packageJsonPath);
+
+    return result;
+};
+
+const getNsConfig = projectDir => {
+    const nsConfigPath = getNsConfigPath(projectDir);
+    const result = readJsonFile(nsConfigPath);
+
+    return result;
+};
+
+const readJsonFile = filePath => {
+    let result;
+    try {
+        result = JSON.parse(fs.readFileSync(filePath, "utf8"));
+    } catch (e) {
+        result = {};
+    }
+
+    return result;
 };
 
 const writePackageJson = (content, projectDir) => {
@@ -61,17 +87,10 @@ const getIndentationCharacter = (jsonContent) => {
 const getProjectDir = hook.findProjectDir;
 
 const getPackageJsonPath = projectDir => resolve(projectDir, "package.json");
+const getNsConfigPath = projectDir => resolve(projectDir, "nsconfig.json");
 
 const isAndroid = platform => /android/i.test(platform);
 const isIos = platform => /ios/i.test(platform);
-
-function getAppPathFromProjectData(data) {
-    return safeGet(data, PROJECT_DATA_GETTERS.appPath);
-}
-
-function getAppResourcesPathFromProjectData(data) {
-    return safeGet(data, PROJECT_DATA_GETTERS.appResourcesPath);
-}
 
 function safeGet(object, property, ...args) {
     if (!object) {
@@ -99,13 +118,13 @@ function convertSlashesInPath(modulePath) {
 const isWindows = process.platform.startsWith("win32");
 
 module.exports = {
-    getAppPathFromProjectData,
-    getAppResourcesPathFromProjectData,
     getPackageJson,
     getProjectDir,
     isAndroid,
     isIos,
     isAngular,
+    isShared,
+    getAngularVersion,
     isVue,
     isTypeScript,
     writePackageJson,
@@ -113,3 +132,4 @@ module.exports = {
     getIndentationCharacter,
     safeGet,
 };
+

@@ -8,12 +8,14 @@ const {
     ANDROID_PROJECT_DIR,
     ANDROID_APP_PATH,
 } = require("../../androidProjectHelpers");
+const { ensureDirectoryExistence } = require("../../lib/utils");
 const schema = require("./options.json");
 
 const SNAPSHOT_ENTRY_NAME = "snapshot-entry";
 const SNAPSHOT_ENTRY_MODULE = `${SNAPSHOT_ENTRY_NAME}.js`;
+exports.SNAPSHOT_ENTRY_NAME = SNAPSHOT_ENTRY_NAME;
 
-exports.NativeScriptSnapshotPlugin = (function() {
+exports.NativeScriptSnapshotPlugin = (function () {
     function NativeScriptSnapshotPlugin(options) {
         NativeScriptSnapshotPlugin.validateSchema(options);
 
@@ -30,14 +32,14 @@ exports.NativeScriptSnapshotPlugin = (function() {
         NativeScriptSnapshotPlugin.ensureSnapshotModuleEntry(this.options);
     }
 
-    NativeScriptSnapshotPlugin.removeLibraryTarget = function(webpackConfig) {
+    NativeScriptSnapshotPlugin.removeLibraryTarget = function (webpackConfig) {
         const { output } = webpackConfig;
         if (output) {
             output.libraryTarget = undefined;
         }
     }
 
-    NativeScriptSnapshotPlugin.ensureSnapshotModuleEntry = function(options) {
+    NativeScriptSnapshotPlugin.ensureSnapshotModuleEntry = function (options) {
         const { webpackConfig, requireModules, chunks, includeApplicationCss } = options;
         const internalRequireModules = this.getInternalRequireModules(webpackConfig.context);
 
@@ -50,12 +52,13 @@ exports.NativeScriptSnapshotPlugin = (function() {
                 options.angular ?
                     'nativescript-dev-webpack/load-application-css-angular' :
                     'nativescript-dev-webpack/load-application-css-regular'
-            }")();
+                }")();
             `;
         }
-        snapshotEntryContent += [ ...requireModules, ...internalRequireModules]
+        snapshotEntryContent += [...requireModules, ...internalRequireModules]
             .map(mod => `require('${mod}')`).join(";");
 
+        ensureDirectoryExistence(snapshotEntryPath);
         writeFileSync(snapshotEntryPath, snapshotEntryContent, { encoding: "utf8" });
 
         // add the module to the entry points to make sure it's content is evaluated
@@ -67,13 +70,12 @@ exports.NativeScriptSnapshotPlugin = (function() {
         // ensure that the runtime is installed only in the snapshotted chunk
         webpackConfig.optimization.runtimeChunk = { name: SNAPSHOT_ENTRY_NAME };
     }
-
-    NativeScriptSnapshotPlugin.getInternalRequireModules = function(webpackContext) {
+    NativeScriptSnapshotPlugin.getInternalRequireModules = function (webpackContext) {
         const packageJson = getPackageJson(webpackContext);
         return (packageJson && packageJson["android"] && packageJson["android"]["requireModules"]) || [];
     }
 
-    NativeScriptSnapshotPlugin.validateSchema = function(options) {
+    NativeScriptSnapshotPlugin.validateSchema = function (options) {
         if (!options.chunk && !options.chunks) {
             const error = NativeScriptSnapshotPlugin.extendError({ message: `No chunks specified!` });
             throw error;
@@ -87,7 +89,7 @@ exports.NativeScriptSnapshotPlugin = (function() {
                 options.chunks.push(options.chunk);
             }
         } catch (error) {
-           throw new Error(error.message);
+            throw new Error(error.message);
         }
     }
 
@@ -96,6 +98,11 @@ exports.NativeScriptSnapshotPlugin = (function() {
 
     NativeScriptSnapshotPlugin.prototype.generate = function (webpackChunks) {
         const options = this.options;
+        if (options.skipSnapshotTools) {
+            console.log(`Skipping snapshot tools.`);
+            return Promise.resolve();
+        }
+
         const inputFiles = webpackChunks.map(chunk => join(options.webpackConfig.output.path, chunk.files[0]));
         const preprocessedInputFile = join(
             this.options.projectRoot,
@@ -112,6 +119,8 @@ exports.NativeScriptSnapshotPlugin = (function() {
             useLibs: options.useLibs,
             androidNdkPath: options.androidNdkPath,
             v8Version: options.v8Version,
+            snapshotInDocker: options.snapshotInDocker,
+            skipSnapshotTools: options.skipSnapshotTools
         }).then(() => {
             // Make the original files empty
             inputFiles.forEach(inputFile =>

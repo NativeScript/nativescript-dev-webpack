@@ -1,14 +1,27 @@
 const { join, relative } = require("path");
+const { existsSync } = require("fs");
+const { convertSlashesInPath } = require("./projectHelpers");
+
+function getRunnerFullPath(projectRoot) {
+    const runnerRootPath = join(projectRoot, "node_modules", "nativescript-unit-test-runner");
+    const runnerAppPath = join(runnerRootPath, "app");
+    const result = existsSync(runnerAppPath) ? runnerAppPath : runnerRootPath;
+
+    return result;
+}
 
 module.exports = function ({ appFullPath, projectRoot, angular, rootPagesRegExp }) {
     // TODO: Consider to use the files property from karma.conf.js
-    const testFilesRegExp = /tests\/.*\.js/;
-    const runnerFullPath = join(projectRoot, "node_modules", "nativescript-unit-test-runner");
-    const runnerRelativePath = relative(appFullPath, runnerFullPath);
+    const testFilesRegExp = /tests\/.*\.(ts|js)/;
+    const runnerFullPath = getRunnerFullPath(projectRoot);
+    const runnerRelativePath = convertSlashesInPath(relative(appFullPath, runnerFullPath));
+    const appCssFilePath = convertSlashesInPath(join(runnerRelativePath, "app.css"));
     let source = `
         require("tns-core-modules/bundle-entry-points");
         const runnerContext = require.context("${runnerRelativePath}", true, ${rootPagesRegExp});
         global.registerWebpackModules(runnerContext);
+        global.registerModule("${appCssFilePath}", () => require("${appCssFilePath}"));
+        require("tns-core-modules/application").setCssFileName("${appCssFilePath}");
     `;
 
     if (angular) {
@@ -24,7 +37,7 @@ module.exports = function ({ appFullPath, projectRoot, angular, rootPagesRegExp 
         `;
     }
 
-    const runnerEntryPointPath = join(runnerRelativePath, "bundle-app.js");
+    const runnerEntryPointPath = convertSlashesInPath(join(runnerRelativePath, "bundle-app.js"));
     source += `
         require("${runnerEntryPointPath}");
     `;

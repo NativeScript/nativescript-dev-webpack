@@ -10,17 +10,6 @@ Some dependencies have already been added. \
 If you want to force update them, please run "node_modules/.bin/update-ns-webpack".
 `;
 
-const USAGE_MESSAGE = `
-NativeScript Webpack plugin was successfully added.
-You can now bundle your project by passing --bundle flag to NativeScript CLI commands:
-    - tns build android --bundle
-    - tns build ios --bundle
-    - tns run android --bundle
-    - tns run ios --bundle
-You can also pass the "--env.uglify" flag to use UglifyJS for minification.
-For more information check out https://docs.nativescript.org/tooling/bundling-with-webpack#bundling.
-`;
-
 function addProjectDeps(packageJson, force = false) {
     packageJson.devDependencies = packageJson.devDependencies || {};
     const postinstallOptions = {
@@ -28,7 +17,7 @@ function addProjectDeps(packageJson, force = false) {
     };
 
     const depsToAdd = getRequiredDeps(packageJson);
-    Object.keys(depsToAdd).forEach(function(name) {
+    Object.keys(depsToAdd).forEach(function (name) {
         const version = depsToAdd[name];
         Object.assign(postinstallOptions,
             addDependency(postinstallOptions.deps, name, version, force));
@@ -54,7 +43,7 @@ function removeObsoleteDeps(packageJson) {
         "raw-loader",
         "css-loader",
         "nativescript-worker-loader",
-        "uglifyjs-webpack-plugin",
+        "terser-webpack-plugin",
         "@angular-devkit/core",
         "resolve-url-loader",
         "sass-loader",
@@ -79,16 +68,16 @@ function addDependency(deps, name, version, force) {
 }
 
 function getRequiredDeps(packageJson) {
-    if (!isAngular({packageJson})) {
+    if (!isAngular({ packageJson })) {
         return false;
     }
 
     const deps = {
-       "@angular/compiler-cli": "~7.2.0",
+        "@angular/compiler-cli": "~8.2.0",
     };
 
     if (!dependsOn(packageJson, "@angular-devkit/build-angular")) {
-        deps["@ngtools/webpack"] = "~7.2.0";
+        deps["@ngtools/webpack"] = "8.2.0";
     }
 
     return deps;
@@ -105,8 +94,6 @@ function dependsOn(packageJson, package) {
 }
 
 function showHelperMessages({ newDepsAdded, hasOldDeps }) {
-    console.info(USAGE_MESSAGE);
-
     if (hasOldDeps) {
         console.info(ALREADY_ADDED_MESSAGE);
     }

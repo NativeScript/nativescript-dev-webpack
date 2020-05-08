@@ -1,7 +1,7 @@
-const frame = require("ui/frame");
+const frame = require("tns-core-modules/ui/frame");
 
-const superProto = android.support.v7.app.AppCompatActivity.prototype;
-android.support.v7.app.AppCompatActivity.extend("org.myApp.MainActivity", {
+const superProto = androidx.appcompat.app.AppCompatActivity.prototype;
+androidx.appcompat.app.AppCompatActivity.extend("org.myApp.MainActivity", {
     onCreate: function(savedInstanceState) {
         // Set isNativeScriptActivity in onCreate.
         // The JS constructor might not be called because the activity is created from Android.
@@ -10,7 +10,7 @@ android.support.v7.app.AppCompatActivity.extend("org.myApp.MainActivity", {
         if(!this._callbacks) {
             frame.setActivityCallbacks(this);
         }
-        this._callbacks.onCreate(this, savedInstanceState, superProto.onCreate);
+        this._callbacks.onCreate(this, savedInstanceState, this.getIntent(), superProto.onCreate);
     },
     onSaveInstanceState: function(outState) {
         this._callbacks.onSaveInstanceState(this, outState, superProto.onSaveInstanceState);

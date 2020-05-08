@@ -35,5 +35,26 @@ Migration steps:
 [Provide a migration path for existing applications.]
 -->
 
+<!-- 
+E2E TESTS
+
+Additional e2e tests can be executed by comment including trigger phrase.
+
+Phrases:
+`test cli-smoke`: Smoke tests for `tns run`.
+`test cli-create`: Tests for `tns create` commans.
+`test cli-plugin`: Tests for `tns plugin *` commands.
+`test cli-preview`: Tests for `tns preview` command.
+`test cli-regression`: Tests for backward compatibility with old projects.
+`test cli-resources`: Test for resource generate.
+`test cli-tests`: Tests for `tns test` command.
+`test cli-vue`: Smoke tests for VueJS projects based on {N} cli.
+`test cli-templates`: Tests for `tns run` on {N} templates.
+`test cli-misc`: 
+`test cli-build`: Test for `tns build` on emulators/simulators
+`test cli-device`: Test for `tns run` on real devices
+`test cli-debug`: Tests for `tns debug`
+`test cli-run`: Tests for `tns run`
+-->
 
 [CLA]: http://www.nativescript.org/cla

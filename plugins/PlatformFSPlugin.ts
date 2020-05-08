@@ -8,7 +8,7 @@ export interface PlatformFSPluginOptions {
     platform?: string;
 
     /**
-     * A list of all platforms. By default it is `["ios", "android"]`.
+     * A list of all platforms. By default it is `["ios", "android", "desktop"]`.
      */
     platforms?: string[];
 
@@ -18,6 +18,8 @@ export interface PlatformFSPluginOptions {
     ignore?: string[];
 }
 
+const internalPlatforms = ["ios", "android"];
+
 export class PlatformFSPlugin {
     protected readonly platform: string;
     protected readonly platforms: ReadonlyArray<string>;
@@ -26,18 +28,18 @@ export class PlatformFSPlugin {
 
     constructor({ platform, platforms, ignore }: PlatformFSPluginOptions) {
         this.platform = platform || "";
-        this.platforms = platforms || ["ios", "android"];
+        this.platforms = platforms || internalPlatforms;
         this.ignore = ignore || [];
     }
 
     public apply(compiler) {
         this.context = compiler.context;
         compiler.inputFileSystem = mapFileSystem({
-            fs: compiler.inputFileSystem,
             platform: this.platform,
             platforms: this.platforms,
             ignore: this.ignore,
-            context: this.context
+            context: this.context,
+            compiler
         });
     }
 }
@@ -46,16 +48,19 @@ export interface MapFileSystemArgs {
     /**
      * This is the underlying webpack compiler.inputFileSystem, its interface is similar to Node's fs.
      */
-    readonly fs: any;
     readonly context: string;
     readonly platform: string;
     readonly platforms: ReadonlyArray<string>;
     readonly ignore: ReadonlyArray<string>;
+    readonly compiler: any;
 }
 
 export function mapFileSystem(args: MapFileSystemArgs): any {
-    let { fs, platform, platforms, ignore, context } = args;
+    let { platform, platforms, ignore, context, compiler } = args;
+    const fs = compiler.inputFileSystem;
     ignore = args.ignore || [];
+
+    const isExternal = internalPlatforms.indexOf(platform) === -1;
 
     const minimatchFileFilters = ignore.map(pattern => {
         const minimatchFilter = minimatch.filter(pattern);
@@ -79,7 +84,7 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
             return join(dir, name.substr(0, name.length - currentPlatformExt.length) + ext);
         }
         return file;
-    }
+    };
 
     const isNotIgnored = file => !isIgnored(file);
 
@@ -94,7 +99,28 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
 
     function platformSpecificFile(file: string): string {
         const {dir, name, ext} = parseFile(file);
-        const platformFilePath = join(dir, `${name}.${platform}${ext}`);
+        let platformFilePath = join(dir, `${name}.${platform}${ext}`);
+
+        if (isExternal && dir.indexOf("/@nativescript/core/") !== -1) {
+            let replacedPath;
+            try {
+                replacedPath = dir.replace(
+                    /node_modules(\/[^/]+)?\/@nativescript\/core/,
+                    `node_modules/nativescript-platform-${platform}`
+                );
+
+                platformFilePath = require.resolve(join(replacedPath, `${name}.${platform}${ext}`));
+            } catch (e) {
+                if (replacedPath) {
+                    if (ext === ".d") {
+                        platformFilePath = undefined;
+                    } else {
+                        platformFilePath = join(replacedPath, `${name}${ext}`);
+                    }
+                }
+            }
+        }
+
         return platformFilePath;
     }
 
@@ -122,7 +148,8 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
     }
 
     const platformSuffix = "." + platform + ".";
-    mappedFS.watch = function(
+    const baseWatch = compiler.watchFileSystem.watch;
+    compiler.watchFileSystem.watch = function(
         files,
         dirs,
         missing,
@@ -135,11 +162,15 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
             missingModified,
             fileTimestamps,
             contextTimestamps
+        ) => void,
+        callbackUndelayed: (
+            filename,
+            timestamp
         ) => void) {
 
         const mappedFiles = listWithPlatformSpecificFiles(files);
 
-        const callbackCalled = function(
+        const newCallback = function(
                 err,
                 filesModified,
                 contextModified,
@@ -148,13 +179,17 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
                 contextTimestamps) {
 
             const mappedFilesModified = filterIgnoredFilesAlienFilesAndMap(filesModified);
-
             const mappedTimestamps = new Map();
-            for(const file in fileTimestamps) {
-                const timestamp = fileTimestamps[file];
+            const fileTimestampsAsArray = Array.from(fileTimestamps);
+
+            for (const entry of fileTimestampsAsArray) {
+                const file = entry[0];
+                const timestamp = entry[1];
                 mappedTimestamps.set(file, timestamp);
+
                 const platformSuffixIndex = file.lastIndexOf(platformSuffix);
                 if (platformSuffixIndex != -1) {
+                    // file name without platform suffix
                     const mappedFile = file.substr(0, platformSuffixIndex) + file.substr(platformSuffixIndex + platformSuffix.length - 1);
                     if (!(mappedFile in fileTimestamps)) {
                         mappedTimestamps.set(mappedFile, timestamp);
@@ -165,7 +200,12 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
             callback.call(this, err, mappedFilesModified, contextModified, missingModified, mappedTimestamps, contextTimestamps);
         }
 
-        fs.watch(mappedFiles, dirs, missing, startTime, watchOptions, callbackCalled);
+        const newCallbackUndelayed = function(filename, timestamp) {
+            compiler.watchFileSystem.inputFileSystem.purge(filename);
+            callbackUndelayed(filename, timestamp);
+        };
+
+        baseWatch.apply(compiler.watchFileSystem.watch, [mappedFiles, dirs, missing, startTime, watchOptions, newCallback, newCallbackUndelayed]);
     }
 
     /**

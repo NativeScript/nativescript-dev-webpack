@@ -1,38 +1,28 @@
-import { AppiumDriver, createDriver, SearchOptions } from "nativescript-dev-appium";
+import { AppiumDriver, createDriver, SearchOptions, nsCapabilities } from "nativescript-dev-appium";
 import { assert } from "chai";
 
 describe("sample scenario", () => {
     let driver: AppiumDriver;
 
-    before(async () => {
+    before(async function () {
+        nsCapabilities.testReporter.context = this;
         driver = await createDriver();
-    });
-
-    beforeEach(async function () {
-        try {
-            const lblPlatform = await getPlatformLabel();
-        } catch (err) {
-            console.log("Navigating to main page ...");
-            await driver.navBack();
-        }
     });
 
     afterEach(async function () {
         if (this.currentTest.state === "failed") {
-            await driver.logPageSource(this.currentTest.title);
-            await driver.logScreenshot(this.currentTest.title);
+            await driver.logTestArtifacts(this.currentTest.title);
         }
     });
 
-    after(async () => {
+    after(async function () {
         await driver.quit();
         console.log("Quit driver!");
     });
 
-    it("should the button on second page work", async () => {
+    it("should the button on second page work", async function () {
         const btnNav = await driver.findElementByText("btnNav");
         await btnNav.tap();
-
         const secondPage = await driver.findElementByText("Second Page");
         const btnZero = await driver.findElementByText("0");
         await btnZero.tap();
@@ -45,7 +35,7 @@ describe("sample scenario", () => {
         await driver.navBack();
     });
 
-    it("should the button on main page work", async () => {
+    it("should the button on main page work", async function () {
         const btnTap = await driver.findElementByText("TAP");
         await btnTap.tap();
 
@@ -63,10 +53,10 @@ describe("sample scenario", () => {
     for (let styleType in styleTypes) {
         it(`should find an element with ${styleType} style applied`, async function () {
             const element = await driver.findElementByText(styleTypes[styleType]);
+            driver.imageHelper.options.keepOriginalImageSize = false;
+            driver.imageHelper.options.isDeviceSpecific = false;
             const result = await driver.compareElement(element, "style");
             assert.isTrue(result);
         });
     }
-
-    const getPlatformLabel = async () => { return driver.isAndroid ? await driver.findElementByText("android") : await driver.findElementByText("ios"); }
 });
