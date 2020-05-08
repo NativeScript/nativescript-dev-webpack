@@ -54,8 +54,8 @@ exports.getAppPath = (platform, projectDir) => {
 };
 
 exports.getNSConfigPaths = (projectDir, defaultAppPath, defaultAppResourcePath) => {
-    let appPath = defaultAppPath | "app";
-    let appResourcesPath = defaultAppResourcePath | "app/App_Resources";
+    let appPath = defaultAppPath || "app";
+    let appResourcesPath = defaultAppResourcePath || "app/App_Resources";
     const nsConfigPath = path.join(projectDir, 'nsconfig.json');
     if (existsSync(nsConfigPath)) {
         const nsConfig = readFileSync(nsConfigPath).toJSON();
