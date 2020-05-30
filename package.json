@@ -68,7 +68,7 @@
     "sax": "^1.2.4",
     "schema-utils": "0.4.5",
     "semver": "^6.0.0",
-    "shelljs": "0.6.0",
+    "shelljs": "~0.8.4",
     "tapable": "1.0.0",
     "terser": "3.17.0",
     "terser-webpack-plugin": "1.2.3",
