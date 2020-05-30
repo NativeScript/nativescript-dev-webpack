@@ -1,5 +1,5 @@
 const path = require("path");
-const { existsSync } = require("fs");
+const { existsSync, readFileSync } = require("fs");
 const { ANDROID_APP_PATH } = require("./androidProjectHelpers");
 const {
     getPackageJson,
@@ -108,6 +108,22 @@ exports.getAppPath = (platform, projectDir) => {
     } else {
         throw new Error(`Invalid platform: ${platform}`);
     }
+};
+
+exports.getNSConfigPaths = (projectDir, defaultAppPath, defaultAppResourcePath) => {
+    let appPath = defaultAppPath || "app";
+    let appResourcesPath = defaultAppResourcePath || "app/App_Resources";
+    const nsConfigPath = path.join(projectDir, 'nsconfig.json');
+    if (existsSync(nsConfigPath)) {
+        const nsConfig = readFileSync(nsConfigPath).toJSON();
+        if (nsConfig.appPath) {
+            appPath = nsConfig.appPath;
+        }
+        if (nsConfig.appResourcesPath) {
+            appResourcesPath = nsConfig.appResourcesPath;
+        }
+    }
+    return { appPath, appResourcesPath };
 };
 
 /**

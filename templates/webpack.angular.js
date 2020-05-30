@@ -35,12 +35,14 @@ module.exports = env => {
     // Default destination inside platforms/<platform>/...
     const dist = resolve(projectRoot, nsWebpack.getAppPath(platform, projectRoot));
 
+
     const {
         // The 'appPath' and 'appResourcesPath' values are fetched from
-        // the nsconfig.json configuration file.
-        appPath = "src",
-        appResourcesPath = "App_Resources",
-
+        // the nsconfig.json configuration file
+        appPath,
+        appResourcesPath
+    } = nsWebpack.getNSConfigPaths(projectRoot, "src")
+    const {
         // You can provide the following flags when running 'tns run android|ios'
         aot, // --env.aot
         snapshot, // --env.snapshot,
