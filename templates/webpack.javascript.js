@@ -3,7 +3,7 @@ const { join, relative, resolve, sep } = require("path");
 const webpack = require("webpack");
 const nsWebpack = require("nativescript-dev-webpack");
 const nativescriptTarget = require("nativescript-dev-webpack/nativescript-target");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
@@ -68,6 +68,8 @@ module.exports = env => {
         alias["tns-core-modules"] = coreModulesPackageName;
     }
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
+
+    const copyIgnore = { ignore: [`${relative(appPath, appResourcesFullPath)}/**`] };
 
     const entryModule = nsWebpack.getEntryModule(appFullPath, platform);
     const entryPath = `.${sep}${entryModule}.js`;
@@ -228,13 +230,19 @@ module.exports = env => {
                 "process": "global.process",
             }),
             // Remove all files from the out dir.
-            new CleanWebpackPlugin(itemsToClean, { verbose: !!verbose }),
-            // Copy assets to out dir. Add your own globs as needed.
-            new CopyWebpackPlugin([
-                { from: { glob: "fonts/**" } },
-                { from: { glob: "**/*.jpg" } },
-                { from: { glob: "**/*.png" } },
-            ], { ignore: [`${relative(appPath, appResourcesFullPath)}/**`] }),
+            new CleanWebpackPlugin({ 
+              cleanOnceBeforeBuildPatterns: itemsToClean,
+              verbose: !!verbose
+            }),
+            // Copy assets
+            new CopyWebpackPlugin({
+              patterns: [
+                { from: 'assets/**', globOptions: { dot: false, ...copyIgnore } },
+                { from: 'fonts/**', globOptions: { dot: false, ...copyIgnore } },
+                { from: '**/*.jpg', globOptions: { dot: false, ...copyIgnore } },
+                { from: '**/*.png', globOptions: { dot: false, ...copyIgnore } },
+              ],
+            }),
             new nsWebpack.GenerateNativeScriptEntryPointsPlugin("bundle"),
 
             // For instructions on how to set up workers with webpack

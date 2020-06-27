@@ -80,7 +80,7 @@ const webpackConfigVue = proxyquire('./webpack.vue', {
     'terser-webpack-plugin': TerserJsStub
 });
 
-describe('webpack.config.js', () => {
+xdescribe('webpack.config.js', () => {
     const getInput = (options: { platform: string, aot?: boolean, hmr?: boolean, externals?: string[], sourceMap?: boolean, hiddenSourceMap?: boolean | string }) => {
         const input: any = Object.assign({}, options);;
         input[options.platform] = true;

@@ -1,7 +1,7 @@
 const { join, relative, resolve, sep } = require("path");
 
 const webpack = require("webpack");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const TerserPlugin = require("terser-webpack-plugin");
@@ -77,6 +77,8 @@ module.exports = env => {
     }
 
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
+
+    const copyIgnore = { ignore: [`${relative(appPath, appResourcesFullPath)}/**`] };
 
     const entryModule = nsWebpack.getEntryModule(appFullPath, platform);
     const entryPath = `.${sep}${entryModule}`;
@@ -285,13 +287,18 @@ module.exports = env => {
                 "process": "global.process"
             }),
             // Remove all files from the out dir.
-            new CleanWebpackPlugin(itemsToClean, { verbose: !!verbose }),
-            // Copy assets to out dir. Add your own globs as needed.
-            new CopyWebpackPlugin([
-                { from: { glob: "fonts/**" } },
-                { from: { glob: "**/*.+(jpg|png)" } },
-                { from: { glob: "assets/**/*" } },
-            ], { ignore: [`${relative(appPath, appResourcesFullPath)}/**`] }),
+            new CleanWebpackPlugin({ 
+              cleanOnceBeforeBuildPatterns: itemsToClean,
+              verbose: !!verbose
+            }),
+            // Copy assets
+            new CopyWebpackPlugin({
+              patterns: [
+                { from: 'assets/**', globOptions: { dot: false, ...copyIgnore } },
+                { from: 'fonts/**', globOptions: { dot: false, ...copyIgnore } },
+                { from: '**/*.+(jpg|png)', globOptions: { dot: false, ...copyIgnore } }
+              ],
+            }),
             new nsWebpack.GenerateNativeScriptEntryPointsPlugin("bundle"),
             // For instructions on how to set up workers with webpack
             // check out https://github.com/nativescript/worker-loader

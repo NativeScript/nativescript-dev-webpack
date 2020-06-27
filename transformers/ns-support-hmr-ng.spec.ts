@@ -1,5 +1,5 @@
 import { tags } from "@angular-devkit/core";
-import { createTypescriptContext, transformTypescript } from "@ngtools/webpack/src/transformers";
+import { createTypescriptContext, transformTypescript } from "@ngtools/webpack/src/transformers/spec_helpers";
 import { nsReplaceBootstrap } from './ns-replace-bootstrap';
 import { nsSupportHmrNg, getHmrOptionsCode, getAcceptMainModuleCode, GeneratedDynamicAppOptions } from "./ns-support-hmr-ng";
 import { AngularCompilerPlugin } from "@ngtools/webpack";

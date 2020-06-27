@@ -64,7 +64,7 @@ export function mapFileSystem(args: MapFileSystemArgs): any {
 
     const minimatchFileFilters = ignore.map(pattern => {
         const minimatchFilter = minimatch.filter(pattern);
-        return file => minimatchFilter(relative(context, file));
+        return file => minimatchFilter(relative(context, file), 0, []);
     });
 
     const isIgnored = file => minimatchFileFilters.some(filter => filter(file));

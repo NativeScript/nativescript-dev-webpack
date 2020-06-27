@@ -20,10 +20,10 @@ const loader: loader.Loader = function (source, map) {
 
     if (!registerModules) {
         registerModules = defaultMatch;
-        for (const key in ignoredFiles) {
+        for (const key in <any>ignoredFiles) {
             registerModules = `(?<!${escapeRegExp(ignoredFiles[key])})` + registerModules;
         }
-        registerModules = new RegExp(registerModules);
+        registerModules = <any>new RegExp(registerModules);
     }
 
     if (unitTesting) {
