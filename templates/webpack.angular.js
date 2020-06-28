@@ -96,8 +96,8 @@ module.exports = env => {
 
   const copyIgnore = { ignore: [`${relative(appPath, appResourcesFullPath)}/**`] };
   const copyTargets = [
-    { from: 'assets/**', globOptions: { dot: false, ...copyIgnore } },
-    { from: 'fonts/**', globOptions: { dot: false, ...copyIgnore } },
+    { from: 'assets/**', noErrorOnMissing: true, globOptions: { dot: false, ...copyIgnore } },
+    { from: 'fonts/**', noErrorOnMissing: true, globOptions: { dot: false, ...copyIgnore } },
   ];
 
   if (!production) {
