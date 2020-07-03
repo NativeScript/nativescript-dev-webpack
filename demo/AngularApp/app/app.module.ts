@@ -1,5 +1,5 @@
 import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
-import { NativeScriptModule } from "nativescript-angular/nativescript.module";
+import { NativeScriptModule } from "@nativescript/angular";
 import { AppRoutingModule } from "./app.routing";
 import { AppComponent } from "./app.component";
 
@@ -10,10 +10,10 @@ import { ItemDetailComponent } from "./item/item-detail.component";
 // import { PlayfulSpirit } from "./directive";
 
 // Uncomment and add to NgModule imports if you need to use two-way binding
-// import { NativeScriptFormsModule } from "nativescript-angular/forms";
+// import { NativeScriptFormsModule } from "@nativescript/angular";
 
 // Uncomment and add to NgModule imports  if you need to use the HTTP wrapper
-// import { NativeScriptHttpModule } from "nativescript-angular/http";
+// import { NativeScriptHttpModule } from "@nativescript/angular";
 
 @NgModule({
     bootstrap: [

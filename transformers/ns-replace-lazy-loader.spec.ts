@@ -12,7 +12,7 @@ xdescribe("@ngtools/webpack transformers", () => {
                 name: "should add providers and NgModuleFactoryLoader when providers is missing",
                 rawAppModule: `
                     import { NgModule } from "@angular/core";
-                    import { NativeScriptModule } from "nativescript-angular/nativescript.module";
+                    import { NativeScriptModule } from "@nativescript/angular";
                     import { AppComponent } from "./app.component";
 
                     @NgModule({
@@ -30,7 +30,7 @@ xdescribe("@ngtools/webpack transformers", () => {
               `,
                 transformedAppModule: `
                     import * as tslib_1 from "tslib"; import { NgModule } from "@angular/core";
-                    import { NativeScriptModule } from "nativescript-angular/nativescript.module";
+                    import { NativeScriptModule } from "@nativescript/angular";
                     import { AppComponent } from "./app.component";
                     ${NgLazyLoaderCode}
                     let AppModule = class AppModule { };
@@ -47,7 +47,7 @@ xdescribe("@ngtools/webpack transformers", () => {
                 name: "should add providers and NgModuleFactoryLoader when providers is missing and decomposition is used",
                 rawAppModule: `
                     import { NgModule } from "@angular/core";
-                    import { NativeScriptModule } from "nativescript-angular/nativescript.module";
+                    import { NativeScriptModule } from "@nativescript/angular";
                     import { AppComponent } from "./app.component";
 
                     const declarationsArray = [AppComponent];
@@ -66,7 +66,7 @@ xdescribe("@ngtools/webpack transformers", () => {
               `,
                 transformedAppModule: `
                     import * as tslib_1 from "tslib"; import { NgModule } from "@angular/core";
-                    import { NativeScriptModule } from "nativescript-angular/nativescript.module";
+                    import { NativeScriptModule } from "@nativescript/angular";
                     import { AppComponent } from "./app.component";
                     ${NgLazyLoaderCode}
                     const declarationsArray = [AppComponent];
@@ -84,7 +84,7 @@ xdescribe("@ngtools/webpack transformers", () => {
                 name: "should add NgModuleFactoryLoader when the providers array is empty",
                 rawAppModule: `
                     import { NgModule } from "@angular/core";
-                    import { NativeScriptModule } from "nativescript-angular/nativescript.module";
+                    import { NativeScriptModule } from "@nativescript/angular";
                     import { AppComponent } from "./app.component";
 
                     @NgModule({
@@ -103,7 +103,7 @@ xdescribe("@ngtools/webpack transformers", () => {
               `,
                 transformedAppModule: `
                     import * as tslib_1 from "tslib"; import { NgModule } from "@angular/core";
-                    import { NativeScriptModule } from "nativescript-angular/nativescript.module";
+                    import { NativeScriptModule } from "@nativescript/angular";
                     import { AppComponent } from "./app.component";
                     ${NgLazyLoaderCode}
                     let AppModule = class AppModule { };
@@ -120,7 +120,7 @@ xdescribe("@ngtools/webpack transformers", () => {
                 name: "should add NgModuleFactoryLoader at the end when the providers array is containing other providers",
                 rawAppModule: `
                     import { NgModule } from "@angular/core";
-                    import { NativeScriptModule } from "nativescript-angular/nativescript.module";
+                    import { NativeScriptModule } from "@nativescript/angular";
                     import { AppComponent } from "./app.component";
                     @NgModule({
                         bootstrap: [
@@ -138,7 +138,7 @@ xdescribe("@ngtools/webpack transformers", () => {
               `,
                 transformedAppModule: `
                     import * as tslib_1 from "tslib"; import { NgModule } from "@angular/core";
-                    import { NativeScriptModule } from "nativescript-angular/nativescript.module";
+                    import { NativeScriptModule } from "@nativescript/angular";
                     import { AppComponent } from "./app.component";
                     ${NgLazyLoaderCode}
                     let AppModule = class AppModule { };
@@ -155,7 +155,7 @@ xdescribe("@ngtools/webpack transformers", () => {
                 name: "should NOT add NgModuleFactoryLoader when it's already defined",
                 rawAppModule: `
                     import { NgModule } from "@angular/core";
-                    import { NativeScriptModule } from "nativescript-angular/nativescript.module";
+                    import { NativeScriptModule } from "@nativescript/angular";
                     import { AppComponent } from "./app.component";
 
                     @NgModule({
@@ -174,7 +174,7 @@ xdescribe("@ngtools/webpack transformers", () => {
               `,
                 transformedAppModule: `
                     import * as tslib_1 from "tslib"; import { NgModule } from "@angular/core";
-                    import { NativeScriptModule } from "nativescript-angular/nativescript.module";
+                    import { NativeScriptModule } from "@nativescript/angular";
                     import { AppComponent } from "./app.component";
                     let AppModule = class AppModule { };
                     AppModule = tslib_1.__decorate([ NgModule({

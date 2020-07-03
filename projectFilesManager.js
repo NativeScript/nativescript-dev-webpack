@@ -33,7 +33,7 @@ function compareProjectFiles(projectDir) {
             const currentTemplate = fs.readFileSync(currentTemplatePath).toString();
             const newTemplate = fs.readFileSync(newTemplatePath).toString();
             if (newTemplate.replace(/\s/g, '') !== currentTemplate.replace(/\s/g, '')) {
-                const message = `The current project contains a ${path.basename(currentTemplatePath)} file located at ${currentTemplatePath} that differs from the one in the new version of the nativescript-dev-webpack plugin located at ${newTemplatePath}. Some of the plugin features may not work as expected until you manually update the ${path.basename(currentTemplatePath)} file or automatically update it using "./node_modules/.bin/update-ns-webpack --configs" command.`;
+                const message = `The current project contains a ${path.basename(currentTemplatePath)} file located at ${currentTemplatePath} that differs from the one in the new version of the @nativescript/webpack plugin located at ${newTemplatePath}. Some of the plugin features may not work as expected until you manually update the ${path.basename(currentTemplatePath)} file or automatically update it using "./node_modules/.bin/update-ns-webpack --configs" command.`;
                 console.info(`\x1B[33;1m${message}\x1B[0m`);
             }
         }

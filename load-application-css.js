@@ -1,6 +1,6 @@
 module.exports = function (loadModuleFn) {
-    const application = require("tns-core-modules/application");
-    require("tns-core-modules/ui/styling/style-scope");
+    const application = require("@nativescript/core/application");
+    require("@nativescript/core/ui/styling/style-scope");
 
     loadModuleFn();
 

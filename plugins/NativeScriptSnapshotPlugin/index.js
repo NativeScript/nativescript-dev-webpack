@@ -50,8 +50,8 @@ exports.NativeScriptSnapshotPlugin = (function () {
             snapshotEntryContent += `
             require("${
                 options.angular ?
-                    'nativescript-dev-webpack/load-application-css-angular' :
-                    'nativescript-dev-webpack/load-application-css-regular'
+                    '@nativescript/webpack/load-application-css-angular' :
+                    '@nativescript/webpack/load-application-css-regular'
                 }")();
             `;
         }

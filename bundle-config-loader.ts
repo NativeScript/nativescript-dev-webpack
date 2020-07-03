@@ -34,7 +34,7 @@ const loader: loader.Loader = function (source, map) {
 
     const hmr = `
         if (module.hot) {
-            const hmrUpdate = require("nativescript-dev-webpack/hmr").hmrUpdate;
+            const hmrUpdate = require("@nativescript/webpack/hmr").hmrUpdate;
             global.__coreModulesLiveSync = global.__onLiveSync;
 
             global.__onLiveSync = function () {
@@ -54,7 +54,7 @@ const loader: loader.Loader = function (source, map) {
         }
         `;
 
-    let sourceModule = "tns-core-modules";
+    let sourceModule = "@nativescript/core";
 
     if (platform && platform !== "ios" && platform !== "android") {
         sourceModule = `nativescript-platform-${platform}`;
@@ -88,8 +88,8 @@ const loader: loader.Loader = function (source, map) {
         source = `
             require("${
             angular ?
-                'nativescript-dev-webpack/load-application-css-angular' :
-                'nativescript-dev-webpack/load-application-css-regular'
+                '@nativescript/webpack/load-application-css-angular' :
+                '@nativescript/webpack/load-application-css-regular'
             }")();
             ${source}
         `;

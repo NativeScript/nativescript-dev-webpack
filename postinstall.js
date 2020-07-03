@@ -1,6 +1,6 @@
 "use strict";
 
-const hook = require("nativescript-hook")(__dirname);
+const hook = require("@nativescript/hook")(__dirname);
 
 const { compareProjectFiles } = require("./projectFilesManager");
 const { getProjectDir } = require("./projectHelpers");
@@ -9,7 +9,7 @@ const fs = require("fs");
 
 const projectDir = getProjectDir();
 
-// This method is introduced as in version 1.0.0 of nativescript-dev-webpack (compatible and required for NativeScript 6.0.0)
+// This method is introduced as in version 1.0.0 of @nativescript/webpack (compatible and required for NativeScript 6.0.0)
 // we have changed a lot of hooks and old ones are incompatible. This should be automatically handled with preuninstall script of the old version.
 // However, old versions of nativescript-dev-webpack do not have such logic, so remove them manually on postinstall of the current version.
 // This logic can be removed later, once most of the projects are migrated to 1.0.0 of the package or later.
@@ -49,7 +49,7 @@ if (projectDir) {
     const installer = require("./installer");
     installer.install();
 } else {
-    // We are installing dev dependencies for the nativescript-dev-webpack plugin.
-    console.log("Skipping postinstall artifacts! We assumed the nativescript-dev-webpack is installing devDependencies");
+    // We are installing dev dependencies for the @nativescript/webpack plugin.
+    console.log("Skipping postinstall artifacts! We assumed the @nativescript/webpack is installing devDependencies");
 }
 

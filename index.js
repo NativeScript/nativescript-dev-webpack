@@ -180,7 +180,7 @@ exports.processAppComponents = (appComponents, platform) => {
 exports.getUserDefinedEntries = (entries, platform) => {
     const userDefinedEntries = [];
     for (const entry in entries) {
-        if (entry !== "bundle" && entry !== "tns_modules/tns-core-modules/inspector_modules") {
+        if (entry !== "bundle" && entry !== "tns_modules/@nativescript/core/inspector_modules") {
             userDefinedEntries.push(entries[entry].replace(`.${platform}`, ""));
         }
     }
