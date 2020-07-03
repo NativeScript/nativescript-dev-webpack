@@ -1,5 +1,5 @@
 import * as hot from "../hot";
-import { knownFolders, path, File } from "tns-core-modules/file-system";
+import { knownFolders, path, File } from "@nativescript/core";
 
 declare const __webpack_require__: any;
 

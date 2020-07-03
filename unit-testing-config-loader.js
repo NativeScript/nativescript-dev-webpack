@@ -17,11 +17,11 @@ module.exports = function ({ appFullPath, projectRoot, angular, rootPagesRegExp 
     const runnerRelativePath = convertSlashesInPath(relative(appFullPath, runnerFullPath));
     const appCssFilePath = convertSlashesInPath(join(runnerRelativePath, "app.css"));
     let source = `
-        require("tns-core-modules/bundle-entry-points");
+        require("@nativescript/core/bundle-entry-points");
         const runnerContext = require.context("${runnerRelativePath}", true, ${rootPagesRegExp});
         global.registerWebpackModules(runnerContext);
         global.registerModule("${appCssFilePath}", () => require("${appCssFilePath}"));
-        require("tns-core-modules/application").setCssFileName("${appCssFilePath}");
+        require("@nativescript/core/application").setCssFileName("${appCssFilePath}");
     `;
 
     if (angular) {

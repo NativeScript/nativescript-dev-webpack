@@ -1,4 +1,4 @@
-var frameModule = require("tns-core-modules/ui/frame");
+var frameModule = require("@nativescript/core/ui/frame");
 var createViewModel = require("./main-view-model").createViewModel;
 
 function onNavigatingTo(args) {

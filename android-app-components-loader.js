@@ -6,7 +6,7 @@ module.exports = function (source, map) {
     const imports = modules.map(convertSlashesInPath)
         .map(m => `require("${m}");`).join("\n");
     const augmentedSource = `
-        let applicationCheckPlatform = require("tns-core-modules/application");
+        let applicationCheckPlatform = require("@nativescript/core/application");
         if (applicationCheckPlatform.android && !global["__snapshot"]) {
             ${imports}
         }

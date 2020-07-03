@@ -4,7 +4,7 @@ import { getOptions, urlToRequest } from "loader-utils";
 
 const betweenQuotesPattern = /('|")(.*?)\1/;
 const unpackUrlPattern = /url\(([^\)]+)\)/;
-const inlineLoader = "!nativescript-dev-webpack/css2json-loader?useForImports!"
+const inlineLoader = "!@nativescript/webpack/css2json-loader?useForImports!"
 
 const loader: loader.Loader = function (content: string, map) {
     const options = getOptions(this) || {};
@@ -26,7 +26,7 @@ const loader: loader.Loader = function (content: string, map) {
             }
         });
     const str = JSON.stringify(ast, (k, v) => k === "position" ? undefined : v);
-    this.callback(null, `${dependencies.join("\n")}module.exports = ${str};`, map);
+    this.callback(null, `${dependencies.join("\n")}module.exports = ${str};`);
 }
 
 function getImportRules(ast: Stylesheet): Import[] {
