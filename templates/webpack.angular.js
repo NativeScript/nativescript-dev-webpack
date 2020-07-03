@@ -302,21 +302,26 @@ module.exports = env => {
 
         { test: /\.html$|\.xml$/, use: 'raw-loader' },
 
-        // @nativescript/core reads the app.css and its imports using css-loader
         {
           test: /[\/|\\]app\.css$/,
           use: [
-            '@nativescript/webpack/style-hot-loader',
-            { loader: 'css-loader', options: { url: false } }
-          ]
+              '@nativescript/webpack/style-hot-loader',
+              {
+                  loader: "@nativescript/webpack/css2json-loader",
+                  options: { useForImports: true }
+              },
+          ],
         },
         {
           test: /[\/|\\]app\.scss$/,
           use: [
-            '@nativescript/webpack/style-hot-loader',
-            { loader: 'css-loader', options: { url: false } },
-            'sass-loader'
-          ]
+              '@nativescript/webpack/style-hot-loader',
+              {
+                  loader: "@nativescript/webpack/css2json-loader",
+                  options: { useForImports: true }
+              },
+              'sass-loader',
+          ],
         },
 
         // Angular components reference css files and their imports using raw-loader
