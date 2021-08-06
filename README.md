@@ -1,3 +1,9 @@
+**The source code has been moved into the main [NativeScript monorepo](https://github.com/NativeScript/NativeScript) and all issues are handled in the main repo now.**
+
+**This repository is now in read-only mode (archived) for reference.**
+
+---
+
 # NativeScript Webpack
 
 This repository contains the code for the nativescript-dev-webpack plugin which helps in webpacking [NativeScript](https://www.nativescript.org/) apps.
