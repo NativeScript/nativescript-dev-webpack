@@ -18,7 +18,7 @@
 
 First of all, thank you for taking the time to contribute!
 
-Before starting, make yourself familiar with the `nativescript-dev-webpack`'s [documentation](http://docs.nativescript.org/best-practices/bundling-with-webpack) and the official [NativeScript Code Of Conduct]( https://github.com/NativeScript/codeofconduct).
+Before starting, make yourself familiar with the `@nativescript/webpack`'s [documentation](http://docs.nativescript.org/best-practices/bundling-with-webpack) and the official [NativeScript Code Of Conduct]( https://github.com/NativeScript/codeofconduct).
 
 ## Project Structure
 
@@ -67,7 +67,7 @@ NOTE: There are three test apps in the repository, located in the `/demo` direct
     cd demo/AngularApp
     ```
 
-2. Install your local copy of the `nativescript-dev-webpack` plugin.
+2. Install your local copy of the `@nativescript/webpack` plugin.
     ```bash
     npm run setup
     ```

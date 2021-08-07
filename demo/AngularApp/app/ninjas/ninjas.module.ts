@@ -1,6 +1,5 @@
-import { NativeScriptCommonModule } from "nativescript-angular/common";
+import { NativeScriptCommonModule, NativeScriptRouterModule } from "@nativescript/angular";
 import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
-import { NativeScriptRouterModule } from "nativescript-angular/router";
 
 import { NinjasComponent } from "./ninjas.component";
 import { routes } from "./ninjas.routes";

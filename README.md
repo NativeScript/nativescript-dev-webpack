@@ -6,7 +6,7 @@
 
 # NativeScript Webpack
 
-This repository contains the code for the nativescript-dev-webpack plugin which helps in webpacking [NativeScript](https://www.nativescript.org/) apps.
+This repository contains the code for the @nativescript/webpack plugin which helps in webpacking [NativeScript](https://www.nativescript.org/) apps.
 
 JavaScript code and general asset bundling have been a member of the web developer toolbox for a long time. Tools like Webpack have been providing support for an enjoyable development experience that lets you assemble client-side code from various module sources and formats and then package it together. Most importantly, they allow for page load time optimizations that reduce or parallelize the number of requests a browser makes to the server.
 
@@ -37,7 +37,7 @@ For more details, see the [NativeScript docs for building with webpack](http://d
 ## Usage
 
 ```sh
-$ npm install --save-dev nativescript-dev-webpack
+$ npm install --save-dev @nativescript/webpack
 
 $ tns run android
 or

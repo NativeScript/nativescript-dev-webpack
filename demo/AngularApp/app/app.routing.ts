@@ -1,5 +1,5 @@
 import { NgModule } from "@angular/core";
-import { NativeScriptRouterModule } from "nativescript-angular/router";
+import { NativeScriptRouterModule } from "@nativescript/angular";
 import { Routes } from "@angular/router";
 
 import { ItemsComponent } from "./item/items.component";
@@ -11,7 +11,7 @@ const routes: Routes = [
     { path: "item/:id", component: ItemDetailComponent },
     {
         path: "ninjas",
-        loadChildren: "./ninjas/ninjas.module#NinjasModule",
+        loadChildren: () => import("./ninjas/ninjas.module").then(m => m.NinjasModule)
     },
 
 ];

@@ -26,8 +26,8 @@ module.exports = function (content, map) {
     }
 
     content += `
-    const application = require("tns-core-modules/application");
-    require("tns-core-modules/ui/styling/style-scope");
+    const application = require("@nativescript/core/application");
+    require("@nativescript/core/ui/styling/style-scope");
 
     if (typeof exports.forEach === "function") {
         exports.forEach(cssExport => {

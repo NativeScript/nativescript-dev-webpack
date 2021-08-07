@@ -1,7 +1,7 @@
 const { resolve } = require("path");
 const fs = require("fs");
 
-const hook = require("nativescript-hook")(__dirname);
+const hook = require("@nativescript/hook")(__dirname);
 
 const isTypeScript = ({ projectDir, packageJson } = {}) => {
     packageJson = packageJson || getPackageJson(projectDir);
