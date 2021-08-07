@@ -28,6 +28,7 @@ const nativeScriptDevWebpack = {
     WatchStateLoggerPlugin: EmptyClass,
     PlatformFSPlugin: EmptyClass,
     getAppPath: () => 'app',
+    getNSConfigPaths: () => ({ appPath: 'app', appResourcesPath: 'app/App_Resources' }),
     getEntryModule: () => 'EntryModule',
     hasRootLevelScopedModules: () => false,
     hasRootLevelScopedAngular: () => false,
